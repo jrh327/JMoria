@@ -179,7 +179,7 @@ public class Store1 {
 			if (i < 1)  i = 1;
 			max_sell.value(i * Tables.owners[s_ptr.owner].max_inflate / 100);
 			min_sell.value(i * Tables.owners[s_ptr.owner].min_inflate / 100);
-			if (min_sell.value() > max_sell.value())	min_sell = max_sell;
+			if (min_sell.value() > max_sell.value())	min_sell.value(max_sell.value());
 			return i;
 		} else {
 			/* don't let the item get into the store inventory */
@@ -441,10 +441,16 @@ public class Store1 {
 	 */
 	public boolean noneedtobargain(int store_num, int minprice) {
 		boolean flagnoneed;
+		int bargain_record;
 		StoreType s_ptr;
 		
 		s_ptr = var.store[store_num];
-		flagnoneed = ((s_ptr.good_buy == Constants.MAX_SHORT) || (s_ptr.good_buy > 3 * s_ptr.bad_buy + 5 + minprice / 50));
+		if (s_ptr.good_buy == Constants.MAX_SHORT) {
+			return true;
+		}
+		bargain_record = (s_ptr.good_buy - 3 * s_ptr.bad_buy - 5);
+		flagnoneed = ((bargain_record > 0)
+				&& ((long)bargain_record * (long)bargain_record > minprice/50));
 		return flagnoneed;
 	}
 	

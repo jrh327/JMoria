@@ -439,7 +439,7 @@ public class Moria3 {
 		CaveType c_ptr;
 		int real_typ, res;
 		
-		if (typ == 1) {
+		if (typ == 1 || typ == 5) {
 			real_typ = 1; /* typ == 1 . objects */
 		} else {
 			real_typ = 256; /* typ == 2 . gold */
@@ -453,7 +453,8 @@ public class Moria3 {
 				if (m1.in_bounds(j, k) && m1.los(y, x, j, k)) {
 					c_ptr = var.cave[j][k];
 					if (c_ptr.fval <= Constants.MAX_OPEN_SPACE && (c_ptr.tptr == 0)) {
-						if (typ == 3) {	/* typ == 3 . 50% objects, 50% gold */
+						if (typ == 3 || typ == 7) {
+							/* typ == 3 . 50% objects, 50% gold */
 							if (m1.randint(100) < 50) {
 								real_typ = 1;
 							} else {
@@ -517,6 +518,9 @@ public class Moria3 {
 		if ((flags & Constants.CM_CARRY_GOLD) != 0) {
 			i += 2;
 		}
+		if ((flags & Constants.CM_SMALL_OBJ) != 0) {
+			i += 4;
+		}
 		
 		number = 0;
 		if ((flags & Constants.CM_60_RANDOM) != 0 && (m1.randint(100) < 60)) {
@@ -541,16 +545,21 @@ public class Moria3 {
 		}
 		
 		if ((flags & Constants.CM_WIN) != 0) {
-			var.total_winner = true;
-			m3.prt_winner();
-			io.msg_print("*** CONGRATULATIONS *** You have won the game.");
-			io.msg_print("You cannot save this game, but you may retire when ready.");
+			if (!var.death) {
+				var.total_winner = true;
+				m3.prt_winner();
+				io.msg_print("*** CONGRATULATIONS *** You have won the game.");
+				io.msg_print("You cannot save this game, but you may retire when ready.");
+			}
 		}
 		
 		if (dump != 0) {
 			res = 0;
 			if ((dump & 255) != 0) {
 				res |= Constants.CM_CARRY_OBJ;
+				if ((i & 0x04) != 0) {
+					res |= Constants.CM_SMALL_OBJ;
+				}
 			}
 			if (dump >= 256) {
 				res |= Constants.CM_CARRY_GOLD;
@@ -681,7 +690,11 @@ public class Moria3 {
 						out_val = String.format("%s is unaffected.", m_name);
 					} else {
 						out_val = String.format("%s appears confused.", m_name);
-						mon.m_list[crptr].confused = true;
+						if (mon.m_list[crptr].confused > 0) {
+							mon.m_list[crptr].confused += 3;
+						} else {
+							mon.m_list[crptr].confused = 2 + m1.randint(16);
+						}
 					}
 					io.msg_print(out_val);
 					if (mon.m_list[crptr].ml && m1.randint(4) == 1) {

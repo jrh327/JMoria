@@ -397,8 +397,7 @@ public class Store2 {
 		if (s_ptr.insult_cur > Tables.owners[s_ptr.owner].insult_max) {
 			prt_comment4();
 			s_ptr.insult_cur = 0;
-			s_ptr.good_buy = 0;
-			s_ptr.bad_buy = 0;
+			s_ptr.bad_buy++;
 			s_ptr.store_open = var.turn + 2500 + m1.randint(2500);
 			increase = true;
 		}

@@ -22,7 +22,7 @@
 package net.jonhopkins.moria.types;
 
 public final class MonsterType {
-	public MonsterType(int _hp, int _csleep, int _cspeed, int _mptr, int _fy, int _fx, int _cdis, boolean _ml, int _stunned, boolean _confused) {
+	public MonsterType(int _hp, int _csleep, int _cspeed, int _mptr, int _fy, int _fx, int _cdis, boolean _ml, int _stunned, int _confused) {
 		hp = _hp;
 		csleep = _csleep;
 		cspeed = _cspeed;
@@ -72,5 +72,5 @@ public final class MonsterType {
 	public int cdis;
 	public boolean ml;
 	public int stunned;
-	public boolean confused;
+	public int confused;
 }

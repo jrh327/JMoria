@@ -134,17 +134,17 @@ public class Treasure {
 	  500,	  20,	77,   1,   1,	0,   0,	 0,   0, new int[] {0,0}	,  7),
 	new TreasureType("Light Cures"			,0x00800000L,	Constants.TV_FOOD, ',',	/* 14*/
 	  500,	  30,	78,   1,   1,	0,   0,	 0,   0, new int[] {0,0}	, 10),
-	new TreasureType("Restoring"			,0x001F8040L,	Constants.TV_FOOD, ',',	/* 15*/
+	new TreasureType("Restoration"		,0x001F8000L,	Constants.TV_FOOD, ',',	/* 15*/
 	  500,	1000,	79,   1,   1,	0,   0,	 0,   0, new int[] {0,0}	, 30),
 	new TreasureType("Poison"			,0x00000001L,	Constants.TV_FOOD, ',',	/* 16*/
 	 1200,	   0,	80,   1,   1,	0,   0,	 0,   0, new int[] {0,0}	, 15),
-	new TreasureType("Hallucinations"		,0x00000010L,	Constants.TV_FOOD, ',',	/* 17*/
+	new TreasureType("Hallucination"		,0x00000010L,	Constants.TV_FOOD, ',',	/* 17*/
 	 1200,	   0,	81,   1,   1,	0,   0,	 0,   0, new int[] {0,0}	, 18),
 	new TreasureType("Cure Poison"			,0x00000020L,	Constants.TV_FOOD, ',',	/* 18*/
 	 1200,	  75,	82,   1,   1,	0,   0,	 0,   0, new int[] {0,0}	, 19),
-	new TreasureType("Unhealth"			,0x00000400L,	Constants.TV_FOOD, ',',	/* 19*/
-	 1200,	  25,	83,   1,   1,	0,   0,	 0,   0, new int[] {6,8}	, 28),
-	new TreasureType("Cure Serious Wounds"		,0x02000000L,	Constants.TV_FOOD, ',',	/* 20*/
+	new TreasureType("Unhealth"			,0x04000400L,	Constants.TV_FOOD, ',',	/* 19*/
+	 1200,	  75,	83,   1,   1,	0,   0,	 0,   0, new int[] {10,12}	, 28),
+	new TreasureType("Major Cures"		,0x02000000L,	Constants.TV_FOOD, ',',	/* 20*/
 	 1200,	  75,	84,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	, 16),
 	new TreasureType("& Ration~ of Food"		,0x00000000L,	Constants.TV_FOOD, ',',	/* 21*/
 	 5000,	   3,	90,   1,  10,	0,   0,	 0,   0, new int[] {0,0}	,  0),
@@ -155,11 +155,11 @@ public class Treasure {
 	new TreasureType("& Slime Mold~"		,0x00000000L,	Constants.TV_FOOD, ',',	/* 24*/
 	 3000,	   2,	91,   1,   5,	0,   0,	 0,   0, new int[] {0,0}	,  1),
 	new TreasureType("& Piece~ of Elvish Waybread"	,0x02000020L,	Constants.TV_FOOD, ',',	/* 25*/
-	 7500,	  10,	92,   1,   3,	0,   0,	 0,   0, new int[] {0,0}	,  6),
+	 7500,	  25,	92,   1,   3,	0,   0,	 0,   0, new int[] {0,0}	,  6),
 	new TreasureType("& Piece~ of Elvish Waybread"	,0x02000020L,	Constants.TV_FOOD, ',',	/* 26*/
-	 7500,	  10,	92,   1,   3,	0,   0,	 0,   0, new int[] {0,0}	, 12),
+	 7500,	  25,	92,   1,   3,	0,   0,	 0,   0, new int[] {0,0}	, 12),
 	new TreasureType("& Piece~ of Elvish Waybread"	,0x02000020L,	Constants.TV_FOOD, ',',	/* 27*/
-	 7500,	  10,	92,   1,   3,	0,   0,	 0,   0, new int[] {0,0}	, 20),
+	 7500,	  25,	92,   1,   3,	0,   0,	 0,   0, new int[] {0,0}	, 20),
 	new TreasureType("& Dagger (Main Gauche)"	,0x00000000L,	Constants.TV_SWORD, '|',	/* 28*/
 	    0,	  25,	1,   1,  30,	0,   0,	 0,   0, new int[] {1,5}	,  2),
 	new TreasureType("& Dagger (Misericorde)"	,0x00000000L,	Constants.TV_SWORD, '|',	/* 29*/
@@ -168,10 +168,10 @@ public class Treasure {
 	    0,	  10,	3,   1,  12,	0,   0,	 0,   0, new int[] {1,4}	,  0),
 	new TreasureType("& Dagger (Bodkin)"		,0x00000000L,	Constants.TV_SWORD, '|',	/* 31*/
 	    0,	  10,	4,   1,  20,	0,   0,	 0,   0, new int[] {1,4}	,  1),
-	new TreasureType("& Broken dagger"		,0x00000000L,	Constants.TV_SWORD, '|',	/* 32*/
+	new TreasureType("& Broken Dagger"		,0x00000000L,	Constants.TV_SWORD, '|',	/* 32*/
 	    0,	   0,	5,   1,  15,  -2,  -2,	 0,   0, new int[] {1,1}	,  0),
 	new TreasureType("& Backsword"			,0x00000000L,	Constants.TV_SWORD, '|',	/* 33*/
-	    0,	  60,	6,   1,  95,	0,   0,	 0,   0, new int[] {1,9}	,  7),
+	    0,	 150,	6,   1,  95,	0,   0,	 0,   0, new int[] {1,9}	,  7),
 	new TreasureType("& Bastard Sword"		,0x00000000L,	Constants.TV_SWORD, '|',	/* 34*/
 	    0,	 350,	7,   1, 140,	0,   0,	 0,   0, new int[] {3,4}	, 14),
 	new TreasureType("& Thrusting Sword (Bilbo)"	,0x00000000L,	Constants.TV_SWORD, '|',	/* 35*/
@@ -195,7 +195,7 @@ public class Treasure {
 	new TreasureType("& Katana"			,0x00000000L,	Constants.TV_SWORD, '|',	/* 44*/
 	    0,	 400,	17,   1, 120,	0,   0,	 0,   0, new int[] {3,4}	, 18),
 	new TreasureType("& Longsword"			,0x00000000L,	Constants.TV_SWORD, '|',	/* 45*/
-	    0,	 300,	18,   1, 130,	0,   0,	 0,   0, new int[] {1,10} , 12),
+	    0,	 200,	18,   1, 130,	0,   0,	 0,   0, new int[] {1,10} , 12),
 	new TreasureType("& Two-Handed Sword (No-Dachi)",0x00000000L,	Constants.TV_SWORD, '|',	/* 46*/
 	    0,	 675,	19,   1, 200,	0,   0,	 0,   0, new int[] {4,4}	, 45),
 	new TreasureType("& Rapier"			,0x00000000L,	Constants.TV_SWORD, '|',	/* 47*/
@@ -206,11 +206,11 @@ public class Treasure {
 	    0,	  48,	22,   1,  75,	0,   0,	 0,   0, new int[] {1,6}	,  5),
 	new TreasureType("& Two-Handed Sword (Zweihander)",0x00000000L,	Constants.TV_SWORD, '|',	/* 50*/
 	    0,	1500,	23,   1, 280,	0,   0,	 0,   0, new int[] {4,6}	, 50),
-	new TreasureType("& Broken sword"		,0x00000000L,	Constants.TV_SWORD, '|',	/* 51*/
+	new TreasureType("& Broken Sword"		,0x00000000L,	Constants.TV_SWORD, '|',	/* 51*/
 	    0,	   0,	24,   1,  75,  -2,  -2,	 0,   0, new int[] {1,1}	,  0),
 	new TreasureType("& Ball and Chain"		,0x00000000L,	Constants.TV_HAFTED, '\\',/* 52*/
 	    0,	 200,	1,   1, 150,	0,   0,	 0,   0, new int[] {2,4}	, 20),
-	new TreasureType("& Cat-O-Nine Tails"		,0x00000000L,	Constants.TV_HAFTED, '\\',/* 53*/
+	new TreasureType("& Cat-o'-Nine-Tails"		,0x00000000L,	Constants.TV_HAFTED, '\\',/* 53*/
 	    0,	  14,	2,   1,  40,	0,   0,	 0,   0, new int[] {1,4}	,  3),
 	new TreasureType("& Wooden Club"		,0x00000000L,	Constants.TV_HAFTED, '\\',/* 54*/
 	    0,	  10,	3,   1, 100,	0,   0,	 0,   0, new int[] {1,3}	,  0),
@@ -224,14 +224,14 @@ public class Treasure {
 	    0,	 130,	7,   1, 120,	0,   0,	 0,   0, new int[] {2,4}	,  6),
 	new TreasureType("& War Hammer"			,0x00000000L,	Constants.TV_HAFTED, '\\',/* 59*/
 	    0,	 225,	8,   1, 120,	0,   0,	 0,   0, new int[] {3,3}	,  5),
-	new TreasureType("& Mace (Lead-filled)"		,0x00000000L,	Constants.TV_HAFTED, '\\',/* 60*/
+	new TreasureType("& Lead-Filled Mace"		,0x00000000L,	Constants.TV_HAFTED, '\\',/* 60*/
 	    0,	 502,	9,   1, 180,	0,   0,	 0,   0, new int[] {3,4}	, 15),
 	new TreasureType("& Awl-Pike"			,0x00000000L,	Constants.TV_POLEARM, '/',/* 61*/
-	    0,	 340,	1,   1, 160,	0,   0,	 0,   0, new int[] {1,8}	,  8),
+	    0,	 200,	1,   1, 160,	0,   0,	 0,   0, new int[] {1,8}	,  8),
 	new TreasureType("& Beaked Axe"			,0x00000000L,	Constants.TV_POLEARM, '/',/* 62*/
 	    0,	 408,	2,   1, 180,	0,   0,	 0,   0, new int[] {2,6}	, 15),
 	new TreasureType("& Fauchard"			,0x00000000L,	Constants.TV_POLEARM, '/',/* 63*/
-	    0,	 376,	3,   1, 170,	0,   0,	 0,   0, new int[] {1,10} , 17),
+	    0,	 326,	3,   1, 170,	0,   0,	 0,   0, new int[] {1,10} , 17),
 	new TreasureType("& Glaive"			,0x00000000L,	Constants.TV_POLEARM, '/',/* 64*/
 	    0,	 363,	4,   1, 190,	0,   0,	 0,   0, new int[] {2,6}	, 20),
 	new TreasureType("& Halberd"			,0x00000000L,	Constants.TV_POLEARM, '/',/* 65*/
@@ -305,9 +305,9 @@ public class Treasure {
 	new TreasureType("& Silver Crown"		,0x00000000L,	Constants.TV_HELM, ']',	/* 99*/
 	    0,	 500,	6,   1,  20,	0,   0,	 0,   0, new int[] {1,1}	, 44),
 	new TreasureType("& Golden Crown"		,0x00000000L,	Constants.TV_HELM, ']',	/*100*/
-	    0,	1000,	7,   1,  30,	0,   0,	 0,   0, new int[] {1,1}	, 47),
+	    0,	1000,	7,   1,  30,	0,   0,	 0,   0, new int[] {1,2}	, 47),
 	new TreasureType("& Jewel-Encrusted Crown"	,0x00000000L,	Constants.TV_HELM, ']',	/*101*/
-	    0,	2000,	8,   1,  40,	0,   0,	 0,   0, new int[] {1,1}	, 50),
+	    0,	2000,	8,   1,  40,	0,   0,	 0,   0, new int[] {1,3}	, 50),
 	new TreasureType("& Robe"			,0x00000000L,	Constants.TV_SOFT_ARMOR, '(',/*102*/
 	    0,	   4,	1,   1,  20,	0,   0,	 2,   0, new int[] {0,0}	,  1),
 	new TreasureType("Soft Leather Armor"		,0x00000000L,	Constants.TV_SOFT_ARMOR, '(',/*103*/
@@ -331,7 +331,7 @@ public class Treasure {
 	new TreasureType("Chain Mail"			,0x00000000L,	Constants.TV_HARD_ARMOR, '[',/*112*/
 	    0,	 530,	2,   1, 220,  -2,   0,	14,   0, new int[] {1,4}	, 26),
 	new TreasureType("Rusty Chain Mail"		,0x00000000L,	Constants.TV_HARD_ARMOR, '[',/*113*/
-	    0,	   0,	3,   1, 200,  -5,   0,	14,  -8, new int[] {1,4}	, 26),
+	    0,	   0,	3,   1, 220,  -5,   0,	14,  -8, new int[] {1,4}	, 26),
 	new TreasureType("Double Chain Mail"		,0x00000000L,	Constants.TV_HARD_ARMOR, '[',/*114*/
 	    0,	 630,	4,   1, 260,  -2,   0,	15,   0, new int[] {1,4}	, 28),
 	new TreasureType("Augmented Chain Mail"		,0x00000000L,	Constants.TV_HARD_ARMOR, '[',/*115*/
@@ -343,7 +343,7 @@ public class Treasure {
 	new TreasureType("Laminated Armor"		,0x00000000L,	Constants.TV_HARD_ARMOR, '[',/*118*/
 	    0,	 825,	8,   1, 300,  -3,   0,	20,   0, new int[] {1,4}	, 38),
 	new TreasureType("Partial Plate Armor"		,0x00000000L,	Constants.TV_HARD_ARMOR, '[',/*119*/
-	    0,	 900,	9,   1, 260,  -3,   0,	22,   0, new int[] {1,6}	, 42),
+	    0,	 900,	9,   1, 320,  -3,   0,	22,   0, new int[] {1,6}	, 42),
 	new TreasureType("Metal Lamellar Armor"		,0x00000000L,	Constants.TV_HARD_ARMOR, '[',/*120*/
 	    0,	 950,	10,   1, 340,  -3,   0,	23,   0, new int[] {1,6}	, 44),
 	new TreasureType("Full Plate Armor"		,0x00000000L,	Constants.TV_HARD_ARMOR, '[',/*121*/
@@ -368,22 +368,22 @@ public class Treasure {
 	    0,	 125,	5,   1,  90,	0,   0,	 4,   0, new int[] {1,3}	, 20),
 	new TreasureType("& Large Metal Shield"		,0x00000000L,	Constants.TV_SHIELD, ')',	/*131*/
 	    0,	 200,	6,   1, 120,	0,   0,	 5,   0, new int[] {1,3}	, 30),
-	new TreasureType("Gain Strength"		,0x00000001L,	Constants.TV_RING, '=',	/*132*/
+	new TreasureType("Strength"				,0x00000001L,	Constants.TV_RING, '=',	/*132*/
 	    0,	 400,	0,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	, 30),
-	new TreasureType("Gain Dexterity"		,0x00000008L,	Constants.TV_RING, '=',	/*133*/
+	new TreasureType("Dexterity"			,0x00000008L,	Constants.TV_RING, '=',	/*133*/
 	    0,	 400,	1,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	, 30),
-	new TreasureType("Gain Constitution"		,0x00000010L,	Constants.TV_RING, '=',	/*134*/
+	new TreasureType("Constitution"			,0x00000010L,	Constants.TV_RING, '=',	/*134*/
 	    0,	 400,	2,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	, 30),
-	new TreasureType("Gain Intelligence"		,0x00000002L,	Constants.TV_RING, '=',	/*135*/
-	    0,	 350,	3,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	, 30),
-	new TreasureType("Speed"			,0x00001000L,	Constants.TV_RING, '=',	/*136*/
+	new TreasureType("Intelligence"			,0x00000002L,	Constants.TV_RING, '=',	/*135*/
+	    0,	 400,	3,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	, 30),
+	new TreasureType("Speed"				,0x00001000L,	Constants.TV_RING, '=',	/*136*/
 	    0,	3000,	4,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	, 50),
 	new TreasureType("Searching"			,0x00000040L,	Constants.TV_RING, '=',	/*137*/
 	    0,	 250,	5,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	,  7),
 	new TreasureType("Teleportation"		,0x80000400L,	Constants.TV_RING, '=',	/*138*/
 	    0,	   0,	6,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	,  7),
 	new TreasureType("Slow Digestion"		,0x00000080L,	Constants.TV_RING, '=',	/*139*/
-	    0,	 250,	7,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	,  7),
+	    0,	 200,	7,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	,  7),
 	new TreasureType("Resist Fire"			,0x00080000L,	Constants.TV_RING, '=',	/*140*/
 	    0,	 250,	8,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	, 14),
 	new TreasureType("Resist Cold"			,0x00200000L,	Constants.TV_RING, '=',	/*141*/
@@ -416,7 +416,7 @@ public class Treasure {
 	new TreasureType("Aggravate Monster"		,0x80000200L,	Constants.TV_RING, '=',	/*154*/
 	    0,	   0,	22,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	,  7),
 	new TreasureType("See Invisible"		,0x01000000L,	Constants.TV_RING, '=',	/*155*/
-	    0,	 340,	23,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	, 40),
+	    0,	 500,	23,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	, 40),
 	new TreasureType("Sustain Strength"		,0x00400000L,	Constants.TV_RING, '=',	/*156*/
 	    1,	 750,	24,   1,   2,	0,   0,	 0,   0, new int[] {0,0}	, 44),
 	new TreasureType("Sustain Intelligence"		,0x00400000L,	Constants.TV_RING, '=',	/*157*/
@@ -442,7 +442,7 @@ public class Treasure {
 	new TreasureType("Slow Digestion"		,0x00000080L,	Constants.TV_AMULET, '"',	/*167*/
 	    0,	 200,	4,   1,   3,	0,   0,	 0,   0, new int[] {0,0}	, 14),
 	new TreasureType("Resist Acid"			,0x00100000L,	Constants.TV_AMULET, '"',	/*168*/
-	    0,	 300,	5,   1,   3,	0,   0,	 0,   0, new int[] {0,0}	, 24),
+	    0,	 250,	5,   1,   3,	0,   0,	 0,   0, new int[] {0,0}	, 24),
 	new TreasureType("Adornment"			,0x00000000L,	Constants.TV_AMULET, '"',	/*169*/
 	    0,	  20,	6,   1,   3,	0,   0,	 0,   0, new int[] {0,0}	, 16),
 	/* was an amulet of adornment here, subval = 7 */
@@ -525,7 +525,7 @@ public class Treasure {
 	new TreasureType("Darkness"			,0x04000000L,	Constants.TV_SCROLL1, '?',/*208*/
 	    0,	   0,	90,   1,   5,	0,   0,	 0,   0, new int[] {0,0}	,  1),
 	new TreasureType("Protection from Evil"		,0x08000000L,	Constants.TV_SCROLL1, '?',/*209*/
-	    0,	  50,	91,   1,   5,	0,   0,	 0,   0, new int[] {0,0}	, 30),
+	    0,	 100,	91,   1,   5,	0,   0,	 0,   0, new int[] {0,0}	, 30),
 	new TreasureType("Create Food"			,0x10000000L,	Constants.TV_SCROLL1, '?',/*210*/
 	    0,	  10,	92,   1,   5,	0,   0,	 0,   0, new int[] {0,0}	,  5),
 	new TreasureType("Dispel Undead"		,0x20000000L,	Constants.TV_SCROLL1, '?',/*211*/
@@ -549,7 +549,7 @@ public class Treasure {
 	new TreasureType("Word-of-Recall"		,0x00000100L,	Constants.TV_SCROLL2, '?',/*220*/
 	    0,	 150, 102,   1,   5,	0,   0,	 0,   0, new int[] {0,0}	,  5),
 	new TreasureType("*Destruction*"		,0x00000200L,	Constants.TV_SCROLL2, '?',/*221*/
-	    0,	 250, 103,   1,   5,	0,   0,	 0,   0, new int[] {0,0}	, 40),
+	    0,	 750, 103,   1,   5,	0,   0,	 0,   0, new int[] {0,0}	, 40),
 	/* SMJ, AJ, Water must be subval 64-66 resp. for objdes to work */
 	new TreasureType("Slime Mold Juice"		,0x30000000L,	Constants.TV_POTION1, '!',/*222*/
 	  400,	   2,	64,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	,  0),
@@ -557,19 +557,19 @@ public class Treasure {
 	  250,	   1,	65,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	,  0),
 	new TreasureType("Water"			,0x00000000L,	Constants.TV_POTION1, '!',/*224*/
 	  200,	   0,	66,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	,  0),
-	new TreasureType("Gain Strength"		,0x00000001L,	Constants.TV_POTION1, '!',/*225*/
-	    0,	 300,	67,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 25),
+	new TreasureType("Strength"			,0x00000001L,	Constants.TV_POTION1, '!',/*225*/
+	   50,	 300,	67,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 25),
 	new TreasureType("Weakness"			,0x00000002L,	Constants.TV_POTION1, '!',/*226*/
 	    0,	   0,	68,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	,  3),
 	new TreasureType("Restore Strength"		,0x00000004L,	Constants.TV_POTION1, '!',/*227*/
 	    0,	 300,	69,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 40),
-	new TreasureType("Gain Intelligence"		,0x00000008L,	Constants.TV_POTION1, '!',/*228*/
+	new TreasureType("Intelligence"		,0x00000008L,	Constants.TV_POTION1, '!',/*228*/
 	    0,	 300,	70,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 25),
 	new TreasureType("Lose Intelligence"		,0x00000010L,	Constants.TV_POTION1, '!',/*229*/
 	    0,	   0,	71,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 25),
 	new TreasureType("Restore Intelligence"		,0x00000020L,	Constants.TV_POTION1, '!',/*230*/
 	    0,	 300,	72,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 40),
-	new TreasureType("Gain Wisdom"			,0x00000040L,	Constants.TV_POTION1, '!',/*231*/
+	new TreasureType("Wisdom"				,0x00000040L,	Constants.TV_POTION1, '!',/*231*/
 	    0,	 300,	73,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 25),
 	new TreasureType("Lose Wisdom"			,0x00000080L,	Constants.TV_POTION1, '!',/*232*/
 	    0,	   0,	74,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 25),
@@ -593,8 +593,8 @@ public class Treasure {
 	  100,	 100,	81,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	,  5),
 	new TreasureType("Healing"			,0x70008000L,	Constants.TV_POTION1, '!',/*242*/
 	  200,	 200,	82,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 12),
-	new TreasureType("Gain Constitution"		,0x00010000L,	Constants.TV_POTION1, '!',/*243*/
-	    0,	 300,	83,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 25),
+	new TreasureType("Constitution"			,0x00010000L,	Constants.TV_POTION1, '!',/*243*/
+	   50,	 300,	83,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 25),
 	new TreasureType("Gain Experience"		,0x00020000L,	Constants.TV_POTION1, '!',/*244*/
 	    0,	2500,	84,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 50),
 	new TreasureType("Sleep"			,0x00040000L,	Constants.TV_POTION1, '!',/*245*/
@@ -609,7 +609,7 @@ public class Treasure {
 	    0,	  75,	89,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	,  1),
 	new TreasureType("Slowness"			,0x00800000L,	Constants.TV_POTION1, '!',/*250*/
 	   50,	   0,	90,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	,  1),
-	new TreasureType("Gain Dexterity"		,0x02000000L,	Constants.TV_POTION1, '!',/*251*/
+	new TreasureType("Dexterity"			,0x02000000L,	Constants.TV_POTION1, '!',/*251*/
 	    0,	 300,	91,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 25),
 	new TreasureType("Restore Dexterity"		,0x04000000L,	Constants.TV_POTION1, '!',/*252*/
 	    0,	 300,	92,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 40),
@@ -620,7 +620,7 @@ public class Treasure {
 	new TreasureType("Salt Water"			,0x00000004L,	Constants.TV_POTION2, '!',/*255*/
 	    0,	   0,	96,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	,  0),
 	new TreasureType("Invulnerability"		,0x00000008L,	Constants.TV_POTION2, '!',/*256*/
-	    0,	 250,	97,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 40),
+	    0,	1000,	97,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 40),
 	new TreasureType("Heroism"			,0x00000010L,	Constants.TV_POTION2, '!',/*257*/
 	    0,	  35,	98,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	,  1),
 	new TreasureType("Super Heroism"		,0x00000020L,	Constants.TV_POTION2, '!',/*258*/
@@ -643,7 +643,7 @@ public class Treasure {
 	    0,	 350, 107,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	, 25),
 	new TreasureType("Infra-Vision"			,0x00004000L,	Constants.TV_POTION2, '!',/*267*/
 	    0,	  20, 108,   1,   4,	0,   0,	 0,   0, new int[] {1,1}	,  3),
-	new TreasureType("& Flask~ of oil"		,0x00040000L,	Constants.TV_FLASK, '!',	/*268*/
+	new TreasureType("& Flask~ of Oil"		,0x00040000L,	Constants.TV_FLASK, '!',	/*268*/
 	 7500,	   3,	64,   1,  10,	0,   0,	 0,   0, new int[] {2,6}	,  1),
 	new TreasureType("Light"			,0x00000001L,	Constants.TV_WAND, '-',	/*269*/
 	    0,	 200,	0,   1,  10,	0,   0,	 0,   0, new int[] {1,1}	,  2),
@@ -670,7 +670,7 @@ public class Treasure {
 	new TreasureType("Drain Life"			,0x00000800L,	Constants.TV_WAND, '-',	/*280*/
 	    0,	1200,	11,   1,  10,	0,   0,	 0,   0, new int[] {1,1}	, 50),
 	new TreasureType("Trap/Door Destruction"	,0x00001000L,	Constants.TV_WAND, '-',	/*281*/
-	    0,	 100,	12,   1,  10,	0,   0,	 0,   0, new int[] {1,1}	, 12),
+	    0,	 500,	12,   1,  10,	0,   0,	 0,   0, new int[] {1,1}	, 12),
 	new TreasureType("Magic Missile"		,0x00002000L,	Constants.TV_WAND, '-',	/*282*/
 	    0,	 200,	13,   1,  10,	0,   0,	 0,   0, new int[] {1,1}	,  2),
 	new TreasureType("Wall Building"		,0x00004000L,	Constants.TV_WAND, '-',	/*283*/
@@ -704,7 +704,7 @@ public class Treasure {
 	new TreasureType("Object Location"		,0x00000010L,	Constants.TV_STAFF, '_',	/*297*/
 	    0,	 200,	4,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	,  5),
 	new TreasureType("Teleportation"		,0x00000020L,	Constants.TV_STAFF, '_',	/*298*/
-	    0,	 400,	5,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	, 20),
+	    0,	 800,	5,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	, 20),
 	new TreasureType("Earthquakes"			,0x00000040L,	Constants.TV_STAFF, '_',	/*299*/
 	    0,	 350,	6,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	, 40),
 	new TreasureType("Summoning"			,0x00000080L,	Constants.TV_STAFF, '_',	/*300*/
@@ -714,7 +714,7 @@ public class Treasure {
 	new TreasureType("*Destruction*"		,0x00000200L,	Constants.TV_STAFF, '_',	/*302*/
 	    0,	2500,	8,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	, 50),
 	new TreasureType("Starlight"			,0x00000400L,	Constants.TV_STAFF, '_',	/*303*/
-	    0,	 800,	9,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	, 20),
+	    0,	 400,	9,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	, 20),
 	new TreasureType("Haste Monsters"		,0x00000800L,	Constants.TV_STAFF, '_',	/*304*/
 	    0,	   0,	10,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	, 10),
 	new TreasureType("Slow Monsters"		,0x00001000L,	Constants.TV_STAFF, '_',	/*305*/
@@ -722,7 +722,7 @@ public class Treasure {
 	new TreasureType("Sleep Monsters"		,0x00002000L,	Constants.TV_STAFF, '_',	/*306*/
 	    0,	 700,	12,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	, 10),
 	new TreasureType("Cure Light Wounds"		,0x00004000L,	Constants.TV_STAFF, '_',	/*307*/
-	    0,	 350,	13,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	,  5),
+	    0,	 200,	13,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	,  5),
 	new TreasureType("Detect Invisible"		,0x00008000L,	Constants.TV_STAFF, '_',	/*308*/
 	    0,	 200,	14,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	,  5),
 	new TreasureType("Speed"			,0x00010000L,	Constants.TV_STAFF, '_',	/*309*/
@@ -743,48 +743,48 @@ public class Treasure {
 	    0,	   0,	22,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	, 50),
 	new TreasureType("Darkness"			,0x01000000L,	Constants.TV_STAFF, '_',	/*317*/
 	    0,	   0,	22,   1,  50,	0,   0,	 0,   0, new int[] {1,2}	,  5),
-	new TreasureType("[Beginners-Magik]"		,0x0000007FL,	Constants.TV_MAGIC_BOOK, '?',/*318*/
+	new TreasureType("[Beginners-Magick]"		,0x0000007FL,	Constants.TV_MAGIC_BOOK, '?',/*318*/
 	    0,	  25,	64,   1,  30,   0,   0,	 0,   0, new int[] {1,1}	, 40),
-	new TreasureType("[Magik I]"			,0x0000FF80L,	Constants.TV_MAGIC_BOOK, '?',/*319*/
+	new TreasureType("[Magick I]"			,0x0000FF80L,	Constants.TV_MAGIC_BOOK, '?',/*319*/
 	    0,	 100,	65,   1,  30,   0,   0,	 0,   0, new int[] {1,1}	, 40),
-	new TreasureType("[Magik II]"			,0x00FF0000L,	Constants.TV_MAGIC_BOOK, '?',/*320*/
+	new TreasureType("[Magick II]"			,0x00FF0000L,	Constants.TV_MAGIC_BOOK, '?',/*320*/
 	    0,	 400,	66,   1,  30,   0,   0,	 0,   0, new int[] {1,1}	, 40),
-	new TreasureType("[The Mages Guide to Power]"	,0x7F000000L,	Constants.TV_MAGIC_BOOK, '?',/*321*/
+	new TreasureType("[The Mages' Guide to Power]"	,0x7F000000L,	Constants.TV_MAGIC_BOOK, '?',/*321*/
 	    0,	 800,	67,   1,  30,   0,   0,	 0,   0, new int[] {1,1}	, 40),
 	new TreasureType("[Beginners Handbook]"		,0x000000FFL,	Constants.TV_PRAYER_BOOK, '?',/*322*/
 	    0,	  25,	64,   1,  30,   0,   0,	 0,   0, new int[] {1,1}	, 40),
 	new TreasureType("[Words of Wisdom]"		,0x0000FF00L,	Constants.TV_PRAYER_BOOK, '?',/*323*/
 	    0,	 100,	65,   1,  30,   0,   0,	 0,   0, new int[] {1,1}	, 40),
 	new TreasureType("[Chants and Blessings]"	,0x01FF0000L,	Constants.TV_PRAYER_BOOK, '?',/*324*/
-	    0,	 300,	66,   1,  30,   0,   0,	 0,   0, new int[] {1,1}	, 40),
-	new TreasureType("[Exorcism and Dispelling]"	,0x7E000000L,	Constants.TV_PRAYER_BOOK, '?',/*325*/
-	    0,	 900,	67,   1,  30,   0,   0,	 0,   0, new int[] {1,1}	, 40),
-	new TreasureType("& Small wooden chest"		,0x0F000000L,	 Constants.TV_CHEST, '&',	/*326*/
+	    0,	 400,	66,   1,  30,   0,   0,	 0,   0, new int[] {1,1}	, 40),
+	new TreasureType("[Exorcisms and Dispellings]"	,0x7E000000L,	Constants.TV_PRAYER_BOOK, '?',/*325*/
+	    0,	 800,	67,   1,  30,   0,   0,	 0,   0, new int[] {1,1}	, 40),
+	new TreasureType("& Small Wooden Chest"		,0x13800000L,	 Constants.TV_CHEST, '&',	/*326*/
 	    0,	  20,	1,   1, 250,	0,   0,	 0,   0, new int[] {2,3}	,  7),
-	new TreasureType("& Large wooden chest"		,0x15000000L,	 Constants.TV_CHEST, '&',	/*327*/
+	new TreasureType("& Large Wooden Chest"		,0x17800000L,	 Constants.TV_CHEST, '&',	/*327*/
 	    0,	  60,	4,   1, 500,	0,   0,	 0,   0, new int[] {2,5}	, 15),
-	new TreasureType("& Small iron chest"		,0x0F000000L,	 Constants.TV_CHEST, '&',	/*328*/
-	    0,	 100,	7,   1, 300,	0,   0,	 0,   0, new int[] {2,4}	, 25),
-	new TreasureType("& Large iron chest"		,0x1F000000L,	 Constants.TV_CHEST, '&',	/*329*/
+	new TreasureType("& Small Iron Chest"		,0x17800000L,	 Constants.TV_CHEST, '&',	/*328*/
+	    0,	 100,	7,   1, 500,	0,   0,	 0,   0, new int[] {2,4}	, 25),
+	new TreasureType("& Large Iron Chest"		,0x23800000L,	 Constants.TV_CHEST, '&',	/*329*/
 	    0,	 150,	10,   1,1000,	0,   0,	 0,   0, new int[] {2,6}	, 35),
-	new TreasureType("& Small steel chest"		,0x0F000000L,	 Constants.TV_CHEST, '&',	/*330*/
+	new TreasureType("& Small Steel Chest"		,0x1B800000L,	 Constants.TV_CHEST, '&',	/*330*/
 	    0,	 200,	13,   1, 500,	0,   0,	 0,   0, new int[] {2,4}	, 45),
-	new TreasureType("& Large steel chest"		,0x23000000L,	 Constants.TV_CHEST, '&',	/*331*/
+	new TreasureType("& Large Steel Chest"		,0x33800000L,	 Constants.TV_CHEST, '&',	/*331*/
 	    0,	 250,	16,   1,1000,	0,   0,	 0,   0, new int[] {2,6}	, 50),
 	new TreasureType("& Rat Skeleton"		,0x00000000L,	 Constants.TV_MISC, 's',	/*332*/
 	    0,	   0,	1,   1,  10,	0,   0,	 0,   0, new int[] {1,1}	,  1),
 	new TreasureType("& Giant Centipede Skeleton"	,0x00000000L,	 Constants.TV_MISC, 's',	/*333*/
 	    0,	   0,	2,   1,  25,	0,   0,	 0,   0, new int[] {1,1}	,  1),
-	new TreasureType("some filthy rags"		,0x00000000L,	Constants.TV_SOFT_ARMOR, '~',/*334*/
+	new TreasureType("some Filthy Rags"		,0x00000000L,	Constants.TV_SOFT_ARMOR, '~',/*334*/
 	    0,	   0,	63,   1,  20,	0,   0,	 1,   0, new int[] {0,0}	,  0),
 	new TreasureType("& empty bottle"		,0x00000000L,	 Constants.TV_MISC, '!',	/*335*/
 	    0,	   0,	4,   1,   2,	0,   0,	 0,   0, new int[] {1,1}	,  0),
 	new TreasureType("some shards of pottery"	,0x00000000L,	 Constants.TV_MISC, '~',	/*336*/
 	    0,	   0,	5,   1,   5,	0,   0,	 0,   0, new int[] {1,1}	,  0),
 	new TreasureType("& Human Skeleton"		,0x00000000L,	 Constants.TV_MISC, 's',	/*337*/
-	    0,	   0,	7,   1,  50,	0,   0,	 0,   0, new int[] {1,1}	,  1),
+	    0,	   0,	7,   1,  60,	0,   0,	 0,   0, new int[] {1,1}	,  1),
 	new TreasureType("& Dwarf Skeleton"		,0x00000000L,	 Constants.TV_MISC, 's',	/*338*/
-	    0,	   0,	8,   1,  60,	0,   0,	 0,   0, new int[] {1,1}	,  1),
+	    0,	   0,	8,   1,  50,	0,   0,	 0,   0, new int[] {1,1}	,  1),
 	new TreasureType("& Elf Skeleton"		,0x00000000L,	 Constants.TV_MISC, 's',	/*339*/
 	    0,	   0,	9,   1,  40,	0,   0,	 0,   0, new int[] {1,1}	,  1),
 	new TreasureType("& Gnome Skeleton"		,0x00000000L,	 Constants.TV_MISC, 's',	/*340*/
@@ -803,7 +803,7 @@ public class Treasure {
 	new TreasureType("& Hard Biscuit~"		,0x00000000L,	Constants.TV_FOOD, ',',	/*345*/
 	  500,	   1,	93,   5,   2,	0,   0,	 0,   0, new int[] {0,0}	,  0),
 	new TreasureType("& Strip~ of Beef Jerky"	,0x00000000L,	Constants.TV_FOOD, ',',	/*346*/
-	 1750,	   2,	94,   5,   2,	0,   0,	 0,   0, new int[] {0,0}	,  0),
+	 1750,	   2,	94,   5,   4,	0,   0,	 0,   0, new int[] {0,0}	,  0),
 	new TreasureType("& Pint~ of Fine Ale"		,0x00000000L,	Constants.TV_FOOD, ',',	/*347*/
 	  500,	   1,	95,   3,  10,	0,   0,	 0,   0, new int[] {0,0}	,  0),
 	new TreasureType("& Pint~ of Fine Wine"		,0x00000000L,	Constants.TV_FOOD, ',',	/*348*/
@@ -842,7 +842,7 @@ public class Treasure {
 	 7500,	  35,	0,   1,  50,	0,   0,	 0,   0, new int[] {1,1}	,  1),
 	new TreasureType("& Wooden Torch~"		,0x00000000L,	Constants.TV_LIGHT, '~',	/*365*/
 	 4000,	   2, 192,   5,  30,	0,   0,	 0,   0, new int[] {1,1}	,  1),
-	new TreasureType("& Flask~ of oil"		,0x00040000L,	Constants.TV_FLASK, '!',	/*366*/
+	new TreasureType("& Flask~ of Oil"		,0x00040000L,	Constants.TV_FLASK, '!',	/*366*/
 	 7500,	   3,	64,   5,  10,	0,   0,	 0,   0, new int[] {2,6}	,  1),
 	/* end store items */
 	/* start doors */
@@ -856,7 +856,7 @@ public class Treasure {
 	    0,	   0,	19,   1,   0,	0,   0,	 0,   0, new int[] {1,1}	,  0),
 	/* end doors */
 	/* stairs */
-	new TreasureType("an up staircase "		,0x00000000L, Constants.TV_UP_STAIR, '<',	/* 370 */
+	new TreasureType("an up staircase"		,0x00000000L, Constants.TV_UP_STAIR, '<',	/* 370 */
 	    0,	   0,	1,   1,   0,	0,   0,	 0,   0, new int[] {1,1}	,  0),
 	new TreasureType("a down staircase"		,0x00000000L, Constants.TV_DOWN_STAIR, '>',/* 371 */
 	    0,	   0,	1,   1,   0,	0,   0,	 0,   0, new int[] {1,1}	,  0),
@@ -918,8 +918,8 @@ public class Treasure {
 	new TreasureType("some rubble"			,0x00000000L, Constants.TV_RUBBLE, ':',	/* 396 */
 	    0,	   0,	1,   1,   0,	0,   0,	 0,   0, new int[] {0,0}	,  0),
 	/* mush */
-	new TreasureType("& pint~ of fine grade mush"	,0x00000000L, Constants.TV_FOOD, ',',	/* 397 */
-	 1500,	   0,  97,   1,   1,   0,   0,   0,   0, new int[] {1,1}  ,  1),
+	new TreasureType("& Pint~ of Fine Grade Mush"	,0x00000000L, Constants.TV_FOOD, ',',	/* 397 */
+	 1500,	   1,  97,   1,   1,   0,   0,   0,   0, new int[] {1,1}  ,  1),
 	/* Special trap	*/
 	new TreasureType("a strange rune"		,0x00000000L, Constants.TV_VIS_TRAP, '^',	/* 398 */
 	    0,	   0,	99,   1,   0,	0,   0,	 0,   0, new int[] {0,0}	, 10),

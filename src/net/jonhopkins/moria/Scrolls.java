@@ -282,16 +282,16 @@ public class Scrolls {
 					break;
 				case 19:
 					io.msg_print("This is a mass genocide scroll.");
-					ident = spells.mass_genocide();
+					spells.mass_genocide();
+					ident = true;
 					break;
 				case 20:
 					ident = spells.detect_invisible();
 					break;
 				case 21:
-					ident = spells.aggravate_monster(20);
-					if (ident) {
-						io.msg_print("There is a high pitched humming noise.");
-					}
+					io.msg_print("There is a high pitched humming noise.");
+					spells.aggravate_monster(20);
+					ident = true;
 					break;
 				case 22:
 					ident = spells.trap_creation();
@@ -309,7 +309,8 @@ public class Scrolls {
 					break;
 				case 26:
 					io.msg_print("This is a genocide scroll.");
-					ident = spells.genocide();
+					spells.genocide();
+					ident = true;
 					break;
 				case 27:
 					ident = spells.unlight_area(py.char_row, py.char_col);
@@ -374,6 +375,7 @@ public class Scrolls {
 						desc.unmagic_name(i_ptr);
 						i_ptr.tohit = -m1.randint(5) - m1.randint(5);
 						i_ptr.todam = -m1.randint(5) - m1.randint(5);
+						i_ptr.toac = 0;
 						/* Must call py_bonuses() before set (clear) flags, and
 						 * must call calc_bonuses() after set (clear) flags, so that
 						 * all attributes will be properly turned off. */
@@ -487,6 +489,8 @@ public class Scrolls {
 						io.msg_print(out_val);
 						desc.unmagic_name(i_ptr);
 						i_ptr.flags = Constants.TR_CURSED;
+						i_ptr.tohit = 0;
+						i_ptr.todam = 0;
 						i_ptr.toac = -m1.randint(5) - m1.randint(5);
 						mor1.calc_bonuses();
 						ident = true;

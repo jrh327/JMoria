@@ -291,8 +291,8 @@ public class Moria1 {
 				if (lim < tmp_val.length()) {
 					tmp_val = tmp_val.substring(0, lim);	/* Truncate if too long. */
 				}
-				out_val[i] = String.format("  %c) %s", (char)('a' + i), tmp_val);
-				l = out_val[i].length();
+				out_val[i] = String.format("%c) %s", (char)('a' + i), tmp_val);
+				l = out_val[i].length() + 2;
 				if (weight) {
 					l += 9;
 				}
@@ -312,9 +312,10 @@ public class Moria1 {
 			if (mask.equals("") || mask.length() >= i) {
 				/* don't need first two spaces if in first column */
 				if (col == 0) {
-					io.prt(out_val[i].substring(2), current_line, col);
-				} else {
 					io.prt(out_val[i], current_line, col);
+				} else {
+					io.put_buffer("  ", current_line, col);
+					io.prt(out_val[i], current_line, col + 2);
 				}
 				if (weight) {
 					total_weight = t.inventory[i].weight * t.inventory[i].number;
@@ -421,8 +422,8 @@ public class Moria1 {
 				if (lim < prt2.length()) {
 					prt2 = prt2.substring(0, lim); /* Truncate if necessary */
 				}
-				out_val[line] = String.format("  %c) %-14s: %s", line + 'a', prt1, prt2);
-				l = out_val[line].length();
+				out_val[line] = String.format("%c) %-14s: %s", line + 'a', prt1, prt2);
+				l = out_val[line].length() + 2;
 				if (weight) {
 					l += 9;
 				}
@@ -443,9 +444,10 @@ public class Moria1 {
 			if (i_ptr.tval != Constants.TV_NOTHING) {
 				/* don't need first two spaces when using whole screen */
 				if (col == 0) {
-					io.prt(out_val[line].substring(2), line + 1, col);
-				} else {
 					io.prt(out_val[line], line + 1, col);
+				} else {
+					io.put_buffer("  ", line + 1, col);
+					io.prt(out_val[line], line + 1, col + 2);
 				}
 				if (weight) {
 					total_weight = i_ptr.weight * i_ptr.number;
@@ -775,7 +777,10 @@ public class Moria1 {
 					} else {
 						disp = "";
 					}
-					prt1 = String.format("(%c-%c%s%s, space to break, ESC to exit) %s which one?", from + 'a', to + 'a', disp, swap, prompt);
+					prt1 = String.format("(%c-%c%s%s, space to break, ESC to exit) %s which one?",
+							from + 'a', to + 'a', disp, swap, 
+							((command == 'w' || command == 'd') ? ", 0-9" : ""),
+							prompt);
 					
 					/* Abort everything. */
 					if (!io.get_com(prt1, which)) {
@@ -783,7 +788,7 @@ public class Moria1 {
 						which.value(Constants.ESCAPE);
 					
 					/* Draw the screen and maybe exit to main prompt. */
-					} else if (which.value()== ' ' || which.value()== '*') {
+					} else if (which.value() == ' ' || which.value() == '*') {
 						if (command == 't' || command == 'r') {
 							inven_screen(EQUIP_SCR);
 						} else if (command == 'w' && scr_state != INVEN_SCR) {
@@ -791,12 +796,12 @@ public class Moria1 {
 						} else {
 							inven_screen(INVEN_SCR);
 						}
-						if (which.value()== ' ') {
+						if (which.value() == ' ') {
 							selecting = false;
 						}
 					
 					/* Swap screens (for drop) */
-					} else if (which.value()== '/' && !swap.equals("")) {
+					} else if (which.value() == '/' && !swap.equals("")) {
 						if (command == 'd') {
 							command = 'r';
 						} else {
@@ -807,239 +812,257 @@ public class Moria1 {
 						} else if (scr_state == INVEN_SCR) {
 							inven_screen(EQUIP_SCR);
 						}
-					} else if ((which.value()< from + 'a' || which.value()> to + 'a') && (which.value()< from + 'A' || which.value()> to + 'A')) {
-						io.bell();
-					} else {	/* Found an item! */
-						if (Character.isUpperCase(which.value())) {
-							item = which.value()- 'A';
-						} else {
-							item = which.value()- 'a';
+					} else {
+						if ((which.value() >= '0') && (which.value() <= '9') 
+								&& (command != 'r') && (command != 't'))
+						{
+							/* look for item whose inscription matches "which" */
+							int m;
+							for (m = from;
+									m <= to && ((t.inventory[m].inscrip.charAt(0) != which.value())
+											|| (t.inventory[m].inscrip.length() > 1));
+									m++);
+							if (m <= to)
+								item = m;
+							else 
+								item = -1;
 						}
-						if (command == 'r' || command == 't') {
-							/* Get its place in the equipment list. */
-							tmp = item;
-							item = 21;
-							do {
-								item++;
-								if (t.inventory[item].tval != Constants.TV_NOTHING) {
-									tmp--;
-								}
-							} while (tmp >= 0);
-							if (Character.isUpperCase(which.value()) && !verify(prompt, item)) {
-								item = -1;
-							} else if ((Constants.TR_CURSED & t.inventory[item].flags) != 0) {
-								io.msg_print("Hmmm, it seems to be cursed.");
-								item = -1;
-							} else if (command == 't' && !m3.inven_check_num(t.inventory[item])) {
-								if (var.cave[py.char_row][py.char_col].tptr != 0) {
-									io.msg_print("You can't carry it.");
-									item = -1;
-								} else if (io.get_check("You can't carry it.  Drop it?")) {
-									command = 'r';
-								} else {
-									item = -1;
-								}
-							}
-							if (item >= 0) {
-								if (command == 'r') {
-									m3.inven_drop(item, true);
-									/* As a safety measure, set the player's inven
-									 * weight to 0, when the last object is dropped*/
-									if (t.inven_ctr == 0 && t.equip_ctr == 0) {
-										t.inven_weight = 0;
+						else if ((which.value() >= 'A') && (which.value() <= 'Z')) {
+							item = which.value() - 'A';
+						} else {
+							item = which.value() - 'a';
+						}
+						if (item < from || item > to) {
+							io.bell();
+						} else {  /* Found an item! */
+							if (command == 'r' || command == 't') {
+								/* Get its place in the equipment list. */
+								tmp = item;
+								item = 21;
+								do {
+									item++;
+									if (t.inventory[item].tval != Constants.TV_NOTHING) {
+										tmp--;
 									}
-								} else {
-									slot = m3.inven_carry(t.inventory[item]);
-									takeoff(item, slot);
-								}
-								m3.check_strength();
-								var.free_turn_flag = false;
-								if (command == 'r') {
-									selecting = false;
-								}
-							}
-						} else if (command == 'w') {
-							/* Wearing. Go to a bit of trouble over replacing
-							 * existing equipment. */
-							if (Character.isUpperCase(which.value()) && !verify(prompt, item)) {
-								item = -1;
-							} else {
-								switch(t.inventory[item].tval)
-								{ /* Slot for equipment	   */
-								case Constants.TV_SLING_AMMO: case Constants.TV_BOLT: case Constants.TV_ARROW:
-								case Constants.TV_BOW: case Constants.TV_HAFTED: case Constants.TV_POLEARM:
-								case Constants.TV_SWORD: case Constants.TV_DIGGING: case Constants.TV_SPIKE:
-									slot = Constants.INVEN_WIELD; break;
-								case Constants.TV_LIGHT: slot = Constants.INVEN_LIGHT; break;
-								case Constants.TV_BOOTS: slot = Constants.INVEN_FEET; break;
-								case Constants.TV_GLOVES: slot = Constants.INVEN_HANDS; break;
-								case Constants.TV_CLOAK: slot = Constants.INVEN_OUTER; break;
-								case Constants.TV_HELM: slot = Constants.INVEN_HEAD; break;
-								case Constants.TV_SHIELD: slot = Constants.INVEN_ARM; break;
-								case Constants.TV_HARD_ARMOR: case Constants.TV_SOFT_ARMOR:
-									slot = Constants.INVEN_BODY; break;
-								case Constants.TV_AMULET: slot = Constants.INVEN_NECK; break;
-								case Constants.TV_RING:
-									if (t.inventory[Constants.INVEN_RIGHT].tval == Constants.TV_NOTHING) {
-										slot = Constants.INVEN_RIGHT;
-									} else if (t.inventory[Constants.INVEN_LEFT].tval == Constants.TV_NOTHING) {
-										slot = Constants.INVEN_LEFT;
+								} while (tmp >= 0);
+								if (Character.isUpperCase(which.value()) && !verify(prompt, item)) {
+									item = -1;
+								} else if ((Constants.TR_CURSED & t.inventory[item].flags) != 0) {
+									io.msg_print("Hmmm, it seems to be cursed.");
+									item = -1;
+								} else if (command == 't' &&
+										!m3.inven_check_num(t.inventory[item])) {
+									if (var.cave[py.char_row][py.char_col].tptr != 0) {
+										io.msg_print("You can't carry it.");
+										item = -1;
+									} else if (io.get_check("You can't carry it.  Drop it?")) {
+										command = 'r';
 									} else {
-										slot = 0;
-										/* Rings. Give some choice over where they go. */
-										do {
-											if (!io.get_com( "Put ring on which hand (l/r/L/R)?", query)) {
-												item = -1;
-												slot = -1;
-											} else if (query.value()== 'l') {
-												slot = Constants.INVEN_LEFT;
-											} else if (query.value()== 'r') {
-												slot = Constants.INVEN_RIGHT;
-											} else {
-												if (query.value()== 'L') {
+										item = -1;
+									}
+								}
+								if (item >= 0) {
+									if (command == 'r') {
+										m3.inven_drop(item, true);
+										/* As a safety measure, set the player's
+										   inven weight to 0, 
+										   when the last object is dropped*/
+										if (t.inven_ctr == 0 && t.equip_ctr == 0) {
+											t.inven_weight = 0;
+										}
+									} else {
+										slot = m3.inven_carry(t.inventory[item]);
+										takeoff(item, slot);
+									}
+									m3.check_strength();
+									var.free_turn_flag = false;
+									if (command == 'r') {
+										selecting = false;
+									}
+								}
+							} else if (command == 'w') {
+								/* Wearing. Go to a bit of trouble over replacing
+								 * existing equipment. */
+								if (Character.isUpperCase(which.value()) && !verify(prompt, item)) {
+									item = -1;
+								} else {
+									switch(t.inventory[item].tval)
+									{ /* Slot for equipment	   */
+									case Constants.TV_SLING_AMMO: case Constants.TV_BOLT: case Constants.TV_ARROW:
+									case Constants.TV_BOW: case Constants.TV_HAFTED: case Constants.TV_POLEARM:
+									case Constants.TV_SWORD: case Constants.TV_DIGGING: case Constants.TV_SPIKE:
+										slot = Constants.INVEN_WIELD; break;
+									case Constants.TV_LIGHT: slot = Constants.INVEN_LIGHT; break;
+									case Constants.TV_BOOTS: slot = Constants.INVEN_FEET; break;
+									case Constants.TV_GLOVES: slot = Constants.INVEN_HANDS; break;
+									case Constants.TV_CLOAK: slot = Constants.INVEN_OUTER; break;
+									case Constants.TV_HELM: slot = Constants.INVEN_HEAD; break;
+									case Constants.TV_SHIELD: slot = Constants.INVEN_ARM; break;
+									case Constants.TV_HARD_ARMOR: case Constants.TV_SOFT_ARMOR:
+										slot = Constants.INVEN_BODY; break;
+									case Constants.TV_AMULET: slot = Constants.INVEN_NECK; break;
+									case Constants.TV_RING:
+										if (t.inventory[Constants.INVEN_RIGHT].tval == Constants.TV_NOTHING) {
+											slot = Constants.INVEN_RIGHT;
+										} else if (t.inventory[Constants.INVEN_LEFT].tval == Constants.TV_NOTHING) {
+											slot = Constants.INVEN_LEFT;
+										} else {
+											slot = 0;
+											/* Rings. Give some choice over where they go. */
+											do {
+												if (!io.get_com( "Put ring on which hand (l/r/L/R)?", query)) {
+													item = -1;
+													slot = -1;
+												} else if (query.value()== 'l') {
 													slot = Constants.INVEN_LEFT;
-												} else if (query.value()== 'R') {
+												} else if (query.value()== 'r') {
 													slot = Constants.INVEN_RIGHT;
 												} else {
-													io.bell();
+													if (query.value() == 'L') {
+														slot = Constants.INVEN_LEFT;
+													} else if (query.value() == 'R') {
+														slot = Constants.INVEN_RIGHT;
+													} else {
+														io.bell();
+													}
+													if (slot != 0 && !verify("Replace", slot)) {
+														slot = 0;
+													}
 												}
-												if (slot != 0 && !verify("Replace", slot)) {
-													slot = 0;
-												}
-											}
-										} while(slot == 0);
+											} while (slot == 0);
+										}
+										break;
+									default:
+										io.msg_print("IMPOSSIBLE: I don't see how you can use that.");
+										item = -1;
+										break;
 									}
-									break;
-								default:
-									io.msg_print("IMPOSSIBLE: I don't see how you can use that.");
-									item = -1;
-									break;
 								}
-							}
-							if (item >= 0 && t.inventory[slot].tval != Constants.TV_NOTHING) {
-								if ((Constants.TR_CURSED & t.inventory[slot].flags) != 0) {
-									prt1 = desc.objdes(t.inventory[slot], false);
-									prt2 = String.format("The %s you are ", prt1);
-									if (slot == Constants.INVEN_HEAD) {
-										prt2 = prt2.concat("wielding ");
-									} else {
-										prt2 = prt2.concat("wearing ");
+								if (item >= 0 && t.inventory[slot].tval != Constants.TV_NOTHING) {
+									if ((Constants.TR_CURSED & t.inventory[slot].flags) != 0) {
+										prt1 = desc.objdes(t.inventory[slot], false);
+										prt2 = String.format("The %s you are ", prt1);
+										if (slot == Constants.INVEN_HEAD) {
+											prt2 = prt2.concat("wielding ");
+										} else {
+											prt2 = prt2.concat("wearing ");
+										}
+										io.msg_print(prt2.concat("appears to be cursed."));
+										item = -1;
+									} else if (t.inventory[item].subval == Constants.ITEM_GROUP_MIN && t.inventory[item].number > 1 && !m3.inven_check_num(t.inventory[slot])) {
+										/* this can happen if try to wield a torch, and
+										 * have more than one in your inventory */
+										io.msg_print("You will have to drop something first.");
+										item = -1;
 									}
-									io.msg_print(prt2.concat("appears to be cursed."));
-									item = -1;
-								} else if (t.inventory[item].subval == Constants.ITEM_GROUP_MIN && t.inventory[item].number > 1 && !m3.inven_check_num(t.inventory[slot])) {
-									/* this can happen if try to wield a torch, and
-									 * have more than one in your inventory */
-									io.msg_print("You will have to drop something first.");
-									item = -1;
 								}
-							}
-							if (item >= 0) {
-								/* OK. Wear it. */
-								var.free_turn_flag = false;
-								
-								/* first remove new item from inventory */
-								tmp_obj = t.inventory[item];
-								i_ptr = new InvenType();
-								desc.invdeepcopy(i_ptr, tmp_obj);
-								
-								wear_high--;
-								/* Fix for torches	   */
-								if (i_ptr.number > 1 && i_ptr.subval <= Constants.ITEM_SINGLE_STACK_MAX) {
-									i_ptr.number = 1;
-									wear_high++;
-								}
-								t.inven_weight += i_ptr.weight * i_ptr.number;
-								m3.inven_destroy(item);	/* Subtracts weight */
-								
-								/* second, add old item to inv and remove from
-								 * equipment list, if necessary */
-								i_ptr = t.inventory[slot];
-								if (i_ptr.tval != Constants.TV_NOTHING) {
-									tmp2 = t.inven_ctr;
-									tmp = m3.inven_carry(i_ptr);
-									/* if item removed did not stack with anything in
-									 * inventory, then increment wear_high */
-									if (t.inven_ctr != tmp2) {
+								if (item >= 0) {
+									/* OK. Wear it. */
+									var.free_turn_flag = false;
+									
+									/* first remove new item from inventory */
+									tmp_obj = t.inventory[item];
+									i_ptr = new InvenType();
+									desc.invdeepcopy(i_ptr, tmp_obj);
+									
+									wear_high--;
+									/* Fix for torches	   */
+									if (i_ptr.number > 1 && i_ptr.subval <= Constants.ITEM_SINGLE_STACK_MAX) {
+										i_ptr.number = 1;
 										wear_high++;
 									}
-									takeoff(slot, tmp);
-								}
-								
-								/* third, wear new item */
-								desc.invdeepcopy(i_ptr, tmp_obj);
-								t.equip_ctr++;
-								py_bonuses(i_ptr, 1);
-								if (slot == Constants.INVEN_WIELD) {
-									string = "You are wielding";
-								} else if (slot == Constants.INVEN_LIGHT) {
-									string = "Your light source is";
-								} else {
-									string = "You are wearing";
-								}
-								prt2 = desc.objdes(i_ptr, true);
-								/* Get the right equipment letter. */
-								tmp = Constants.INVEN_WIELD;
-								item = 0;
-								while (tmp != slot) {
-									if (t.inventory[tmp++].tval != Constants.TV_NOTHING) {
-										item++;
+									t.inven_weight += i_ptr.weight * i_ptr.number;
+									m3.inven_destroy(item);	/* Subtracts weight */
+									
+									/* second, add old item to inv and remove from
+									 * equipment list, if necessary */
+									i_ptr = t.inventory[slot];
+									if (i_ptr.tval != Constants.TV_NOTHING) {
+										tmp2 = t.inven_ctr;
+										tmp = m3.inven_carry(i_ptr);
+										/* if item removed did not stack with anything in
+										 * inventory, then increment wear_high */
+										if (t.inven_ctr != tmp2) {
+											wear_high++;
+										}
+										takeoff(slot, tmp);
+									}
+									
+									/* third, wear new item */
+									desc.invdeepcopy(i_ptr, tmp_obj);
+									t.equip_ctr++;
+									py_bonuses(i_ptr, 1);
+									if (slot == Constants.INVEN_WIELD) {
+										string = "You are wielding";
+									} else if (slot == Constants.INVEN_LIGHT) {
+										string = "Your light source is";
+									} else {
+										string = "You are wearing";
+									}
+									prt2 = desc.objdes(i_ptr, true);
+									/* Get the right equipment letter. */
+									tmp = Constants.INVEN_WIELD;
+									item = 0;
+									while (tmp != slot) {
+										if (t.inventory[tmp++].tval != Constants.TV_NOTHING) {
+											item++;
+										}
+									}
+									
+									prt1 = String.format("%s %s (%c)", string, prt2, 'a' + item);
+									io.msg_print(prt1);
+									/* this is a new weapon, so clear the heavy flag */
+									if (slot == Constants.INVEN_WIELD) {
+										var.weapon_heavy = false;
+									}
+									m3.check_strength();
+									if ((i_ptr.flags & Constants.TR_CURSED) != 0) {
+										io.msg_print("Oops! It feels deathly cold!");
+										m4.add_inscribe(i_ptr, Constants.ID_DAMD);
+										/* To force a cost of 0, even if unidentified. */
+										i_ptr.cost = -1;
 									}
 								}
-								
-								prt1 = String.format("%s %s (%c)", string, prt2, 'a' + item);
-								io.msg_print(prt1);
-								/* this is a new weapon, so clear the heavy flag */
-								if (slot == Constants.INVEN_WIELD) {
-									var.weapon_heavy = false;
-								}
-								m3.check_strength();
-								if ((i_ptr.flags & Constants.TR_CURSED) != 0) {
-									io.msg_print("Oops! It feels deathly cold!");
-									m4.add_inscribe(i_ptr, Constants.ID_DAMD);
-									/* To force a cost of 0, even if unidentified. */
-									i_ptr.cost = -1;
-								}
-							}
-						} else {	/* command == 'd' */
-							if (t.inventory[item].number > 1) {
-								prt1 = desc.objdes(t.inventory[item], true);
-								prt1 = prt1.substring(0, prt1.length() - 1).concat("?");
-								prt2 = String.format("Drop all %s [y/n]", prt1);
-								prt1 = prt1.substring(0, prt1.length() - 1).concat(".");
-								io.prt(prt2, 0, 0);
-								query.value(io.inkey());
-								if (query.value()!= 'y' && query.value()!= 'n') {
-									if (query.value()!= Constants.ESCAPE) {
-										io.bell();
+							} else {	/* command == 'd' */
+								if (t.inventory[item].number > 1) {
+									prt1 = desc.objdes(t.inventory[item], true);
+									prt1 = prt1.substring(0, prt1.length() - 1).concat("?");
+									prt2 = String.format("Drop all %s [y/n]", prt1);
+									prt1 = prt1.substring(0, prt1.length() - 1).concat(".");
+									io.prt(prt2, 0, 0);
+									query.value(io.inkey());
+									if (query.value()!= 'y' && query.value()!= 'n') {
+										if (query.value()!= Constants.ESCAPE) {
+											io.bell();
+										}
+										io.erase_line(Constants.MSG_LINE, 0);
+										item = -1;
 									}
-									io.erase_line(Constants.MSG_LINE, 0);
+								} else if (Character.isUpperCase(which.value()) && !verify(prompt, item)) {
 									item = -1;
+								} else {
+									query.value('y');
 								}
-							} else if (Character.isUpperCase(which.value()) && !verify(prompt, item)) {
-								item = -1;
-							} else {
-								query.value('y');
+								if (item >= 0) {
+									var.free_turn_flag = false;    /* Player turn   */
+									m3.inven_drop(item, query.value()== 'y');
+									m3.check_strength();
+								}
+								selecting = false;
+								/* As a safety measure, set the player's inven weight
+								 * to 0, when the last object is dropped.  */
+								if (t.inven_ctr == 0 && t.equip_ctr == 0) {
+									t.inven_weight = 0;
+								}
 							}
-							if (item >= 0) {
-								var.free_turn_flag = false;    /* Player turn   */
-								m3.inven_drop(item, query.value()== 'y');
-								m3.check_strength();
+							if (!var.free_turn_flag && scr_state == BLANK_SCR) {
+								selecting = false;
 							}
-							selecting = false;
-							/* As a safety measure, set the player's inven weight
-							 * to 0, when the last object is dropped.  */
-							if (t.inven_ctr == 0 && t.equip_ctr == 0) {
-								t.inven_weight = 0;
-							}
-						}
-						if (!var.free_turn_flag && scr_state == BLANK_SCR) {
-							selecting = false;
 						}
 					}
 				}
 			}
-			if (which.value()== Constants.ESCAPE || scr_state == BLANK_SCR) {
+			if (which.value() == Constants.ESCAPE || scr_state == BLANK_SCR) {
 				command = Constants.ESCAPE;
 			} else if (!var.free_turn_flag) {
 				/* Save state for recovery if they want to call us again next turn.*/
@@ -1126,13 +1149,16 @@ public class Moria1 {
 				}
 				if (full) {
 					out_val = String.format(
-							"(%s: %c-%c,%s / for %s, or ESC) %s",
+							"(%s: %c-%c,%s%s / for %s, or ESC) %s",
 							(i_scr > 0 ? "Inven" : "Equip"), i + 'a', j + 'a',
+							(i_scr > 0 ? " 0-9," : ""),
 							(redraw ? "" : " * to see,"),
 							(i_scr > 0 ? "Equip" : "Inven"), pmt);
 				} else {
 					out_val = String.format(
-							"(Items %c-%c,%s ESC to exit) %s", i + 'a', j + 'a',
+							"(Items %c-%c,%s%s ESC to exit) %s", 
+							i + 'a', j + 'a',			   
+							(i_scr > 0 ? " 0-9," : ""),
 							(redraw ? "" : " * for inventory list,"), pmt);
 				}
 				test_flag = false;
@@ -1192,7 +1218,21 @@ public class Moria1 {
 						}
 						break;
 					default:
-						if (Character.isUpperCase(which)) {
+						if ((which >= '0') && (which <= '9') && (i_scr != 0))
+							/* look for item whose inscription matches "which" */
+						{
+							int m;
+							for (m = i;
+									(m < Constants.INVEN_WIELD) 
+									&& ((t.inventory[m].inscrip.charAt(0) != which)
+											|| (t.inventory[m].inscrip.length() > 1));
+									m++);
+							if (m < Constants.INVEN_WIELD) {
+								com_val.value(m);
+							} else {
+								com_val.value(-1);
+							}
+						} else if (Character.isUpperCase(which)) {
 							com_val.value(which - 'A');
 						} else {
 							com_val.value(which - 'a');

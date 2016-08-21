@@ -43,7 +43,7 @@ public class Constants {
 	
 	/* Current version number of Moria				*/
 	public static final int CUR_VERSION_MAJ = 5; /* version 5.5 */
-	public static final int CUR_VERSION_MIN = 5;
+	public static final int CUR_VERSION_MIN = 6;
 	public static final int PATCH_LEVEL = 0;
 	
 	public static final int TRUE = 1;
@@ -410,6 +410,7 @@ public class Constants {
 	public static final int CM_PICKS_UP		= 0x00100000;
 	public static final int CM_MULTIPLY		= 0x00200000;
 	
+	public static final int CM_SMALL_OBJ	= 0x00800000;
 	public static final int CM_CARRY_OBJ	= 0x01000000;
 	public static final int CM_CARRY_GOLD	= 0x02000000;
 	public static final int CM_TREASURE		= 0x7C000000;
@@ -438,8 +439,8 @@ public class Constants {
 	public static final int CS_SLOW_PER		= 0x00008000;
 	public static final int CS_DRAIN_MANA	= 0x00010000;
 
-	public static final int CS_BREATHE	= 0x00F80000;
-	public static final int CS_BR_LIGHT	= 0x00080000;
+	public static final int CS_BREATHE	= 0x00F80000; /* may also just indicate resistance */
+	public static final int CS_BR_LIGHT	= 0x00080000; /* if no spell frequency set */
 	public static final int CS_BR_GAS	= 0x00100000;
 	public static final int CS_BR_ACID	= 0x00200000;
 	public static final int CS_BR_FROST	= 0x00400000;

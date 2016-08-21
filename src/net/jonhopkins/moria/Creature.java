@@ -809,7 +809,11 @@ public class Creature {
 						tmp_str = String.format("%sis unaffected.", cdesc);
 					} else {
 						tmp_str = String.format("%sappears confused.", cdesc);
-						m_ptr.confused = true;
+						if (m_ptr.confused > 0) {
+							m_ptr.confused += 3;
+						} else {
+							m_ptr.confused = 2 + m1.randint(16);
+						}
 					}
 					io.msg_print(tmp_str);
 					if (visible && !var.death && m1.randint(4) == 1) {
@@ -1385,24 +1389,32 @@ public class Creature {
 			}
 			return;  /* monster movement finished */
 		
-		/* Creature is confused?  Chance it becomes un-confused  */
-		} else if (m_ptr.confused) {
-			mm[0] = m1.randint(9);
-			mm[1] = m1.randint(9);
-			mm[2] = m1.randint(9);
-			mm[3] = m1.randint(9);
-			mm[4] = m1.randint(9);
+		/* Creature is confused or undead turned? */
+		} else if (m_ptr.confused > 0) {
+			/* Undead only get confused from turn undead, so they should flee */
+			if ((r_ptr.cdefense & Constants.CD_UNDEAD) != 0) {
+				get_moves(monptr,mm);
+				mm[0] = 10 - mm[0];
+				mm[1] = 10 - mm[1];
+				mm[2] = 10 - mm[2];
+				mm[3] = m1.randint(9); /* May attack only if cornered */
+				mm[4] = m1.randint(9);
+			} else {
+				mm[0] = m1.randint(9);
+				mm[1] = m1.randint(9);
+				mm[2] = m1.randint(9);
+				mm[3] = m1.randint(9);
+				mm[4] = m1.randint(9);
+			}
 			/* don't move him if he is not supposed to move! */
 			if ((r_ptr.cmove & Constants.CM_ATTACK_ONLY) == 0) {
 				make_move(monptr, mm, rcmove);
 			}
-			if (m1.randint(8) == 1) {
-				m_ptr.confused = false;
-			}
+			m_ptr.confused--;
 			move_test = true;
 		
 		/* Creature may cast a spell */
-		} else if (r_ptr.spells != 0) {
+		} else if ((r_ptr.spells & Constants.CS_FREQ) != 0) {
 			move_test = mon_cast_spell(monptr);
 		}
 		if (!move_test) {
@@ -1538,12 +1550,10 @@ public class Creature {
 									m_ptr.stunned--;
 								}
 								if (m_ptr.stunned == 0) {
-									if (!m_ptr.ml) {
-										cdesc = "It ";
-									} else {
+									if (m_ptr.ml) {
 										cdesc = String.format("The %s ", mon.c_list[m_ptr.mptr].name);
+										io.msg_print(cdesc.concat("recovers and glares at you."));
 									}
-									io.msg_print(cdesc.concat("recovers and glares at you."));
 								}
 							}
 							if ((m_ptr.csleep == 0) && (m_ptr.stunned == 0)) {

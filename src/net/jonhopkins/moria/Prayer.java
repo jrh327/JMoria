@@ -200,10 +200,21 @@ public class Prayer {
 						spells.warding_glyph();
 						break;
 					case 31:
-						spells.dispel_creature(Constants.CD_EVIL, (4 * py.py.misc.lev));
 						spells.remove_fear();
 						spells.cure_poison();
 						spells.hp_player(1000);
+						for (i.value(Constants.A_STR);
+								i.value() <= Constants.A_CHR;
+								i.value(i.value() + 1)) {
+							m3.res_stat(i.value());
+						}
+						spells.dispel_creature(Constants.CD_EVIL, (int)(4 * py.py.misc.lev));
+						spells.turn_undead();
+						if (py.py.flags.invuln < 3) {
+							py.py.flags.invuln = 3;
+						} else {
+							py.py.flags.invuln++;
+						}
 						break;
 					default:
 						break;

@@ -156,27 +156,28 @@ public class Misc3 {
 			 * makes a level n objects occur approx 2/n% of the time on level n,
 			 * and 1/2n are 0th level. */
 			
-			if (m1.randint(2) == 1) {
-				i = m1.randint(t.t_level[level]) - 1;
-			} else { /* Choose three objects, pick the highest level. */
-				
-				i = m1.randint(t.t_level[level]) - 1;
-				j = m1.randint(t.t_level[level]) - 1;
-				if (i < j) {
-					i = j;
+			do {
+				if (m1.randint(2) == 1) {
+					i = m1.randint(t.t_level[level]) - 1;
+				} else { /* Choose three objects, pick the highest level. */
+					i = m1.randint(t.t_level[level]) - 1;
+					j = m1.randint(t.t_level[level]) - 1;
+					if (i < j) {
+						i = j;
+					}
+					j = m1.randint(t.t_level[level]) - 1;
+					if (i < j) {
+						i = j;
+					}
+					
+					j = t.object_list[t.sorted_objects[i]].level;
+					if (j == 0) {
+						i = m1.randint(t.t_level[0]) - 1;
+					} else {
+						i = m1.randint(t.t_level[j] - t.t_level[j - 1]) - 1 + t.t_level[j - 1];
+					}
 				}
-				j = m1.randint(t.t_level[level]) - 1;
-				if (i < j) {
-					i = j;
-				}
-				
-				j = t.object_list[t.sorted_objects[i]].level;
-				if (j == 0) {
-					i = m1.randint(t.t_level[0]) - 1;
-				} else {
-					i = m1.randint(t.t_level[j] - t.t_level[j - 1]) - 1 + t.t_level[j - 1];
-				}
-			}
+			} while (must_be_small && Sets.set_large(t.object_list[t.sorted_objects[i]]));
 		}
 		return i;
 	}
@@ -336,6 +337,13 @@ public class Misc3 {
 		String out_val;
 		
 		out_val = String.format("%s: %6d", header, num);
+		io.put_buffer(out_val, row, column);
+	}
+	
+	public void prt_7lnum(String header, int num, int row, int column) {
+		String out_val;
+		
+		out_val = String.format("%s: %7ld", header, num);
 		io.put_buffer(out_val, row, column);
 	}
 	
@@ -914,7 +922,7 @@ public class Misc3 {
 		int stat;
 		
 		stat = py.py.stats.use_stat[Constants.A_DEX];
-		if		(stat <   3)	return -8;
+		if		(stat <   4)	return -8;
 		else if (stat ==  4)	return -6;
 		else if (stat ==  5)	return -4;
 		else if (stat ==  6)	return -2;
@@ -1091,15 +1099,15 @@ public class Misc3 {
 		PlayerMisc m_ptr;
 		
 		m_ptr = py.py.misc;
-		prt_num ("Level      ", m_ptr.lev, 9, 29);
-		prt_lnum("Experience ", m_ptr.exp, 10, 29);
-		prt_lnum("Max Exp    ", m_ptr.max_exp, 11, 29);
+		prt_7lnum ("Level      ", m_ptr.lev, 9, 28);
+		prt_7lnum("Experience ", m_ptr.exp, 10, 28);
+		prt_7lnum("Max Exp    ", m_ptr.max_exp, 11, 28);
 		if (m_ptr.lev == Constants.MAX_PLAYER_LEVEL) {
-			io.prt("Exp to Adv.: ******", 12, 29);
+			io.prt("Exp to Adv.: *******", 12, 28);
 		} else {
-			prt_lnum("Exp to Adv.", (py.player_exp[m_ptr.lev - 1] * m_ptr.expfact / 100), 12, 29);
+			prt_7lnum("Exp to Adv.", (py.player_exp[m_ptr.lev - 1] * m_ptr.expfact / 100), 12, 28);
 		}
-		prt_lnum("Gold       ", m_ptr.au, 13, 29);
+		prt_7lnum("Gold       ", m_ptr.au, 13, 28);
 		prt_num("Max Hit Points ", m_ptr.mhp, 9, 52);
 		prt_num("Cur Hit Points ", m_ptr.chp, 10, 52);
 		prt_num("Max Mana       ", m_ptr.mana, 11, 52);
@@ -2023,7 +2031,7 @@ public class Misc3 {
 		
 		need_exp = py.player_exp[p_ptr.lev - 1] * p_ptr.expfact / 100;
 		if (p_ptr.exp > need_exp) {
-			/* lose some of the 'extra' exp when gain a level */
+			/* lose some of the 'extra' exp when gaining several levels at once */
 			dif_exp = p_ptr.exp - need_exp;
 			p_ptr.exp = need_exp + (dif_exp / 2);
 		}
@@ -2049,10 +2057,9 @@ public class Misc3 {
 		if (p_ptr.exp > Constants.MAX_EXP) {
 			p_ptr.exp = Constants.MAX_EXP;
 		}
-		if (p_ptr.lev < Constants.MAX_PLAYER_LEVEL) {
-			while ((py.player_exp[p_ptr.lev - 1] * p_ptr.expfact / 100) <= p_ptr.exp) {
-				gain_level();
-			}
+		while (p_ptr.lev < Constants.MAX_PLAYER_LEVEL
+				&& (py.player_exp[p_ptr.lev - 1] * p_ptr.expfact / 100) <= p_ptr.exp) {
+			gain_level();
 		}
 		if (p_ptr.exp > p_ptr.max_exp) {
 			p_ptr.max_exp = p_ptr.exp;

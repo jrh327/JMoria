@@ -1198,7 +1198,7 @@ public class Save {
 		wr_int(mon.cdis);
 		wr_byte((byte)(mon.ml ? 0x1 : 0x0));
 		wr_int(mon.stunned);
-		wr_byte((byte)(mon.confused ? 0x1 : 0x0));
+		wr_byte((byte)(mon.confused > 0 ? 0x1 : 0x0));
 	}
 	
 	private byte getNextByte() {
@@ -1331,7 +1331,7 @@ public class Save {
 		mon.cdis = rd_byte();
 		mon.ml = (rd_byte() == 1);
 		mon.stunned = rd_byte();
-		mon.confused = (rd_byte() == 1);
+		mon.confused = rd_byte();
 	}
 	
 	/* functions called from death.c to implement the score file */

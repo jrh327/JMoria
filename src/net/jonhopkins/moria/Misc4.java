@@ -70,7 +70,7 @@ public class Misc4 {
 					out_val = "Inscription: ";
 				}
 				j = 78 - tmp_str.length();
-				if (j > 24) {
+				if (j > 12) {
 					j = 12;
 				}
 				io.prt(out_val, 0, 0);

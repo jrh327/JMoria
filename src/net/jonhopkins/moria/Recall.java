@@ -26,103 +26,109 @@ import net.jonhopkins.moria.types.MonsterRecallType;
 
 public class Recall {
 	private String[] desc_atype = {
-	  "do something undefined",
-	  "attack",
-	  "weaken",
-	  "confuse",
-	  "terrify",
-	  "shoot flames",
-	  "shoot acid",
-	  "freeze",
-	  "shoot lightning",
-	  "corrode",
-	  "blind",
-	  "paralyse",
-	  "steal money",
-	  "steal things",
-	  "poison",
-	  "reduce dexterity",
-	  "reduce constitution",
-	  "drain intelligence",
-	  "drain wisdom",
-	  "lower experience",
-	  "call for help",
-	  "disenchant",
-	  "eat your food",
-	  "absorb light",
-	  "absorb charges" };
+			"do something undefined",
+			"attack",
+			"weaken",
+			"confuse",
+			"terrify",
+			"shoot flames",
+			"shoot acid",
+			"freeze",
+			"shoot lightning",
+			"corrode",
+			"blind",
+			"paralyse",
+			"steal money",
+			"steal things",
+			"poison",
+			"reduce dexterity",
+			"reduce constitution",
+			"drain intelligence",
+			"drain wisdom",
+			"lower experience",
+			"call for help",
+			"disenchant",
+			"eat your food",
+			"absorb light",
+			"absorb charges"
+	};
 	private String[] desc_amethod = {
-	  "make an undefined advance",
-	  "hit",
-	  "bite",
-	  "claw",
-	  "sting",
-	  "touch",
-	  "kick",
-	  "gaze",
-	  "breathe",
-	  "spit",
-	  "wail",
-	  "embrace",
-	  "crawl on you",
-	  "release spores",
-	  "beg",
-	  "slime you",
-	  "crush",
-	  "trample",
-	  "drool",
-	  "insult" };
+			"make an undefined advance",
+			"hit",
+			"bite",
+			"claw",
+			"sting",
+			"touch",
+			"kick",
+			"gaze",
+			"breathe",
+			"spit",
+			"wail",
+			"embrace",
+			"crawl on you",
+			"release spores",
+			"beg",
+			"slime you",
+			"crush",
+			"trample",
+			"drool",
+			"insult"
+	};
 	private String[] desc_howmuch = {
-	  " not at all",
-	  " a bit",
-	  "",
-	  " quite",
-	  " very",
-	  " most",
-	  " highly",
-	  " extremely" };
-
+			" not at all",
+			" a bit",
+			"",
+			" quite",
+			" very",
+			" most",
+			" highly",
+			" extremely"
+	};
 	private String[] desc_move = {
-	  "move invisibly",
-	  "open doors",
-	  "pass through walls",
-	  "kill weaker creatures",
-	  "pick up objects",
-	  "breed explosively" };
+			"move invisibly",
+			"open doors",
+			"pass through walls",
+			"kill weaker creatures",
+			"pick up objects",
+			"breed explosively"
+	};
 	private String[] desc_spell = {
-	  "teleport short distances",
-	  "teleport long distances",
-	  "teleport its prey",
-	  "cause light wounds",
-	  "cause serious wounds",
-	  "paralyse its prey",
-	  "induce blindness",
-	  "confuse",
-	  "terrify",
-	  "summon a monster",
-	  "summon the undead",
-	  "slow its prey",
-	  "drain mana",
-	  "unknown 1",
-	  "unknown 2" };
+			"teleport short distances",
+			"teleport long distances",
+			"teleport its prey",
+			"cause light wounds",
+			"cause serious wounds",
+			"paralyse its prey",
+			"induce blindness",
+			"confuse",
+			"terrify",
+			"summon a monster",
+			"summon the undead",
+			"slow its prey",
+			"drain mana",
+			"unknown 1",
+			"unknown 2"
+	};
 	private String[] desc_breath = {
-	  "lightning",
-	  "poison gases",
-	  "acid",
-	  "frost",
-	  "fire" };
+			"lightning",
+			"poison gases",
+			"acid",
+			"frost",
+			"fire"
+	};
 	private String[] desc_weakness = {
-	  "frost",
-	  "fire",
-	  "poison",
-	  "acid",
-	  "bright light",
-	  "rock remover" };
+			"frost",
+			"fire",
+			"poison",
+			"acid",
+			"bright light",
+			"rock remover"
+	};
 	
-	static String roffbuf;		/* Line buffer. */
+	private static String roffbuf;		/* Line buffer. */
 	//static char *roffp;		/* Pointer into line buffer. */
-	static String roffp;
-	static int roffpline;		/* Place to print line now being loaded. */
+	private static String roffp;
+	private static int roffpline;		/* Place to print line now being loaded. */
 	
 	//#define plural(c, ss, sp)	((c) == 1 ? ss : sp)
 	private static String plural(int c, String ss, String sp) { return ((c == 1) ? ss : sp); }
@@ -208,6 +214,11 @@ public class Recall {
 			mp.r_cmove = (cp.cmove & ~Constants.CM_TREASURE) | (j << Constants.CM_TR_SHIFT);
 			mp.r_cdefense = cp.cdefense;
 			mp.r_spells = cp.spells | Constants.CS_FREQ;
+			if ((cp.spells & Constants.CS_FREQ) != 0) {
+				mp.r_spells = cp.spells | Constants.CS_FREQ;
+			} else {
+				mp.r_spells = cp.spells;
+			}
 			j = 0;
 			pu = cp.damage;
 			
@@ -368,14 +379,20 @@ public class Recall {
 			temp = String.format(" for a%s %d%s level character.", q, i, p);
 			roff(temp);
 		}
-		/* Spells known, if have been used against us. */
+		/* Spells known, if have been used against us.
+		   Breath weapons or resistance might be known only because we cast spells 
+		   at it. */
 		k = 1;
 		j = rspells;
 		for (i = 0; (j & Constants.CS_BREATHE) != 0; i++) {
 			if ((j & (Constants.CS_BR_LIGHT << i)) != 0) {
 				j &= ~(Constants.CS_BR_LIGHT << i);
 				if (k > 0) {
-					roff(" It can breathe ");
+					if ((mp.r_spells & Constants.CS_FREQ) != 0) {
+						roff(" It can breathe ");
+					} else {
+						roff(" It is resistant to ");
+					}
 					k = 0;
 				} else if ((j & Constants.CS_BREATHE) != 0) {
 					roff(", ");
@@ -517,9 +534,17 @@ public class Recall {
 				roff (" often");
 			}
 			roff(" carry");
-			p = " objects";
+			if ((rcmove & Constants.CM_SMALL_OBJ) != 0) {
+				p = " small objects";
+			} else {
+				p = " objects";
+			}
 			if (j == 1) {
-				p = " an object";
+				if ((rcmove & Constants.CM_SMALL_OBJ) != 0) {
+					p = " a small object";
+				} else {
+					p = " an object";
+				}
 			} else if (j == 2) {
 				roff(" one or two");
 			} else {

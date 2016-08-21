@@ -24,7 +24,7 @@ package net.jonhopkins.moria;
 public class Config {
 	/* Person to bother if something goes wrong.  */
 	/* Recompile files.c and misc2.c if this changes.  */
-	public static final String WIZARD	= "David Grabiner";
+	public static final String WIZARD	= "David Grabiner <grabiner@alumni.princeton.edu>";
 	/* The wizard password and wizard uid are no longer used.  */
 	
 	/* Files used by moria, set these to valid pathnames for your system.  */
@@ -32,6 +32,7 @@ public class Config {
 	public static final String MORIA_SAV		= "files/moriasav";
 	public static final String MORIA_TOP		= "files/moriatop";
 	public static final String MORIA_MOR		= "files/news";
+	public static final String MORIA_GPL		= "files/COPYING";
 	public static final String MORIA_TOP_NAME	= "files/scores";
 	public static final String MORIA_SAV_NAME	= "files/MORIA.SAV";
 	public static final String MORIA_CNF_NAME	= "files/MORIA.CNF";

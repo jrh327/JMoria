@@ -171,10 +171,10 @@ public class Misc2 {
 						break;
 					case 3: case 4:	 /* Slay Animal  */
 						t_ptr.flags |= Constants.TR_SLAY_ANIMAL;
-						t_ptr.tohit += 3;
-						t_ptr.todam += 3;
+						t_ptr.tohit += 2;
+						t_ptr.todam += 2;
 						t_ptr.name2 = Constants.SN_SA;
-						t_ptr.cost += 5000;
+						t_ptr.cost += 3000;
 						break;
 					case 5: case 6:	/* Slay Dragon	 */
 						t_ptr.flags |= Constants.TR_SLAY_DRAGON;
@@ -192,10 +192,10 @@ public class Misc2 {
 						break;
 					case 9: case 10:	 /* Slay Undead	  */
 						t_ptr.flags |= (Constants.TR_SEE_INVIS | Constants.TR_SLAY_UNDEAD);
-						t_ptr.tohit += 2;
-						t_ptr.todam += 2;
+						t_ptr.tohit += 3;
+						t_ptr.todam += 3;
 						t_ptr.name2 = Constants.SN_SU;
-						t_ptr.cost += 3000;
+						t_ptr.cost += 5000;
 						break;
 					case 11: case 12: case 13:   /* Flame Tongue  */
 						t_ptr.flags |= Constants.TR_FLAME_TONGUE;

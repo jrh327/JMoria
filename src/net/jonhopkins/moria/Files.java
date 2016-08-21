@@ -325,22 +325,22 @@ public class Files {
 			output.write(String.format("   CHR : %s\n\n", prt1));
 			
 			output.write(String.format(" + To Hit    : %6d", py.py.misc.dis_th));
-			output.write(String.format("%8sLevel      : %6d", blank, py.py.misc.lev));
+			output.write(String.format("%7sLevel      : %7d", blank, py.py.misc.lev));
 			output.write(String.format("    Max Hit Points : %6d\n", py.py.misc.mhp));
 			output.write(String.format(" + To Damage : %6d", py.py.misc.dis_td));
-			output.write(String.format("%8sExperience : %6d", blank, py.py.misc.exp));
+			output.write(String.format("%7sExperience : %7d", blank, py.py.misc.exp));
 			output.write(String.format("    Cur Hit Points : %6d\n", py.py.misc.chp));
 			output.write(String.format(" + To AC     : %6d", py.py.misc.dis_tac));
-			output.write(String.format("%8sMax Exp    : %6d", blank, py.py.misc.max_exp));
+			output.write(String.format("%7sMax Exp    : %7d", blank, py.py.misc.max_exp));
 			output.write(String.format("    Max Mana%8s %6d\n", colon, py.py.misc.mana));
 			output.write(String.format("   Total AC  : %6d", py.py.misc.dis_ac));
 			if (py.py.misc.lev == Constants.MAX_PLAYER_LEVEL) {
-				output.write(String.format("%8sExp to Adv : ******", blank));
+				output.write(String.format("%7sExp to Adv : *******", blank));
 			} else {
-				output.write(String.format("%8sExp to Adv : %6d", blank, (py.player_exp[py.py.misc.lev - 1] * py.py.misc.expfact / 100)));
+				output.write(String.format("%7sExp to Adv : %7d", blank, (py.player_exp[py.py.misc.lev - 1] * py.py.misc.expfact / 100)));
 			}
 			output.write(String.format("    Cur Mana%8s %6d\n", colon, py.py.misc.cmana));
-			output.write(String.format("%29sGold%8s %6d\n\n", blank, colon, py.py.misc.au));
+			output.write(String.format("%28sGold%8s %7d\n\n", blank, colon, py.py.misc.au));
 			
 			p_ptr = py.py.misc;
 			xbth = p_ptr.bth + p_ptr.ptohit * Constants.BTH_PLUS_ADJ + (py.class_level_adj[p_ptr.pclass][Constants.CLA_BTH] * p_ptr.lev);

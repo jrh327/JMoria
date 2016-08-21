@@ -204,6 +204,64 @@ public class Dungeon {
 			}
 			
 			/* Update counters and messages			*/
+			/* Heroism (must precede anything that can damage player)      */
+			if (f_ptr.hero > 0) {
+				if ((Constants.PY_HERO & f_ptr.status) == 0) {
+					f_ptr.status |= Constants.PY_HERO;
+					mor1.disturb(false, false);
+					p_ptr.mhp += 10;
+					p_ptr.chp += 10;
+					p_ptr.bth += 12;
+					p_ptr.bthb+= 12;
+					io.msg_print("You feel like a HERO!");
+					m3.prt_mhp();
+					m3.prt_chp();
+				}
+				f_ptr.hero--;
+				if (f_ptr.hero == 0) {
+					f_ptr.status &= ~Constants.PY_HERO;
+					mor1.disturb(false, false);
+					p_ptr.mhp -= 10;
+					if (p_ptr.chp > p_ptr.mhp) {
+						p_ptr.chp = p_ptr.mhp;
+						p_ptr.chp_frac = 0;
+						m3.prt_chp();
+					}
+					p_ptr.bth -= 12;
+					p_ptr.bthb-= 12;
+					io.msg_print("The heroism wears off.");
+					m3.prt_mhp();
+				}
+			}
+			/* Super Heroism */
+			if (f_ptr.shero > 0) {
+				if ((Constants.PY_SHERO & f_ptr.status) == 0) {
+					f_ptr.status |= Constants.PY_SHERO;
+					mor1.disturb(false, false);
+					p_ptr.mhp += 20;
+					p_ptr.chp += 20;
+					p_ptr.bth += 24;
+					p_ptr.bthb+= 24;
+					io.msg_print("You feel like a SUPER HERO!");
+					m3.prt_mhp();
+					m3.prt_chp();
+				}
+				f_ptr.shero--;
+				if (f_ptr.shero == 0) {
+					f_ptr.status &= ~Constants.PY_SHERO;
+					mor1.disturb(false, false);
+					p_ptr.mhp -= 20;
+					if (p_ptr.chp > p_ptr.mhp) {
+						p_ptr.chp = p_ptr.mhp;
+						p_ptr.chp_frac = 0;
+						m3.prt_chp();
+					}
+					p_ptr.bth -= 24;
+					p_ptr.bthb-= 24;
+					io.msg_print("The super heroism wears off.");
+					m3.prt_mhp();
+				}
+			}
 			/* Check food status	       */
 			regen_amount = Constants.PLAYER_REGEN_NORMAL;
 			if (f_ptr.food < Constants.PLAYER_FOOD_ALERT) {
@@ -442,64 +500,6 @@ public class Dungeon {
 					py.py.misc.dis_ac -= 100;
 					m3.prt_pac();
 					io.msg_print("Your skin returns to normal.");
-				}
-			}
-			/* Heroism       */
-			if (f_ptr.hero > 0) {
-				if ((Constants.PY_HERO & f_ptr.status) == 0) {
-					f_ptr.status |= Constants.PY_HERO;
-					mor1.disturb(false, false);
-					p_ptr.mhp += 10;
-					p_ptr.chp += 10;
-					p_ptr.bth += 12;
-					p_ptr.bthb+= 12;
-					io.msg_print("You feel like a HERO!");
-					m3.prt_mhp();
-					m3.prt_chp();
-				}
-				f_ptr.hero--;
-				if (f_ptr.hero == 0) {
-					f_ptr.status &= ~Constants.PY_HERO;
-					mor1.disturb(false, false);
-					p_ptr.mhp -= 10;
-					if (p_ptr.chp > p_ptr.mhp) {
-						p_ptr.chp = p_ptr.mhp;
-						p_ptr.chp_frac = 0;
-						m3.prt_chp();
-					}
-					p_ptr.bth -= 12;
-					p_ptr.bthb-= 12;
-					io.msg_print("The heroism wears off.");
-					m3.prt_mhp();
-				}
-			}
-			/* Super Heroism */
-			if (f_ptr.shero > 0) {
-				if ((Constants.PY_SHERO & f_ptr.status) == 0) {
-					f_ptr.status |= Constants.PY_SHERO;
-					mor1.disturb(false, false);
-					p_ptr.mhp += 20;
-					p_ptr.chp += 20;
-					p_ptr.bth += 24;
-					p_ptr.bthb+= 24;
-					io.msg_print("You feel like a SUPER HERO!");
-					m3.prt_mhp();
-					m3.prt_chp();
-				}
-				f_ptr.shero--;
-				if (f_ptr.shero == 0) {
-					f_ptr.status &= ~Constants.PY_SHERO;
-					mor1.disturb(false, false);
-					p_ptr.mhp -= 20;
-					if (p_ptr.chp > p_ptr.mhp) {
-						p_ptr.chp = p_ptr.mhp;
-						p_ptr.chp_frac = 0;
-						m3.prt_chp();
-					}
-					p_ptr.bth -= 24;
-					p_ptr.bthb-= 24;
-					io.msg_print("The super heroism wears off.");
-					m3.prt_mhp();
 				}
 			}
 			/* Blessed       */
@@ -823,6 +823,7 @@ public class Dungeon {
 		case (Constants.CTRL & 'P'):	/*^P = repeat  */
 		case (Constants.CTRL & 'W'):	/*^W = password*/
 		case (Constants.CTRL & 'X'):	/*^X = save    */
+		case (Constants.CTRL & 'V'):	/*^V = view license */
 		case ' ':
 		case '!':
 		case '$':
@@ -1075,6 +1076,10 @@ public class Dungeon {
 				io.put_buffer(">", 0, 0);
 				io.prt(var.old_msg[j], 0, 1);
 			}
+			var.free_turn_flag = true;
+			break;
+		case (Constants.CTRL & 'V'):	/* (^V)iew license */
+			files.helpfile(Config.MORIA_GPL);
 			var.free_turn_flag = true;
 			break;
 		case (Constants.CTRL & 'W'):	/* (^W)izard mode */

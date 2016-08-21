@@ -123,6 +123,7 @@ public class Create {
 		change_stat(Constants.A_DEX, r_ptr.dex_adj);
 		change_stat(Constants.A_CON, r_ptr.con_adj);
 		change_stat(Constants.A_CHR, r_ptr.chr_adj);
+		p_ptr.misc.lev = 1;
 		for (j = 0; j < 6; j++) {
 			py.py.stats.cur_stat[j] = py.py.stats.max_stat[j];
 			m3.set_use_stat(j);
@@ -135,7 +136,6 @@ public class Create {
 		p_ptr.misc.stl    = r_ptr.stl;
 		p_ptr.misc.save   = r_ptr.bsav;
 		p_ptr.misc.hitdie = r_ptr.bhitdie;
-		p_ptr.misc.lev    = 1;
 		p_ptr.misc.ptodam = m3.todam_adj();
 		p_ptr.misc.ptohit = m3.tohit_adj();
 		p_ptr.misc.ptoac  = 0;

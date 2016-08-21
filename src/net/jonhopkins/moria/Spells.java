@@ -481,7 +481,8 @@ public class Spells {
 						if (mor3.delete_object(i, j)) {
 							destroy = true;
 						}
-					} else if (t.t_list[c_ptr.tptr].tval == Constants.TV_CHEST) {
+					} else if (t.t_list[c_ptr.tptr].tval == Constants.TV_CHEST
+							&& t.t_list[c_ptr.tptr].flags != 0) {
 						/* destroy traps on chest and unlock */
 						t.t_list[c_ptr.tptr].flags &= ~(Constants.CH_TRAPPED | Constants.CH_LOCKED);
 						t.t_list[c_ptr.tptr].name2 = Constants.SN_UNLOCKED;
@@ -1188,14 +1189,18 @@ public class Spells {
 						var.c_recall[m_ptr.mptr].r_cdefense |= Constants.CD_NO_SLEEP;
 					}
 					/* Monsters which resisted the attack should wake up.
-					 * Monsters with inane resistence ignore the attack.  */
+					 * Monsters with innate resistance ignore the attack.  */
 					if ((Constants.CD_NO_SLEEP & r_ptr.cdefense) == 0) {
 						m_ptr.csleep = 0;
 					}
 					out_val = String.format("%s is unaffected.", m_name);
 					io.msg_print(out_val);
 				} else {
-					m_ptr.confused = true;
+					if (m_ptr.confused > 0) {
+						m_ptr.confused += 3;
+					} else {
+						m_ptr.confused = 2 + m1.randint(16);
+					}
 					confuse = true;
 					m_ptr.csleep = 0;
 					out_val = String.format("%s appears confused.", m_name);
@@ -1264,28 +1269,41 @@ public class Spells {
 		dist = 0;
 		do {
 			m3.mmove(dir, y1, x1);
+			x = x1.value();
+			y = y1.value();
 			dist++;
-			c_ptr = var.cave[y1.value()][x1.value()];
+			c_ptr = var.cave[y][x];
 			/* note, this ray can move through walls as it turns them to mud */
 			if (dist == Constants.OBJ_BOLT_RANGE) {
 				flag = true;
 			}
 			if ((c_ptr.fval >= Constants.MIN_CAVE_WALL) && (c_ptr.fval != Constants.BOUNDARY_WALL)) {
 				flag = true;
-				mor3.twall(y1.value(), x1.value(), 1, 0);
-				if (m1.test_light(y1.value(), x1.value())) {
+				mor3.twall(y, x, 1, 0);
+				if (m1.test_light(y, x)) {
 					io.msg_print("The wall turns into mud.");
 					wall = true;
 				}
 			} else if ((c_ptr.tptr != 0) && (c_ptr.fval >= Constants.MIN_CLOSED_SPACE)) {
 				flag = true;
-				if (m1.panel_contains(y1.value(), x1.value()) && m1.test_light(y1.value(), x1.value())) {
+				if (m1.panel_contains(y, x) && m1.test_light(y, x)) {
 					tmp_str = desc.objdes(t.t_list[c_ptr.tptr], false);
 					out_val = String.format("The %s turns into mud.", tmp_str);
 					io.msg_print(out_val);
 					wall = true;
 				}
-				mor3.delete_object(y1.value(), x1.value());
+				if (t.t_list[c_ptr.tptr].tval == Constants.TV_RUBBLE) {
+					mor3.delete_object(y, x);
+					if (m1.randint(10) == 1) {
+						m3.place_object(y, x, false);
+						if (m1.test_light(y, x)) {
+							io.msg_print("You have found something!");
+						}
+					}
+					mor1.lite_spot(y, x);
+				} else {
+					mor3.delete_object(y, x);
+				}
 			}
 			if (c_ptr.cptr > 1) {
 				m_ptr = mon.m_list[c_ptr.cptr];
@@ -1336,7 +1354,7 @@ public class Spells {
 						io.msg_print("There is a bright flash of light!");
 						destroy2 = true;
 					}
-				} else if (t_ptr.tval == Constants.TV_CHEST) {
+				} else if (t_ptr.tval == Constants.TV_CHEST && t_ptr.flags != 0) {
 					io.msg_print("Click!");
 					t_ptr.flags &= ~(Constants.CH_TRAPPED|Constants.CH_LOCKED);
 					destroy2 = true;
@@ -1345,7 +1363,7 @@ public class Spells {
 				}
 			}
 		} while ((dist <= Constants.OBJ_BOLT_RANGE) || c_ptr.fval <= Constants.MAX_OPEN_SPACE);
-		return(destroy2);
+		return destroy2;
 	}
 	
 	/* Polymorph a monster					-RAK-	*/
@@ -1987,7 +2005,7 @@ public class Spells {
 						turn_und = true;
 						var.c_recall[m_ptr.mptr].r_cdefense |= Constants.CD_UNDEAD;
 					}
-					m_ptr.confused = true;
+					m_ptr.confused = py.py.misc.lev;
 				} else if (m_ptr.ml) {
 					out_val = String.format("%s is unaffected.", m_name);
 					io.msg_print(out_val);
