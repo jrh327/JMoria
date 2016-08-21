@@ -11,3 +11,5 @@ UMoria
 > [from wikipedia](http://en.wikipedia.org/wiki/Moria_(video_game))
 
 This project is my attempt at porting UMoria from C to Java. Because Java does not have native control over a commandline console, it has been turned into an applet with a console look-alike. This project has been in the works since the summer of 2011, but because of school and work it has not gotten the attention it deserves, and therefore is still rather buggy. Fixes will come with time.
+
+The free-moria project is complete and the [source code](https://github.com/HunterZ/umoria) is now on GitHub.
