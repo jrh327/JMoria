@@ -1007,7 +1007,7 @@ public class Dungeon {
 		int i, j;
 		String out_val, tmp_str;
 		PlayerFlags f_ptr;
-		System.out.println("do command " + com_val);
+		
 		/* hack for move without pickup.  Map '-' to a movement command. */
 		if (com_val == '-') {
 			do_pickup = false;

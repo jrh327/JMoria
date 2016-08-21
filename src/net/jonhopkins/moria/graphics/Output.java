@@ -44,7 +44,7 @@ public final class Output {
 	}
 	
 	public void addKeyHandler(Output curses) {
-		keyHandler = new KeyHandler(curses);
+		keyHandler = new KeyHandler();
 	}
 	public void handleKey(KeyEvent event) {
 		keyHandler.handleKey(event);
@@ -91,16 +91,17 @@ public final class Output {
 	public void moveCursor(int x, int y) {
 		windowInFocus.moveCursor(x, y);
 	}
+	public boolean kbhit() {
+		return keyHandler.isKeyAvailable();
+	}
 	public char getch() {
 		char ch = 0;
 		main.requestFocus();
-		keyHandler.clearKeyHit();
-		System.out.println("getch");
-		while (ch == 0) {
+		try {
 			ch = keyHandler.requestKeyHit();
-			Thread.yield();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		System.out.println("gotch " + ch);
 		return ch;
 	}
 	public char getCharacter() {

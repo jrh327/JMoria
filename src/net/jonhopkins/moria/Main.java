@@ -82,8 +82,6 @@ import net.jonhopkins.moria.graphics.Output;
 import net.jonhopkins.moria.types.BooleanPointer;
 import net.jonhopkins.moria.types.InvenType;
 
-//import jcurses.Jcurses;
-
 public class Main extends Applet implements KeyListener {
 	public void init() {
 		setFocusable(true);
@@ -126,10 +124,7 @@ public class Main extends Applet implements KeyListener {
 	}
 	
 	public void keyPressed(KeyEvent event) {
-		//displayInfo(event, "PRESSED");
-		//synchronized(this) {
-			curses.handleKey(event);
-		//}
+		curses.handleKey(event);
 	}
 	
 	public void keyReleased(KeyEvent event) {

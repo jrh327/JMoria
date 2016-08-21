@@ -365,9 +365,9 @@ public class Console {
 	
 	/* Flush the buffer					-RAK-	*/
 	public void flush() {
-		//while (kbhit()) {
+		while (curses.kbhit()) {
 			curses.getch();
-		//}
+		}
 		/* used to call put_qio() here to drain output, but it is not necessary */
 	}
 	
