@@ -319,9 +319,7 @@ public class Main extends Applet implements KeyListener {
 		
 		/* Loop till dead, or exit			*/
 		while(!var.death) {
-			synchronized(this) {
-				dun.dungeon();	/* Dungeon logic */
-			}
+			dun.dungeon();	/* Dungeon logic */
 			/* check for eof here, see inkey() in io.c */
 			/* eof can occur if the process gets a HANGUP signal */
 			if (var.eof_flag == Constants.TRUE) {

@@ -25,26 +25,7 @@ package net.jonhopkins.moria.types;
  * constant by changing index instead; all are used rarely */
 /* extra fields x and y for location in dungeon would simplify pusht() */
 
-public final class TreasureType {
-	public TreasureType(String _name, long _flags, int _tval, int _tchar, int _p1, int _cost, int _subval,
-			int _number, int _weight, int _tohit, int _todam, int _ac, int _toac, int[] _damage, int _level) {
-		name = _name;
-		flags = _flags;
-		tval = _tval;
-		tchar = _tchar;
-		p1 = _p1;
-		cost = _cost;
-		subval = _subval;
-		number = _number;
-		weight = _weight;
-		tohit = _tohit;
-		todam = _todam;
-		ac = _ac;
-		toac = _toac;
-		damage = _damage;
-		level = _level;
-	}
-	
+public abstract class TreasureType {
 	/**
 	 * Object name
 	 */
@@ -63,7 +44,7 @@ public final class TreasureType {
 	/**
 	 * Character representation
 	 */
-	public int tchar;
+	public char tchar;
 	
 	/**
 	 * Misc. use variable

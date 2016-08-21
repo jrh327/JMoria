@@ -343,7 +343,7 @@ public class Misc3 {
 	public void prt_7lnum(String header, int num, int row, int column) {
 		String out_val;
 		
-		out_val = String.format("%s: %7ld", header, num);
+		out_val = String.format("%s: %7d", header, num);
 		io.put_buffer(out_val, row, column);
 	}
 	
