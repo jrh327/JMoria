@@ -21,24 +21,7 @@
  */
 package net.jonhopkins.moria.types;
 
-public final class CreatureType {
-	public CreatureType(String _name, long _cmove, long _spells, int _cdefense, int _mexp, int _sleep,
-			int _aaf, int _ac, int _speed, char _cchar, int _hd[], int _damage[], int _level) {
-		name = _name;
-		cmove = _cmove;
-		spells = _spells;
-		cdefense = _cdefense;
-		mexp = _mexp;
-		sleep = _sleep;
-		aaf = _aaf;
-		ac = _ac;
-		speed = _speed;
-		cchar = _cchar;
-		hd = _hd;
-		damage = _damage;
-		level = _level;
-	}
-	
+public abstract class CreatureType {
 	/**
 	 * Description of creature
 	 */
