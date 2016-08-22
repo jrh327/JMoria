@@ -361,6 +361,14 @@ public class Console {
 	    }
 	}
 	
+	public boolean isKeyAvailable() {
+		return curses.kbhit();
+	}
+	
+	public char getch() {
+		return curses.getch();
+	}
+	
 	/* Flush the buffer					-RAK-	*/
 	public void flush() {
 		while (curses.kbhit()) {

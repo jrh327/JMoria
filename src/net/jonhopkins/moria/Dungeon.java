@@ -451,14 +451,9 @@ public class Dungeon {
 			
 			/* Check for interrupts to find or rest. */
 			if ((var.command_count > 0 || var.find_flag > 0 || f_ptr.rest != 0)
-					//	#if defined(MSDOS) || defined(VMS)
-					//&& kbhit()	
-					//	#else	
-					//&& (check_input(var.find_flag > 0 ? 0 : 10000))
-					//	#endif
-					) {	
-				//io.inkey();	//find some way to check if a key has been pressed while inside this loop
-				//mor1.disturb(false, false);
+					&& io.isKeyAvailable()) {	
+				io.getch();
+				mor1.disturb(false, false);
 			}
 			
 			/* Hallucinating?	 (Random characters appear!)*/
