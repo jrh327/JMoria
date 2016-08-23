@@ -27,7 +27,7 @@ import net.jonhopkins.moria.Constants;
  * constant by changing index instead; all are used rarely */
 /* extra fields x and y for location in dungeon would simplify pusht() */
 
-public abstract class TreasureType {
+public final class TreasureType {
 	/**
 	 * Object name
 	 */
@@ -102,6 +102,26 @@ public abstract class TreasureType {
 	 * Level on which item can first be found
 	 */
 	public int level;
+	
+	public TreasureType(String name, long flags, int tval, char tchar, int p1,
+			int cost, int subval, int number, int weight, int tohit, 
+			int todam, int ac, int toac, int[] damage, int level) {
+		this.name = name;
+		this.flags = flags;
+		this.tval = tval;
+		this.tchar = tchar;
+		this.p1 = p1;
+		this.cost = cost;
+		this.subval = subval;
+		this.number = number;
+		this.weight = weight;
+		this.tohit = tohit;
+		this.todam = todam;
+		this.ac = ac;
+		this.toac = toac;
+		this.damage = damage;
+		this.level = level;
+	}
 	
 	public void copyInto(InvenType item) {
 		item.name2 = Constants.SN_NULL;
