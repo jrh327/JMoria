@@ -27,7 +27,6 @@ import net.jonhopkins.moria.types.InvenType;
 import net.jonhopkins.moria.types.PlayerMisc;
 
 public class Wizard {
-	private Desc desc;
 	private IO io;
 	private Misc1 m1;
 	private Misc3 m3;
@@ -49,7 +48,6 @@ public class Wizard {
 	}
 	
 	private void init() {
-		desc = Desc.getInstance();
 		io = IO.getInstance();
 		m1 = Misc1.getInstance();
 		m3 = Misc3.getInstance();
@@ -586,7 +584,7 @@ public class Wizard {
 			}
 			
 			tmp_val = m1.popt();
-			desc.invdeepcopy(t.t_list[tmp_val], forge);
+			forge.copyInto(t.t_list[tmp_val]);
 			c_ptr.tptr = tmp_val;
 			io.msg_print("Allocated.");
 		} else {

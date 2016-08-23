@@ -21,6 +21,8 @@
  */
 package net.jonhopkins.moria.types;
 
+import net.jonhopkins.moria.Constants;
+
 /* only damage, ac, and tchar are constant; level could possibly be made
  * constant by changing index instead; all are used rarely */
 /* extra fields x and y for location in dungeon would simplify pusht() */
@@ -100,4 +102,25 @@ public abstract class TreasureType {
 	 * Level on which item can first be found
 	 */
 	public int level;
+	
+	public void copyInto(InvenType item) {
+		item.name2 = Constants.SN_NULL;
+		item.inscrip = "";
+		item.flags = this.flags;
+		item.tval = this.tval;
+		item.tchar = this.tchar;
+		item.p1 = this.p1;
+		item.cost = this.cost;
+		item.subval = this.subval;
+		item.number = this.number;
+		item.weight = this.weight;
+		item.tohit = this.tohit;
+		item.todam = this.todam;
+		item.ac = this.ac;
+		item.toac = this.toac;
+		item.damage[0] = this.damage[0];
+		item.damage[1] = this.damage[1];
+		item.level = this.level;
+		item.ident = 0;
+	}
 }

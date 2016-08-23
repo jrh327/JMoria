@@ -1257,7 +1257,7 @@ public class Misc3 {
 		} else {
 			t.inven_weight -= i_ptr.weight * i_ptr.number;
 			for (j = item_val; j < t.inven_ctr - 1; j++) {
-				desc.invdeepcopy(t.inventory[j], t.inventory[j + 1]);
+				t.inventory[j + 1].copyInto(t.inventory[j]);
 			}
 			desc.invcopy(t.inventory[t.inven_ctr - 1], Constants.OBJ_NOTHING);
 			t.inven_ctr--;
@@ -1273,7 +1273,7 @@ public class Misc3 {
 	 * @param i_ptr - Item being copied
 	 */
 	public void take_one_item(InvenType s_ptr, InvenType i_ptr) {
-		desc.invdeepcopy(s_ptr, i_ptr);
+		i_ptr.copyInto(s_ptr);
 		if ((s_ptr.number > 1) && (s_ptr.subval >= Constants.ITEM_SINGLE_STACK_MIN)
 				&& (s_ptr.subval <= Constants.ITEM_SINGLE_STACK_MAX))
 			s_ptr.number = 1;
@@ -1296,7 +1296,7 @@ public class Misc3 {
 		}
 		i = m1.popt();
 		i_ptr = t.inventory[item_val];
-		desc.invdeepcopy(t.t_list[i], i_ptr);
+		i_ptr.copyInto(t.t_list[i]);
 		var.cave[py.char_row][py.char_col].tptr = i;
 		
 		if (item_val >= Constants.INVEN_WIELD) {
@@ -1306,7 +1306,7 @@ public class Misc3 {
 				t.inven_weight -= i_ptr.weight * i_ptr.number;
 				t.inven_ctr--;
 				while (item_val < t.inven_ctr) {
-					desc.invdeepcopy(t.inventory[item_val], t.inventory[item_val + 1]);
+					t.inventory[item_val + 1].copyInto(t.inventory[item_val]);
 					item_val++;
 				}
 				desc.invcopy(t.inventory[t.inven_ctr], Constants.OBJ_NOTHING);
@@ -1506,9 +1506,9 @@ public class Misc3 {
 			 * insert them into the t.inventory in sorted order.  */
 			} else if ((typ == t_ptr.tval && subt < t_ptr.subval && always_known1p) || (typ > t_ptr.tval)) {
 				for (i = t.inven_ctr - 1; i >= locn; i--) {
-					desc.invdeepcopy(t.inventory[i + 1], t.inventory[i]);
+					t.inventory[i].copyInto(t.inventory[i + 1]);
 				}
-				desc.invdeepcopy(t.inventory[locn], i_ptr);
+				i_ptr.copyInto(t.inventory[locn]);
 				t.inven_ctr++;
 				break;
 			}

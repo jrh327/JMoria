@@ -35,7 +35,6 @@ public final class MonsterType {
 		confused = _confused;
 	}
 	
-	
 	/**
 	 * Hitpoints
 	 */

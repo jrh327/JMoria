@@ -963,7 +963,7 @@ public class Moria1 {
 									/* first remove new item from inventory */
 									tmp_obj = t.inventory[item];
 									i_ptr = new InvenType();
-									desc.invdeepcopy(i_ptr, tmp_obj);
+									tmp_obj.copyInto(i_ptr);
 									
 									wear_high--;
 									/* Fix for torches	   */
@@ -989,7 +989,7 @@ public class Moria1 {
 									}
 									
 									/* third, wear new item */
-									desc.invdeepcopy(i_ptr, tmp_obj);
+									tmp_obj.copyInto(i_ptr);
 									t.equip_ctr++;
 									py_bonuses(i_ptr, 1);
 									if (slot == Constants.INVEN_WIELD) {

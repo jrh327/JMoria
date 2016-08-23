@@ -233,10 +233,10 @@ public class Store1 {
 		
 		s_ptr = var.store[store_num];
 		for (i = s_ptr.store_ctr - 1; i >= pos; i--) {
-			desc.invdeepcopy(s_ptr.store_inven[i + 1].sitem, s_ptr.store_inven[i].sitem);
+			s_ptr.store_inven[i].sitem.copyInto(s_ptr.store_inven[i + 1].sitem);
 			s_ptr.store_inven[i + 1].scost = s_ptr.store_inven[i].scost;
 		}
-		desc.invdeepcopy(s_ptr.store_inven[pos].sitem, i_ptr);
+		i_ptr.copyInto(s_ptr.store_inven[pos].sitem);
 		s_ptr.store_inven[pos].scost = -icost;
 		s_ptr.store_ctr++;
 	}
@@ -333,7 +333,7 @@ public class Store1 {
 			i_ptr.number -= number;
 		} else {
 			for (j = item_val; j < s_ptr.store_ctr - 1; j++) {
-				desc.invdeepcopy(s_ptr.store_inven[j].sitem, s_ptr.store_inven[j + 1].sitem);
+				s_ptr.store_inven[j + 1].sitem.copyInto(s_ptr.store_inven[j].sitem);
 				s_ptr.store_inven[j].scost = s_ptr.store_inven[j + 1].scost;
 			}
 			desc.invcopy(s_ptr.store_inven[s_ptr.store_ctr - 1].sitem, Constants.OBJ_NOTHING);

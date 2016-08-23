@@ -23,7 +23,6 @@ package net.jonhopkins.moria;
 
 import net.jonhopkins.moria.types.IntPointer;
 import net.jonhopkins.moria.types.InvenType;
-import net.jonhopkins.moria.types.TreasureType;
 
 public class Desc {
 	private IO io;
@@ -646,50 +645,8 @@ public class Desc {
 	}
 	
 	public void invcopy(InvenType to, int from_index) {
-		TreasureType from;
-		
-		from = t.object_list[from_index];
+		t.object_list[from_index].copyInto(to);
 		to.index	 = from_index;
-		to.name2	 = Constants.SN_NULL;
-		to.inscrip	 = "";
-		to.flags	 = from.flags;
-		to.tval		 = from.tval;
-		to.tchar	 = (char)from.tchar;
-		to.p1		 = from.p1;
-		to.cost		 = from.cost;
-		to.subval	 = from.subval;
-		to.number	 = from.number;
-		to.weight	 = from.weight;
-		to.tohit	 = from.tohit;
-		to.todam	 = from.todam;
-		to.ac		 = from.ac;
-		to.toac		 = from.toac;
-		to.damage[0] = from.damage[0];
-		to.damage[1] = from.damage[1];
-		to.level	 = from.level;
-		to.ident	 = 0;
-	}
-	
-	public void invdeepcopy(InvenType to, InvenType from) {
-		to.index	 = from.index;
-		to.name2	 = from.name2;
-		to.inscrip	 = from.inscrip;
-		to.flags	 = from.flags;
-		to.tval		 = from.tval;
-		to.tchar	 = from.tchar;
-		to.p1		 = from.p1;
-		to.cost		 = from.cost;
-		to.subval	 = from.subval;
-		to.number	 = from.number;
-		to.weight	 = from.weight;
-		to.tohit	 = from.tohit;
-		to.todam	 = from.todam;
-		to.ac		 = from.ac;
-		to.toac		 = from.toac;
-		to.damage[0] = from.damage[0];
-		to.damage[1] = from.damage[1];
-		to.level	 = from.level;
-		to.ident	 = from.ident;
 	}
 	
 	/* Describe number of remaining charges.		-RAK-	*/

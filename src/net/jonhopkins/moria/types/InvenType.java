@@ -117,4 +117,26 @@ public final class InvenType {
 	 * Identify information
 	 */
 	public int ident;
+	
+	public void copyInto(InvenType item) {
+		item.index = this.index;
+		item.name2 = this.name2;
+		item.inscrip = this.inscrip;
+		item.flags = this.flags;
+		item.tval = this.tval;
+		item.tchar = this.tchar;
+		item.p1 = this.p1;
+		item.cost = this.cost;
+		item.subval = this.subval;
+		item.number = this.number;
+		item.weight = this.weight;
+		item.tohit = this.tohit;
+		item.todam = this.todam;
+		item.ac = this.ac;
+		item.toac = this.toac;
+		item.damage[0] = this.damage[0];
+		item.damage[1] = this.damage[1];
+		item.level = this.level;
+		item.ident = this.ident;
+	}
 }

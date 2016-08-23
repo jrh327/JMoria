@@ -1102,7 +1102,7 @@ public class Misc1 {
 		int i, j;
 		
 		if (x != t.tcptr - 1) {
-			desc.invdeepcopy(t.t_list[x], t.t_list[t.tcptr - 1]);
+			t.t_list[t.tcptr - 1].copyInto(t.t_list[x]);
 			
 			/* must change the tptr in the cave of the object just moved */
 			for (i = 0; i < var.cur_height; i++) {

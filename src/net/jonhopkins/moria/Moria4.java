@@ -683,7 +683,7 @@ public class Moria4 {
 		InvenType i_ptr;
 		
 		i_ptr = t.inventory[item_val];
-		desc.invdeepcopy(t_ptr, i_ptr);
+		i_ptr.copyInto(t_ptr);
 		if (i_ptr.number > 1) {
 			t_ptr.number = 1;
 			i_ptr.number--;
@@ -812,7 +812,7 @@ public class Moria4 {
 		if (flag) {
 			cur_pos = m1.popt();
 			var.cave[i][j].tptr = cur_pos;
-			desc.invdeepcopy(t.t_list[cur_pos], t_ptr);
+			t_ptr.copyInto(t.t_list[cur_pos]);
 			mor1.lite_spot(i, j);
 		} else {
 			tmp_str = desc.objdes(t_ptr, false);
