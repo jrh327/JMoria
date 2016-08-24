@@ -31,44 +31,20 @@ public class IO {
 	//struct screen { int dumb; };
 	
 	private static boolean curses_on = false;
-	private Output curses;
-	private Window stdscr;
-	private Window savescr;		/* Spare window for saving the screen. -CJS-*/
+	private static Output curses;
+	private static Window stdscr;
+	private static Window savescr;		/* Spare window for saving the screen. -CJS-*/
 	
-	private Death death;
-	private Misc1 m1;
-	private Moria1 mor1;
-	private Save save;
-	private Signals signals;
-	private Variable var;
+	private static final int COLS = 80;
+	private static final int LINES = 24;
 	
-	private final int COLS = 80;
-	private final int LINES = 24;
-	
-	private static IO instance;
 	private IO() { }
-	public static IO getInstance() {
-		if (instance == null) {
-			instance = new IO();
-			instance.init();
-		}
-		return instance;
-	}
-	
-	private void init() {
-		death = Death.getInstance();
-		m1 = Misc1.getInstance();
-		mor1 = Moria1.getInstance();
-		save = Save.getInstance();
-		signals = Signals.getInstance();
-		var = Variable.getInstance();
-	}
 	
 	/* suspend()							   -CJS-
 	 * Handle the stop and start signals. This ensures that the log
 	 * is up to date, and that the terminal is fully reset and
 	 * restored.  */
-	public int suspend() {
+	public static int suspend() {
 		/*struct sgttyb tbuf;
 		struct ltchars lcbuf;
 		struct tchars cbuf;
@@ -98,7 +74,7 @@ public class IO {
 	}
 	
 	/* initializes curses routines */
-	public void init_curses(Output output) {
+	public static void init_curses(Output output) {
 		int i, y, x;
 		
 		curses = output;
@@ -163,7 +139,7 @@ public class IO {
 		
 		if (i != 10) {
 			msg_print("Tabs must be set 8 spaces apart.");
-			death.exit_game();
+			Death.exit_game();
 		}
 		
 		stdscr = curses.getWindow();
@@ -171,7 +147,7 @@ public class IO {
 	}
 	
 	/* Set up the terminal into a suitable state for moria.	 -CJS- */
-	public void moriaterm() {
+	public static void moriaterm() {
 		curses_on = true;
 		//use_value(crmode());
 		//use_value(noecho());
@@ -180,7 +156,7 @@ public class IO {
 	}
 	
 	/* Dump IO to buffer					-RAK-	*/
-	public void put_buffer(String out_str, int row, int col) {
+	public static void put_buffer(String out_str, int row, int col) {
 		//vtype tmp_str;
 		String tmp_str;
 		
@@ -211,13 +187,13 @@ public class IO {
 	}
 	
 	/* Dump the IO buffer to terminal			-RAK-	*/
-	public void put_qio() {
-		var.screen_change = true;	/* Let inven_command know something has changed. */
+	public static void put_qio() {
+		Variable.screen_change = true;	/* Let inven_command know something has changed. */
 		curses.refresh();
 	}
 	
 	/* Put the terminal in the original mode.			   -CJS- */
-	public void restore_term() {
+	public static void restore_term() {
 		if (!curses_on) {
 			return;
 		}
@@ -243,7 +219,7 @@ public class IO {
 		curses_on = false;
 	}
 	
-	public void shell_out() {
+	public static void shell_out() {
 		//struct sgttyb tbuf;
 		//struct ltchars lcbuf;
 		//struct tchars cbuf;
@@ -265,7 +241,7 @@ public class IO {
 		//use_value(nocrmode());
 		//use_value(msdos_noraw());
 		//use_value(echo());
-		signals.ignore_signals();
+		Signals.ignore_signals();
 		if (System.getenv("COMSPEC").equals("")) { // ||  spawnl(P_WAIT, comspec, comspec, CNIL) < 0) {
 			clear_screen();	/* BOSS key if shell failed */
 			put_buffer("M:\\> ", 0, 0);
@@ -274,7 +250,7 @@ public class IO {
 			} while (key != '!');
 		}
 		
-		signals.restore_signals();
+		Signals.restore_signals();
 		/* restore the cave to the screen */
 		restore_screen();
 		
@@ -300,7 +276,7 @@ public class IO {
 	 * consumes ^R to redraw the screen and reset the terminal, so that this
 	 * operation can always be performed at any input prompt.  inkey() never
 	 * returns ^R.	*/
-	public char inkey() {
+	public static char inkey() {
 		/*
 import jcurses.system.InputChar;
 import jcurses.system.Toolkit;
@@ -322,33 +298,33 @@ public class Console {
 		char i;
 		
 		put_qio();			/* Dump IO buffer		*/
-		var.command_count = 0;	/* Just to be safe -CJS- */
+		Variable.command_count = 0;	/* Just to be safe -CJS- */
 		while (true) {
 			i = curses.getch();
 			
 			/* some machines may not sign extend. */
 			if (i == 0 /* EOF */) {
-				var.eof_flag++;
+				Variable.eof_flag++;
 				/* avoid infinite loops while trying to call inkey() for a -more-
 				 * prompt. */
-				var.msg_flag = Constants.FALSE;
+				Variable.msg_flag = Constants.FALSE;
 				
 				curses.refresh();
-				if (!var.character_generated || var.character_saved != 0) {
-					death.exit_game();
+				if (!Variable.character_generated || Variable.character_saved != 0) {
+					Death.exit_game();
 				}
 				
-				mor1.disturb(true, false);
+				Moria1.disturb(true, false);
 				
-				if (var.eof_flag > 100) {
+				if (Variable.eof_flag > 100) {
 					/* just in case, to make sure that the process eventually dies */
-					var.panic_save = 1;
-					var.died_from = "(end of input: panic saved)";
-					if (!save.save_char()) {
-						var.died_from = "panic: unexpected eof";
-						var.death = true;
+					Variable.panic_save = 1;
+					Variable.died_from = "(end of input: panic saved)";
+					if (!Save.save_char()) {
+						Variable.died_from = "panic: unexpected eof";
+						Variable.death = true;
 					}
-					death.exit_game();
+					Death.exit_game();
 				}
 				return Constants.ESCAPE;
 			}
@@ -361,16 +337,16 @@ public class Console {
 	    }
 	}
 	
-	public boolean isKeyAvailable() {
+	public static boolean isKeyAvailable() {
 		return curses.kbhit();
 	}
 	
-	public char getch() {
+	public static char getch() {
 		return curses.getch();
 	}
 	
 	/* Flush the buffer					-RAK-	*/
-	public void flush() {
+	public static void flush() {
 		while (curses.kbhit()) {
 			curses.getch();
 		}
@@ -378,8 +354,8 @@ public class Console {
 	}
 	
 	/* Clears given line of text				-RAK-	*/
-	public void erase_line(int row, int col) {
-		if (row == Constants.MSG_LINE && var.msg_flag > 0) {
+	public static void erase_line(int row, int col) {
+		if (row == Constants.MSG_LINE && Variable.msg_flag > 0) {
 			msg_print("");
 		}
 		
@@ -388,26 +364,26 @@ public class Console {
 	}
 	
 	/* Clears screen */
-	public void clear_screen() {
-		if (var.msg_flag > 0) {
+	public static void clear_screen() {
+		if (Variable.msg_flag > 0) {
 			msg_print("");
 		}
 		curses.clear();
 	}
 	
-	public void clear_from(int row) {
+	public static void clear_from(int row) {
 		curses.moveCursor(0, row);
 		curses.clearToBottom();
 	}
 	
 	/* Outputs a char to a given interpolated y, x position	-RAK-	*/
 	/* sign bit of a character used to indicate standout mode. -CJS */
-	public void print(char ch, int row, int col) {
+	public static void print(char ch, int row, int col) {
 		//char[] tmp_str = new char[Constants.VTYPESIZ];
 		//String tmp_str;
 		
-		row -= var.panel_row_prt;/* Real co-ords convert to screen positions */
-		col -= var.panel_col_prt;
+		row -= Variable.panel_row_prt;/* Real co-ords convert to screen positions */
+		col -= Variable.panel_col_prt;
 		curses.moveCursorAddCharacter(col, row, ch);
 		//if (mvaddch(row, col, ch) == ERR) {
 		//	abort();
@@ -422,11 +398,11 @@ public class Console {
 	}
 	
 	/* Moves the cursor to a given interpolated y, x position	-RAK-	*/
-	public void move_cursor_relative(int row, int col) {
+	public static void move_cursor_relative(int row, int col) {
 		//char[] tmp_str = new char[Constants.VTYPESIZ];
 		
-		row -= var.panel_row_prt;/* Real co-ords convert to screen positions */
-		col -= var.panel_col_prt;
+		row -= Variable.panel_row_prt;/* Real co-ords convert to screen positions */
+		col -= Variable.panel_col_prt;
 		curses.moveCursor(col, row);
 		//if (move(row, col) == ERR) {
 		//	abort();
@@ -441,17 +417,17 @@ public class Console {
 	}
 	
 	/* Print a message so as not to interrupt a counted command. -CJS- */
-	public void count_msg_print(String p) {
+	public static void count_msg_print(String p) {
 		int i;
 		
-		i = var.command_count;
+		i = Variable.command_count;
 		msg_print(p);
-		var.command_count = i;
+		Variable.command_count = i;
 	}
 	
 	/* Outputs a line to a given y, x position		-RAK-	*/
-	public void prt(String str_buff, int row, int col) {
-		if (row == Constants.MSG_LINE && var.msg_flag > 0) {
+	public static void prt(String str_buff, int row, int col) {
+		if (row == Constants.MSG_LINE && Variable.msg_flag > 0) {
 			msg_print("");
 		}
 		
@@ -461,19 +437,19 @@ public class Console {
 	}
 	
 	/* move cursor to a given y, x position */
-	public void move_cursor(int row, int col) {
+	public static void move_cursor(int row, int col) {
 		curses.moveCursor(col, row);
 	}
 	
 	/* Outputs message to top line of screen				*/
 	/* These messages are kept for later reference.	 */
-	public void msg_print(String str_buff) {
+	public static void msg_print(String str_buff) {
 		int old_len = 0, new_len;
 		boolean combine_messages = false;
 		char in_char;
 		
-		if (var.msg_flag == Constants.TRUE) {
-			old_len = var.old_msg[var.last_msg].length() + 1;
+		if (Variable.msg_flag == Constants.TRUE) {
+			old_len = Variable.old_msg[Variable.last_msg].length() + 1;
 			
 			/* If the new message and the old message are short enough, we want
 		 	 * display them together on the same line.  So we don't flush the old
@@ -493,12 +469,12 @@ public class Console {
 				
 				put_buffer(" -more-", Constants.MSG_LINE, old_len);
 				/* let sigint handler know that we are waiting for a space */
-				var.wait_for_more = 1;
+				Variable.wait_for_more = 1;
 				do {
 					in_char = inkey();
 				} while ((in_char != ' ') && (in_char != Constants.ESCAPE) && (in_char != '\n') && (in_char != '\r'));
 				
-				var.wait_for_more = 0;
+				Variable.wait_for_more = 0;
 			} else {
 				combine_messages = true;
 			}
@@ -511,32 +487,32 @@ public class Console {
 		
 		/* Make the null string a special case.  -CJS- */
 		if (!str_buff.equals("")) {
-			var.command_count = 0;
-			var.msg_flag = 1;
+			Variable.command_count = 0;
+			Variable.msg_flag = 1;
 			/* If the new message and the old message are short enough, display
 			 * them on the same line.  */
 			if (combine_messages) {
 				put_buffer(str_buff, Constants.MSG_LINE, old_len + 2);
-				var.old_msg[var.last_msg] = var.old_msg[var.last_msg].concat("  ");
-				var.old_msg[var.last_msg] = var.old_msg[var.last_msg].concat(str_buff);
+				Variable.old_msg[Variable.last_msg] = Variable.old_msg[Variable.last_msg].concat("  ");
+				Variable.old_msg[Variable.last_msg] = Variable.old_msg[Variable.last_msg].concat(str_buff);
 			} else {
 				put_buffer(str_buff, Constants.MSG_LINE, 0);
-				var.last_msg++;
-				if (var.last_msg >= Constants.MAX_SAVE_MSG) {
-					var.last_msg = 0;
+				Variable.last_msg++;
+				if (Variable.last_msg >= Constants.MAX_SAVE_MSG) {
+					Variable.last_msg = 0;
 				}
-				var.old_msg[var.last_msg]= str_buff; 
+				Variable.old_msg[Variable.last_msg]= str_buff; 
 				//strncpy(var.old_msg[var.last_msg], str_buff, Constants.VTYPESIZ);
 				//var.old_msg[var.last_msg][Constants.VTYPESIZ - 1] = '\0';
 			}
 			curses.refresh();
 		} else {
-			var.msg_flag = Constants.FALSE;
+			Variable.msg_flag = Constants.FALSE;
 		}
 	}
 	
 	/* Used to verify a choice - user gets the chance to abort choice.  -CJS- */
-	public boolean get_check(String prompt) {
+	public static boolean get_check(String prompt) {
 		int res;
 		int y, x;
 		
@@ -569,7 +545,7 @@ public class Console {
 	
 	/* Prompts (optional) and returns ord value of input char	*/
 	/* Function returns false if <ESCAPE> is input	*/
-	public boolean get_com(String prompt, CharPointer command) {
+	public static boolean get_com(String prompt, CharPointer command) {
 		boolean res;
 		
 		if (prompt != null)
@@ -587,7 +563,7 @@ public class Console {
 	
 	/* Gets a string terminated by <RETURN>		*/
 	/* Function returns false if <ESCAPE> is input	*/
-	public String get_string(int row, int column, int slen) {
+	public static String get_string(int row, int column, int slen) {
 		int start_col, end_col, i;
 		String in_str = "";
 		boolean flag, aborted;
@@ -652,7 +628,7 @@ public class Console {
 	}
 	
 	/* Pauses for user response before returning		-RAK-	*/
-	public void pause_line(int prt_line) {
+	public static void pause_line(int prt_line) {
 		prt("[Press any key to continue.]", prt_line, 23);
 		inkey();
 		erase_line(prt_line, 0);
@@ -661,14 +637,14 @@ public class Console {
 	/* Pauses for user response before returning		-RAK-	*/
 	/* NOTE: Delay is for players trying to roll up "perfect"	*/
 	/*	characters.  Make them wait a bit.			*/
-	public void pause_exit(int prt_line, int delay) {
+	public static void pause_exit(int prt_line, int delay) {
 		char dummy;
 		
 		prt("[Press any key to continue, or Q to exit.]", prt_line, 10);
 		dummy = inkey();
 		if (dummy == 'Q') {
 			erase_line(prt_line, 0);
-			death.exit_game();
+			Death.exit_game();
 		}
 		/*
 		try {
@@ -680,20 +656,20 @@ public class Console {
 		erase_line(prt_line, 0);
 	}
 	
-	public void save_screen() {
+	public static void save_screen() {
 		curses.overwrite(stdscr, savescr);
 	}
 	
-	void restore_screen() {
+	public static void restore_screen() {
 		curses.overwrite(savescr, stdscr);
 		//touchwin(stdscr);
 	}
 	
-	void bell() {
+	public static void bell() {
 		put_qio();
 		
 		/* The player can turn off beeps if he/she finds them annoying.  */
-		if (!var.sound_beep_flag.value()) {
+		if (!Variable.sound_beep_flag.value()) {
 			return;
 		}
 		
@@ -702,25 +678,25 @@ public class Console {
 	
 	/* definitions used by screen_map() */
 	/* index into border character array */
-	private final int TL = 0;	/* top left */
-	private final int TR = 1;
-	private final int BL = 2;
-	private final int BR = 3;
-	private final int HE = 4;	/* horizontal edge */
-	private final int VE = 5;
-	private char[][] screen_border = new char[][] {
+	private static final int TL = 0;	/* top left */
+	private static final int TR = 1;
+	private static final int BL = 2;
+	private static final int BR = 3;
+	private static final int HE = 4;	/* horizontal edge */
+	private static final int VE = 5;
+	private static char[][] screen_border = new char[][] {
 		{'+', '+', '+', '+', '-', '|'},	/* normal chars */
     	{201, 187, 200, 188, 205, 186}	/* graphics chars */
 	};
 	
-	private char CH(int x) {
+	private static char CH(int x) {
 		return screen_border[1][x];
 	}
 	
 	/* Display highest priority object in the RATIO by RATIO area */
-	private final int RATIO = 3;
+	private static final int RATIO = 3;
 	
-	public void screen_map() {
+	public static void screen_map() {
 		int i, j;
 		int[] map = new int[Constants.MAX_WIDTH / RATIO + 1];
 		int tmp;
@@ -736,8 +712,8 @@ public class Console {
 		priority['<'] = 5;
 		priority['>'] = 5;
 		priority['@'] = 10;
-		priority[var.wallsym] = -5;
-		priority[var.floorsym] = -10;
+		priority[Variable.wallsym] = -5;
+		priority[Variable.floorsym] = -10;
 		priority['\''] = -3;
 		priority[' '] = -15;
 		
@@ -772,7 +748,7 @@ public class Console {
 			
 			for (j = 0; j < Constants.MAX_WIDTH; j++) {
 				col = j / RATIO;
-				tmp = m1.loc_symbol(i, j);
+				tmp = Misc1.loc_symbol(i, j);
 				
 				if (priority[map[col]] < priority[tmp]) {
 					map[col] = tmp;

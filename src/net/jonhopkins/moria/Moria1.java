@@ -29,49 +29,20 @@ import net.jonhopkins.moria.types.InvenType;
 import net.jonhopkins.moria.types.PlayerMisc;
 
 public class Moria1 {
-	private Desc desc;
-	private IO io;
-	private Misc1 m1;
-	private Misc3 m3;
-	private Misc4 m4;
-	private Monsters mon;
-	private Player py;
-	private Treasure t;
-	private Variable var;
 	
-	private static Moria1 instance;
 	private Moria1() { }
-	public static Moria1 getInstance() {
-		if (instance == null) {
-			instance = new Moria1();
-			instance.init();
-		}
-		return instance;
-	}
-	
-	private void init() {
-		desc = Desc.getInstance();
-		io = IO.getInstance();
-		m1 = Misc1.getInstance();
-		m3 = Misc3.getInstance();
-		m4 = Misc4.getInstance();
-		mon = Monsters.getInstance();
-		py = Player.getInstance();
-		t = Treasure.getInstance();
-		var = Variable.getInstance();
-	}
 	
 	/* Changes speed of monsters relative to player		-RAK-	*/
 	/* Note: When the player is sped up or slowed down, I simply	 */
 	/*	 change the speed of all the monsters.	This greatly	 */
 	/*	 simplified the logic.				       */
-	public void change_speed(int num) {
+	public static void change_speed(int num) {
 		int i;
 		
-		py.py.flags.speed += num;
-		py.py.flags.status |= Constants.PY_SPEED;
-		for (i = mon.mfptr - 1; i >= Constants.MIN_MONIX; i--) {
-			mon.m_list[i].cspeed += num;
+		Player.py.flags.speed += num;
+		Player.py.flags.status |= Constants.PY_SPEED;
+		for (i = Monsters.mfptr - 1; i >= Constants.MIN_MONIX; i--) {
+			Monsters.m_list[i].cspeed += num;
 		}
 	}
 	
@@ -80,40 +51,40 @@ public class Moria1 {
 	/* bonuses.  Factor=1 : wear; Factor=-1 : removed		 */
 	/* Only calculates properties with cumulative effect.  Properties that
 	 * depend on everything being worn are recalculated by calc_bonuses() -CJS- */
-	public void py_bonuses(InvenType t_ptr, int factor) {
+	public static void py_bonuses(InvenType t_ptr, int factor) {
 		int i, amount;
 		
 		amount = t_ptr.p1 * factor;
 		if ((t_ptr.flags & Constants.TR_STATS) != 0) {
 			for(i = 0; i < 6; i++) {
 				if (((1 << i) & t_ptr.flags) != 0) {
-					m3.bst_stat(i, amount);
+					Misc3.bst_stat(i, amount);
 				}
 			}
 		}
 		if ((Constants.TR_SEARCH & t_ptr.flags) != 0) {
-			py.py.misc.srh += amount;
-			py.py.misc.fos -= amount;
+			Player.py.misc.srh += amount;
+			Player.py.misc.fos -= amount;
 		}
 		if ((Constants.TR_STEALTH & t_ptr.flags) != 0) {
-			py.py.misc.stl += amount;
+			Player.py.misc.stl += amount;
 		}
 		if ((Constants.TR_SPEED & t_ptr.flags) != 0) {
 			change_speed(-amount);
 		}
 		if ((Constants.TR_BLIND & t_ptr.flags) != 0 && (factor > 0)) {
-			py.py.flags.blind += 1000;
+			Player.py.flags.blind += 1000;
 		}
 		if ((Constants.TR_TIMID & t_ptr.flags) != 0 && (factor > 0)) {
-			py.py.flags.afraid += 50;
+			Player.py.flags.afraid += 50;
 		}
 		if ((Constants.TR_INFRA & t_ptr.flags) != 0) {
-			py.py.flags.see_infra += amount;
+			Player.py.flags.see_infra += amount;
 		}
 	}
 	
 	/* Recalculate the effect of all the stuff we use.		  -CJS- */
-	public void calc_bonuses() {
+	public static void calc_bonuses() {
 		long item_flags;
 		int old_dis_ac;
 		PlayerFlags p_ptr;
@@ -121,8 +92,8 @@ public class Moria1 {
 		InvenType i_ptr;
 		int i;
 		
-		p_ptr = py.py.flags;
-		m_ptr = py.py.misc;
+		p_ptr = Player.py.flags;
+		m_ptr = Player.py.misc;
 		if (p_ptr.slow_digest) {
 			p_ptr.food_digested++;
 		}
@@ -148,16 +119,16 @@ public class Moria1 {
 		p_ptr.ffall       = Constants.FALSE;
 		
 		old_dis_ac		= m_ptr.dis_ac;
-		m_ptr.ptohit	= m3.tohit_adj();	/* Real To Hit   */
-		m_ptr.ptodam	= m3.todam_adj();	/* Real To Dam   */
-		m_ptr.ptoac		= m3.toac_adj();	/* Real To AC    */
+		m_ptr.ptohit	= Misc3.tohit_adj();	/* Real To Hit   */
+		m_ptr.ptodam	= Misc3.todam_adj();	/* Real To Dam   */
+		m_ptr.ptoac		= Misc3.toac_adj();	/* Real To AC    */
 		m_ptr.pac		= 0;				/* Real AC	     */
 		m_ptr.dis_th	= m_ptr.ptohit;		/* Display To Hit	    */
 		m_ptr.dis_td	= m_ptr.ptodam;		/* Display To Dam	    */
 		m_ptr.dis_ac	= 0;				/* Display AC		 */
 		m_ptr.dis_tac	= m_ptr.ptoac;		/* Display To AC	    */
 		for (i = Constants.INVEN_WIELD; i < Constants.INVEN_LIGHT; i++) {
-			i_ptr = t.inventory[i];
+			i_ptr = Treasure.inventory[i];
 			if (i_ptr.tval != Constants.TV_NOTHING) {
 				m_ptr.ptohit += i_ptr.tohit;
 				if (i_ptr.tval != Constants.TV_BOW) {	/* Bows can't damage. -CJS- */
@@ -165,7 +136,7 @@ public class Moria1 {
 				}
 				m_ptr.ptoac	+= i_ptr.toac;
 				m_ptr.pac += i_ptr.ac;
-				if (desc.known2_p(i_ptr)) {
+				if (Desc.known2_p(i_ptr)) {
 					m_ptr.dis_th += i_ptr.tohit;
 					if (i_ptr.tval != Constants.TV_BOW) {
 						m_ptr.dis_td  += i_ptr.todam;	/* Bows can't damage. -CJS- */
@@ -181,8 +152,8 @@ public class Moria1 {
 		}
 		m_ptr.dis_ac += m_ptr.dis_tac;
 		
-		if (var.weapon_heavy) {
-			m_ptr.dis_th += (py.py.stats.use_stat[Constants.A_STR] * 15 - t.inventory[Constants.INVEN_WIELD].weight);
+		if (Variable.weapon_heavy) {
+			m_ptr.dis_th += (Player.py.stats.use_stat[Constants.A_STR] * 15 - Treasure.inventory[Constants.INVEN_WIELD].weight);
 		}
 		
 		/* Add in temporary spell increases	*/
@@ -205,7 +176,7 @@ public class Moria1 {
 		
 		item_flags = 0;
 		for (i = Constants.INVEN_WIELD; i < Constants.INVEN_LIGHT; i++) {
-			i_ptr = t.inventory[i];
+			i_ptr = Treasure.inventory[i];
 			item_flags |= i_ptr.flags;
 		}
 		if ((Constants.TR_SLOW_DIGEST & item_flags) != 0) {
@@ -243,7 +214,7 @@ public class Moria1 {
 		}
 		
 		for (i = Constants.INVEN_WIELD; i < Constants.INVEN_LIGHT; i++) {
-			i_ptr = t.inventory[i];
+			i_ptr = Treasure.inventory[i];
 			if ((Constants.TR_SUST_STAT & i_ptr.flags) != 0) {
 				switch(i_ptr.p1)
 				{
@@ -272,7 +243,7 @@ public class Moria1 {
 	 * not fit, it may be moved left.  The return value is the left edge used. */
 	/* If mask is non-zero, then only display those items which have a non-zero
 	 * entry in the mask array.  */
-	public int show_inven(int r1, int r2, boolean weight, int col, String mask) {
+	public static int show_inven(int r1, int r2, boolean weight, int col, String mask) {
 		int i;
 		int total_weight, len, l, lim, current_line;
 		String tmp_val;
@@ -287,7 +258,7 @@ public class Moria1 {
 		
 		for (i = r1; i <= r2; i++) {	/* Print the items	  */
 			if (mask.equals("") || mask.length() >= i) {
-				tmp_val = desc.objdes(t.inventory[i], true);
+				tmp_val = Desc.objdes(Treasure.inventory[i], true);
 				if (lim < tmp_val.length()) {
 					tmp_val = tmp_val.substring(0, lim);	/* Truncate if too long. */
 				}
@@ -312,15 +283,15 @@ public class Moria1 {
 			if (mask.equals("") || mask.length() >= i) {
 				/* don't need first two spaces if in first column */
 				if (col == 0) {
-					io.prt(out_val[i], current_line, col);
+					IO.prt(out_val[i], current_line, col);
 				} else {
-					io.put_buffer("  ", current_line, col);
-					io.prt(out_val[i], current_line, col + 2);
+					IO.put_buffer("  ", current_line, col);
+					IO.prt(out_val[i], current_line, col + 2);
 				}
 				if (weight) {
-					total_weight = t.inventory[i].weight * t.inventory[i].number;
+					total_weight = Treasure.inventory[i].weight * Treasure.inventory[i].number;
 					tmp_val = String.format("%3d.%d lb", (total_weight) / 10, (total_weight) % 10);
-					io.prt(tmp_val, current_line, 71);
+					IO.prt(tmp_val, current_line, 71);
 				}
 				current_line++;
 			}
@@ -329,7 +300,7 @@ public class Moria1 {
 	}
 	
 	/* Return a string describing how a given equipment item is carried. -CJS- */
-	public String describe_use(int i) {
+	public static String describe_use(int i) {
 		String p;
 		
 		switch(i)
@@ -366,7 +337,7 @@ public class Moria1 {
 	
 	/* Displays equipment items from r1 to end	-RAK-	*/
 	/* Keep display as far right as possible. -CJS- */
-	public int show_equip(boolean weight, int col) {
+	public static int show_equip(boolean weight, int col) {
 		int i, line;
 		int total_weight, l, len, lim;
 		String prt1;
@@ -382,12 +353,12 @@ public class Moria1 {
 			lim = 60;
 		}
 		for (i = Constants.INVEN_WIELD; i < Constants.INVEN_ARRAY_SIZE; i++) { /* Range of equipment */
-			i_ptr = t.inventory[i];
+			i_ptr = Treasure.inventory[i];
 			if (i_ptr.tval != Constants.TV_NOTHING) {
 				switch(i)	     /* Get position	      */
 				{
 				case Constants.INVEN_WIELD:
-					if (py.py.stats.use_stat[Constants.A_STR] * 15 < i_ptr.weight) {
+					if (Player.py.stats.use_stat[Constants.A_STR] * 15 < i_ptr.weight) {
 						prt1 = "Just lifting";
 					} else {
 						prt1 = "Wielding";
@@ -418,7 +389,7 @@ public class Moria1 {
 				default:
 					prt1 = "Unknown value"; break;
 				}
-				prt2 = desc.objdes(t.inventory[i], true);
+				prt2 = Desc.objdes(Treasure.inventory[i], true);
 				if (lim < prt2.length()) {
 					prt2 = prt2.substring(0, lim); /* Truncate if necessary */
 				}
@@ -440,37 +411,37 @@ public class Moria1 {
 		
 		line = 0;
 		for (i = Constants.INVEN_WIELD; i < Constants.INVEN_ARRAY_SIZE; i++) {	/* Range of equipment */
-			i_ptr = t.inventory[i];
+			i_ptr = Treasure.inventory[i];
 			if (i_ptr.tval != Constants.TV_NOTHING) {
 				/* don't need first two spaces when using whole screen */
 				if (col == 0) {
-					io.prt(out_val[line], line + 1, col);
+					IO.prt(out_val[line], line + 1, col);
 				} else {
-					io.put_buffer("  ", line + 1, col);
-					io.prt(out_val[line], line + 1, col + 2);
+					IO.put_buffer("  ", line + 1, col);
+					IO.prt(out_val[line], line + 1, col + 2);
 				}
 				if (weight) {
 					total_weight = i_ptr.weight * i_ptr.number;
 					prt2 = String.format("%3d.%d lb", (total_weight) / 10, (total_weight) % 10);
-					io.prt(prt2, line + 1, 71);
+					IO.prt(prt2, line + 1, 71);
 				}
 				line++;
 			}
 		}
-		io.erase_line(line + 1, col);
+		IO.erase_line(line + 1, col);
 		return col;
 	}
 	
 	/* Remove item from equipment list		-RAK-	*/
-	public void takeoff(int item_val, int posn) {
+	public static void takeoff(int item_val, int posn) {
 		String p;
 		String out_val, prt2;
 		InvenType t_ptr;
 		
-		t.equip_ctr--;
-		t_ptr = t.inventory[item_val];
-		t.inven_weight -= t_ptr.weight * t_ptr.number;
-		py.py.flags.status |= Constants.PY_STR_WGT;
+		Treasure.equip_ctr--;
+		t_ptr = Treasure.inventory[item_val];
+		Treasure.inven_weight -= t_ptr.weight * t_ptr.number;
+		Player.py.flags.status |= Constants.PY_STR_WGT;
 		
 		if (item_val == Constants.INVEN_WIELD || item_val == Constants.INVEN_AUX) {
 			p = "Was wielding ";
@@ -480,28 +451,28 @@ public class Moria1 {
 			p = "Was wearing ";
 		}
 		
-		prt2 = desc.objdes(t_ptr, true);
+		prt2 = Desc.objdes(t_ptr, true);
 		if (posn >= 0) {
 			out_val = String.format("%s%s (%c)", p, prt2, 'a' + posn);
 		} else {
 			out_val = String.format("%s%s", p, prt2);
 		}
-		io.msg_print(out_val);
+		IO.msg_print(out_val);
 		if (item_val != Constants.INVEN_AUX) {	/* For secondary weapon  */
 			py_bonuses(t_ptr, -1);
 		}
-		desc.invcopy(t_ptr, Constants.OBJ_NOTHING);
+		Desc.invcopy(t_ptr, Constants.OBJ_NOTHING);
 	}
 	
 	/* Used to verify if this really is the item we wish to	 -CJS-
 	 * wear or read. */
-	public boolean verify(String prompt, int item) {
+	public static boolean verify(String prompt, int item) {
 		String out_str, object;
 		
-		object = desc.objdes(t.inventory[item], true);
+		object = Desc.objdes(Treasure.inventory[item], true);
 		object = object.substring(0, object.length() - 1).concat("?");	/* change the period to a question mark */
 		out_str = String.format("%s %s", prompt, object);
-		return io.get_check(out_str);
+		return IO.get_check(out_str);
 	}
 	
 	/* All inventory commands (wear, exchange, take off, drop, inventory and
@@ -531,19 +502,19 @@ public class Moria1 {
 	 * minimize the work done to restore the screen afterwards.		-CJS-*/
 	
 	/* Inventory command screen states. */
-	public final int BLANK_SCR =	0;
-	public final int EQUIP_SCR =	1;
-	public final int INVEN_SCR =	2;
-	public final int WEAR_SCR  =	3;
-	public final int HELP_SCR  =	4;
-	public final int WRONG_SCR =	5;
+	public static final int BLANK_SCR =	0;
+	public static final int EQUIP_SCR =	1;
+	public static final int INVEN_SCR =	2;
+	public static final int WEAR_SCR  =	3;
+	public static final int HELP_SCR  =	4;
+	public static final int WRONG_SCR =	5;
 	
 	/* Keep track of the state of the inventory screen. */
-	public int scr_state, scr_left, scr_base;
-	public int wear_low, wear_high;
+	public static int scr_state, scr_left, scr_base;
+	public static int wear_low, wear_high;
 	
 	/* Draw the inventory screen. */
-	public void inven_screen(int new_scr) {
+	public static void inven_screen(int new_scr) {
 		int line = 0;
 		
 		if (new_scr != scr_state) {
@@ -557,41 +528,41 @@ public class Moria1 {
 				if (scr_left > 52) {
 					scr_left = 52;
 				}
-				io.prt("  ESC: exit", 1, scr_left);
-				io.prt("  w  : wear or wield object", 2, scr_left);
-				io.prt("  t  : take off item", 3, scr_left);
-				io.prt("  d  : drop object", 4, scr_left);
-				io.prt("  x  : exchange weapons", 5, scr_left);
-				io.prt("  i  : inventory of pack", 6, scr_left);
-				io.prt("  e  : list used equipment", 7, scr_left);
+				IO.prt("  ESC: exit", 1, scr_left);
+				IO.prt("  w  : wear or wield object", 2, scr_left);
+				IO.prt("  t  : take off item", 3, scr_left);
+				IO.prt("  d  : drop object", 4, scr_left);
+				IO.prt("  x  : exchange weapons", 5, scr_left);
+				IO.prt("  i  : inventory of pack", 6, scr_left);
+				IO.prt("  e  : list used equipment", 7, scr_left);
 				line = 7;
 				break;
 			case INVEN_SCR:
-				scr_left = show_inven(0, t.inven_ctr - 1, var.show_weight_flag.value(), scr_left, "");
-				line = t.inven_ctr;
+				scr_left = show_inven(0, Treasure.inven_ctr - 1, Variable.show_weight_flag.value(), scr_left, "");
+				line = Treasure.inven_ctr;
 				break;
 			case WEAR_SCR:
-				scr_left = show_inven(wear_low, wear_high, var.show_weight_flag.value(), scr_left, "");
+				scr_left = show_inven(wear_low, wear_high, Variable.show_weight_flag.value(), scr_left, "");
 				line = wear_high - wear_low + 1;
 				break;
 			case EQUIP_SCR:
-				scr_left = show_equip(var.show_weight_flag.value(), scr_left);
-				line = t.equip_ctr;
+				scr_left = show_equip(Variable.show_weight_flag.value(), scr_left);
+				line = Treasure.equip_ctr;
 				break;
 			}
 			if (line >= scr_base) {
 				scr_base = line + 1;
-				io.erase_line(scr_base, scr_left);
+				IO.erase_line(scr_base, scr_left);
 			} else {
 				while (++line <= scr_base) {
-					io.erase_line(line, scr_left);
+					IO.erase_line(line, scr_left);
 				}
 			}
 		}
 	}
 	
 	/* This does all the work. */
-	public void inven_command(char command) {
+	public static void inven_command(char command) {
 		int slot = 0, item;
 		int tmp, tmp2, from, to;
 		boolean selecting;
@@ -601,16 +572,16 @@ public class Moria1 {
 		InvenType i_ptr;
 		InvenType tmp_obj;
 		
-		var.free_turn_flag = true;
-		io.save_screen();
+		Variable.free_turn_flag = true;
+		IO.save_screen();
 		/* Take up where we left off after a previous inventory command. -CJS- */
-		if (var.doing_inven != '\0') {
+		if (Variable.doing_inven != '\0') {
 			/* If the screen has been flushed, we need to redraw. If the command is
 			 * a simple ' ' to recover the screen, just quit. Otherwise, check and
 			 * see what the user wants. */
-			if (var.screen_change) {
-				if (command == ' ' || !io.get_check("Continuing with inventory command?")) {
-					var.doing_inven = '\0';
+			if (Variable.screen_change) {
+				if (command == ' ' || !IO.get_check("Continuing with inventory command?")) {
+					Variable.doing_inven = '\0';
 					return;
 				}
 				scr_left = 50;
@@ -635,27 +606,27 @@ public class Moria1 {
 			switch(command)
 			{
 			case 'i':	/* Inventory	    */
-				if (t.inven_ctr == 0) {
-					io.msg_print("You are not carrying anything.");
+				if (Treasure.inven_ctr == 0) {
+					IO.msg_print("You are not carrying anything.");
 				} else {
 					inven_screen(INVEN_SCR);
 				}
 				break;
 			case 'e':	/* Equipment	   */
-				if (t.equip_ctr == 0) {
-					io.msg_print("You are not using any equipment.");
+				if (Treasure.equip_ctr == 0) {
+					IO.msg_print("You are not using any equipment.");
 				} else {
 					inven_screen(EQUIP_SCR);
 				}
 				break;
 			case 't':	/* Take off	   */
-				if (t.equip_ctr == 0) {
-					io.msg_print("You are not using any equipment.");
+				if (Treasure.equip_ctr == 0) {
+					IO.msg_print("You are not using any equipment.");
 				
 				/* don't print message restarting inven command after taking off
 				 * something, it is confusing */
-				} else if (t.inven_ctr >= Constants.INVEN_WIELD && var.doing_inven == '\0') {
-					io.msg_print("You will have to drop something first.");
+				} else if (Treasure.inven_ctr >= Constants.INVEN_WIELD && Variable.doing_inven == '\0') {
+					IO.msg_print("You will have to drop something first.");
 				} else {
 					if (scr_state != BLANK_SCR) {
 						inven_screen(EQUIP_SCR);
@@ -664,13 +635,13 @@ public class Moria1 {
 				}
 				break;
 			case 'd':	/* Drop */
-				if (t.inven_ctr == 0 && t.equip_ctr == 0) {
-					io.msg_print("But you're not carrying anything.");
-				} else if (var.cave[py.char_row][py.char_col].tptr != 0) {
-					io.msg_print("There's no room to drop anything here.");
+				if (Treasure.inven_ctr == 0 && Treasure.equip_ctr == 0) {
+					IO.msg_print("But you're not carrying anything.");
+				} else if (Variable.cave[Player.char_row][Player.char_col].tptr != 0) {
+					IO.msg_print("There's no room to drop anything here.");
 				} else {
 					selecting = true;
-					if ((scr_state == EQUIP_SCR && t.equip_ctr > 0) || t.inven_ctr == 0) {
+					if ((scr_state == EQUIP_SCR && Treasure.equip_ctr > 0) || Treasure.inven_ctr == 0) {
 						if (scr_state != BLANK_SCR) {
 							inven_screen(EQUIP_SCR);
 						}
@@ -681,15 +652,15 @@ public class Moria1 {
 				}
 				break;
 			case 'w':	  /* Wear/wield	   */
-				for (wear_low = 0; wear_low < t.inven_ctr && t.inventory[wear_low].tval > Constants.TV_MAX_WEAR; wear_low++) {
+				for (wear_low = 0; wear_low < Treasure.inven_ctr && Treasure.inventory[wear_low].tval > Constants.TV_MAX_WEAR; wear_low++) {
 					;
 				}
-				for(wear_high = wear_low; wear_high < t.inven_ctr && t.inventory[wear_high].tval >= Constants.TV_MIN_WEAR; wear_high++) {
+				for(wear_high = wear_low; wear_high < Treasure.inven_ctr && Treasure.inventory[wear_high].tval >= Constants.TV_MIN_WEAR; wear_high++) {
 					;
 				}
 				wear_high--;
 				if (wear_low > wear_high) {
-					io.msg_print("You have nothing to wear or wield.");
+					IO.msg_print("You have nothing to wear or wield.");
 				} else {
 					if (scr_state != BLANK_SCR && scr_state != INVEN_SCR) {
 						inven_screen(WEAR_SCR);
@@ -698,32 +669,32 @@ public class Moria1 {
 				}
 				break;
 			case 'x':
-				if (t.inventory[Constants.INVEN_WIELD].tval == Constants.TV_NOTHING && t.inventory[Constants.INVEN_AUX].tval == Constants.TV_NOTHING) {
-					io.msg_print("But you are wielding no weapons.");
-				} else if ((Constants.TR_CURSED & t.inventory[Constants.INVEN_WIELD].flags) != 0) {
-					prt1 = desc.objdes(t.inventory[Constants.INVEN_WIELD], false);
+				if (Treasure.inventory[Constants.INVEN_WIELD].tval == Constants.TV_NOTHING && Treasure.inventory[Constants.INVEN_AUX].tval == Constants.TV_NOTHING) {
+					IO.msg_print("But you are wielding no weapons.");
+				} else if ((Constants.TR_CURSED & Treasure.inventory[Constants.INVEN_WIELD].flags) != 0) {
+					prt1 = Desc.objdes(Treasure.inventory[Constants.INVEN_WIELD], false);
 					prt2 = String.format("The %s you are wielding appears to be cursed.", prt1);
-					io.msg_print(prt2);
+					IO.msg_print(prt2);
 				} else {
-					var.free_turn_flag = false;
-					tmp_obj = t.inventory[Constants.INVEN_AUX];
-					t.inventory[Constants.INVEN_AUX] = t.inventory[Constants.INVEN_WIELD];
-					t.inventory[Constants.INVEN_WIELD] = tmp_obj;
+					Variable.free_turn_flag = false;
+					tmp_obj = Treasure.inventory[Constants.INVEN_AUX];
+					Treasure.inventory[Constants.INVEN_AUX] = Treasure.inventory[Constants.INVEN_WIELD];
+					Treasure.inventory[Constants.INVEN_WIELD] = tmp_obj;
 					if (scr_state == EQUIP_SCR) {
-						scr_left = show_equip(var.show_weight_flag.value(), scr_left);
+						scr_left = show_equip(Variable.show_weight_flag.value(), scr_left);
 					}
-					py_bonuses(t.inventory[Constants.INVEN_AUX], -1);	/* Subtract bonuses */
-					py_bonuses(t.inventory[Constants.INVEN_WIELD], 1);	/* Add bonuses    */
-					if (t.inventory[Constants.INVEN_WIELD].tval != Constants.TV_NOTHING) {
+					py_bonuses(Treasure.inventory[Constants.INVEN_AUX], -1);	/* Subtract bonuses */
+					py_bonuses(Treasure.inventory[Constants.INVEN_WIELD], 1);	/* Add bonuses    */
+					if (Treasure.inventory[Constants.INVEN_WIELD].tval != Constants.TV_NOTHING) {
 						prt1 = "Primary weapon   : ";
-						prt2 = desc.objdes(t.inventory[Constants.INVEN_WIELD], true);
-						io.msg_print(prt1.concat(prt2));
+						prt2 = Desc.objdes(Treasure.inventory[Constants.INVEN_WIELD], true);
+						IO.msg_print(prt1.concat(prt2));
 					} else {
-						io.msg_print("No primary weapon.");
+						IO.msg_print("No primary weapon.");
 					}
 					/* this is a new weapon, so clear the heavy flag */
-					var.weapon_heavy = false;
-					m3.check_strength();
+					Variable.weapon_heavy = false;
+					Misc3.check_strength();
 				}
 				break;
 			case ' ':	/* Dummy command to return again to main prompt. */
@@ -733,17 +704,17 @@ public class Moria1 {
 				break;
 			default:
 				/* Nonsense command					   */
-				io.bell();
+				IO.bell();
 				break;
 			}
 			
 			/* Clear the doing_inven flag here, instead of at beginning, so that
 			 * can use it to control when messages above appear. */
-			var.doing_inven = '\0';
+			Variable.doing_inven = '\0';
 			
 			/* Keep looking for objects to drop/wear/take off/throw off */
 			which.value('z');
-			while (selecting && var.free_turn_flag) {
+			while (selecting && Variable.free_turn_flag) {
 				swap = "";
 				if (command == 'w') {
 					from = wear_low;
@@ -752,18 +723,18 @@ public class Moria1 {
 				} else {
 					from = 0;
 					if (command == 'd') {
-						to = t.inven_ctr - 1;
+						to = Treasure.inven_ctr - 1;
 						prompt = "Drop";
-						if (t.equip_ctr > 0) {
+						if (Treasure.equip_ctr > 0) {
 							swap = ", / for Equip";
 						}
 					} else {
-						to = t.equip_ctr - 1;
+						to = Treasure.equip_ctr - 1;
 						if (command == 't') {
 							prompt = "Take off";
 						} else {	/* command == 'r' */
 							prompt = "Throw off";
-							if (t.inven_ctr > 0) {
+							if (Treasure.inven_ctr > 0) {
 								swap = ", / for Inven";
 							}
 						}
@@ -783,7 +754,7 @@ public class Moria1 {
 							prompt);
 					
 					/* Abort everything. */
-					if (!io.get_com(prt1, which)) {
+					if (!IO.get_com(prt1, which)) {
 						selecting = false;
 						which.value(Constants.ESCAPE);
 					
@@ -819,8 +790,8 @@ public class Moria1 {
 							/* look for item whose inscription matches "which" */
 							int m;
 							for (m = from;
-									m <= to && ((t.inventory[m].inscrip.charAt(0) != which.value())
-											|| (t.inventory[m].inscrip.length() > 1));
+									m <= to && ((Treasure.inventory[m].inscrip.charAt(0) != which.value())
+											|| (Treasure.inventory[m].inscrip.length() > 1));
 									m++);
 							if (m <= to)
 								item = m;
@@ -833,7 +804,7 @@ public class Moria1 {
 							item = which.value() - 'a';
 						}
 						if (item < from || item > to) {
-							io.bell();
+							IO.bell();
 						} else {  /* Found an item! */
 							if (command == 'r' || command == 't') {
 								/* Get its place in the equipment list. */
@@ -841,21 +812,21 @@ public class Moria1 {
 								item = 21;
 								do {
 									item++;
-									if (t.inventory[item].tval != Constants.TV_NOTHING) {
+									if (Treasure.inventory[item].tval != Constants.TV_NOTHING) {
 										tmp--;
 									}
 								} while (tmp >= 0);
 								if (Character.isUpperCase(which.value()) && !verify(prompt, item)) {
 									item = -1;
-								} else if ((Constants.TR_CURSED & t.inventory[item].flags) != 0) {
-									io.msg_print("Hmmm, it seems to be cursed.");
+								} else if ((Constants.TR_CURSED & Treasure.inventory[item].flags) != 0) {
+									IO.msg_print("Hmmm, it seems to be cursed.");
 									item = -1;
 								} else if (command == 't' &&
-										!m3.inven_check_num(t.inventory[item])) {
-									if (var.cave[py.char_row][py.char_col].tptr != 0) {
-										io.msg_print("You can't carry it.");
+										!Misc3.inven_check_num(Treasure.inventory[item])) {
+									if (Variable.cave[Player.char_row][Player.char_col].tptr != 0) {
+										IO.msg_print("You can't carry it.");
 										item = -1;
-									} else if (io.get_check("You can't carry it.  Drop it?")) {
+									} else if (IO.get_check("You can't carry it.  Drop it?")) {
 										command = 'r';
 									} else {
 										item = -1;
@@ -863,19 +834,19 @@ public class Moria1 {
 								}
 								if (item >= 0) {
 									if (command == 'r') {
-										m3.inven_drop(item, true);
+										Misc3.inven_drop(item, true);
 										/* As a safety measure, set the player's
 										   inven weight to 0, 
 										   when the last object is dropped*/
-										if (t.inven_ctr == 0 && t.equip_ctr == 0) {
-											t.inven_weight = 0;
+										if (Treasure.inven_ctr == 0 && Treasure.equip_ctr == 0) {
+											Treasure.inven_weight = 0;
 										}
 									} else {
-										slot = m3.inven_carry(t.inventory[item]);
+										slot = Misc3.inven_carry(Treasure.inventory[item]);
 										takeoff(item, slot);
 									}
-									m3.check_strength();
-									var.free_turn_flag = false;
+									Misc3.check_strength();
+									Variable.free_turn_flag = false;
 									if (command == 'r') {
 										selecting = false;
 									}
@@ -886,7 +857,7 @@ public class Moria1 {
 								if (Character.isUpperCase(which.value()) && !verify(prompt, item)) {
 									item = -1;
 								} else {
-									switch(t.inventory[item].tval)
+									switch(Treasure.inventory[item].tval)
 									{ /* Slot for equipment	   */
 									case Constants.TV_SLING_AMMO: case Constants.TV_BOLT: case Constants.TV_ARROW:
 									case Constants.TV_BOW: case Constants.TV_HAFTED: case Constants.TV_POLEARM:
@@ -902,15 +873,15 @@ public class Moria1 {
 										slot = Constants.INVEN_BODY; break;
 									case Constants.TV_AMULET: slot = Constants.INVEN_NECK; break;
 									case Constants.TV_RING:
-										if (t.inventory[Constants.INVEN_RIGHT].tval == Constants.TV_NOTHING) {
+										if (Treasure.inventory[Constants.INVEN_RIGHT].tval == Constants.TV_NOTHING) {
 											slot = Constants.INVEN_RIGHT;
-										} else if (t.inventory[Constants.INVEN_LEFT].tval == Constants.TV_NOTHING) {
+										} else if (Treasure.inventory[Constants.INVEN_LEFT].tval == Constants.TV_NOTHING) {
 											slot = Constants.INVEN_LEFT;
 										} else {
 											slot = 0;
 											/* Rings. Give some choice over where they go. */
 											do {
-												if (!io.get_com( "Put ring on which hand (l/r/L/R)?", query)) {
+												if (!IO.get_com( "Put ring on which hand (l/r/L/R)?", query)) {
 													item = -1;
 													slot = -1;
 												} else if (query.value()== 'l') {
@@ -923,7 +894,7 @@ public class Moria1 {
 													} else if (query.value() == 'R') {
 														slot = Constants.INVEN_RIGHT;
 													} else {
-														io.bell();
+														IO.bell();
 													}
 													if (slot != 0 && !verify("Replace", slot)) {
 														slot = 0;
@@ -933,35 +904,35 @@ public class Moria1 {
 										}
 										break;
 									default:
-										io.msg_print("IMPOSSIBLE: I don't see how you can use that.");
+										IO.msg_print("IMPOSSIBLE: I don't see how you can use that.");
 										item = -1;
 										break;
 									}
 								}
-								if (item >= 0 && t.inventory[slot].tval != Constants.TV_NOTHING) {
-									if ((Constants.TR_CURSED & t.inventory[slot].flags) != 0) {
-										prt1 = desc.objdes(t.inventory[slot], false);
+								if (item >= 0 && Treasure.inventory[slot].tval != Constants.TV_NOTHING) {
+									if ((Constants.TR_CURSED & Treasure.inventory[slot].flags) != 0) {
+										prt1 = Desc.objdes(Treasure.inventory[slot], false);
 										prt2 = String.format("The %s you are ", prt1);
 										if (slot == Constants.INVEN_HEAD) {
 											prt2 = prt2.concat("wielding ");
 										} else {
 											prt2 = prt2.concat("wearing ");
 										}
-										io.msg_print(prt2.concat("appears to be cursed."));
+										IO.msg_print(prt2.concat("appears to be cursed."));
 										item = -1;
-									} else if (t.inventory[item].subval == Constants.ITEM_GROUP_MIN && t.inventory[item].number > 1 && !m3.inven_check_num(t.inventory[slot])) {
+									} else if (Treasure.inventory[item].subval == Constants.ITEM_GROUP_MIN && Treasure.inventory[item].number > 1 && !Misc3.inven_check_num(Treasure.inventory[slot])) {
 										/* this can happen if try to wield a torch, and
 										 * have more than one in your inventory */
-										io.msg_print("You will have to drop something first.");
+										IO.msg_print("You will have to drop something first.");
 										item = -1;
 									}
 								}
 								if (item >= 0) {
 									/* OK. Wear it. */
-									var.free_turn_flag = false;
+									Variable.free_turn_flag = false;
 									
 									/* first remove new item from inventory */
-									tmp_obj = t.inventory[item];
+									tmp_obj = Treasure.inventory[item];
 									i_ptr = new InvenType();
 									tmp_obj.copyInto(i_ptr);
 									
@@ -971,18 +942,18 @@ public class Moria1 {
 										i_ptr.number = 1;
 										wear_high++;
 									}
-									t.inven_weight += i_ptr.weight * i_ptr.number;
-									m3.inven_destroy(item);	/* Subtracts weight */
+									Treasure.inven_weight += i_ptr.weight * i_ptr.number;
+									Misc3.inven_destroy(item);	/* Subtracts weight */
 									
 									/* second, add old item to inv and remove from
 									 * equipment list, if necessary */
-									i_ptr = t.inventory[slot];
+									i_ptr = Treasure.inventory[slot];
 									if (i_ptr.tval != Constants.TV_NOTHING) {
-										tmp2 = t.inven_ctr;
-										tmp = m3.inven_carry(i_ptr);
+										tmp2 = Treasure.inven_ctr;
+										tmp = Misc3.inven_carry(i_ptr);
 										/* if item removed did not stack with anything in
 										 * inventory, then increment wear_high */
-										if (t.inven_ctr != tmp2) {
+										if (Treasure.inven_ctr != tmp2) {
 											wear_high++;
 										}
 										takeoff(slot, tmp);
@@ -990,7 +961,7 @@ public class Moria1 {
 									
 									/* third, wear new item */
 									tmp_obj.copyInto(i_ptr);
-									t.equip_ctr++;
+									Treasure.equip_ctr++;
 									py_bonuses(i_ptr, 1);
 									if (slot == Constants.INVEN_WIELD) {
 										string = "You are wielding";
@@ -999,43 +970,43 @@ public class Moria1 {
 									} else {
 										string = "You are wearing";
 									}
-									prt2 = desc.objdes(i_ptr, true);
+									prt2 = Desc.objdes(i_ptr, true);
 									/* Get the right equipment letter. */
 									tmp = Constants.INVEN_WIELD;
 									item = 0;
 									while (tmp != slot) {
-										if (t.inventory[tmp++].tval != Constants.TV_NOTHING) {
+										if (Treasure.inventory[tmp++].tval != Constants.TV_NOTHING) {
 											item++;
 										}
 									}
 									
 									prt1 = String.format("%s %s (%c)", string, prt2, 'a' + item);
-									io.msg_print(prt1);
+									IO.msg_print(prt1);
 									/* this is a new weapon, so clear the heavy flag */
 									if (slot == Constants.INVEN_WIELD) {
-										var.weapon_heavy = false;
+										Variable.weapon_heavy = false;
 									}
-									m3.check_strength();
+									Misc3.check_strength();
 									if ((i_ptr.flags & Constants.TR_CURSED) != 0) {
-										io.msg_print("Oops! It feels deathly cold!");
-										m4.add_inscribe(i_ptr, Constants.ID_DAMD);
+										IO.msg_print("Oops! It feels deathly cold!");
+										Misc4.add_inscribe(i_ptr, Constants.ID_DAMD);
 										/* To force a cost of 0, even if unidentified. */
 										i_ptr.cost = -1;
 									}
 								}
 							} else {	/* command == 'd' */
-								if (t.inventory[item].number > 1) {
-									prt1 = desc.objdes(t.inventory[item], true);
+								if (Treasure.inventory[item].number > 1) {
+									prt1 = Desc.objdes(Treasure.inventory[item], true);
 									prt1 = prt1.substring(0, prt1.length() - 1).concat("?");
 									prt2 = String.format("Drop all %s [y/n]", prt1);
 									prt1 = prt1.substring(0, prt1.length() - 1).concat(".");
-									io.prt(prt2, 0, 0);
-									query.value(io.inkey());
+									IO.prt(prt2, 0, 0);
+									query.value(IO.inkey());
 									if (query.value()!= 'y' && query.value()!= 'n') {
 										if (query.value()!= Constants.ESCAPE) {
-											io.bell();
+											IO.bell();
 										}
-										io.erase_line(Constants.MSG_LINE, 0);
+										IO.erase_line(Constants.MSG_LINE, 0);
 										item = -1;
 									}
 								} else if (Character.isUpperCase(which.value()) && !verify(prompt, item)) {
@@ -1044,18 +1015,18 @@ public class Moria1 {
 									query.value('y');
 								}
 								if (item >= 0) {
-									var.free_turn_flag = false;    /* Player turn   */
-									m3.inven_drop(item, query.value()== 'y');
-									m3.check_strength();
+									Variable.free_turn_flag = false;    /* Player turn   */
+									Misc3.inven_drop(item, query.value()== 'y');
+									Misc3.check_strength();
 								}
 								selecting = false;
 								/* As a safety measure, set the player's inven weight
 								 * to 0, when the last object is dropped.  */
-								if (t.inven_ctr == 0 && t.equip_ctr == 0) {
-									t.inven_weight = 0;
+								if (Treasure.inven_ctr == 0 && Treasure.equip_ctr == 0) {
+									Treasure.inven_weight = 0;
 								}
 							}
-							if (!var.free_turn_flag && scr_state == BLANK_SCR) {
+							if (!Variable.free_turn_flag && scr_state == BLANK_SCR) {
 								selecting = false;
 							}
 						}
@@ -1064,58 +1035,58 @@ public class Moria1 {
 			}
 			if (which.value() == Constants.ESCAPE || scr_state == BLANK_SCR) {
 				command = Constants.ESCAPE;
-			} else if (!var.free_turn_flag) {
+			} else if (!Variable.free_turn_flag) {
 				/* Save state for recovery if they want to call us again next turn.*/
 				if (selecting) {
-					var.doing_inven = command;
+					Variable.doing_inven = command;
 				} else {
-					var.doing_inven = ' ';	/* A dummy command to recover screen. */
+					Variable.doing_inven = ' ';	/* A dummy command to recover screen. */
 				}
 				/* flush last message before clearing screen_change and exiting */
-				io.msg_print("");
-				var.screen_change = false;	/* This lets us know if the world changes */
+				IO.msg_print("");
+				Variable.screen_change = false;	/* This lets us know if the world changes */
 				command = Constants.ESCAPE;
 			} else {
 				/* Put an appropriate header. */
 				if (scr_state == INVEN_SCR) {
-					if (!var.show_weight_flag.value()|| t.inven_ctr == 0) {
+					if (!Variable.show_weight_flag.value()|| Treasure.inven_ctr == 0) {
 						prt1 = String.format("You are carrying %d.%d pounds. In your pack there is %s",
-								t.inven_weight / 10, t.inven_weight % 10, (t.inven_ctr == 0 ? "nothing." : "-"));
+								Treasure.inven_weight / 10, Treasure.inven_weight % 10, (Treasure.inven_ctr == 0 ? "nothing." : "-"));
 					} else {
 						prt1 = String.format("You are carrying %d.%d pounds. Your capacity is %d.%d pounds. %s",
-								t.inven_weight / 10, t.inven_weight % 10, m3.weight_limit() / 10, m3.weight_limit() % 10, "In your pack is -");
+								Treasure.inven_weight / 10, Treasure.inven_weight % 10, Misc3.weight_limit() / 10, Misc3.weight_limit() % 10, "In your pack is -");
 					}
-					io.prt(prt1, 0, 0);
+					IO.prt(prt1, 0, 0);
 				} else if (scr_state == WEAR_SCR) {
 					if (wear_high < wear_low) {
-						io.prt("You have nothing you could wield.", 0, 0);
+						IO.prt("You have nothing you could wield.", 0, 0);
 					} else {
-						io.prt("You could wield -", 0, 0);
+						IO.prt("You could wield -", 0, 0);
 					}
 				} else if (scr_state == EQUIP_SCR) {
-					if (t.equip_ctr == 0) {
-						io.prt("You are not using anything.", 0, 0);
+					if (Treasure.equip_ctr == 0) {
+						IO.prt("You are not using anything.", 0, 0);
 					} else {
-						io.prt("You are using -", 0, 0);
+						IO.prt("You are using -", 0, 0);
 					}
 				} else {
-					io.prt("Allowed commands:", 0, 0);
+					IO.prt("Allowed commands:", 0, 0);
 				}
-				io.erase_line(scr_base, scr_left);
-				io.put_buffer("e/i/t/w/x/d/?/ESC:", scr_base, 60);
-				command = io.inkey();
-				io.erase_line(scr_base, scr_left);
+				IO.erase_line(scr_base, scr_left);
+				IO.put_buffer("e/i/t/w/x/d/?/ESC:", scr_base, 60);
+				command = IO.inkey();
+				IO.erase_line(scr_base, scr_left);
 			}
 		} while (command != Constants.ESCAPE);
 		
 		if (scr_state != BLANK_SCR) {
-			io.restore_screen();
+			IO.restore_screen();
 		}
 		calc_bonuses();
 	}
 	
 	/* Get the ID of an item and return the CTR value of it	-RAK-	*/
-	public boolean get_item(IntPointer com_val, String pmt, int i, int j, String mask, String message) {
+	public static boolean get_item(IntPointer com_val, String pmt, int i, int j, String mask, String message) {
 		String out_val;
 		char which;
 		boolean test_flag;
@@ -1128,17 +1099,17 @@ public class Moria1 {
 		i_scr = 1;
 		if (j > Constants.INVEN_WIELD) {
 			full = true;
-			if (t.inven_ctr == 0) {
+			if (Treasure.inven_ctr == 0) {
 				i_scr = 0;
-				j = t.equip_ctr - 1;
+				j = Treasure.equip_ctr - 1;
 			} else {
-				j = t.inven_ctr - 1;
+				j = Treasure.inven_ctr - 1;
 			}
 		} else {
 			full = false;
 		}
 		
-		if (t.inven_ctr > 0 || (full && t.equip_ctr > 0)) {
+		if (Treasure.inven_ctr > 0 || (full && Treasure.equip_ctr > 0)) {
 			do {
 				if (redraw) {
 					if (i_scr > 0) {
@@ -1162,50 +1133,50 @@ public class Moria1 {
 							(redraw ? "" : " * for inventory list,"), pmt);
 				}
 				test_flag = false;
-				io.prt(out_val, 0, 0);
+				IO.prt(out_val, 0, 0);
 				do {
-					which = io.inkey();
+					which = IO.inkey();
 					switch(which)
 					{
 					case Constants.ESCAPE:
 						test_flag = true;
-						var.free_turn_flag = true;
+						Variable.free_turn_flag = true;
 						i_scr = -1;
 						break;
 					case '/':
 						if (full) {
 							if (i_scr > 0) {
-								if (t.equip_ctr == 0) {
-									io.prt("But you're not using anything -more-",0,0);
-									io.inkey();
+								if (Treasure.equip_ctr == 0) {
+									IO.prt("But you're not using anything -more-",0,0);
+									IO.inkey();
 								} else {
 									i_scr = 0;
 									test_flag = true;
 									if (redraw) {
-										j = t.equip_ctr;
-										while (j < t.inven_ctr) {
+										j = Treasure.equip_ctr;
+										while (j < Treasure.inven_ctr) {
 											j++;
-											io.erase_line(j, 0);
+											IO.erase_line(j, 0);
 										}
 									}
-									j = t.equip_ctr - 1;
+									j = Treasure.equip_ctr - 1;
 								}
-								io.prt(out_val, 0, 0);
+								IO.prt(out_val, 0, 0);
 							} else {
-								if (t.inven_ctr == 0) {
-									io.prt("But you're not carrying anything -more-",0,0);
-									io.inkey();
+								if (Treasure.inven_ctr == 0) {
+									IO.prt("But you're not carrying anything -more-",0,0);
+									IO.inkey();
 								} else {
 									i_scr = 1;
 									test_flag = true;
 									if (redraw) {
-										j = t.inven_ctr;
-										while (j < t.equip_ctr) {
+										j = Treasure.inven_ctr;
+										while (j < Treasure.equip_ctr) {
 											j++;
-											io.erase_line (j, 0);
+											IO.erase_line (j, 0);
 										}
 									}
-									j = t.inven_ctr - 1;
+									j = Treasure.inven_ctr - 1;
 								}
 							}
 						}
@@ -1213,7 +1184,7 @@ public class Moria1 {
 					case '*':
 						if (!redraw) {
 							test_flag = true;
-							io.save_screen();
+							IO.save_screen();
 							redraw = true;
 						}
 						break;
@@ -1224,8 +1195,8 @@ public class Moria1 {
 							int m;
 							for (m = i;
 									(m < Constants.INVEN_WIELD) 
-									&& ((t.inventory[m].inscrip.charAt(0) != which)
-											|| (t.inventory[m].inscrip.length() > 1));
+									&& ((Treasure.inventory[m].inscrip.charAt(0) != which)
+											|| (Treasure.inventory[m].inscrip.length() > 1));
 									m++);
 							if (m < Constants.INVEN_WIELD) {
 								com_val.value(m);
@@ -1242,14 +1213,14 @@ public class Moria1 {
 								i = 21;
 								j = com_val.value();
 								do {
-									while (t.inventory[++i].tval == Constants.TV_NOTHING);
+									while (Treasure.inventory[++i].tval == Constants.TV_NOTHING);
 									j--;
 								} while (j >= 0);
 								com_val.value(i);
 							}
 							if (Character.isUpperCase(which) && !verify("Try", com_val.value())) {
 								test_flag = true;
-								var.free_turn_flag = true;
+								Variable.free_turn_flag = true;
 								i_scr = -1;
 								break;
 							}
@@ -1257,11 +1228,11 @@ public class Moria1 {
 							item = true;
 							i_scr = -1;
 						} else if (!message.equals("")) {
-							io.msg_print(message);
+							IO.msg_print(message);
 							/* Set test_flag to force redraw of the question.  */
 							test_flag = true;
 						} else {
-							io.bell();
+							IO.bell();
 						}
 						break;
 					}
@@ -1269,11 +1240,11 @@ public class Moria1 {
 			} while (i_scr >= 0);
 			
 			if (redraw) {
-				io.restore_screen();
+				IO.restore_screen();
 			}
-			io.erase_line(Constants.MSG_LINE, 0);
+			IO.erase_line(Constants.MSG_LINE, 0);
 		} else {
-			io.prt("You are not carrying anything.", 0, 0);
+			IO.prt("You are not carrying anything.", 0, 0);
 		}
 		
 		return item;
@@ -1284,10 +1255,10 @@ public class Moria1 {
 	/* hooks which I have not had time to re-think.		 -RAK-	 */
 	
 	/* Returns true if player has no light			-RAK-	*/
-	public boolean no_light() {
+	public static boolean no_light() {
 		CaveType c_ptr;
 		
-		c_ptr = var.cave[py.char_row][py.char_col];
+		c_ptr = Variable.cave[Player.char_row][Player.char_col];
 		if (!c_ptr.tl && !c_ptr.pl) {
 			return true;
 		}
@@ -1333,15 +1304,15 @@ public class Moria1 {
 		return comval;
 	}
 	
-	private int prev_dir;	/* Direction memory. -CJS- */
+	private static int prev_dir;	/* Direction memory. -CJS- */
 	
 	/* Prompts for a direction				-RAK-	*/
 	/* Direction memory added, for repeated commands.  -CJS */
-	public boolean get_dir(String prompt, IntPointer dir) {
+	public static boolean get_dir(String prompt, IntPointer dir) {
 		CharPointer command = new CharPointer();
 		int save;
 		
-		if (var.default_dir > 0) {	/* used in counted commands. -CJS- */
+		if (Variable.default_dir > 0) {	/* used in counted commands. -CJS- */
 			dir.value(prev_dir);
 			return true;
 		}
@@ -1349,13 +1320,13 @@ public class Moria1 {
 			prompt = "Which direction?";
 		}
 		for (;;) {
-			save = var.command_count;	/* Don't end a counted command. -CJS- */
-			if (!io.get_com(prompt, command)) {
-				var.free_turn_flag = true;
+			save = Variable.command_count;	/* Don't end a counted command. -CJS- */
+			if (!IO.get_com(prompt, command)) {
+				Variable.free_turn_flag = true;
 				return false;
 			}
-			var.command_count = save;
-			if (var.rogue_like_commands.value()) {
+			Variable.command_count = save;
+			if (Variable.rogue_like_commands.value()) {
 				command.value(map_roguedir(command.value()));
 			}
 			if (command.value()>= '1' && command.value()<= '9' && command.value()!= '5') {
@@ -1363,43 +1334,43 @@ public class Moria1 {
 				dir.value(prev_dir);
 				return true;
 			}
-			io.bell();
+			IO.bell();
 		}
 	}
 	
 	/* Similar to get_dir, except that no memory exists, and it is		-CJS-
 	 * allowed to enter the null direction. */
-	public boolean get_alldir(String prompt, IntPointer dir) {
+	public static boolean get_alldir(String prompt, IntPointer dir) {
 		CharPointer command = new CharPointer();
 		
 		for(;;) {
-			if (!io.get_com(prompt, command)) {
-				var.free_turn_flag = true;
+			if (!IO.get_com(prompt, command)) {
+				Variable.free_turn_flag = true;
 				return false;
 			}
-			if (var.rogue_like_commands.value()) {
+			if (Variable.rogue_like_commands.value()) {
 				command.value(map_roguedir(command.value()));
 			}
 			if (command.value()>= '1' && command.value()<= '9') {
 				dir.value(command.value()- '0');
 				return true;
 			}
-			io.bell();
+			IO.bell();
 		}
 	}
 	
 	/* Moves creature record from one space to another	-RAK-	*/
-	public void move_rec(int y1, int x1, int y2, int x2) {
+	public static void move_rec(int y1, int x1, int y2, int x2) {
 		int tmp;
 		
 		/* this always works correctly, even if y1==y2 and x1==x2 */
-		tmp = var.cave[y1][x1].cptr;
-		var.cave[y1][x1].cptr = 0;
-		var.cave[y2][x2].cptr = tmp;
+		tmp = Variable.cave[y1][x1].cptr;
+		Variable.cave[y1][x1].cptr = 0;
+		Variable.cave[y2][x2].cptr = tmp;
 	}
 	
 	/* Room is lit, make it appear				-RAK-	*/
-	public void light_room(int y, int x) {
+	public static void light_room(int y, int x) {
 		int i, j, start_col, end_col;
 		int tmp1, tmp2, start_row, end_row;
 		CaveType c_ptr;
@@ -1413,61 +1384,61 @@ public class Moria1 {
 		end_col = start_col + tmp2 - 1;
 		for (i = start_row; i <= end_row; i++) {
 			for (j = start_col; j <= end_col; j++) {
-				c_ptr = var.cave[i][j];
+				c_ptr = Variable.cave[i][j];
 				if (c_ptr.lr && ! c_ptr.pl) {
 					c_ptr.pl = true;
 					if (c_ptr.fval == Constants.DARK_FLOOR) {
 						c_ptr.fval = Constants.LIGHT_FLOOR;
 					}
 					if (! c_ptr.fm && c_ptr.tptr != 0) {
-						tval = t.t_list[c_ptr.tptr].tval;
+						tval = Treasure.t_list[c_ptr.tptr].tval;
 						if (tval >= Constants.TV_MIN_VISIBLE && tval <= Constants.TV_MAX_VISIBLE) {
 							c_ptr.fm = true;
 						}
 					}
-					io.print(m1.loc_symbol(i, j), i, j);
+					IO.print(Misc1.loc_symbol(i, j), i, j);
 				}
 			}
 		}
 	}
 	
 	/* Lights up given location				-RAK-	*/
-	public void lite_spot(int y, int x) {
-		if (m1.panel_contains(y, x))
-			io.print(m1.loc_symbol(y, x), y, x);
+	public static void lite_spot(int y, int x) {
+		if (Misc1.panel_contains(y, x))
+			IO.print(Misc1.loc_symbol(y, x), y, x);
 	}
 	
 	/* Normal movement					*/
 	/* When FIND_FLAG,  light only permanent features	*/
-	public void sub1_move_light(int y1, int x1, int y2, int x2) {
+	public static void sub1_move_light(int y1, int x1, int y2, int x2) {
 		int i, j;
 		CaveType c_ptr;
 		int tval, top, left, bottom, right;
 		
-		if (var.light_flag) {
+		if (Variable.light_flag) {
 			for (i = y1 - 1; i <= y1 + 1; i++) {	/* Turn off lamp light	*/
 				for (j = x1 - 1; j <= x1 + 1; j++) {
-					var.cave[i][j].tl = false;
+					Variable.cave[i][j].tl = false;
 				}
 			}
-			if (var.find_flag != 0 && !var.find_prself.value()) {
-				var.light_flag = false;
+			if (Variable.find_flag != 0 && !Variable.find_prself.value()) {
+				Variable.light_flag = false;
 			}
-		} else if (var.find_flag == 0 || var.find_prself.value()) {
-			var.light_flag = true;
+		} else if (Variable.find_flag == 0 || Variable.find_prself.value()) {
+			Variable.light_flag = true;
 		}
 		
 		for (i = y2 - 1; i <= y2 + 1; i++) {
 			for (j = x2 - 1; j <= x2 + 1; j++) {
-				c_ptr = var.cave[i][j];
+				c_ptr = Variable.cave[i][j];
 				/* only light up if normal movement */
-				if (var.light_flag) {
+				if (Variable.light_flag) {
 					c_ptr.tl = true;
 				}
 				if (c_ptr.fval >= Constants.MIN_CAVE_WALL) {
 					c_ptr.pl = true;
 				} else if (!c_ptr.fm && c_ptr.tptr != 0) {
-					tval = t.t_list[c_ptr.tptr].tval;
+					tval = Treasure.t_list[c_ptr.tptr].tval;
 					if ((tval >= Constants.TV_MIN_VISIBLE) && (tval <= Constants.TV_MAX_VISIBLE)) {
 						c_ptr.fm = true;
 					}
@@ -1492,37 +1463,37 @@ public class Moria1 {
 		}
 		for (i = top; i <= bottom; i++) {
 			for (j = left; j <= right; j++) {	/* Leftmost to rightmost do*/
-				io.print(m1.loc_symbol(i, j), i, j);
+				IO.print(Misc1.loc_symbol(i, j), i, j);
 			}
 		}
 	}
 	
 	/* When blinded,  move only the player symbol.		*/
 	/* With no light,  movement becomes involved.		*/
-	public void sub3_move_light(int y1, int x1, int y2, int x2) {
+	public static void sub3_move_light(int y1, int x1, int y2, int x2) {
 		int i, j;
 		
-		if (var.light_flag) {
+		if (Variable.light_flag) {
 			for (i = y1 - 1; i <= y1 + 1; i++) {
 				for (j = x1 - 1; j <= x1 + 1; j++) {
-					var.cave[i][j].tl = false;
-					io.print(m1.loc_symbol(i, j), i, j);
+					Variable.cave[i][j].tl = false;
+					IO.print(Misc1.loc_symbol(i, j), i, j);
 				}
 			}
-			var.light_flag = false;
-		} else if (var.find_flag == 0 || var.find_prself.value()) {
-			io.print(m1.loc_symbol(y1, x1), y1, x1);
+			Variable.light_flag = false;
+		} else if (Variable.find_flag == 0 || Variable.find_prself.value()) {
+			IO.print(Misc1.loc_symbol(y1, x1), y1, x1);
 		}
 		
-		if (var.find_flag == 0 || var.find_prself.value()) {
-			io.print('@', y2, x2);
+		if (Variable.find_flag == 0 || Variable.find_prself.value()) {
+			IO.print('@', y2, x2);
 		}
 	}
 	
 	/* Package for moving the character's light about the screen	 */
 	/* Four cases : Normal, Finding, Blind, and Nolight	 -RAK-	 */
-	public void move_light(int y1, int x1, int y2, int x2) {
-		if (py.py.flags.blind > 0 || !var.player_light) {
+	public static void move_light(int y1, int x1, int y2, int x2) {
+		if (Player.py.flags.blind > 0 || !Variable.player_light) {
 			sub3_move_light(y1, x1, y2, x2);
 		} else {
 			sub1_move_light(y1, x1, y2, x2);
@@ -1532,51 +1503,51 @@ public class Moria1 {
 	/* Something happens to disturb the player.		-CJS-
 	 * The first arg indicates a major disturbance, which affects search.
 	 * The second arg indicates a light change. */
-	public void disturb(boolean s, boolean l) {
-		var.command_count = 0;
-		if (s && (py.py.flags.status & Constants.PY_SEARCH) != 0) {
+	public static void disturb(boolean s, boolean l) {
+		Variable.command_count = 0;
+		if (s && (Player.py.flags.status & Constants.PY_SEARCH) != 0) {
 			search_off();
 		}
-		if (py.py.flags.rest != 0) {
+		if (Player.py.flags.rest != 0) {
 			rest_off();
 		}
-		if (l || var.find_flag != 0) {
-			var.find_flag = 0;
-			m4.check_view();
+		if (l || Variable.find_flag != 0) {
+			Variable.find_flag = 0;
+			Misc4.check_view();
 		}
-		io.flush();
+		IO.flush();
 	}
 	
 	/* Search Mode enhancement				-RAK-	*/
-	public void search_on() {
+	public static void search_on() {
 		change_speed(1);
-		py.py.flags.status |= Constants.PY_SEARCH;
-		m3.prt_state();
-		m3.prt_speed();
-		py.py.flags.food_digested++;
+		Player.py.flags.status |= Constants.PY_SEARCH;
+		Misc3.prt_state();
+		Misc3.prt_speed();
+		Player.py.flags.food_digested++;
 	}
 	
-	public void search_off() {
-		m4.check_view();
+	public static void search_off() {
+		Misc4.check_view();
 		change_speed(-1);
-		py.py.flags.status &= ~Constants.PY_SEARCH;
-		m3.prt_state();
-		m3.prt_speed();
-		py.py.flags.food_digested--;
+		Player.py.flags.status &= ~Constants.PY_SEARCH;
+		Misc3.prt_state();
+		Misc3.prt_speed();
+		Player.py.flags.food_digested--;
 	}
 	
 	/* Resting allows a player to safely restore his hp	-RAK-	*/
-	public void rest() {
+	public static void rest() {
 		int rest_num;
 		String rest_str;
 		
-		if (var.command_count > 0) {
-			rest_num = var.command_count;
-			var.command_count = 0;
+		if (Variable.command_count > 0) {
+			rest_num = Variable.command_count;
+			Variable.command_count = 0;
 		} else {
-			io.prt("Rest for how long? ", 0, 0);
+			IO.prt("Rest for how long? ", 0, 0);
 			rest_num = 0;
-			rest_str = io.get_string(0, 19, 5);
+			rest_str = IO.get_string(0, 19, 5);
 			if (rest_str.length() > 0) {
 				if (rest_str.charAt(0) == '*') {
 					rest_num = -Constants.MAX_SHORT;
@@ -1593,42 +1564,42 @@ public class Moria1 {
 		/* check for reasonable value, must be positive number in range of a
 	     short, or must be -MAX_SHORT */
 		if ((rest_num == -Constants.MAX_SHORT) || (rest_num > 0) && (rest_num < Constants.MAX_SHORT)) {
-			if ((py.py.flags.status & Constants.PY_SEARCH) != 0) {
+			if ((Player.py.flags.status & Constants.PY_SEARCH) != 0) {
 				search_off();
 			}
-			py.py.flags.rest = rest_num;
-			py.py.flags.status |= Constants.PY_REST;
-			m3.prt_state();
-			py.py.flags.food_digested--;
-			io.prt ("Press any key to stop resting...", 0, 0);
-			io.put_qio();
+			Player.py.flags.rest = rest_num;
+			Player.py.flags.status |= Constants.PY_REST;
+			Misc3.prt_state();
+			Player.py.flags.food_digested--;
+			IO.prt ("Press any key to stop resting...", 0, 0);
+			IO.put_qio();
 		} else {
 			if (rest_num != 0) {
-				io.msg_print ("Invalid rest count.");
+				IO.msg_print ("Invalid rest count.");
 			}
-			io.erase_line(Constants.MSG_LINE, 0);
-			var.free_turn_flag = true;
+			IO.erase_line(Constants.MSG_LINE, 0);
+			Variable.free_turn_flag = true;
 		}
 	}
 	
-	public void rest_off() {
-		py.py.flags.rest = 0;
-		py.py.flags.status &= ~Constants.PY_REST;
-		m3.prt_state();
-		io.msg_print(""); /* flush last message, or delete "press any key" message */
-		py.py.flags.food_digested++;
+	public static void rest_off() {
+		Player.py.flags.rest = 0;
+		Player.py.flags.status &= ~Constants.PY_REST;
+		Misc3.prt_state();
+		IO.msg_print(""); /* flush last message, or delete "press any key" message */
+		Player.py.flags.food_digested++;
 	}
 	
 	/* Attacker's level and plusses,  defender's AC		-RAK-	*/
-	public boolean test_hit(int bth, int level, int pth, int ac, int attack_type) {
+	public static boolean test_hit(int bth, int level, int pth, int ac, int attack_type) {
 		int i, die;
 		
 		disturb(true, false);
-		i = bth + pth * Constants.BTH_PLUS_ADJ + (level * py.class_level_adj[py.py.misc.pclass][attack_type]);
+		i = bth + pth * Constants.BTH_PLUS_ADJ + (level * Player.class_level_adj[Player.py.misc.pclass][attack_type]);
 		/* pth could be less than 0 if player wielding weapon too heavy for him */
 		/* always miss 1 out of 20, always hit 1 out of 20 */
-		die = m1.randint(20);
-		if ((die != 1) && ((die == 20) || ((i > 0) && (m1.randint (i) > ac)))) {	/* normal hit */
+		die = Misc1.randint(20);
+		if ((die != 1) && ((die == 20) || ((i > 0) && (Misc1.randint (i) > ac)))) {	/* normal hit */
 			return true;
 		} else {
 			return false;
@@ -1637,20 +1608,20 @@ public class Moria1 {
 	
 	/* Decreases players hit points and sets death flag if necessary*/
 	/*							 -RAK-	 */
-	public void take_hit(int damage, String hit_from) {
-		if (py.py.flags.invuln > 0) {
+	public static void take_hit(int damage, String hit_from) {
+		if (Player.py.flags.invuln > 0) {
 			damage = 0;
 		}
-		py.py.misc.chp -= damage;
-		if (py.py.misc.chp < 0) {
-			if (!var.death) {
-				var.death = true;
-				var.died_from = hit_from;
-				var.total_winner = false;
+		Player.py.misc.chp -= damage;
+		if (Player.py.misc.chp < 0) {
+			if (!Variable.death) {
+				Variable.death = true;
+				Variable.died_from = hit_from;
+				Variable.total_winner = false;
 			}
-			var.new_level_flag = true;
+			Variable.new_level_flag = true;
 		} else {
-			m3.prt_chp();
+			Misc3.prt_chp();
 		}
 	}
 }

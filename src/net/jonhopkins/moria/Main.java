@@ -134,27 +134,8 @@ public class Main extends Applet implements KeyListener {
 		//displayInfo(event, "TYPED");
 	}
 	
-
-	
 	//long _stksize = 18000;		/*(SAJ) for MWC	*/
 	//unsigned _stklen = 0x3fff;	/* increase stack from 4K to 16K */
-	
-	private Create create = Create.getInstance();
-	private Death death = Death.getInstance();
-	private Desc desc = Desc.getInstance();
-	private Dungeon dun = Dungeon.getInstance();
-	private Files files = Files.getInstance();
-	private Generate gen = Generate.getInstance();
-	private IO io = IO.getInstance();
-	private Misc1 m1 = Misc1.getInstance();
-	private Misc3 m3 = Misc3.getInstance();
-	private Monsters mon = Monsters.getInstance();
-	private Player py = Player.getInstance();
-	private Save save = Save.getInstance();
-	private Signals sigs = Signals.getInstance();
-	private Store1 store1 = Store1.getInstance();
-	private Treasure t = Treasure.getInstance();
-	private Variable var = Variable.getInstance();
 	
 	/* Initialize, restore, and get the ball rolling.	-RAK-	*/
 	int main(int argc, char[] argv) {
@@ -167,18 +148,18 @@ public class Main extends Applet implements KeyListener {
 		boolean force_keys_to = false;
 		
 		/* default command set defined in config.h file */
-		var.rogue_like_commands.value(Config.ROGUE_LIKE);
+		Variable.rogue_like_commands.value(Config.ROGUE_LIKE);
 		
 		/* call this routine to grab a file pointer to the highscore file */
 		/* and prepare things to relinquish setuid privileges */
-		files.init_scorefile();
+		Files.init_scorefile();
 		
 		/* use curses */
-		io.init_curses(curses);
+		IO.init_curses(curses);
 		
 		/* catch those nasty signals */
 		/* must come after init_curses as some of the signal handlers use curses */
-		sigs.init_signals();
+		Signals.init_signals();
 		
 		seed = 0; /* let wizard specify rng seed */
 		/* check for user interface option */
@@ -203,14 +184,14 @@ public class Main extends Applet implements KeyListener {
 				force_keys_to = true;
 				break;
 			case 'S':
-				death.display_scores(true);
-				death.exit_game();
+				Death.display_scores(true);
+				Death.exit_game();
 			case 's':
-				death.display_scores(true);
-				death.exit_game();
+				Death.display_scores(true);
+				Death.exit_game();
 			case 'W':
 			case 'w':
-				var.to_be_wizard = true;
+				Variable.to_be_wizard = true;
 				
 				if (Character.isDigit(argv[i + 2]))
 					try {
@@ -221,7 +202,7 @@ public class Main extends Applet implements KeyListener {
 				break;
 			default:
 				System.out.println("Usage: moria [-norsw] [savefile]\n");
-				death.exit_game();
+				Death.exit_game();
 			}
 		}
 		
@@ -231,24 +212,24 @@ public class Main extends Applet implements KeyListener {
 		if (Constants.COST_ADJ != 100) price_adjust();
 		
 		/* Grab a random seed from the clock		*/
-		m1.init_seeds(seed);
+		Misc1.init_seeds(seed);
 		
 		/* Init monster and treasure levels for allocate */
 		init_m_level();
 		init_t_level();
 		
 		/* Init the store inventories			*/
-		store1.store_init();
+		Store1.store_init();
 		
 		/* Auto-restart of saved file */
 		if (argv[0] != Constants.CNIL) {
-			var.savefile = "" + argv[0];
+			Variable.savefile = "" + argv[0];
 		} else if (!(p = System.getenv("MORIA_SAV")).equals(null)) {
-			var.savefile =  p;
+			Variable.savefile =  p;
 		} else if (!(p = System.getenv("HOME")).equals(null)) {
-			var.savefile = String.format("%s/%s", p, Config.MORIA_SAV);
+			Variable.savefile = String.format("%s/%s", p, Config.MORIA_SAV);
 		} else {
-			var.savefile = Config.MORIA_SAV;
+			Variable.savefile = Config.MORIA_SAV;
 		}
 		
 		/* This restoration of a saved character may get ONLY the monster memory. In
@@ -258,84 +239,84 @@ public class Main extends Applet implements KeyListener {
 		
 		result = false;
 		
-		if ((!new_game) && !(new File(var.savefile)).canRead() && save.get_char(generate)) {
+		if ((!new_game) && !(new File(Variable.savefile)).canRead() && Save.get_char(generate)) {
 			result = true;
 		}
 		
 		/* enter wizard mode before showing the character display, but must wait
 		 * until after get_char in case it was just a resurrection */
-		if (var.to_be_wizard) {
-			if (!m3.enter_wiz_mode()) {
-				death.exit_game();
+		if (Variable.to_be_wizard) {
+			if (!Misc3.enter_wiz_mode()) {
+				Death.exit_game();
 			}
 		}
 		
 		if (result) {
-			m3.change_name();
+			Misc3.change_name();
 			
 			/* could be restoring a dead character after a signal or HANGUP */
-			if (py.py.misc.chp < 0) {
-				var.death = true;
+			if (Player.py.misc.chp < 0) {
+				Variable.death = true;
 			}
 		} else {
 			/* Create character	   */
-			create.create_character();
-			var.birth_date = java.util.Calendar.getInstance().getTimeInMillis();
+			Create.create_character();
+			Variable.birth_date = java.util.Calendar.getInstance().getTimeInMillis();
 			char_inven_init();
-			py.py.flags.food = 7500;
-			py.py.flags.food_digested = 2;
+			Player.py.flags.food = 7500;
+			Player.py.flags.food_digested = 2;
 			
-			if (py.Class[py.py.misc.pclass].spell == Constants.MAGE) {
+			if (Player.Class[Player.py.misc.pclass].spell == Constants.MAGE) {
 				/* Magic realm   */
-				io.clear_screen(); /* makes spell list easier to read */
-				m3.calc_spells(Constants.A_INT);
-				m3.calc_mana(Constants.A_INT);
-			} else if (py.Class[py.py.misc.pclass].spell == Constants.PRIEST) {
+				IO.clear_screen(); /* makes spell list easier to read */
+				Misc3.calc_spells(Constants.A_INT);
+				Misc3.calc_mana(Constants.A_INT);
+			} else if (Player.Class[Player.py.misc.pclass].spell == Constants.PRIEST) {
 				/* Clerical realm*/
-				m3.calc_spells(Constants.A_WIS);
-				io.clear_screen(); /* force out the 'learn prayer' message */
-				m3.calc_mana(Constants.A_WIS);
+				Misc3.calc_spells(Constants.A_WIS);
+				IO.clear_screen(); /* force out the 'learn prayer' message */
+				Misc3.calc_mana(Constants.A_WIS);
 			}
 			/* prevent ^c quit from entering score into scoreboard,
 			 * and prevent signal from creating panic save until this point,
 			 * all info needed for save file is now valid */
-			var.character_generated = true;
+			Variable.character_generated = true;
 			generate.value(true);
 	    }
 		
 		if (force_rogue_like) {
-			var.rogue_like_commands.value(force_keys_to);
+			Variable.rogue_like_commands.value(force_keys_to);
 		}
 		
-		desc.magic_init();
+		Desc.magic_init();
 		
 		/* Begin the game				*/
-		io.clear_screen();
-		m3.prt_stat_block();
+		IO.clear_screen();
+		Misc3.prt_stat_block();
 		
 		if (generate.value()) {
-			gen.generate_cave();
+			Generate.generate_cave();
 		}
 		
 		/* Loop till dead, or exit			*/
-		while(!var.death) {
-			dun.dungeon();	/* Dungeon logic */
+		while(!Variable.death) {
+			Dungeon.dungeon();	/* Dungeon logic */
 			/* check for eof here, see inkey() in io.c */
 			/* eof can occur if the process gets a HANGUP signal */
-			if (var.eof_flag == Constants.TRUE) {
-				var.died_from = "(end of input: saved)";
+			if (Variable.eof_flag == Constants.TRUE) {
+				Variable.died_from = "(end of input: saved)";
 				
-				if (!save.save_char()) {
-					var.died_from = "unexpected eof";
+				if (!Save.save_char()) {
+					Variable.died_from = "unexpected eof";
 				}
 				/* should not reach here, by if we do, this guarantees exit */
-				var.death = true;
+				Variable.death = true;
 			}
 			
-			if (!var.death) gen.generate_cave();	/* New level	*/
+			if (!Variable.death) Generate.generate_cave();	/* New level	*/
 	    }
 		
-		death.exit_game();	/* Character gets buried. */
+		Death.exit_game();	/* Character gets buried. */
 		/* should never reach here, but just in case */
 		return 0;
 	}
@@ -347,26 +328,26 @@ public class Main extends Applet implements KeyListener {
 		
 		/* this is needed for bash to work right, it can't hurt anyway */
 		for (i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
-			desc.invcopy(t.inventory[i], Constants.OBJ_NOTHING);
+			Desc.invcopy(Treasure.inventory[i], Constants.OBJ_NOTHING);
 		}
 		
 		for (i = 0; i < 5; i++) {
 			inven_init = new InvenType();
-			j = py.player_init[py.py.misc.pclass][i];
-			desc.invcopy(inven_init, j);
+			j = Player.player_init[Player.py.misc.pclass][i];
+			Desc.invcopy(inven_init, j);
 			/* this makes it known2 and known1 */
-			desc.store_bought(inven_init);
+			Desc.store_bought(inven_init);
 			/* must set this bit to display tohit/todam for stiletto */
 			if (inven_init.tval == Constants.TV_SWORD) {
 				inven_init.ident |= Constants.ID_SHOW_HITDAM;
 			}
 			
-			m3.inven_carry(inven_init);
+			Misc3.inven_carry(inven_init);
 	    }
 		
 		/* wierd place for it, but why not? */
 		for (i = 0; i < 32; i++) {
-			py.spell_order[i] = 99;
+			Player.spell_order[i] = 99;
 		}
 	}
 	
@@ -375,17 +356,17 @@ public class Main extends Applet implements KeyListener {
 		int i, k;
 		
 		for (i = 0; i <= Constants.MAX_MONS_LEVEL; i++) {
-			mon.m_level[i] = 0;
+			Monsters.m_level[i] = 0;
 		}
 		
 		k = Constants.MAX_CREATURES - Constants.WIN_MON_TOT;
 		
 		for (i = 0; i < k; i++) {
-			mon.m_level[mon.c_list[i].level]++;
+			Monsters.m_level[Monsters.c_list[i].level]++;
 		}
 		
 		for (i = 1; i <= Constants.MAX_MONS_LEVEL; i++) {
-			mon.m_level[i] += mon.m_level[i - 1];
+			Monsters.m_level[i] += Monsters.m_level[i - 1];
 		}
 	}
 	
@@ -395,15 +376,15 @@ public class Main extends Applet implements KeyListener {
 		int[] tmp = new int[Constants.MAX_OBJ_LEVEL + 1];
 		
 		for (i = 0; i <= Constants.MAX_OBJ_LEVEL; i++) {
-			t.t_level[i] = 0;
+			Treasure.t_level[i] = 0;
 		}
 		
 		for (i = 0; i < Constants.MAX_DUNGEON_OBJ; i++) {
-			t.t_level[t.object_list[i].level]++;
+			Treasure.t_level[Treasure.object_list[i].level]++;
 		}
 		
 		for (i = 1; i <= Constants.MAX_OBJ_LEVEL; i++) {
-			t.t_level[i] += t.t_level[i - 1];
+			Treasure.t_level[i] += Treasure.t_level[i - 1];
 		}
 		
 		/* now produce an array with object indexes sorted by level, by using
@@ -414,8 +395,8 @@ public class Main extends Applet implements KeyListener {
 		}
 		
 		for (i = 0; i < Constants.MAX_DUNGEON_OBJ; i++) {
-			l = t.object_list[i].level;
-			t.sorted_objects[t.t_level[l] - tmp[l]] = i;
+			l = Treasure.object_list[i].level;
+			Treasure.sorted_objects[Treasure.t_level[l] - tmp[l]] = i;
 			tmp[l]++;
 		}
 	}
@@ -426,7 +407,7 @@ public class Main extends Applet implements KeyListener {
 		
 		/* round half-way cases up */
 		for (i = 0; i < Constants.MAX_OBJECTS; i++) {
-			t.object_list[i].cost = ((t.object_list[i].cost * Constants.COST_ADJ) + 50) / 100;
+			Treasure.object_list[i].cost = ((Treasure.object_list[i].cost * Constants.COST_ADJ) + 50) / 100;
 		}
 	}
 	

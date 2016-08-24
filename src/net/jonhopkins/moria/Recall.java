@@ -25,7 +25,8 @@ import net.jonhopkins.moria.types.CreatureType;
 import net.jonhopkins.moria.types.MonsterRecallType;
 
 public class Recall {
-	private String[] desc_atype = {
+	
+	private static String[] desc_atype = {
 			"do something undefined",
 			"attack",
 			"weaken",
@@ -52,7 +53,7 @@ public class Recall {
 			"absorb light",
 			"absorb charges"
 	};
-	private String[] desc_amethod = {
+	private static String[] desc_amethod = {
 			"make an undefined advance",
 			"hit",
 			"bite",
@@ -74,7 +75,7 @@ public class Recall {
 			"drool",
 			"insult"
 	};
-	private String[] desc_howmuch = {
+	private static String[] desc_howmuch = {
 			" not at all",
 			" a bit",
 			"",
@@ -84,7 +85,7 @@ public class Recall {
 			" highly",
 			" extremely"
 	};
-	private String[] desc_move = {
+	private static String[] desc_move = {
 			"move invisibly",
 			"open doors",
 			"pass through walls",
@@ -92,7 +93,7 @@ public class Recall {
 			"pick up objects",
 			"breed explosively"
 	};
-	private String[] desc_spell = {
+	private static String[] desc_spell = {
 			"teleport short distances",
 			"teleport long distances",
 			"teleport its prey",
@@ -109,14 +110,14 @@ public class Recall {
 			"unknown 1",
 			"unknown 2"
 	};
-	private String[] desc_breath = {
+	private static String[] desc_breath = {
 			"lightning",
 			"poison gases",
 			"acid",
 			"frost",
 			"fire"
 	};
-	private String[] desc_weakness = {
+	private static String[] desc_weakness = {
 			"frost",
 			"fire",
 			"poison",
@@ -143,37 +144,17 @@ public class Recall {
 	//#define knowdamage(l,a,d)	((4 + (l))*(a) > 80 * (d))
 	private static boolean knowdamage(int l, int a, int d) { return ((4 + (l)) * (a) > 80 * (d)); }
 	
-	private IO io;
-	private Monsters mon;
-	private Player py;
-	private Variable var;
-	
-	private static Recall instance;
 	private Recall() { }
-	public static Recall getInstance() {
-		if (instance == null) {
-			instance = new Recall();
-			instance.init();
-		}
-		return instance;
-	}
-	
-	private void init() {
-		io = IO.getInstance();
-		mon = Monsters.getInstance();
-		py = Player.getInstance();
-		var = Variable.getInstance();
-	}
 	
 	/* Do we know anything about this monster? */
-	public boolean bool_roff_recall(int mon_num) {
+	public static boolean bool_roff_recall(int mon_num) {
 		MonsterRecallType mp;
 		int i;
 		
-		if (var.wizard) {
+		if (Variable.wizard) {
 			return true;
 		}
-		mp = var.c_recall[mon_num];
+		mp = Variable.c_recall[mon_num];
 		if (mp.r_cmove != 0 || mp.r_cdefense != 0 || mp.r_kills != 0 || mp.r_spells != 0 || mp.r_deaths != 0) {
 			return true;
 		}
@@ -186,7 +167,7 @@ public class Recall {
 	}
 	
 	/* Print out what we have discovered about this monster. */
-	public char roff_recall(int mon_num) {
+	public static char roff_recall(int mon_num) {
 		String p, q;
 		int[] pu;
 		String temp;
@@ -200,9 +181,9 @@ public class Recall {
 		int rcdefense;
 		MonsterRecallType save_mem = new MonsterRecallType();
 		
-		mp = var.c_recall[mon_num];
-		cp = mon.c_list[mon_num];
-		if (var.wizard) {
+		mp = Variable.c_recall[mon_num];
+		cp = Monsters.c_list[mon_num];
+		if (Variable.wizard) {
 			save_mem = mp;
 			mp.r_kills = Constants.MAX_SHORT;
 			mp.r_wake = mp.r_ignore = Constants.MAX_UCHAR;
@@ -348,18 +329,18 @@ public class Recall {
 			
 			/* calculate the integer exp part, can be larger than 64K when first
 			 * level character looks at Balrog info, so must store in long */
-			templong = cp.mexp * cp.level / py.py.misc.lev;
+			templong = cp.mexp * cp.level / Player.py.misc.lev;
 			/* calculate the fractional exp part scaled by 100,
 			 * must use long arithmetic to avoid overflow */
-			j = ((cp.mexp * cp.level % py.py.misc.lev) * 1000 / py.py.misc.lev + 5) / 10;
+			j = ((cp.mexp * cp.level % Player.py.misc.lev) * 1000 / Player.py.misc.lev + 5) / 10;
 			
 			temp = String.format(" creature is worth %d.%02d point%s", templong, j, (templong == 1 && j == 0 ? "" : "s"));
 			roff(temp);
 			
-			if (py.py.misc.lev / 10 == 1) {
+			if (Player.py.misc.lev / 10 == 1) {
 				p = "th";
 			} else {
-				i = py.py.misc.lev % 10;
+				i = Player.py.misc.lev % 10;
 				if (i == 1) {
 					p = "st";
 				} else if (i == 2) {
@@ -370,7 +351,7 @@ public class Recall {
 					p = "th";
 				}
 			}
-			i = py.py.misc.lev;
+			i = Player.py.misc.lev;
 			if (i == 8 || i == 11 || i == 18) {
 				q = "n";
 			} else {
@@ -587,10 +568,10 @@ public class Recall {
 				continue;
 			}
 			
-			att_type = mon.monster_attacks[pu[i]].attack_type;
-			att_how = mon.monster_attacks[pu[i]].attack_desc;
-			d1 = mon.monster_attacks[pu[i]].attack_dice;
-			d2 = mon.monster_attacks[pu[i]].attack_sides;
+			att_type = Monsters.monster_attacks[pu[i]].attack_type;
+			att_how = Monsters.monster_attacks[pu[i]].attack_desc;
+			d1 = Monsters.monster_attacks[pu[i]].attack_dice;
+			d2 = Monsters.monster_attacks[pu[i]].attack_sides;
 			
 			j++;
 			if (j == 1) {
@@ -636,8 +617,8 @@ public class Recall {
 			roff(" Killing one of these wins the game!");
 		}
 		roff("\n");
-		io.prt("--pause--", roffpline, 0);
-		if (var.wizard) {
+		IO.prt("--pause--", roffpline, 0);
+		if (Variable.wizard) {
 			mp.r_cmove = save_mem.r_cmove;
 			mp.r_spells = save_mem.r_spells;
 			mp.r_kills = save_mem.r_kills;
@@ -647,11 +628,11 @@ public class Recall {
 			mp.r_ignore = save_mem.r_ignore;
 			mp.r_attacks = save_mem.r_attacks;
 		}
-		return io.inkey();
+		return IO.inkey();
 	}
 	
 	/* Print out strings, filling up lines as we go. */
-	public void roff(String p) {
+	public static void roff(String p) {
 		//String q, r;
 		
 		for (int i = 0; i < p.length(); i++) {
@@ -665,7 +646,7 @@ public class Recall {
 				}
 				
 				p = p.substring(0, j);
-				io.prt(roffbuf, roffpline, 0);
+				IO.prt(roffbuf, roffpline, 0);
 				roffpline++;
 				roffbuf = roffbuf.substring(j);
 			}

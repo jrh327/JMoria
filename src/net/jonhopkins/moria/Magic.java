@@ -28,40 +28,11 @@ import net.jonhopkins.moria.types.PlayerMisc;
 import net.jonhopkins.moria.types.SpellType;
 
 public class Magic {
-	private IO io;
-	private Misc1 m1;
-	private Misc3 m3;
-	private Moria1 mor1;
-	private Moria3 mor3;
-	private Player py;
-	private Spells spells;
-	private Treasure t;
-	private Variable var;
 	
-	private static Magic instance;
 	private Magic() { }
-	public static Magic getInstance() {
-		if (instance == null) {
-			instance = new Magic();
-			instance.init();
-		}
-		return instance;
-	}
-	
-	private void init() {
-		io = IO.getInstance();
-		m1 = Misc1.getInstance();
-		m3 = Misc3.getInstance();
-		mor1 = Moria1.getInstance();
-		mor3 = Moria3.getInstance();
-		py = Player.getInstance();
-		spells = Spells.getInstance();
-		t = Treasure.getInstance();
-		var = Variable.getInstance();
-	}
 	
 	/* Throw a magic spell					-RAK-	*/
-	public void cast() {
+	public static void cast() {
 		IntPointer i = new IntPointer(), j = new IntPointer(), item_val = new IntPointer(), dir = new IntPointer();
 		IntPointer choice = new IntPointer(), chance = new IntPointer();
 		int result;
@@ -70,182 +41,182 @@ public class Magic {
 		InvenType i_ptr;
 		SpellType m_ptr;
 		
-		var.free_turn_flag = true;
-		if (py.py.flags.blind > 0) {
-			io.msg_print("You can't see to read your spell book!");
-		} else if (mor1.no_light()) {
-			io.msg_print("You have no light to read by.");
-		} else if (py.py.flags.confused > 0) {
-			io.msg_print("You are too confused.");
-		} else if (py.Class[py.py.misc.pclass].spell != Constants.MAGE) {
-			io.msg_print("You can't cast spells!");
-		} else if (!m3.find_range(Constants.TV_MAGIC_BOOK, Constants.TV_NEVER, i, j)) {
-			io.msg_print("But you are not carrying any spell-books!");
-		} else if (mor1.get_item(item_val, "Use which spell-book?", i.value(), j.value(), "", "")) {
-			result = mor3.cast_spell("Cast which spell?", item_val.value(), choice, chance);
+		Variable.free_turn_flag = true;
+		if (Player.py.flags.blind > 0) {
+			IO.msg_print("You can't see to read your spell book!");
+		} else if (Moria1.no_light()) {
+			IO.msg_print("You have no light to read by.");
+		} else if (Player.py.flags.confused > 0) {
+			IO.msg_print("You are too confused.");
+		} else if (Player.Class[Player.py.misc.pclass].spell != Constants.MAGE) {
+			IO.msg_print("You can't cast spells!");
+		} else if (!Misc3.find_range(Constants.TV_MAGIC_BOOK, Constants.TV_NEVER, i, j)) {
+			IO.msg_print("But you are not carrying any spell-books!");
+		} else if (Moria1.get_item(item_val, "Use which spell-book?", i.value(), j.value(), "", "")) {
+			result = Moria3.cast_spell("Cast which spell?", item_val.value(), choice, chance);
 			if (result < 0) {
-				io.msg_print("You don't know any spells in that book.");
+				IO.msg_print("You don't know any spells in that book.");
 			} else if (result > 0) {
-				m_ptr = py.magic_spell[py.py.misc.pclass - 1][choice.value()];
-				var.free_turn_flag = false;
+				m_ptr = Player.magic_spell[Player.py.misc.pclass - 1][choice.value()];
+				Variable.free_turn_flag = false;
 				
-				if (m1.randint(100) < chance.value()) {
-					io.msg_print("You failed to get the spell off!");
+				if (Misc1.randint(100) < chance.value()) {
+					IO.msg_print("You failed to get the spell off!");
 				} else {
 					/* Spells.  */
 					switch(choice.value() + 1)
 					{
 					case 1:
-						if (mor1.get_dir("", dir)) {
-							spells.fire_bolt(Constants.GF_MAGIC_MISSILE, dir.value(), py.char_row, py.char_col, m1.damroll(2, 6), py.spell_names[0]);
+						if (Moria1.get_dir("", dir)) {
+							Spells.fire_bolt(Constants.GF_MAGIC_MISSILE, dir.value(), Player.char_row, Player.char_col, Misc1.damroll(2, 6), Player.spell_names[0]);
 						}
 						break;
 					case 2:
-						spells.detect_monsters();
+						Spells.detect_monsters();
 						break;
 					case 3:
-						m3.teleport(10);
+						Misc3.teleport(10);
 						break;
 					case 4:
-						spells.light_area(py.char_row, py.char_col);
+						Spells.light_area(Player.char_row, Player.char_col);
 						break;
 					case 5:
-						spells.hp_player(m1.damroll(4, 4));
+						Spells.hp_player(Misc1.damroll(4, 4));
 						break;
 					case 6:
-						spells.detect_sdoor();
-						spells.detect_trap();
+						Spells.detect_sdoor();
+						Spells.detect_trap();
 						break;
 					case 7:
-						if (mor1.get_dir("", dir)) {
-							spells.fire_ball(Constants.GF_POISON_GAS, dir.value(), py.char_row, py.char_col, 12, py.spell_names[6]);
+						if (Moria1.get_dir("", dir)) {
+							Spells.fire_ball(Constants.GF_POISON_GAS, dir.value(), Player.char_row, Player.char_col, 12, Player.spell_names[6]);
 						}
 						break;
 					case 8:
-						if (mor1.get_dir("", dir)) {
-							spells.confuse_monster(dir.value(), py.char_row, py.char_col);
+						if (Moria1.get_dir("", dir)) {
+							Spells.confuse_monster(dir.value(), Player.char_row, Player.char_col);
 						}
 						break;
 					case 9:
-						if (mor1.get_dir("", dir)) {
-							spells.fire_bolt(Constants.GF_LIGHTNING, dir.value(), py.char_row, py.char_col, m1.damroll(4, 8), py.spell_names[8]);
+						if (Moria1.get_dir("", dir)) {
+							Spells.fire_bolt(Constants.GF_LIGHTNING, dir.value(), Player.char_row, Player.char_col, Misc1.damroll(4, 8), Player.spell_names[8]);
 						}
 						break;
 					case 10:
-						spells.td_destroy();
+						Spells.td_destroy();
 						break;
 					case 11:
-						if (mor1.get_dir("", dir)) {
-							spells.sleep_monster(dir.value(), py.char_row, py.char_col);
+						if (Moria1.get_dir("", dir)) {
+							Spells.sleep_monster(dir.value(), Player.char_row, Player.char_col);
 						}
 						break;
 					case 12:
-						spells.cure_poison();
+						Spells.cure_poison();
 						break;
 					case 13:
-						m3.teleport((py.py.misc.lev * 5));
+						Misc3.teleport((Player.py.misc.lev * 5));
 						break;
 					case 14:
 						for (i.value(22); i.value() < Constants.INVEN_ARRAY_SIZE; i.value(i.value() + 1)) {
-							i_ptr = t.inventory[i.value()];
+							i_ptr = Treasure.inventory[i.value()];
 							i_ptr.flags = (i_ptr.flags & ~Constants.TR_CURSED);
 						}
 						break;
 					case 15:
-						if (mor1.get_dir("", dir)) {
-							spells.fire_bolt(Constants.GF_FROST, dir.value(), py.char_row, py.char_col, m1.damroll(6, 8), py.spell_names[14]);
+						if (Moria1.get_dir("", dir)) {
+							Spells.fire_bolt(Constants.GF_FROST, dir.value(), Player.char_row, Player.char_col, Misc1.damroll(6, 8), Player.spell_names[14]);
 						}
 						break;
 					case 16:
-						if (mor1.get_dir("", dir))
-							spells.wall_to_mud(dir.value(), py.char_row, py.char_col);
+						if (Moria1.get_dir("", dir))
+							Spells.wall_to_mud(dir.value(), Player.char_row, Player.char_col);
 						break;
 					case 17:
-						spells.create_food();
+						Spells.create_food();
 						break;
 					case 18:
-						spells.recharge(20);
+						Spells.recharge(20);
 						break;
 					case 19:
-						spells.sleep_monsters1(py.char_row, py.char_col);
+						Spells.sleep_monsters1(Player.char_row, Player.char_col);
 						break;
 					case 20:
-						if (mor1.get_dir("", dir)) {
-							spells.poly_monster(dir.value(), py.char_row, py.char_col);
+						if (Moria1.get_dir("", dir)) {
+							Spells.poly_monster(dir.value(), Player.char_row, Player.char_col);
 						}
 						break;
 					case 21:
-						spells.ident_spell();
+						Spells.ident_spell();
 						break;
 					case 22:
-						spells.sleep_monsters2();
+						Spells.sleep_monsters2();
 						break;
 					case 23:
-						if (mor1.get_dir("", dir)) {
-							spells.fire_bolt(Constants.GF_FIRE, dir.value(), py.char_row, py.char_col, m1.damroll(9, 8), py.spell_names[22]);
+						if (Moria1.get_dir("", dir)) {
+							Spells.fire_bolt(Constants.GF_FIRE, dir.value(), Player.char_row, Player.char_col, Misc1.damroll(9, 8), Player.spell_names[22]);
 						}
 						break;
 					case 24:
-						if (mor1.get_dir("", dir)) {
-							spells.speed_monster(dir.value(), py.char_row, py.char_col, -1);
+						if (Moria1.get_dir("", dir)) {
+							Spells.speed_monster(dir.value(), Player.char_row, Player.char_col, -1);
 						}
 						break;
 					case 25:
-						if (mor1.get_dir("", dir)) {
-							spells.fire_ball(Constants.GF_FROST, dir.value(), py.char_row, py.char_col, 48, py.spell_names[24]);
+						if (Moria1.get_dir("", dir)) {
+							Spells.fire_ball(Constants.GF_FROST, dir.value(), Player.char_row, Player.char_col, 48, Player.spell_names[24]);
 						}
 						break;
 					case 26:
-						spells.recharge(60);
+						Spells.recharge(60);
 						break;
 					case 27:
-						if (mor1.get_dir("", dir)) {
-							spells.teleport_monster(dir.value(), py.char_row, py.char_col);
+						if (Moria1.get_dir("", dir)) {
+							Spells.teleport_monster(dir.value(), Player.char_row, Player.char_col);
 						}
 						break;
 					case 28:
-						f_ptr = py.py.flags;
-						f_ptr.fast += m1.randint(20) + py.py.misc.lev;
+						f_ptr = Player.py.flags;
+						f_ptr.fast += Misc1.randint(20) + Player.py.misc.lev;
 						break;
 					case 29:
-						if (mor1.get_dir("", dir)) {
-							spells.fire_ball(Constants.GF_FIRE, dir.value(), py.char_row, py.char_col, 72, py.spell_names[28]);
+						if (Moria1.get_dir("", dir)) {
+							Spells.fire_ball(Constants.GF_FIRE, dir.value(), Player.char_row, Player.char_col, 72, Player.spell_names[28]);
 						}
 						break;
 					case 30:
-						spells.destroy_area(py.char_row, py.char_col);
+						Spells.destroy_area(Player.char_row, Player.char_col);
 						break;
 					case 31:
-						spells.genocide();
+						Spells.genocide();
 						break;
 					default:
 						break;
 					}
 					/* End of spells.				     */
-					if (var.free_turn_flag == false) {
-						p_ptr = py.py.misc;
-						if ((py.spell_worked & (1L << choice.value())) == 0) {
+					if (Variable.free_turn_flag == false) {
+						p_ptr = Player.py.misc;
+						if ((Player.spell_worked & (1L << choice.value())) == 0) {
 							p_ptr.exp += m_ptr.sexp << 2;
-							py.spell_worked |= (1L << choice.value());
-							m3.prt_experience();
+							Player.spell_worked |= (1L << choice.value());
+							Misc3.prt_experience();
 						}
 					}
 				}
-				p_ptr = py.py.misc;
-				if (!var.free_turn_flag) {
+				p_ptr = Player.py.misc;
+				if (!Variable.free_turn_flag) {
 					if (m_ptr.smana > p_ptr.cmana) {
-						io.msg_print("You faint from the effort!");
-						py.py.flags.paralysis = m1.randint((5 * (m_ptr.smana - p_ptr.cmana)));
+						IO.msg_print("You faint from the effort!");
+						Player.py.flags.paralysis = Misc1.randint((5 * (m_ptr.smana - p_ptr.cmana)));
 						p_ptr.cmana = 0;
 						p_ptr.cmana_frac = 0;
-						if (m1.randint(3) == 1) {
-							io.msg_print("You have damaged your health!");
-							m3.dec_stat(Constants.A_CON);
+						if (Misc1.randint(3) == 1) {
+							IO.msg_print("You have damaged your health!");
+							Misc3.dec_stat(Constants.A_CON);
 						}
 					} else {
 						p_ptr.cmana -= m_ptr.smana;
 					}
-					m3.prt_cmana();
+					Misc3.prt_cmana();
 				}
 			}
 	    }

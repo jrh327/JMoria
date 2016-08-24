@@ -28,62 +28,41 @@ import net.jonhopkins.moria.types.PlayerType;
 import net.jonhopkins.moria.types.PlayerRaceType;
 
 public class Create {
-	private Files files;
-	private IO io;
-	private Misc1 m1;
-	private Misc3 m3;
-	private Player py;
 	
-	private static Create instance;
 	private Create() { }
-	public static Create getInstance() {
-		if (instance == null) {
-			instance = new Create();
-			instance.init();
-		}
-		return instance;
-	}
-	
-	private void init() {
-		files = Files.getInstance();
-		io = IO.getInstance();
-		m1 = Misc1.getInstance();
-		m3 = Misc3.getInstance();
-		py = Player.getInstance();
-	}
 	
 	/* Generates character's stats				-JWT-	*/
-	public void get_stats() {
+	public static void get_stats() {
 		int i, tot;
 		int[] dice = new int[18];
 		
 		do {
 			tot = 0;
 			for (i = 0; i < 18; i++) {
-				dice[i] = m1.randint (3 + i % 3);  /* Roll 3,4,5 sided dice once each */
+				dice[i] = Misc1.randint (3 + i % 3);  /* Roll 3,4,5 sided dice once each */
 				tot += dice[i];
 			}
 		} while (tot <= 42 || tot >= 54);
 		
 		for (i = 0; i < 6; i++) {
-			py.py.stats.max_stat[i] = 5 + dice[3 * i] + dice[3 * i + 1] + dice[3 * i + 2];
+			Player.py.stats.max_stat[i] = 5 + dice[3 * i] + dice[3 * i + 1] + dice[3 * i + 2];
 		}
 	}
 	
 	/* Changes stats by given amount				-JWT-	*/
-	public void change_stat(int stat, int amount) {
+	public static void change_stat(int stat, int amount) {
 		int i;
 		int tmp_stat;
 		
-		tmp_stat = py.py.stats.max_stat[stat];
+		tmp_stat = Player.py.stats.max_stat[stat];
 		if (amount < 0) {
 			for (i = 0; i > amount; i--) {
 				if (tmp_stat > 108) {
 					tmp_stat--;
 				} else if (tmp_stat > 88) {
-					tmp_stat += -m1.randint(6) - 2;
+					tmp_stat += -Misc1.randint(6) - 2;
 				} else if (tmp_stat > 18) {
-					tmp_stat += -m1.randint(15) - 5;
+					tmp_stat += -Misc1.randint(15) - 5;
 					if (tmp_stat < 18) {
 						tmp_stat = 18;
 					}
@@ -96,26 +75,26 @@ public class Create {
 				if (tmp_stat < 18) {
 					tmp_stat++;
 				} else if (tmp_stat < 88) {
-					tmp_stat += m1.randint(15) + 5;
+					tmp_stat += Misc1.randint(15) + 5;
 				} else if (tmp_stat < 108) {
-					tmp_stat += m1.randint(6) + 2;
+					tmp_stat += Misc1.randint(6) + 2;
 				} else if (tmp_stat < 118) {
 					tmp_stat++;
 				}
 			}
 		}
-		py.py.stats.max_stat[stat] = tmp_stat;
+		Player.py.stats.max_stat[stat] = tmp_stat;
 	}
 	
 	/* generate all stats and modify for race. needed in a separate module so
 	 * looping of character selection would be allowed     -RGM- */
-	public void get_all_stats() {
+	public static void get_all_stats() {
 		PlayerType p_ptr;
 		PlayerRaceType r_ptr;
 		int j;
 		
-		p_ptr = py.py;
-		r_ptr = py.race[p_ptr.misc.prace];
+		p_ptr = Player.py;
+		r_ptr = Player.race[p_ptr.misc.prace];
 		get_stats();
 		change_stat(Constants.A_STR, r_ptr.str_adj);
 		change_stat(Constants.A_INT, r_ptr.int_adj);
@@ -125,8 +104,8 @@ public class Create {
 		change_stat(Constants.A_CHR, r_ptr.chr_adj);
 		p_ptr.misc.lev = 1;
 		for (j = 0; j < 6; j++) {
-			py.py.stats.cur_stat[j] = py.py.stats.max_stat[j];
-			m3.set_use_stat(j);
+			Player.py.stats.cur_stat[j] = Player.py.stats.max_stat[j];
+			Misc3.set_use_stat(j);
 		}
 		
 		p_ptr.misc.srh    = r_ptr.srh;
@@ -136,16 +115,16 @@ public class Create {
 		p_ptr.misc.stl    = r_ptr.stl;
 		p_ptr.misc.save   = r_ptr.bsav;
 		p_ptr.misc.hitdie = r_ptr.bhitdie;
-		p_ptr.misc.ptodam = m3.todam_adj();
-		p_ptr.misc.ptohit = m3.tohit_adj();
+		p_ptr.misc.ptodam = Misc3.todam_adj();
+		p_ptr.misc.ptohit = Misc3.tohit_adj();
 		p_ptr.misc.ptoac  = 0;
-		p_ptr.misc.pac    = m3.toac_adj();
+		p_ptr.misc.pac    = Misc3.toac_adj();
 		p_ptr.misc.expfact = r_ptr.b_exp;
 		p_ptr.flags.see_infra = r_ptr.infra;
 	}
 	
 	/* Allows player to select a race			-JWT-	*/
-	public void choose_race() {
+	public static void choose_race() {
 		int j, k;
 		int l, m;
 		boolean exit_flag;
@@ -158,12 +137,12 @@ public class Create {
 		k = 0;
 		l = 2;
 		m = 21;
-		io.clear_from(20);
-		io.put_buffer("Choose a race (? for Help):", 20, 2);
+		IO.clear_from(20);
+		IO.put_buffer("Choose a race (? for Help):", 20, 2);
 		
 		do {
-			tmp_str = String.format("%c) %s", k + 'a', py.race[j].trace);
-			io.put_buffer(tmp_str, m, l);
+			tmp_str = String.format("%c) %s", k + 'a', Player.race[j].trace);
+			IO.put_buffer(tmp_str, m, l);
 			
 			k++;
 			l += 15;
@@ -178,29 +157,29 @@ public class Create {
 		exit_flag = false;
 		
 		do {
-			io.move_cursor(20, 30);
-			s = io.inkey();
+			IO.move_cursor(20, 30);
+			s = IO.inkey();
 			j = s - 'a';
 			if ((j < Constants.MAX_RACES) && (j >= 0)) {
 				exit_flag = true;
 			} else if (s == '?') {
-				files.helpfile(Config.MORIA_WELCOME);
+				Files.helpfile(Config.MORIA_WELCOME);
 			} else {
-				io.bell();
+				IO.bell();
 			}
 		} while (!exit_flag);
 		
-		p_ptr = py.py;
-		r_ptr = py.race[j];
+		p_ptr = Player.py;
+		r_ptr = Player.race[j];
 		p_ptr.misc.prace = j;
-		io.put_buffer(r_ptr.trace, 3, 15);
+		IO.put_buffer(r_ptr.trace, 3, 15);
 	}
 	
 	/* Will print the history of a character			-JWT-	*/
-	public void print_history() {
-		io.put_buffer("Character Background", 14, 27);
+	public static void print_history() {
+		IO.put_buffer("Character Background", 14, 27);
 		for (int i = 0; i < 4; i++) {
-			io.prt(py.py.misc.history[i], i + 15, 10);
+			IO.prt(Player.py.misc.history[i], i + 15, 10);
 		}
 	}
 	
@@ -208,7 +187,7 @@ public class Create {
 	/* Assumptions:	Each race has init history beginning at		*/
 	/*		(race-1)*3+1					*/
 	/*		All history parts are in ascending order	*/
-	public void get_history() {
+	public static void get_history() {
 		int hist_ptr, cur_ptr, test_roll;
 		boolean flag;
 		int start_pos, end_pos, cur_len;
@@ -217,19 +196,19 @@ public class Create {
 		BackgroundType b_ptr;
 		
 		/* Get a block of history text				*/
-		hist_ptr = py.py.misc.prace * 3 + 1;
+		hist_ptr = Player.py.misc.prace * 3 + 1;
 		history_block = "";
-		social_class = m1.randint(4);
+		social_class = Misc1.randint(4);
 		cur_ptr = 0;
 		do {
 			flag = false;
 			do {
-				if (py.background[cur_ptr].chart == hist_ptr) {
-					test_roll = m1.randint(100);
-					while (test_roll > py.background[cur_ptr].roll) {
+				if (Player.background[cur_ptr].chart == hist_ptr) {
+					test_roll = Misc1.randint(100);
+					while (test_roll > Player.background[cur_ptr].roll) {
 						cur_ptr++;
 					}
-					b_ptr = py.background[cur_ptr];
+					b_ptr = Player.background[cur_ptr];
 					history_block = history_block.concat(b_ptr.info);
 					social_class += b_ptr.bonus - 50;
 					if (hist_ptr > b_ptr.next) {
@@ -245,7 +224,7 @@ public class Create {
 		
 		/* clear the previous history strings */
 		for (hist_ptr = 0; hist_ptr < 4; hist_ptr++) {
-			py.py.misc.history[hist_ptr] = "";
+			Player.py.misc.history[hist_ptr] = "";
 		}
 		
 		/* Process block of history text for pretty output	*/
@@ -273,8 +252,8 @@ public class Create {
 			} else {
 				flag = true;
 			}
-			py.py.misc.history[line_ctr] = history_block.substring(start_pos, cur_len + start_pos);
-			py.py.misc.history[line_ctr] = py.py.misc.history[line_ctr].substring(0, cur_len);
+			Player.py.misc.history[line_ctr] = history_block.substring(start_pos, cur_len + start_pos);
+			Player.py.misc.history[line_ctr] = Player.py.misc.history[line_ctr].substring(0, cur_len);
 			line_ctr++;
 			start_pos = new_start;
 		} while (!flag);
@@ -285,54 +264,54 @@ public class Create {
 		} else if (social_class < 1) {
 			social_class = 1;
 		}
-		py.py.misc.sc = social_class;
+		Player.py.misc.sc = social_class;
 	}
 	
 	/* Gets the character's sex				-JWT-	*/
-	public void get_sex() {
+	public static void get_sex() {
 		boolean exit_flag;
 		char c;
 		
 		exit_flag = false;
-		io.clear_from(20);
-		io.put_buffer("Choose a sex (? for Help):", 20, 2);
-		io.put_buffer("m) Male       f) Female", 21, 2);
+		IO.clear_from(20);
+		IO.put_buffer("Choose a sex (? for Help):", 20, 2);
+		IO.put_buffer("m) Male       f) Female", 21, 2);
 		do {
-			io.move_cursor(20, 29);
+			IO.move_cursor(20, 29);
 			/* speed not important here */
-			c = io.inkey();
+			c = IO.inkey();
 			if (c == 'f' || c == 'F') {
-				py.py.misc.male = false;
-				io.put_buffer("Female", 4, 15);
+				Player.py.misc.male = false;
+				IO.put_buffer("Female", 4, 15);
 				exit_flag = true;
 			} else if (c == 'm' || c == 'M') {
-				py.py.misc.male = true;
-				io.put_buffer("Male", 4, 15);
+				Player.py.misc.male = true;
+				IO.put_buffer("Male", 4, 15);
 				exit_flag = true;
 			} else if (c == '?') {
-				files.helpfile(Config.MORIA_WELCOME);
+				Files.helpfile(Config.MORIA_WELCOME);
 			} else {
-				io.bell();
+				IO.bell();
 			}
 		} while (!exit_flag);
 	}
 	
 	/* Computes character's age, height, and weight		-JWT-	*/
-	public void get_ahw() {
-		int i = py.py.misc.prace;
-		py.py.misc.age = py.race[i].b_age + m1.randint(py.race[i].m_age);
-		if (py.py.misc.male) {
-			py.py.misc.ht = m1.randnor(py.race[i].m_b_ht, py.race[i].m_m_ht);
-			py.py.misc.wt = m1.randnor(py.race[i].m_b_wt, py.race[i].m_m_wt);
+	public static void get_ahw() {
+		int i = Player.py.misc.prace;
+		Player.py.misc.age = Player.race[i].b_age + Misc1.randint(Player.race[i].m_age);
+		if (Player.py.misc.male) {
+			Player.py.misc.ht = Misc1.randnor(Player.race[i].m_b_ht, Player.race[i].m_m_ht);
+			Player.py.misc.wt = Misc1.randnor(Player.race[i].m_b_wt, Player.race[i].m_m_wt);
 		} else {
-			py.py.misc.ht = m1.randnor(py.race[i].f_b_ht, py.race[i].f_m_ht);
-			py.py.misc.wt = m1.randnor(py.race[i].f_b_wt, py.race[i].f_m_wt);
+			Player.py.misc.ht = Misc1.randnor(Player.race[i].f_b_ht, Player.race[i].f_m_ht);
+			Player.py.misc.wt = Misc1.randnor(Player.race[i].f_b_wt, Player.race[i].f_m_wt);
 		}
-		py.py.misc.disarm = py.race[i].b_dis + m3.todis_adj();
+		Player.py.misc.disarm = Player.race[i].b_dis + Misc3.todis_adj();
 	}
 	
 	/* Gets a character class				-JWT-	*/
-	public void get_class() {
+	public static void get_class() {
 		int i, j;
 		int k, l, m, min_value, max_value;
 		int[] cl = new int[Constants.MAX_CLASS];
@@ -347,18 +326,18 @@ public class Create {
 		for (j = 0; j < Constants.MAX_CLASS; j++) {
 			cl[j] = 0;
 		}
-		i = py.py.misc.prace;
+		i = Player.py.misc.prace;
 		j = 0;
 		k = 0;
 		l = 2;
 		m = 21;
 		mask = 0x1;
-		io.clear_from(20);
-		io.put_buffer("Choose a class (? for Help):", 20, 2);
+		IO.clear_from(20);
+		IO.put_buffer("Choose a class (? for Help):", 20, 2);
 		do {
-			if ((py.race[i].rtclass & mask) != 0) {
-				tmp_str = String.format("%c) %s", k + 'a', py.Class[j].title);
-				io.put_buffer(tmp_str, m, l);
+			if ((Player.race[i].rtclass & mask) != 0) {
+				tmp_str = String.format("%c) %s", k + 'a', Player.Class[j].title);
+				IO.put_buffer(tmp_str, m, l);
 				cl[k] = j;
 				l += 15;
 				if (l > 70) {
@@ -371,22 +350,22 @@ public class Create {
 			mask <<= 1;
 		} while (j < Constants.MAX_CLASS);
 		
-		py.py.misc.pclass = 0;
+		Player.py.misc.pclass = 0;
 		exit_flag = false;
 		
 		do {
-			io.move_cursor(20, 31);
-			s = io.inkey();
+			IO.move_cursor(20, 31);
+			s = IO.inkey();
 			j = s - 'a';
 			if ((j < k) && (j >= 0)) {
-				py.py.misc.pclass = cl[j];
-				c_ptr = py.Class[py.py.misc.pclass];
+				Player.py.misc.pclass = cl[j];
+				c_ptr = Player.Class[Player.py.misc.pclass];
 				exit_flag = true;
-				io.clear_from(20);
-				io.put_buffer(c_ptr.title, 5, 15);
+				IO.clear_from(20);
+				IO.put_buffer(c_ptr.title, 5, 15);
 				
 				/* Adjust the stats for the class adjustment		-RAK-	*/
-				p_ptr = py.py;
+				p_ptr = Player.py;
 				change_stat(Constants.A_STR, c_ptr.madj_str);
 				change_stat(Constants.A_INT, c_ptr.madj_int);
 				change_stat(Constants.A_WIS, c_ptr.madj_wis);
@@ -395,12 +374,12 @@ public class Create {
 				change_stat(Constants.A_CHR, c_ptr.madj_chr);
 				for(i = 0; i < 6; i++) {
 					p_ptr.stats.cur_stat[i] = p_ptr.stats.max_stat[i];
-					m3.set_use_stat(i);
+					Misc3.set_use_stat(i);
 				}
 				
-				p_ptr.misc.ptodam = m3.todam_adj();	/* Real values		*/
-				p_ptr.misc.ptohit = m3.tohit_adj();
-				p_ptr.misc.ptoac  = m3.toac_adj();
+				p_ptr.misc.ptodam = Misc3.todam_adj();	/* Real values		*/
+				p_ptr.misc.ptohit = Misc3.tohit_adj();
+				p_ptr.misc.ptoac  = Misc3.toac_adj();
 				p_ptr.misc.pac    = 0;
 				p_ptr.misc.dis_td = p_ptr.misc.ptodam; /* Displayed values	*/
 				p_ptr.misc.dis_th = p_ptr.misc.ptohit;
@@ -409,9 +388,9 @@ public class Create {
 				
 				/* now set misc stats, do this after setting stats because
 				 * of con_adj() for hitpoints */
-				m_ptr = py.py.misc;
+				m_ptr = Player.py.misc;
 				m_ptr.hitdie += c_ptr.adj_hd;
-				m_ptr.mhp = m3.con_adj() + m_ptr.hitdie;
+				m_ptr.mhp = Misc3.con_adj() + m_ptr.hitdie;
 				m_ptr.chp = m_ptr.mhp;
 				m_ptr.chp_frac = 0;
 				
@@ -420,13 +399,13 @@ public class Create {
 				 * 1/8 of average value */
 				min_value = (Constants.MAX_PLAYER_LEVEL*3/8 * (m_ptr.hitdie-1)) + Constants.MAX_PLAYER_LEVEL;
 				max_value = (Constants.MAX_PLAYER_LEVEL*5/8 * (m_ptr.hitdie-1)) + Constants.MAX_PLAYER_LEVEL;
-				py.player_hp[0] = m_ptr.hitdie;
+				Player.player_hp[0] = m_ptr.hitdie;
 				do {
 					for (i = 1; i < Constants.MAX_PLAYER_LEVEL; i++) {
-						py.player_hp[i] = m1.randint(m_ptr.hitdie);
-						py.player_hp[i] += py.player_hp[i - 1];
+						Player.player_hp[i] = Misc1.randint(m_ptr.hitdie);
+						Player.player_hp[i] += Player.player_hp[i - 1];
 					}
-				} while ((py.player_hp[Constants.MAX_PLAYER_LEVEL - 1] < min_value) || (py.player_hp[Constants.MAX_PLAYER_LEVEL - 1] > max_value));
+				} while ((Player.player_hp[Constants.MAX_PLAYER_LEVEL - 1] < min_value) || (Player.player_hp[Constants.MAX_PLAYER_LEVEL - 1] > max_value));
 				
 				m_ptr.bth += c_ptr.mbth;
 				m_ptr.bthb += c_ptr.mbthb;	/*RAK*/
@@ -437,9 +416,9 @@ public class Create {
 				m_ptr.save += c_ptr.msav;
 				m_ptr.expfact += c_ptr.m_exp;
 			} else if (s == '?') {
-				files.helpfile(Config.MORIA_WELCOME);
+				Files.helpfile(Config.MORIA_WELCOME);
 			} else {
-				io.bell();
+				IO.bell();
 			}
 		} while (!exit_flag);
 	}
@@ -450,32 +429,32 @@ public class Create {
 		return 5 * (i - 10);
 	}
 	
-	public void get_money() {
+	public static void get_money() {
 		int tmp, gold;
 		int[] a_ptr;
 		
-		a_ptr = py.py.stats.max_stat;
+		a_ptr = Player.py.stats.max_stat;
 		tmp = monval(a_ptr[Constants.A_STR]) + monval(a_ptr[Constants.A_INT]) + monval(a_ptr[Constants.A_WIS]) + monval(a_ptr[Constants.A_CON]) + monval(a_ptr[Constants.A_DEX]);
 		
-		gold = py.py.misc.sc * 6 + m1.randint(25) + 325;	/* Social Class adj */
+		gold = Player.py.misc.sc * 6 + Misc1.randint(25) + 325;	/* Social Class adj */
 		gold -= tmp;										/* Stat adj */
 		gold += monval(a_ptr[Constants.A_CHR]);				/* Charisma adj	*/
-		if (!py.py.misc.male) {
+		if (!Player.py.misc.male) {
 			gold += 50;	/* She charmed the banker into it! -CJS- */
 		}
 		if (gold < 80) {
 			gold = 80;	/* Minimum */
 		}
-		py.py.misc.au = gold;
+		Player.py.misc.au = gold;
 	}
 	
 	/* ---------- M A I N  for Character Creation Routine ---------- */
 	/*							-JWT-	*/
-	public void create_character() {
+	public static void create_character() {
 		boolean exit_flag = true;
 		char c;
 		
-		m3.put_character();
+		Misc3.put_character();
 		choose_race();
 		get_sex();
 		
@@ -484,14 +463,14 @@ public class Create {
 		get_history();
 		get_ahw();
 		print_history();
-		m3.put_misc1();
-		m3.put_stats();
+		Misc3.put_misc1();
+		Misc3.put_stats();
 		
-		io.clear_from(20);
-		io.put_buffer("Hit space to reroll or ESC to accept characteristics: ", 20, 2);
+		IO.clear_from(20);
+		IO.put_buffer("Hit space to reroll or ESC to accept characteristics: ", 20, 2);
 		do {
-			io.move_cursor(20, 56);
-			c = io.inkey();
+			IO.move_cursor(20, 56);
+			c = IO.inkey();
 			if (c == Constants.ESCAPE) {
 				exit_flag = false;
 			} else if (c == ' ') {
@@ -499,23 +478,23 @@ public class Create {
 				get_history();
 				get_ahw();
 				print_history();
-				m3.put_misc1();
-				m3.put_stats();
+				Misc3.put_misc1();
+				Misc3.put_stats();
 			} else {
-				io.bell();
+				IO.bell();
 			}
 		} while (exit_flag); /* done with stats generation */
 		
 		get_class();
 		get_money();
-		m3.put_stats();
-		m3.put_misc2();
-		m3.put_misc3();
-		m3.get_name();
+		Misc3.put_stats();
+		Misc3.put_misc2();
+		Misc3.put_misc3();
+		Misc3.get_name();
 		
 		/* This delay may be reduced, but is recommended to keep players	*/
 		/* from continuously rolling up characters, which can be VERY	*/
 		/* expensive CPU wise.						*/
-		io.pause_exit(23, Constants.PLAYER_EXIT_PAUSE);
+		IO.pause_exit(23, Constants.PLAYER_EXIT_PAUSE);
 	}
 }

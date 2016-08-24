@@ -72,39 +72,27 @@ public class Rnd {
 	   Returns integers in the range 1 to 2^31-1.
 	 */
 	
-	private final long RNG_M	= 2147483647;	/* m = 2^31 - 1 */
-	private final long RNG_A 	= 16807;
-	private final long RNG_Q 	= 127773;		/* m div a */
-	private final long RNG_R 	= 2836;			/* m mod a */
+	private static final long RNG_M = 2147483647;	/* m = 2^31 - 1 */
+	private static final long RNG_A = 16807;
+	private static final long RNG_Q = 127773;	/* m div a */
+	private static final long RNG_R = 2836;		/* m mod a */
 	
 	/* 32 bit seed */
 	private static long rnd_seed;
 	
-	private static Rnd instance;
 	private Rnd() { }
-	public static Rnd getInstance() {
-		if (instance == null) {
-			instance = new Rnd();
-			instance.init();
-		}
-		return instance;
-	}
 	
-	private void init() {
-		
-	}
-	
-	public long get_rnd_seed() {
+	public static long get_rnd_seed() {
 		return rnd_seed;
 	}
 	
-	public void set_rnd_seed(long seedval) {
+	public static void set_rnd_seed(long seedval) {
 		/* set seed to value between 1 and m-1 */
 		rnd_seed = (seedval % (RNG_M - 1)) + 1;
 	}
 	
 	/* returns a pseudo-random number from set 1, 2, ..., RNG_M - 1 */
-	public long rnd() {
+	public static long rnd() {
 		long low, high, test;
 		
 		high = rnd_seed / RNG_Q;
@@ -118,7 +106,7 @@ public class Rnd {
 		return rnd_seed;
 	}
 	
-	public void main() {
+	public static void test() {
 		long i, random;
 		
 		set_rnd_seed (0L);
@@ -128,8 +116,9 @@ public class Rnd {
 		}
 		
 		random = rnd ();
-		System.out.printf("z[10001] = %ld, should be 1043618065\n", random);
-		if (random == 1043618065L)
+		System.out.printf("z[10001] = %d, should be 1043618065\n", random);
+		if (random == 1043618065L) {
 			System.out.println ("success!!!\n");
+		}
 	}
 }

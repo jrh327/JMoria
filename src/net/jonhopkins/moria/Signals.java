@@ -25,28 +25,10 @@ public class Signals {
 	/* This signal package was brought to you by		-JEW-  */
 	/* Completely rewritten by				-CJS- */
 	/* Modified for Java by					-JRH- */
-	private int error_sig = -1;
-	private int signal_count = 0;
+	private static int error_sig = -1;
+	private static int signal_count = 0;
 	
-	private IO io;
-	private Moria1 mor1;
-	private Variable var;
-	
-	private static Signals instance;
 	private Signals() { }
-	public static Signals getInstance() {
-		if (instance == null) {
-			instance = new Signals();
-			instance.init();
-		}
-		return instance;
-	}
-	
-	private void init() {
-		io = IO.getInstance();
-		mor1 = Moria1.getInstance();
-		var = Variable.getInstance();
-	}
 	
 	/*
 import sun.misc.Signal;
@@ -110,7 +92,7 @@ public class SignalHandlerExample implements SignalHandler {
 	 */
 	
 	/*ARGSUSED*/
-	public void signal_handler(int sig) {
+	public static void signal_handler(int sig) {
 	//	if(error_sig >= 0) {	/* Ignore all second signals. */
 	//		if (++signal_count > 10) {	/* Be safe. We will die if persistent enough. */
 	//			signal(sig, SIG_DFL);
@@ -170,9 +152,9 @@ public class SignalHandlerExample implements SignalHandler {
 	//	System.exit(1);
 	}
 	
-	private int mask;
+	private static int mask;
 	
-	public void nosignals() {
+	public static void nosignals() {
 		/*
 		signal(SIGTSTP, SIG_IGN);
 		mask = sigsetmask(0);
@@ -182,7 +164,7 @@ public class SignalHandlerExample implements SignalHandler {
 		*/
 	}
 	
-	public void signals() {
+	public static void signals() {
 		/*
 		signal(SIGTSTP, suspend);
 		sigsetmask(mask);
@@ -192,7 +174,7 @@ public class SignalHandlerExample implements SignalHandler {
 		*/
 	}
 	
-	public void init_signals() {
+	public static void init_signals() {
 		/*
 		signal(SIGINT, signal_handler);
 		signal(SIGFPE, signal_handler);
@@ -212,21 +194,21 @@ public class SignalHandlerExample implements SignalHandler {
 		*/
 	}
 	
-	public void ignore_signals() {
+	public static void ignore_signals() {
 		/*
 		signal(SIGINT, SIG_IGN);
 		signal(SIGQUIT, SIG_IGN);
 		*/
 	}
 	
-	public void default_signals() {
+	public static void default_signals() {
 		/*
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
 		*/
 	}
 	
-	public void restore_signals() {
+	public static void restore_signals() {
 		/*
 		signal(SIGINT, signal_handler);
 		signal(SIGQUIT, signal_handler);

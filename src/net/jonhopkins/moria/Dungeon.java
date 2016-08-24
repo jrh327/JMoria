@@ -38,79 +38,9 @@ public class Dungeon {
 	
 	/* It has had a bit more hard work.			-CJS- */
 	
-	private Creature creature;
-	private Death death;
-	private Desc desc;
-	private Eat eat;
-	private Files files;
-	private Help help;
-	private IO io;
-	private Magic magic;
-	private Misc1 m1;
-	private Misc2 m2;
-	private Misc3 m3;
-	private Misc4 m4;
-	private Monsters mon;
-	private Moria1 mor1;
-	private Moria2 mor2;
-	private Moria3 mor3;
-	private Moria4 mor4;
-	private Player py;
-	private Potions potions;
-	private Prayer prayer;
-	private Save save;
-	private Scrolls scrolls;
-	private Staffs staffs;
-	private Spells spells;
-	private Store1 store1;
-	private Treasure t;
-	private Variable var;
-	private Wands wands;
-	private Wizard wiz;
-	
-	private static Dungeon instance;
 	private Dungeon() { }
-	public static Dungeon getInstance() {
-		if (instance == null) {
-			instance = new Dungeon();
-			instance.init();
-		}
-		return instance;
-	}
 	
-	private void init() {
-		creature = Creature.getInstance();
-		death = Death.getInstance();
-		desc = Desc.getInstance();
-		eat = Eat.getInstance();
-		files = Files.getInstance();
-		help = Help.getInstance();
-		io = IO.getInstance();
-		magic = Magic.getInstance();
-		m1 = Misc1.getInstance();
-		m2 = Misc2.getInstance();
-		m3 = Misc3.getInstance();
-		m4 = Misc4.getInstance();
-		mon = Monsters.getInstance();
-		mor1 = Moria1.getInstance();
-		mor2 = Moria2.getInstance();
-		mor3 = Moria3.getInstance();
-		mor4 = Moria4.getInstance();
-		py = Player.getInstance();
-		potions = Potions.getInstance();
-		prayer = Prayer.getInstance();
-		save = Save.getInstance();
-		scrolls = Scrolls.getInstance();
-		staffs = Staffs.getInstance();
-		spells = Spells.getInstance();
-		store1 = Store1.getInstance();
-		t = Treasure.getInstance();
-		var = Variable.getInstance();
-		wands = Wands.getInstance();
-		wiz = Wizard.getInstance();
-	}
-	
-	public void dungeon() {
+	public static void dungeon() {
 		int find_count, i = 0;
 		int regen_amount;	    /* Regenerate hp and mana*/
 		CharPointer command = new CharPointer();		/* Last command		 */
@@ -122,85 +52,85 @@ public class Dungeon {
 		/* Note: There is a lot of preliminary magic going on here at first*/
 		
 		/* init pointers. */
-		f_ptr = py.py.flags;
-		p_ptr = py.py.misc;
+		f_ptr = Player.py.flags;
+		p_ptr = Player.py.misc;
 		
 		/* Check light status for setup	   */
-		i_ptr = t.inventory[Constants.INVEN_LIGHT];
+		i_ptr = Treasure.inventory[Constants.INVEN_LIGHT];
 		if (i_ptr.p1 > 0) {
-			var.player_light = true;
+			Variable.player_light = true;
 		} else {
-			var.player_light = false;
+			Variable.player_light = false;
 		}
 		/* Check for a maximum level		   */
-		if (var.dun_level > p_ptr.max_dlv) {
-			p_ptr.max_dlv = var.dun_level;
+		if (Variable.dun_level > p_ptr.max_dlv) {
+			p_ptr.max_dlv = Variable.dun_level;
 		}
 		
 		/* Reset flags and initialize variables  */
-		var.command_count = 0;
+		Variable.command_count = 0;
 		find_count = 0;
-		var.new_level_flag = false;
-		var.find_flag = 0;
-		var.teleport_flag = false;
-		mon.mon_tot_mult = 0;
-		var.cave[py.char_row][py.char_col].cptr = 1;
+		Variable.new_level_flag = false;
+		Variable.find_flag = 0;
+		Variable.teleport_flag = false;
+		Monsters.mon_tot_mult = 0;
+		Variable.cave[Player.char_row][Player.char_col].cptr = 1;
 		/* Ensure we display the panel. Used to do this with a global var. -CJS- */
-		var.panel_row = var.panel_col = -1;
+		Variable.panel_row = Variable.panel_col = -1;
 		/* Light up the area around character	   */
-		m4.check_view();
+		Misc4.check_view();
 		/* must do this after panel_row/col set to -1, because mor1.search_off() will
 		 * call check_view(), and so the panel_* variables must be valid before
 		 * search_off() is called */
-		if ((py.py.flags.status & Constants.PY_SEARCH) != 0) {
-			mor1.search_off();
+		if ((Player.py.flags.status & Constants.PY_SEARCH) != 0) {
+			Moria1.search_off();
 		}
 		/* Light,  but do not move critters	    */
-		creature.creatures(false);
+		Creature.creatures(false);
 		/* Print the depth			   */
-		m3.prt_depth();
+		Misc3.prt_depth();
 		
 		/* Loop until dead,  or new level		*/
 		do {
 			/* Increment turn counter			*/
-			var.turn++;
+			Variable.turn++;
 			
 			/* turn over the store contents every, say, 1000 turns */
-			if ((var.dun_level != 0) && ((var.turn % 1000) == 0)) {
-				store1.store_maint();
+			if ((Variable.dun_level != 0) && ((Variable.turn % 1000) == 0)) {
+				Store1.store_maint();
 			}
 			
 			/* Check for creature generation		*/
-			if (m1.randint(Constants.MAX_MALLOC_CHANCE) == 1) {
-				m1.alloc_monster(1, Constants.MAX_SIGHT, false);
+			if (Misc1.randint(Constants.MAX_MALLOC_CHANCE) == 1) {
+				Misc1.alloc_monster(1, Constants.MAX_SIGHT, false);
 			}
 			/* Check light status			       */
-			i_ptr = t.inventory[Constants.INVEN_LIGHT];
-			if (var.player_light) {
+			i_ptr = Treasure.inventory[Constants.INVEN_LIGHT];
+			if (Variable.player_light) {
 				if (i_ptr.p1 > 0) {
 					i_ptr.p1--;
 					if (i_ptr.p1 == 0) {
-						var.player_light = false;
-						io.msg_print("Your light has gone out!");
-						mor1.disturb(false, true);
+						Variable.player_light = false;
+						IO.msg_print("Your light has gone out!");
+						Moria1.disturb(false, true);
 						/* unlight creatures */
-						creature.creatures(false);
-					} else if ((i_ptr.p1 < 40) && (m1.randint(5) == 1) && (py.py.flags.blind < 1)) {
-						mor1.disturb (false, false);
-						io.msg_print("Your light is growing faint.");
+						Creature.creatures(false);
+					} else if ((i_ptr.p1 < 40) && (Misc1.randint(5) == 1) && (Player.py.flags.blind < 1)) {
+						Moria1.disturb (false, false);
+						IO.msg_print("Your light is growing faint.");
 					}
 				} else {
-					var.player_light = false;
-					mor1.disturb(false, true);
+					Variable.player_light = false;
+					Moria1.disturb(false, true);
 					/* unlight creatures */
-					creature.creatures(false);
+					Creature.creatures(false);
 				}
 			} else if (i_ptr.p1 > 0) {
 				i_ptr.p1--;
-				var.player_light = true;
-				mor1.disturb(false, true);
+				Variable.player_light = true;
+				Moria1.disturb(false, true);
 				/* light creatures */
-				creature.creatures(false);
+				Creature.creatures(false);
 			}
 			
 			/* Update counters and messages			*/
@@ -208,58 +138,58 @@ public class Dungeon {
 			if (f_ptr.hero > 0) {
 				if ((Constants.PY_HERO & f_ptr.status) == 0) {
 					f_ptr.status |= Constants.PY_HERO;
-					mor1.disturb(false, false);
+					Moria1.disturb(false, false);
 					p_ptr.mhp += 10;
 					p_ptr.chp += 10;
 					p_ptr.bth += 12;
 					p_ptr.bthb+= 12;
-					io.msg_print("You feel like a HERO!");
-					m3.prt_mhp();
-					m3.prt_chp();
+					IO.msg_print("You feel like a HERO!");
+					Misc3.prt_mhp();
+					Misc3.prt_chp();
 				}
 				f_ptr.hero--;
 				if (f_ptr.hero == 0) {
 					f_ptr.status &= ~Constants.PY_HERO;
-					mor1.disturb(false, false);
+					Moria1.disturb(false, false);
 					p_ptr.mhp -= 10;
 					if (p_ptr.chp > p_ptr.mhp) {
 						p_ptr.chp = p_ptr.mhp;
 						p_ptr.chp_frac = 0;
-						m3.prt_chp();
+						Misc3.prt_chp();
 					}
 					p_ptr.bth -= 12;
 					p_ptr.bthb-= 12;
-					io.msg_print("The heroism wears off.");
-					m3.prt_mhp();
+					IO.msg_print("The heroism wears off.");
+					Misc3.prt_mhp();
 				}
 			}
 			/* Super Heroism */
 			if (f_ptr.shero > 0) {
 				if ((Constants.PY_SHERO & f_ptr.status) == 0) {
 					f_ptr.status |= Constants.PY_SHERO;
-					mor1.disturb(false, false);
+					Moria1.disturb(false, false);
 					p_ptr.mhp += 20;
 					p_ptr.chp += 20;
 					p_ptr.bth += 24;
 					p_ptr.bthb+= 24;
-					io.msg_print("You feel like a SUPER HERO!");
-					m3.prt_mhp();
-					m3.prt_chp();
+					IO.msg_print("You feel like a SUPER HERO!");
+					Misc3.prt_mhp();
+					Misc3.prt_chp();
 				}
 				f_ptr.shero--;
 				if (f_ptr.shero == 0) {
 					f_ptr.status &= ~Constants.PY_SHERO;
-					mor1.disturb(false, false);
+					Moria1.disturb(false, false);
 					p_ptr.mhp -= 20;
 					if (p_ptr.chp > p_ptr.mhp) {
 						p_ptr.chp = p_ptr.mhp;
 						p_ptr.chp_frac = 0;
-						m3.prt_chp();
+						Misc3.prt_chp();
 					}
 					p_ptr.bth -= 24;
 					p_ptr.bthb-= 24;
-					io.msg_print("The super heroism wears off.");
-					m3.prt_mhp();
+					IO.msg_print("The super heroism wears off.");
+					Misc3.prt_mhp();
 				}
 			}
 			/* Check food status	       */
@@ -275,20 +205,20 @@ public class Dungeon {
 					}
 					if ((Constants.PY_WEAK & f_ptr.status) == 0) {
 						f_ptr.status |= Constants.PY_WEAK;
-						io.msg_print("You are getting weak from hunger.");
-						mor1.disturb(false, false);
-						m3.prt_hunger();
+						IO.msg_print("You are getting weak from hunger.");
+						Moria1.disturb(false, false);
+						Misc3.prt_hunger();
 					}
-					if ((f_ptr.food < Constants.PLAYER_FOOD_FAINT) && (m1.randint(8) == 1)) {
-						f_ptr.paralysis += m1.randint(5);
-						io.msg_print("You faint from the lack of food.");
-						mor1.disturb(true, false);
+					if ((f_ptr.food < Constants.PLAYER_FOOD_FAINT) && (Misc1.randint(8) == 1)) {
+						f_ptr.paralysis += Misc1.randint(5);
+						IO.msg_print("You faint from the lack of food.");
+						Moria1.disturb(true, false);
 					}
 				} else if ((Constants.PY_HUNGRY & f_ptr.status) == 0) {
 					f_ptr.status |= Constants.PY_HUNGRY;
-					io.msg_print("You are getting hungry.");
-					mor1.disturb(false, false);
-					m3.prt_hunger();
+					IO.msg_print("You are getting hungry.");
+					Moria1.disturb(false, false);
+					Misc3.prt_hunger();
 				}
 			}
 			/* Food consumption	*/
@@ -298,15 +228,15 @@ public class Dungeon {
 			}
 			f_ptr.food -= f_ptr.food_digested;
 			if (f_ptr.food < 0) {
-				mor1.take_hit(-f_ptr.food / 16, "starvation");   /* -CJS- */
-				mor1.disturb(true, false);
+				Moria1.take_hit(-f_ptr.food / 16, "starvation");   /* -CJS- */
+				Moria1.disturb(true, false);
 			}
 			/* Regenerate	       */
 			if (f_ptr.regenerate) regen_amount = regen_amount * 3 / 2;
-			if ((py.py.flags.status & Constants.PY_SEARCH) != 0 || f_ptr.rest != 0) {
+			if ((Player.py.flags.status & Constants.PY_SEARCH) != 0 || f_ptr.rest != 0) {
 				regen_amount = regen_amount * 2;
 			}
-			if ((py.py.flags.poisoned < 1) && (p_ptr.chp < p_ptr.mhp)) {
+			if ((Player.py.flags.poisoned < 1) && (p_ptr.chp < p_ptr.mhp)) {
 				regenhp(regen_amount);
 			}
 			if (p_ptr.cmana < p_ptr.mana) {
@@ -316,36 +246,36 @@ public class Dungeon {
 			if (f_ptr.blind > 0) {
 				if ((Constants.PY_BLIND & f_ptr.status) == 0) {
 					f_ptr.status |= Constants.PY_BLIND;
-					m1.prt_map();
-					m3.prt_blind();
-					mor1.disturb(false, true);
+					Misc1.prt_map();
+					Misc3.prt_blind();
+					Moria1.disturb(false, true);
 					/* unlight creatures */
-					creature.creatures(false);
+					Creature.creatures(false);
 				}
 				f_ptr.blind--;
 				if (f_ptr.blind == 0) {
 					f_ptr.status &= ~Constants.PY_BLIND;
-					m3.prt_blind();
-					m1.prt_map();
+					Misc3.prt_blind();
+					Misc1.prt_map();
 					/* light creatures */
-					mor1.disturb(false, true);
-					creature.creatures(false);
-					io.msg_print("The veil of darkness lifts.");
+					Moria1.disturb(false, true);
+					Creature.creatures(false);
+					IO.msg_print("The veil of darkness lifts.");
 				}
 			}
 			/* Confusion	       */
 			if (f_ptr.confused > 0) {
 				if ((Constants.PY_CONFUSED & f_ptr.status) == 0) {
 					f_ptr.status |= Constants.PY_CONFUSED;
-					m3.prt_confused();
+					Misc3.prt_confused();
 				}
 				f_ptr.confused--;
 				if (f_ptr.confused == 0) {
 					f_ptr.status &= ~Constants.PY_CONFUSED;
-					m3.prt_confused();
-					io.msg_print("You feel less confused now.");
-					if (py.py.flags.rest != 0) {
-						mor1.rest_off();
+					Misc3.prt_confused();
+					IO.msg_print("You feel less confused now.");
+					if (Player.py.flags.rest != 0) {
+						Moria1.rest_off();
 					}
 				}
 			}
@@ -356,7 +286,7 @@ public class Dungeon {
 						f_ptr.afraid = 0;
 					} else {
 						f_ptr.status |= Constants.PY_FEAR;
-						m3.prt_afraid();
+						Misc3.prt_afraid();
 					}
 				} else if ((f_ptr.shero + f_ptr.hero) > 0) {
 					f_ptr.afraid = 1;
@@ -364,25 +294,25 @@ public class Dungeon {
 				f_ptr.afraid--;
 				if (f_ptr.afraid == 0) {
 					f_ptr.status &= ~Constants.PY_FEAR;
-					m3.prt_afraid();
-					io.msg_print("You feel bolder now.");
-					mor1.disturb(false, false);
+					Misc3.prt_afraid();
+					IO.msg_print("You feel bolder now.");
+					Moria1.disturb(false, false);
 				}
 			}
 			/* Poisoned	       */
 			if (f_ptr.poisoned > 0) {
 				if ((Constants.PY_POISONED & f_ptr.status) == 0) {
 					f_ptr.status |= Constants.PY_POISONED;
-					m3.prt_poisoned();
+					Misc3.prt_poisoned();
 				}
 				f_ptr.poisoned--;
 				if (f_ptr.poisoned == 0) {
 					f_ptr.status &= ~Constants.PY_POISONED;
-					m3.prt_poisoned();
-					io.msg_print("You feel better.");
-					mor1.disturb(false, false);
+					Misc3.prt_poisoned();
+					IO.msg_print("You feel better.");
+					Moria1.disturb(false, false);
 				} else {
-					switch(m3.con_adj())
+					switch(Misc3.con_adj())
 					{
 					case -4: i = 4; break;
 					case -3:
@@ -390,149 +320,149 @@ public class Dungeon {
 					case -1: i = 2; break;
 					case 0:	 i = 1; break;
 					case 1: case 2: case 3:
-						i = ((var.turn % 2) == 0) ? 1 : 0;
+						i = ((Variable.turn % 2) == 0) ? 1 : 0;
 						break;
 					case 4: case 5:
-						i = ((var.turn % 3) == 0) ? 1 : 0;
+						i = ((Variable.turn % 3) == 0) ? 1 : 0;
 						break;
 					case 6:
-						i = ((var.turn % 4) == 0) ? 1 : 0;
+						i = ((Variable.turn % 4) == 0) ? 1 : 0;
 						break;
 					}
-					mor1.take_hit(i, "poison");
-					mor1.disturb(true, false);
+					Moria1.take_hit(i, "poison");
+					Moria1.disturb(true, false);
 				}
 			}
 			/* Fast		       */
 			if (f_ptr.fast > 0) {
 				if ((Constants.PY_FAST & f_ptr.status) == 0) {
 					f_ptr.status |= Constants.PY_FAST;
-					mor1.change_speed(-1);
-					io.msg_print("You feel yourself moving faster.");
-					mor1.disturb(false, false);
+					Moria1.change_speed(-1);
+					IO.msg_print("You feel yourself moving faster.");
+					Moria1.disturb(false, false);
 				}
 				f_ptr.fast--;
 				if (f_ptr.fast == 0) {
 					f_ptr.status &= ~Constants.PY_FAST;
-					mor1.change_speed(1);
-					io.msg_print("You feel yourself slow down.");
-					mor1.disturb(false, false);
+					Moria1.change_speed(1);
+					IO.msg_print("You feel yourself slow down.");
+					Moria1.disturb(false, false);
 				}
 			}
 			/* Slow		       */
 			if (f_ptr.slow > 0) {
 				if ((Constants.PY_SLOW & f_ptr.status) == 0) {
 					f_ptr.status |= Constants.PY_SLOW;
-					mor1.change_speed(1);
-					io.msg_print("You feel yourself moving slower.");
-					mor1.disturb(false, false);
+					Moria1.change_speed(1);
+					IO.msg_print("You feel yourself moving slower.");
+					Moria1.disturb(false, false);
 				}
 				f_ptr.slow--;
 				if (f_ptr.slow == 0) {
 					f_ptr.status &= ~Constants.PY_SLOW;
-					mor1.change_speed(-1);
-					io.msg_print("You feel yourself speed up.");
-					mor1.disturb(false, false);
+					Moria1.change_speed(-1);
+					IO.msg_print("You feel yourself speed up.");
+					Moria1.disturb(false, false);
 				}
 			}
 			/* Resting is over?      */
 			if (f_ptr.rest > 0) {
 				f_ptr.rest--;
 				if (f_ptr.rest == 0) {	/* Resting over	       */
-					mor1.rest_off();
+					Moria1.rest_off();
 				}
 			} else if (f_ptr.rest < 0) {
 				/* Rest until reach max mana and max hit points.  */
 				f_ptr.rest++;
 				if ((p_ptr.chp == p_ptr.mhp && p_ptr.cmana == p_ptr.mana) || f_ptr.rest == 0) {
-					mor1.rest_off();
+					Moria1.rest_off();
 				}
 			}
 			
 			/* Check for interrupts to find or rest. */
-			if ((var.command_count > 0 || var.find_flag > 0 || f_ptr.rest != 0)
-					&& io.isKeyAvailable()) {	
-				io.getch();
-				mor1.disturb(false, false);
+			if ((Variable.command_count > 0 || Variable.find_flag > 0 || f_ptr.rest != 0)
+					&& IO.isKeyAvailable()) {	
+				IO.getch();
+				Moria1.disturb(false, false);
 			}
 			
 			/* Hallucinating?	 (Random characters appear!)*/
 			if (f_ptr.image > 0) {
-				mor2.end_find();
+				Moria2.end_find();
 				f_ptr.image--;
 				if (f_ptr.image == 0) {
-					m1.prt_map();	 /* Used to draw entire screen! -CJS- */
+					Misc1.prt_map();	 /* Used to draw entire screen! -CJS- */
 				}
 			}
 			/* Paralysis	       */
 			if (f_ptr.paralysis > 0) {
 				/* when paralysis true, you can not see any movement that occurs */
 				f_ptr.paralysis--;
-				mor1.disturb(true, false);
+				Moria1.disturb(true, false);
 			}
 			/* Protection from evil counter*/
 			if (f_ptr.protevil > 0) {
 				f_ptr.protevil--;
 				if (f_ptr.protevil == 0) {
-					io.msg_print("You no longer feel safe from evil.");
+					IO.msg_print("You no longer feel safe from evil.");
 				}
 			}
 			/* Invulnerability	*/
 			if (f_ptr.invuln > 0) {
 				if ((Constants.PY_INVULN & f_ptr.status) == 0) {
 					f_ptr.status |= Constants.PY_INVULN;
-					mor1.disturb(false, false);
-					py.py.misc.pac += 100;
-					py.py.misc.dis_ac += 100;
-					m3.prt_pac();
-					io.msg_print("Your skin turns into steel!");
+					Moria1.disturb(false, false);
+					Player.py.misc.pac += 100;
+					Player.py.misc.dis_ac += 100;
+					Misc3.prt_pac();
+					IO.msg_print("Your skin turns into steel!");
 				}
 				f_ptr.invuln--;
 				if (f_ptr.invuln == 0) {
 					f_ptr.status &= ~Constants.PY_INVULN;
-					mor1.disturb(false, false);
-					py.py.misc.pac -= 100;
-					py.py.misc.dis_ac -= 100;
-					m3.prt_pac();
-					io.msg_print("Your skin returns to normal.");
+					Moria1.disturb(false, false);
+					Player.py.misc.pac -= 100;
+					Player.py.misc.dis_ac -= 100;
+					Misc3.prt_pac();
+					IO.msg_print("Your skin returns to normal.");
 				}
 			}
 			/* Blessed       */
 			if (f_ptr.blessed > 0) {
 				if ((Constants.PY_BLESSED & f_ptr.status) == 0) {
 					f_ptr.status |= Constants.PY_BLESSED;
-					mor1.disturb(false, false);
+					Moria1.disturb(false, false);
 					p_ptr.bth += 5;
 					p_ptr.bthb+= 5;
 					p_ptr.pac += 2;
 					p_ptr.dis_ac+= 2;
-					io.msg_print("You feel righteous!");
-					m3.prt_pac();
+					IO.msg_print("You feel righteous!");
+					Misc3.prt_pac();
 				}
 				f_ptr.blessed--;
 				if (f_ptr.blessed == 0) {
 					f_ptr.status &= ~Constants.PY_BLESSED;
-					mor1.disturb(false, false);
+					Moria1.disturb(false, false);
 					p_ptr.bth -= 5;
 					p_ptr.bthb-= 5;
 					p_ptr.pac -= 2;
 					p_ptr.dis_ac -= 2;
-					io.msg_print("The prayer has expired.");
-					m3.prt_pac();
+					IO.msg_print("The prayer has expired.");
+					Misc3.prt_pac();
 				}
 			}
 			/* Resist Heat   */
 			if (f_ptr.resist_heat > 0) {
 				f_ptr.resist_heat--;
 				if (f_ptr.resist_heat == 0) {
-					io.msg_print("You no longer feel safe from flame.");
+					IO.msg_print("You no longer feel safe from flame.");
 				}
 			}
 			/* Resist Cold   */
 			if (f_ptr.resist_cold > 0) {
 				f_ptr.resist_cold--;
 				if (f_ptr.resist_cold == 0) {
-					io.msg_print("You no longer feel safe from cold.");
+					IO.msg_print("You no longer feel safe from cold.");
 				}
 			}
 			/* Detect Invisible      */
@@ -541,15 +471,15 @@ public class Dungeon {
 					f_ptr.status |= Constants.PY_DET_INV;
 					f_ptr.see_inv = true;
 					/* light but don't move creatures */
-					creature.creatures(false);
+					Creature.creatures(false);
 				}
 				f_ptr.detect_inv--;
 				if (f_ptr.detect_inv == 0) {
 					f_ptr.status &= ~Constants.PY_DET_INV;
 					/* may still be able to see_inv if wearing magic item */
-					mor1.calc_bonuses();
+					Moria1.calc_bonuses();
 					/* unlight but don't move creatures */
-					creature.creatures(false);
+					Creature.creatures(false);
 				}
 			}
 			/* Timed infra-vision    */
@@ -558,28 +488,28 @@ public class Dungeon {
 					f_ptr.status |= Constants.PY_TIM_INFRA;
 					f_ptr.see_infra++;
 					/* light but don't move creatures */
-					creature.creatures(false);
+					Creature.creatures(false);
 				}
 				f_ptr.tim_infra--;
 				if (f_ptr.tim_infra == 0) {
 					f_ptr.status &= ~Constants.PY_TIM_INFRA;
 					f_ptr.see_infra--;
 					/* unlight but don't move creatures */
-					creature.creatures(false);
+					Creature.creatures(false);
 				}
 			}
 			/* Word-of-Recall  Note: Word-of-Recall is a delayed action	 */
 			if (f_ptr.word_recall > 0) {
 				if (f_ptr.word_recall == 1) {
-					var.new_level_flag = true;
+					Variable.new_level_flag = true;
 					f_ptr.paralysis++;
 					f_ptr.word_recall = 0;
-					if (var.dun_level > 0) {
-						var.dun_level = 0;
-						io.msg_print("You feel yourself yanked upwards!");
-					} else if (py.py.misc.max_dlv != 0) {
-						var.dun_level = py.py.misc.max_dlv;
-						io.msg_print("You feel yourself yanked downwards!");
+					if (Variable.dun_level > 0) {
+						Variable.dun_level = 0;
+						IO.msg_print("You feel yourself yanked upwards!");
+					} else if (Player.py.misc.max_dlv != 0) {
+						Variable.dun_level = Player.py.misc.max_dlv;
+						IO.msg_print("You feel yourself yanked downwards!");
 					}
 				} else {
 					f_ptr.word_recall--;
@@ -587,74 +517,74 @@ public class Dungeon {
 			}
 			
 			/* Random teleportation  */
-			if ((py.py.flags.teleport > 0) && (m1.randint(100) == 1)) {
-				mor1.disturb(false, false);
-				m3.teleport(40);
+			if ((Player.py.flags.teleport > 0) && (Misc1.randint(100) == 1)) {
+				Moria1.disturb(false, false);
+				Misc3.teleport(40);
 			}
 			
 			/* See if we are too weak to handle the weapon or pack.  -CJS- */
-			if ((py.py.flags.status & Constants.PY_STR_WGT) != 0) {
-				m3.check_strength();
+			if ((Player.py.flags.status & Constants.PY_STR_WGT) != 0) {
+				Misc3.check_strength();
 			}
-			if ((py.py.flags.status & Constants.PY_STUDY) != 0) {
-				m3.prt_study();
+			if ((Player.py.flags.status & Constants.PY_STUDY) != 0) {
+				Misc3.prt_study();
 			}
-			if ((py.py.flags.status & Constants.PY_SPEED) != 0) {
-				py.py.flags.status &= ~Constants.PY_SPEED;
-				m3.prt_speed();
+			if ((Player.py.flags.status & Constants.PY_SPEED) != 0) {
+				Player.py.flags.status &= ~Constants.PY_SPEED;
+				Misc3.prt_speed();
 			}
-			if ((py.py.flags.status & Constants.PY_PARALYSED) != 0 && (py.py.flags.paralysis < 1)) {
-				m3.prt_state();
-				py.py.flags.status &= ~Constants.PY_PARALYSED;
-			} else if (py.py.flags.paralysis > 0) {
-				m3.prt_state();
-				py.py.flags.status |= Constants.PY_PARALYSED;
-			} else if (py.py.flags.rest != 0) {
-				m3.prt_state();
+			if ((Player.py.flags.status & Constants.PY_PARALYSED) != 0 && (Player.py.flags.paralysis < 1)) {
+				Misc3.prt_state();
+				Player.py.flags.status &= ~Constants.PY_PARALYSED;
+			} else if (Player.py.flags.paralysis > 0) {
+				Misc3.prt_state();
+				Player.py.flags.status |= Constants.PY_PARALYSED;
+			} else if (Player.py.flags.rest != 0) {
+				Misc3.prt_state();
 			}
 			
-			if ((py.py.flags.status & Constants.PY_ARMOR) != 0) {
-				m3.prt_pac();
-				py.py.flags.status &= ~Constants.PY_ARMOR;
+			if ((Player.py.flags.status & Constants.PY_ARMOR) != 0) {
+				Misc3.prt_pac();
+				Player.py.flags.status &= ~Constants.PY_ARMOR;
 			}
-			if ((py.py.flags.status & Constants.PY_STATS) != 0) {
+			if ((Player.py.flags.status & Constants.PY_STATS) != 0) {
 				for (i = 0; i < 6; i++) {
-					if (((Constants.PY_STR << i) & py.py.flags.status) != 0) {
-						m3.prt_stat(i);
+					if (((Constants.PY_STR << i) & Player.py.flags.status) != 0) {
+						Misc3.prt_stat(i);
 					}
 				}
-				py.py.flags.status &= ~Constants.PY_STATS;
+				Player.py.flags.status &= ~Constants.PY_STATS;
 			}
-			if ((py.py.flags.status & Constants.PY_HP) != 0) {
-				m3.prt_mhp();
-				m3.prt_chp();
-				py.py.flags.status &= ~Constants.PY_HP;
+			if ((Player.py.flags.status & Constants.PY_HP) != 0) {
+				Misc3.prt_mhp();
+				Misc3.prt_chp();
+				Player.py.flags.status &= ~Constants.PY_HP;
 			}
-			if ((py.py.flags.status & Constants.PY_MANA) != 0) {
-				m3.prt_cmana();
-				py.py.flags.status &= ~Constants.PY_MANA;
+			if ((Player.py.flags.status & Constants.PY_MANA) != 0) {
+				Misc3.prt_cmana();
+				Player.py.flags.status &= ~Constants.PY_MANA;
 			}
 			
 			/* Allow for a slim chance of detect enchantment -CJS- */
 			/* for 1st level char, check once every 2160 turns
 			 * for 40th level char, check once every 416 turns */
-			if (((var.turn & 0xF) == 0) && (f_ptr.confused == 0) && (m1.randint((int)(10 + 750 / (5 + py.py.misc.lev))) == 1)) {
+			if (((Variable.turn & 0xF) == 0) && (f_ptr.confused == 0) && (Misc1.randint((int)(10 + 750 / (5 + Player.py.misc.lev))) == 1)) {
 				String tmp_str;
 				
 				for (i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
-					if (i == t.inven_ctr) {
+					if (i == Treasure.inven_ctr) {
 						i = 22;
 					}
-					i_ptr = t.inventory[i];
+					i_ptr = Treasure.inventory[i];
 					/* if in inventory, succeed 1 out of 50 times,
 					 * if in equipment list, success 1 out of 10 times */
-					if ((i_ptr.tval != Constants.TV_NOTHING) && enchanted(i_ptr) && (m1.randint(i < 22 ? 50 : 10) == 1)) {
+					if ((i_ptr.tval != Constants.TV_NOTHING) && enchanted(i_ptr) && (Misc1.randint(i < 22 ? 50 : 10) == 1)) {
 						//extern char *describe_use();
 						
-						tmp_str = String.format("There's something about what you are %s...", mor1.describe_use(i));
-						mor1.disturb(false, false);
-						io.msg_print(tmp_str);
-						m4.add_inscribe(i_ptr, Constants.ID_MAGIK);
+						tmp_str = String.format("There's something about what you are %s...", Moria1.describe_use(i));
+						Moria1.disturb(false, false);
+						IO.msg_print(tmp_str);
+						Misc4.add_inscribe(i_ptr, Constants.ID_MAGIK);
 					}
 				}
 			}
@@ -664,43 +594,43 @@ public class Dungeon {
 			 * creature.c when monsters try to multiply.  Compact_monsters() is
 			 * much more likely to succeed if called from here, than if called
 			 * from within creature.creatures().  */
-			if (Constants.MAX_MALLOC - mon.mfptr < 10) {
-				m1.compact_monsters();
+			if (Constants.MAX_MALLOC - Monsters.mfptr < 10) {
+				Misc1.compact_monsters();
 			}
 			
-			if ((py.py.flags.paralysis < 1) && (py.py.flags.rest == 0) && (!var.death)) {
+			if ((Player.py.flags.paralysis < 1) && (Player.py.flags.rest == 0) && (!Variable.death)) {
 				/* Accept a command and execute it				 */
 				do {
-					if ((py.py.flags.status & Constants.PY_REPEAT) != 0) {
-						m3.prt_state();
+					if ((Player.py.flags.status & Constants.PY_REPEAT) != 0) {
+						Misc3.prt_state();
 					}
-					var.default_dir = 0;
-					var.free_turn_flag = false;
+					Variable.default_dir = 0;
+					Variable.free_turn_flag = false;
 					
-					if (var.find_flag > 0) {
-						mor2.find_run();
+					if (Variable.find_flag > 0) {
+						Moria2.find_run();
 						find_count--;
 						if (find_count == 0) {
-							mor2.end_find();
+							Moria2.end_find();
 						}
-						io.put_qio();
-					} else if (var.doing_inven > 0) {
-						mor1.inven_command(var.doing_inven);
+						IO.put_qio();
+					} else if (Variable.doing_inven > 0) {
+						Moria1.inven_command(Variable.doing_inven);
 					} else {
 						/* move the cursor to the players character */
-						io.move_cursor_relative(py.char_row, py.char_col);
-						if (var.command_count > 0) {
-							var.msg_flag = 0;
-							var.default_dir = 1;
+						IO.move_cursor_relative(Player.char_row, Player.char_col);
+						if (Variable.command_count > 0) {
+							Variable.msg_flag = 0;
+							Variable.default_dir = 1;
 						} else {
-							var.msg_flag = 0;
-							command.value(io.inkey());
+							Variable.msg_flag = 0;
+							command.value(IO.inkey());
 							i = 0;
 							/* Get a count for a command. */
-							if ((var.rogue_like_commands.value() && command.value() >= '0' && command.value() <= '9') || (!var.rogue_like_commands.value() && command.value() == '#')) {
+							if ((Variable.rogue_like_commands.value() && command.value() >= '0' && command.value() <= '9') || (!Variable.rogue_like_commands.value() && command.value() == '#')) {
 								String tmp;
 								
-								io.prt("Repeat count:", 0, 0);
+								IO.prt("Repeat count:", 0, 0);
 								if (command.value() == '#') {
 									command.value('0');
 								}
@@ -710,43 +640,43 @@ public class Dungeon {
 										i = i / 10;
 										tmp = String.format("%d", i);
 										if (tmp.length() > 8) tmp = tmp.substring(0, 8);
-										io.prt(tmp, 0, 14);
+										IO.prt(tmp, 0, 14);
 									} else if (command.value() >= '0' && command.value() <= '9') {
 										if (i > 99) {
-											io.bell();
+											IO.bell();
 										} else {
 											i = i * 10 + command.value() - '0';
 											tmp = String.format("%d", i);
-											io.prt(tmp, 0, 14);
+											IO.prt(tmp, 0, 14);
 										}
 									} else {
 										break;
 									}
-									command.value(io.inkey());
+									command.value(IO.inkey());
 								}
 								if (i == 0) {
 									i = 99;
 									tmp = String.format("%d", i);
-									io.prt(tmp, 0, 14);
+									IO.prt(tmp, 0, 14);
 								}
 								/* a special hack to allow numbers as commands */
 								if (command.value() == ' ') {
-									io.prt("Command:", 0, 20);
-									command.value(io.inkey());
+									IO.prt("Command:", 0, 20);
+									command.value(IO.inkey());
 								}
 							}
 							/* Another way of typing control codes -CJS- */
 							if (command.value() == '^') {
-								if (var.command_count > 0) {
-									m3.prt_state();
+								if (Variable.command_count > 0) {
+									Misc3.prt_state();
 								}
-								if (io.get_com("Control-", command)) {
+								if (IO.get_com("Control-", command)) {
 									if (command.value() >= 'A' && command.value() <= 'Z') {
 										command.value((char)(command.value() - 'A' - 1));
 									} else if (command.value() >= 'a' && command.value() <= 'z') {
 										command.value((char)(command.value() - 'a' - 1));
 									} else {
-										io.msg_print("Type ^ <letter> for a control char");
+										IO.msg_print("Type ^ <letter> for a control char");
 										command.value(' ');
 									}
 								} else {
@@ -754,56 +684,56 @@ public class Dungeon {
 								}
 							}
 							/* move cursor to player char again, in case it moved */
-							io.move_cursor_relative(py.char_row, py.char_col);
+							IO.move_cursor_relative(Player.char_row, Player.char_col);
 							/* Commands are always converted to rogue form. -CJS- */
-							if (!var.rogue_like_commands.value()) {
+							if (!Variable.rogue_like_commands.value()) {
 								command.value(original_commands(command.value()));
 							}
 							if (i > 0) {
 								if (!valid_countcommand(command.value())) {
-									var.free_turn_flag = true;
-									io.msg_print("Invalid command with a count.");
+									Variable.free_turn_flag = true;
+									IO.msg_print("Invalid command with a count.");
 									command.value(' ');
 								} else {
-									var.command_count = i;
-									m3.prt_state();
+									Variable.command_count = i;
+									Misc3.prt_state();
 								}
 							}
 						}
 						/* Flash the message line. */
-						io.erase_line(Constants.MSG_LINE, 0);
-						io.move_cursor_relative(py.char_row, py.char_col);
-						io.put_qio();
+						IO.erase_line(Constants.MSG_LINE, 0);
+						IO.move_cursor_relative(Player.char_row, Player.char_col);
+						IO.put_qio();
 						
 						do_command(command.value());
 						/* Find is counted differently, as the command changes. */
-						if (var.find_flag > 0) {
-							find_count = var.command_count - 1;
-							var.command_count = 0;
-						} else if (var.free_turn_flag) {
-							var.command_count = 0;
-						} else if (var.command_count > 0) {
-							var.command_count--;
+						if (Variable.find_flag > 0) {
+							find_count = Variable.command_count - 1;
+							Variable.command_count = 0;
+						} else if (Variable.free_turn_flag) {
+							Variable.command_count = 0;
+						} else if (Variable.command_count > 0) {
+							Variable.command_count--;
 						}
 					}
 					/* End of commands				     */
-				} while (var.free_turn_flag && !var.new_level_flag && var.eof_flag == 0);
+				} while (Variable.free_turn_flag && !Variable.new_level_flag && Variable.eof_flag == 0);
 			} else {
 				/* if paralyzed, resting, or dead, flush output */
 				/* but first move the cursor onto the player, for aesthetics */
-				io.move_cursor_relative(py.char_row, py.char_col);
-				io.put_qio ();
+				IO.move_cursor_relative(Player.char_row, Player.char_col);
+				IO.put_qio ();
 			}
 			
 			/* Teleport?		       */
-			if (var.teleport_flag)	m3.teleport(100);
+			if (Variable.teleport_flag)	Misc3.teleport(100);
 			/* Move the creatures	       */
-			if (!var.new_level_flag)	creature.creatures(true);
+			if (!Variable.new_level_flag)	Creature.creatures(true);
 			/* Exit when new_level_flag is set   */
-		} while (!var.new_level_flag && var.eof_flag == 0);
+		} while (!Variable.new_level_flag && Variable.eof_flag == 0);
 	}
 	
-	public char original_commands(char com_val) {
+	public static char original_commands(char com_val) {
 		IntPointer dir_val = new IntPointer();
 		
 		switch(com_val)
@@ -824,7 +754,7 @@ public class Dungeon {
 		case '$':
 			break;
 		case '.':
-			if (mor1.get_dir("", dir_val)) {
+			if (Moria1.get_dir("", dir_val)) {
 				switch (dir_val.value())
 				{
 				case 1:    com_val = 'B';    break;
@@ -897,7 +827,7 @@ public class Dungeon {
 			com_val = '#';
 			break;
 		case 'T':
-			if (mor1.get_dir("", dir_val)) {
+			if (Moria1.get_dir("", dir_val)) {
 				switch (dir_val.value())
 				{
 				case 1:    com_val = (Constants.CTRL & 'B');    break;
@@ -994,7 +924,7 @@ public class Dungeon {
 		return com_val;
 	}
 	
-	public void do_command(char com_val) {
+	public static void do_command(char com_val) {
 		IntPointer dir_val = new IntPointer();
 		boolean do_pickup;
 		IntPointer y, x;
@@ -1005,9 +935,9 @@ public class Dungeon {
 		/* hack for move without pickup.  Map '-' to a movement command. */
 		if (com_val == '-') {
 			do_pickup = false;
-			i = var.command_count;
-			if (mor1.get_dir("", dir_val)) {
-				var.command_count = i;
+			i = Variable.command_count;
+			if (Moria1.get_dir("", dir_val)) {
+				Variable.command_count = i;
 				switch (dir_val.value())
 				{
 				case 1:    com_val = 'b';	 break;
@@ -1030,161 +960,161 @@ public class Dungeon {
 		switch(com_val)
 		{
 		case 'Q':	/* (Q)uit		(^K)ill */
-			io.flush();
-			if (io.get_check("Do you really want to quit?")) {
-				var.new_level_flag = true;
-				var.death = true;
-				var.died_from = "Quitting";
+			IO.flush();
+			if (IO.get_check("Do you really want to quit?")) {
+				Variable.new_level_flag = true;
+				Variable.death = true;
+				Variable.died_from = "Quitting";
 			}
-			var.free_turn_flag = true;
+			Variable.free_turn_flag = true;
 			break;
 		case (Constants.CTRL & 'P'):	/* (^P)revious message. */
-			if (var.command_count > 0) {
-				i = var.command_count;
+			if (Variable.command_count > 0) {
+				i = Variable.command_count;
 				if (i > Constants.MAX_SAVE_MSG) {
 					i = Constants.MAX_SAVE_MSG;
 				}
-				var.command_count = 0;
-			} else if (var.last_command != (Constants.CTRL & 'P')) {
+				Variable.command_count = 0;
+			} else if (Variable.last_command != (Constants.CTRL & 'P')) {
 				i = 1;
 			} else {
 				i = Constants.MAX_SAVE_MSG;
 			}
-			j = var.last_msg;
+			j = Variable.last_msg;
 			if (i > 1) {
-				io.save_screen();
+				IO.save_screen();
 				x = new IntPointer(i);
 				while (i > 0) {
 					i--;
-					io.prt(var.old_msg[j], i, 0);
+					IO.prt(Variable.old_msg[j], i, 0);
 					if (j == 0) {
 						j = Constants.MAX_SAVE_MSG - 1;
 					} else {
 						j--;
 					}
 				}
-				io.erase_line(x.value(), 0);
-				io.pause_line(x.value());
-				io.restore_screen();
+				IO.erase_line(x.value(), 0);
+				IO.pause_line(x.value());
+				IO.restore_screen();
 			} else {
 				/* Distinguish real and recovered messages with a '>'. -CJS- */
-				io.put_buffer(">", 0, 0);
-				io.prt(var.old_msg[j], 0, 1);
+				IO.put_buffer(">", 0, 0);
+				IO.prt(Variable.old_msg[j], 0, 1);
 			}
-			var.free_turn_flag = true;
+			Variable.free_turn_flag = true;
 			break;
 		case (Constants.CTRL & 'V'):	/* (^V)iew license */
-			files.helpfile(Config.MORIA_GPL);
-			var.free_turn_flag = true;
+			Files.helpfile(Config.MORIA_GPL);
+			Variable.free_turn_flag = true;
 			break;
 		case (Constants.CTRL & 'W'):	/* (^W)izard mode */
-			if (var.wizard) {
-				var.wizard = false;
-				io.msg_print("Wizard mode off.");
-			} else if (m3.enter_wiz_mode()) {
-				io.msg_print("Wizard mode on.");
+			if (Variable.wizard) {
+				Variable.wizard = false;
+				IO.msg_print("Wizard mode off.");
+			} else if (Misc3.enter_wiz_mode()) {
+				IO.msg_print("Wizard mode on.");
 			}
-			m3.prt_winner();
-			var.free_turn_flag = true;
+			Misc3.prt_winner();
+			Variable.free_turn_flag = true;
 			break;
 		case (Constants.CTRL & 'X'):	/* e(^X)it and save */
-			if (var.total_winner) {
-				io.msg_print("You are a Total Winner,  your character must be retired.");
-				if (var.rogue_like_commands.value()) {
-					io.msg_print("Use 'Q' to when you are ready to quit.");
+			if (Variable.total_winner) {
+				IO.msg_print("You are a Total Winner,  your character must be retired.");
+				if (Variable.rogue_like_commands.value()) {
+					IO.msg_print("Use 'Q' to when you are ready to quit.");
 				} else {
-					io.msg_print ("Use <Control>-K when you are ready to quit.");
+					IO.msg_print ("Use <Control>-K when you are ready to quit.");
 				}
 			} else {
-				var.died_from = "(saved)";
-				io.msg_print("Saving game...");
-				if (save.save_char()) {
-					death.exit_game();
+				Variable.died_from = "(saved)";
+				IO.msg_print("Saving game...");
+				if (Save.save_char()) {
+					Death.exit_game();
 				}
-				var.died_from = "(alive and well)";
+				Variable.died_from = "(alive and well)";
 			}
-			var.free_turn_flag = true;
+			Variable.free_turn_flag = true;
 			break;
 		case '=':		/* (=) set options */
-			io.save_screen();
-			m2.set_options();
-			io.restore_screen();
-			var.free_turn_flag = true;
+			IO.save_screen();
+			Misc2.set_options();
+			IO.restore_screen();
+			Variable.free_turn_flag = true;
 			break;
 		case '{':		/* ({) inscribe an object    */
-			m4.scribe_object();
-			var.free_turn_flag = true;
+			Misc4.scribe_object();
+			Variable.free_turn_flag = true;
 			break;
 		case '!':		/* (!) escape to the shell */
 		case '$':
-			io.shell_out();
-			var.free_turn_flag = true;
+			IO.shell_out();
+			Variable.free_turn_flag = true;
 			break;
 		case Constants.ESCAPE:	/* (ESC)   do nothing. */
 		case ' ':		/* (space) do nothing. */
-			var.free_turn_flag = true;
+			Variable.free_turn_flag = true;
 			break;
 		case 'b':		/* (b) down, left	(1) */
-			mor3.move_char(1, do_pickup);
+			Moria3.move_char(1, do_pickup);
 			break;
 		case Constants.KEY_DOWN:
 		case 'j':		/* (j) down		(2) */
-			mor3.move_char(2, do_pickup);
+			Moria3.move_char(2, do_pickup);
 			break;
 		case 'n':		/* (n) down, right	(3) */
-			mor3.move_char(3, do_pickup);
+			Moria3.move_char(3, do_pickup);
 			break;
 		case Constants.KEY_LEFT:
 		case 'h':		/* (h) left		(4) */
-			mor3.move_char(4, do_pickup);
+			Moria3.move_char(4, do_pickup);
 			break;
 		case Constants.KEY_RIGHT:
 		case 'l':		/* (l) right		(6) */
-			mor3.move_char(6, do_pickup);
+			Moria3.move_char(6, do_pickup);
 			break;
 		case 'y':		/* (y) up, left		(7) */
-			mor3.move_char(7, do_pickup);
+			Moria3.move_char(7, do_pickup);
 			break;
 		case Constants.KEY_UP:
 		case 'k':		/* (k) up		(8) */
-			mor3.move_char(8, do_pickup);
+			Moria3.move_char(8, do_pickup);
 			break;
 		case 'u':		/* (u) up, right	(9) */
-			mor3.move_char(9, do_pickup);
+			Moria3.move_char(9, do_pickup);
 			break;
 		case 'B':		/* (B) run down, left	(. 1) */
-			mor2.find_init(1);
+			Moria2.find_init(1);
 			break;
 		case 'J':		/* (J) run down		(. 2) */
-			mor2.find_init(2);
+			Moria2.find_init(2);
 			break;
 		case 'N':		/* (N) run down, right	(. 3) */
-			mor2.find_init(3);
+			Moria2.find_init(3);
 			break;
 		case 'H':		/* (H) run left		(. 4) */
-			mor2.find_init(4);
+			Moria2.find_init(4);
 			break;
 		case 'L':		/* (L) run right	(. 6) */
-			mor2.find_init(6);
+			Moria2.find_init(6);
 			break;
 		case 'Y':		/* (Y) run up, left	(. 7) */
-			mor2.find_init(7);
+			Moria2.find_init(7);
 			break;
 		case 'K':		/* (K) run up		(. 8) */
-			mor2.find_init(8);
+			Moria2.find_init(8);
 			break;
 		case 'U':		/* (U) run up, right	(. 9) */
-			mor2.find_init(9);
+			Moria2.find_init(9);
 			break;
 		case '/':		/* (/) identify a symbol */
-			help.ident_char();
-			var.free_turn_flag = true;
+			Help.ident_char();
+			Variable.free_turn_flag = true;
 			break;
 		case '.':		/* (.) stay in one place (5) */
-			mor3.move_char(5, do_pickup);
-			if (var.command_count > 1) {
-				var.command_count--;
-				mor1.rest();
+			Moria3.move_char(5, do_pickup);
+			if (Variable.command_count > 1) {
+				Variable.command_count--;
+				Moria1.rest();
 			}
 			break;
 		case '<':		/* (<) go up a staircase */
@@ -1194,69 +1124,69 @@ public class Dungeon {
 			go_down();
 			break;
 		case '?':		/* (?) help with commands */
-			if (var.rogue_like_commands.value()) {
-				files.helpfile(Config.MORIA_HELP);
+			if (Variable.rogue_like_commands.value()) {
+				Files.helpfile(Config.MORIA_HELP);
 			} else {
-				files.helpfile(Config.MORIA_ORIG_HELP);
+				Files.helpfile(Config.MORIA_ORIG_HELP);
 			}
-			var.free_turn_flag = true;
+			Variable.free_turn_flag = true;
 			break;
 		case 'f':		/* (f)orce		(B)ash */
-			mor4.bash();
+			Moria4.bash();
 			break;
 		case 'C':		/* (C)haracter description */
-			io.save_screen();
-			m3.change_name();
-			io.restore_screen();
-			var.free_turn_flag = true;
+			IO.save_screen();
+			Misc3.change_name();
+			IO.restore_screen();
+			Variable.free_turn_flag = true;
 			break;
 		case 'D':		/* (D)isarm trap */
-			mor4.disarm_trap();
+			Moria4.disarm_trap();
 			break;
 		case 'E':		/* (E)at food */
-			eat.eat();
+			Eat.eat();
 			break;
 		case 'F':		/* (F)ill lamp */
 			refill_lamp();
 			break;
 		case 'G':		/* (G)ain magic spells */
-			m3.gain_spells();
+			Misc3.gain_spells();
 			break;
 		case 'V':		/* (V)iew scores */
 			boolean b;
-			if (var.last_command != 'V') {
+			if (Variable.last_command != 'V') {
 				b = true;
 			} else {
 				b = false;
 			}
-			io.save_screen();
-			death.display_scores(b);
-			io.restore_screen();
-			var.free_turn_flag = true;
+			IO.save_screen();
+			Death.display_scores(b);
+			IO.restore_screen();
+			Variable.free_turn_flag = true;
 			break;
 		case 'W':		/* (W)here are we on the map	(L)ocate on map */
-			if ((py.py.flags.blind > 0) || mor1.no_light()) {
-				io.msg_print("You can't see your map.");
+			if ((Player.py.flags.blind > 0) || Moria1.no_light()) {
+				IO.msg_print("You can't see your map.");
 			} else {
 				int cy, cx, p_y, p_x;
 				
-				y = new IntPointer(py.char_row);
-				x = new IntPointer(py.char_col);
-				if (m1.get_panel(y.value(), x.value(), true)) {
-					m1.prt_map();
+				y = new IntPointer(Player.char_row);
+				x = new IntPointer(Player.char_col);
+				if (Misc1.get_panel(y.value(), x.value(), true)) {
+					Misc1.prt_map();
 				}
-				cy = var.panel_row;
-				cx = var.panel_col;
+				cy = Variable.panel_row;
+				cx = Variable.panel_col;
 				for(;;) {
-					p_y = var.panel_row;
-					p_x = var.panel_col;
+					p_y = Variable.panel_row;
+					p_x = Variable.panel_col;
 					if (p_y == cy && p_x == cx) {
 						tmp_str = "";
 					} else {
 						tmp_str = String.format("%s%s of", p_y < cy ? " North" : p_y > cy ? " South" : "", p_x < cx ? " West" : p_x > cx ? " East" : "");
 					}
 					out_val = String.format("Map sector [%d,%d], which is%s your sector. Look which direction?", p_y, p_x, tmp_str);
-					if (!mor1.get_dir(out_val, dir_val)) {
+					if (!Moria1.get_dir(out_val, dir_val)) {
 						break;
 					}
 					/*								      -CJS-
@@ -1267,146 +1197,146 @@ public class Dungeon {
 					for(;;){
 						x.value(x.value() + ((dir_val.value() - 1) % 3 - 1) * Constants.SCREEN_WIDTH / 2);
 						y.value(y.value() - ((dir_val.value() - 1) / 3 - 1) * Constants.SCREEN_HEIGHT / 2);
-						if (x.value() < 0 || y.value() < 0 || x.value() >= var.cur_width || y.value() >= var.cur_width) {
-							io.msg_print("You've gone past the end of your map.");
+						if (x.value() < 0 || y.value() < 0 || x.value() >= Variable.cur_width || y.value() >= Variable.cur_width) {
+							IO.msg_print("You've gone past the end of your map.");
 							x.value(x.value() - ((dir_val.value() - 1) % 3 - 1) * Constants.SCREEN_WIDTH / 2);
 							y.value(y.value() + ((dir_val.value() - 1) / 3 - 1) * Constants.SCREEN_HEIGHT / 2);
 							break;
 						}
-						if (m1.get_panel(y.value(), x.value(), true)) {
-							m1.prt_map();
+						if (Misc1.get_panel(y.value(), x.value(), true)) {
+							Misc1.prt_map();
 							break;
 						}
 					}
 				}
 				/* Move to a new panel - but only if really necessary. */
-				if (m1.get_panel(py.char_row, py.char_col, false)) {
-					m1.prt_map();
+				if (Misc1.get_panel(Player.char_row, Player.char_col, false)) {
+					Misc1.prt_map();
 				}
 			}
-			var.free_turn_flag = true;
+			Variable.free_turn_flag = true;
 			break;
 		case 'R':		/* (R)est a while */
-			mor1.rest();
+			Moria1.rest();
 			break;
 		case '#':		/* (#) search toggle	(S)earch toggle */
-			if ((py.py.flags.status & Constants.PY_SEARCH) != 0) {
-				mor1.search_off();
+			if ((Player.py.flags.status & Constants.PY_SEARCH) != 0) {
+				Moria1.search_off();
 			} else {
-				mor1.search_on();
+				Moria1.search_on();
 			}
-			var.free_turn_flag = true;
+			Variable.free_turn_flag = true;
 			break;
 		case (Constants.CTRL & 'B'):		/* (^B) tunnel down left	(T 1) */
-			mor4.tunnel(1);
+			Moria4.tunnel(1);
 			break;
 		case (Constants.CTRL & 'M'):		/* cr must be treated same as lf. */
 		case (Constants.CTRL & 'J'):		/* (^J) tunnel down		(T 2) */
-			mor4.tunnel(2);
+			Moria4.tunnel(2);
 			break;
 		case (Constants.CTRL & 'N'):		/* (^N) tunnel down right	(T 3) */
-			mor4.tunnel(3);
+			Moria4.tunnel(3);
 			break;
 		case (Constants.CTRL & 'H'):		/* (^H) tunnel left		(T 4) */
-			mor4.tunnel(4);
+			Moria4.tunnel(4);
 			break;
 		case (Constants.CTRL & 'L'):		/* (^L) tunnel right		(T 6) */
-			mor4.tunnel(6);
+			Moria4.tunnel(6);
 			break;
 		case (Constants.CTRL & 'Y'):		/* (^Y) tunnel up left		(T 7) */
-			mor4.tunnel(7);
+			Moria4.tunnel(7);
 			break;
 		case (Constants.CTRL & 'K'):		/* (^K) tunnel up		(T 8) */
-			mor4.tunnel(8);
+			Moria4.tunnel(8);
 			break;
 		case (Constants.CTRL & 'U'):		/* (^U) tunnel up right		(T 9) */
-			mor4.tunnel(9);
+			Moria4.tunnel(9);
 			break;
 		case 'z':		/* (z)ap a wand		(a)im a wand */
-			wands.aim();
+			Wands.aim();
 			break;
 		case 'M':
-			io.screen_map();
-			var.free_turn_flag = true;
+			IO.screen_map();
+			Variable.free_turn_flag = true;
 			break;
 		case 'P':		/* (P)eruse a book	(B)rowse in a book */
 			examine_book();
-			var.free_turn_flag = true;
+			Variable.free_turn_flag = true;
 			break;
 		case 'c':		/* (c)lose an object */
-			mor3.closeobject();
+			Moria3.closeobject();
 			break;
 		case 'd':		/* (d)rop something */
-			mor1.inven_command('d');
+			Moria1.inven_command('d');
 			break;
 		case 'e':		/* (e)quipment list */
-			mor1.inven_command('e');
+			Moria1.inven_command('e');
 			break;
 		case 't':		/* (t)hrow something	(f)ire something */
-			mor4.throw_object();
+			Moria4.throw_object();
 			break;
 		case 'i':		/* (i)nventory list */
-			mor1.inven_command('i');
+			Moria1.inven_command('i');
 			break;
 		case 'S':		/* (S)pike a door	(j)am a door */
 			jamdoor();
 			break;
 		case 'x':		/* e(x)amine surrounds	(l)ook about */
-			mor4.look();
-			var.free_turn_flag = true;
+			Moria4.look();
+			Variable.free_turn_flag = true;
 			break;
 		case 'm':		/* (m)agic spells */
-			magic.cast();
+			Magic.cast();
 			break;
 		case 'o':		/* (o)pen something */
-			mor3.openobject();
+			Moria3.openobject();
 			break;
 		case 'p':		/* (p)ray */
-			prayer.pray();
+			Prayer.pray();
 			break;
 		case 'q':		/* (q)uaff */
-			potions.quaff();
+			Potions.quaff();
 			break;
 		case 'r':		/* (r)ead */
-			scrolls.read_scroll();
+			Scrolls.read_scroll();
 			break;
 		case 's':		/* (s)earch for a turn */
-			mor2.search(py.char_row, py.char_col, py.py.misc.srh);
+			Moria2.search(Player.char_row, Player.char_col, Player.py.misc.srh);
 			break;
 		case 'T':		/* (T)ake off something	(t)ake off */
-			mor1.inven_command('t');
+			Moria1.inven_command('t');
 			break;
 		case 'Z':		/* (Z)ap a staff	(u)se a staff */
-			staffs.use();
+			Staffs.use();
 			break;
 		case 'v':		/* (v)ersion of game */
-			files.helpfile(Config.MORIA_VER);
-			var.free_turn_flag = true;
+			Files.helpfile(Config.MORIA_VER);
+			Variable.free_turn_flag = true;
 			break;
 		case 'w':		/* (w)ear or wield */
-			mor1.inven_command('w');
+			Moria1.inven_command('w');
 			break;
 		case 'X':		/* e(X)change weapons	e(x)change */
-			mor1.inven_command('x');
+			Moria1.inven_command('x');
 			break;
 		default:
-			if (var.wizard) {
-				var.free_turn_flag = true; /* Wizard commands are free moves*/
+			if (Variable.wizard) {
+				Variable.free_turn_flag = true; /* Wizard commands are free moves*/
 				switch(com_val)
 				{
 				case (Constants.CTRL & 'A'):	/*^A = Cure all*/
-					spells.remove_curse();
-					spells.cure_blindness();
-					spells.cure_confusion();
-					spells.cure_poison();
-					spells.remove_fear();
-					m3.res_stat(Constants.A_STR);
-					m3.res_stat(Constants.A_INT);
-					m3.res_stat(Constants.A_WIS);
-					m3.res_stat(Constants.A_CON);
-					m3.res_stat(Constants.A_DEX);
-					m3.res_stat(Constants.A_CHR);
-					f_ptr = py.py.flags;
+					Spells.remove_curse();
+					Spells.cure_blindness();
+					Spells.cure_confusion();
+					Spells.cure_poison();
+					Spells.remove_fear();
+					Misc3.res_stat(Constants.A_STR);
+					Misc3.res_stat(Constants.A_INT);
+					Misc3.res_stat(Constants.A_WIS);
+					Misc3.res_stat(Constants.A_CON);
+					Misc3.res_stat(Constants.A_DEX);
+					Misc3.res_stat(Constants.A_CHR);
+					f_ptr = Player.py.flags;
 					if (f_ptr.slow > 1) {
 						f_ptr.slow = 1;
 					}
@@ -1415,34 +1345,34 @@ public class Dungeon {
 					}
 					break;
 				case (Constants.CTRL & 'E'):	/*^E = wizchar */
-					wiz.change_character();
-					io.erase_line(Constants.MSG_LINE, 0);
+					Wizard.change_character();
+					IO.erase_line(Constants.MSG_LINE, 0);
 				break;
 				case (Constants.CTRL & 'F'):	/*^F = genocide*/
-					spells.mass_genocide();
+					Spells.mass_genocide();
 					break;
 				case (Constants.CTRL & 'G'):	/*^G = treasure*/
-					if (var.command_count > 0) {
-						i = var.command_count;
-						var.command_count = 0;
+					if (Variable.command_count > 0) {
+						i = Variable.command_count;
+						Variable.command_count = 0;
 					} else {
 						i = 1;
 					}
-					m3.random_object(py.char_row, py.char_col, i);
-					m1.prt_map();
+					Misc3.random_object(Player.char_row, Player.char_col, i);
+					Misc1.prt_map();
 					break;
 				case (Constants.CTRL & 'D'):	/*^D = up/down */
-					if (var.command_count > 0) {
-						if (var.command_count > 99) {
+					if (Variable.command_count > 0) {
+						if (Variable.command_count > 99) {
 							i = 0;
 						} else {
-							i = var.command_count;
+							i = Variable.command_count;
 						}
-						var.command_count = 0;
+						Variable.command_count = 0;
 					} else {
-						io.prt("Go to which level (0-99) ? ", 0, 0);
+						IO.prt("Go to which level (0-99) ? ", 0, 0);
 						i = -1;
-						if ((tmp_str = io.get_string(0, 27, 10)).length() > 0) {
+						if ((tmp_str = IO.get_string(0, 27, 10)).length() > 0) {
 							try {
 								i = Integer.parseInt(tmp_str);
 							} catch (NumberFormatException e) {
@@ -1452,74 +1382,74 @@ public class Dungeon {
 						}
 					}
 					if (i > -1) {
-						var.dun_level = i;
-						if (var.dun_level > 99) {
-							var.dun_level = 99;
+						Variable.dun_level = i;
+						if (Variable.dun_level > 99) {
+							Variable.dun_level = 99;
 						}
-						var.new_level_flag = true;
+						Variable.new_level_flag = true;
 					} else {
-						io.erase_line(Constants.MSG_LINE, 0);
+						IO.erase_line(Constants.MSG_LINE, 0);
 					}
 					break;
 				case (Constants.CTRL & 'O'):	/*^O = objects */
-					files.print_objects();
+					Files.print_objects();
 					break;
 				case '\\': /* \ wizard help */
-					if (var.rogue_like_commands.value()) {
-						files.helpfile(Config.MORIA_WIZ_HELP);
+					if (Variable.rogue_like_commands.value()) {
+						Files.helpfile(Config.MORIA_WIZ_HELP);
 					} else {
-						files.helpfile(Config.MORIA_OWIZ_HELP);
+						Files.helpfile(Config.MORIA_OWIZ_HELP);
 					}
 					break;
 				case (Constants.CTRL & 'I'):	/*^I = identify*/
-					spells.ident_spell();
+					Spells.ident_spell();
 					break;
 				case '*':
-					wiz.wizard_light();
+					Wizard.wizard_light();
 					break;
 				case ':':
-					spells.map_area();
+					Spells.map_area();
 					break;
 				case (Constants.CTRL & 'T'):	/*^T = teleport*/
-					m3.teleport(100);
+					Misc3.teleport(100);
 					break;
 				case '+':
-					if (var.command_count > 0) {
-						py.py.misc.exp = var.command_count;
-						var.command_count = 0;
-					} else if (py.py.misc.exp == 0) {
-						py.py.misc.exp = 1;
+					if (Variable.command_count > 0) {
+						Player.py.misc.exp = Variable.command_count;
+						Variable.command_count = 0;
+					} else if (Player.py.misc.exp == 0) {
+						Player.py.misc.exp = 1;
 					} else {
-						py.py.misc.exp = py.py.misc.exp * 2;
+						Player.py.misc.exp = Player.py.misc.exp * 2;
 					}
-					m3.prt_experience();
+					Misc3.prt_experience();
 					break;
 				case '&':	/*& = summon  */
-					y = new IntPointer(py.char_row);
-					x = new IntPointer(py.char_col);
-					m1.summon_monster(y, x, true);
-					creature.creatures(false);
+					y = new IntPointer(Player.char_row);
+					x = new IntPointer(Player.char_col);
+					Misc1.summon_monster(y, x, true);
+					Creature.creatures(false);
 					break;
 				case '@':
-					wiz.wizard_create();
+					Wizard.wizard_create();
 					break;
 				default:
-					if (var.rogue_like_commands.value()) {
-						io.prt("Type '?' or '\\' for help.", 0, 0);
+					if (Variable.rogue_like_commands.value()) {
+						IO.prt("Type '?' or '\\' for help.", 0, 0);
 					} else {
-						io.prt("Type '?' or ^H for help.", 0, 0);
+						IO.prt("Type '?' or ^H for help.", 0, 0);
 					}
 				}
 			} else {
-				io.prt("Type '?' for help.", 0, 0);
-				var.free_turn_flag = true;
+				IO.prt("Type '?' for help.", 0, 0);
+				Variable.free_turn_flag = true;
 			}
 		}
-		var.last_command = com_val;
+		Variable.last_command = com_val;
 	}
 	
 	/* Check whether this command will accept a count.     -CJS-  */
-	static boolean valid_countcommand(char c) {
+	public static boolean valid_countcommand(char c) {
 		switch(c)
 		{
 		case 'Q':
@@ -1611,12 +1541,12 @@ public class Dungeon {
 	}
 	
 	/* Regenerate hit points				-RAK-	*/
-	public void regenhp(int percent) {
+	public static void regenhp(int percent) {
 		PlayerMisc p_ptr;
 		int new_chp, new_chp_frac;
 		int old_chp;
 		
-		p_ptr = py.py.misc;
+		p_ptr = Player.py.misc;
 		old_chp = p_ptr.chp;
 		new_chp = p_ptr.mhp * percent + Constants.PLAYER_REGEN_HPBASE;
 		p_ptr.chp += new_chp >> 16;	/* div 65536 */
@@ -1638,17 +1568,17 @@ public class Dungeon {
 			p_ptr.chp_frac = 0;
 		}
 		if (old_chp != p_ptr.chp) {
-			m3.prt_chp();
+			Misc3.prt_chp();
 		}
 	}
 	
 	/* Regenerate mana points				-RAK-	*/
-	public void regenmana(int percent) {
+	public static void regenmana(int percent) {
 		PlayerMisc p_ptr;
 		int new_mana, new_mana_frac;
 		int old_cmana;
 		
-		p_ptr = py.py.misc;
+		p_ptr = Player.py.misc;
 		old_cmana = p_ptr.cmana;
 		new_mana = p_ptr.mana * percent + Constants.PLAYER_REGEN_MNBASE;
 		p_ptr.cmana += new_mana >> 16;  /* div 65536 */
@@ -1670,17 +1600,17 @@ public class Dungeon {
 			p_ptr.cmana_frac = 0;
 		}
 		if (old_cmana != p_ptr.cmana) {
-			m3.prt_cmana();
+			Misc3.prt_cmana();
 		}
 	}
 	
 	/* Is an item an enchanted weapon or armor and we don't know?  -CJS- */
 	/* only returns true if it is a good enchantment */
-	public boolean enchanted(InvenType t_ptr) {
+	public static boolean enchanted(InvenType t_ptr) {
 		if (t_ptr.tval < Constants.TV_MIN_ENCHANT || t_ptr.tval > Constants.TV_MAX_ENCHANT || (t_ptr.flags & Constants.TR_CURSED) != 0) {
 			return false;
 		}
-		if (desc.known2_p(t_ptr)) {
+		if (Desc.known2_p(t_ptr)) {
 			return false;
 		}
 		if ((t_ptr.ident & Constants.ID_MAGIK) != 0) {
@@ -1700,7 +1630,7 @@ public class Dungeon {
 	}
 	
 	/* Examine a Book					-RAK-	*/
-	public void examine_book() {
+	public static void examine_book() {
 		LongPointer j;
 		IntPointer i = new IntPointer(), k = new IntPointer();
 		IntPointer item_val = new IntPointer();
@@ -1709,22 +1639,22 @@ public class Dungeon {
 		InvenType i_ptr;
 		SpellType s_ptr;
 		
-		if (!m3.find_range(Constants.TV_MAGIC_BOOK, Constants.TV_PRAYER_BOOK, i, k)) {
-			io.msg_print("You are not carrying any books.");
-		} else if (py.py.flags.blind > 0) {
-			io.msg_print("You can't see to read your spell book!");
-		} else if (mor1.no_light()) {
-			io.msg_print("You have no light to read by.");
-		} else if (py.py.flags.confused > 0) {
-			io.msg_print("You are too confused.");
-		} else if (mor1.get_item(item_val, "Which Book?", i.value(), k.value(), "", "")) {
+		if (!Misc3.find_range(Constants.TV_MAGIC_BOOK, Constants.TV_PRAYER_BOOK, i, k)) {
+			IO.msg_print("You are not carrying any books.");
+		} else if (Player.py.flags.blind > 0) {
+			IO.msg_print("You can't see to read your spell book!");
+		} else if (Moria1.no_light()) {
+			IO.msg_print("You have no light to read by.");
+		} else if (Player.py.flags.confused > 0) {
+			IO.msg_print("You are too confused.");
+		} else if (Moria1.get_item(item_val, "Which Book?", i.value(), k.value(), "", "")) {
 			flag = true;
-			i_ptr = t.inventory[item_val.value()];
-			if (py.Class[py.py.misc.pclass].spell == Constants.MAGE) {
+			i_ptr = Treasure.inventory[item_val.value()];
+			if (Player.Class[Player.py.misc.pclass].spell == Constants.MAGE) {
 				if (i_ptr.tval != Constants.TV_MAGIC_BOOK) {
 					flag = false;
 				}
-			} else if (py.Class[py.py.misc.pclass].spell == Constants.PRIEST) {
+			} else if (Player.Class[Player.py.misc.pclass].spell == Constants.PRIEST) {
 				if (i_ptr.tval != Constants.TV_PRAYER_BOOK) {
 					flag = false;
 				}
@@ -1733,38 +1663,38 @@ public class Dungeon {
 			}
 			
 			if (!flag) {
-				io.msg_print("You do not understand the language.");
+				IO.msg_print("You do not understand the language.");
 			} else {
 				i.value(0);
-				j = new LongPointer(t.inventory[item_val.value()].flags);
+				j = new LongPointer(Treasure.inventory[item_val.value()].flags);
 				while (j.value() != 0) {
-					k.value(m1.bit_pos(j));
-					s_ptr = py.magic_spell[py.py.misc.pclass - 1][k.value()];
+					k.value(Misc1.bit_pos(j));
+					s_ptr = Player.magic_spell[Player.py.misc.pclass - 1][k.value()];
 					if (s_ptr.slevel < 99) {
 						spell_index[i.value()] = k.value();
 						i.value(i.value() + 1);
 					}
 				}
-				io.save_screen();
-				m3.print_spells(spell_index, i.value(), true, -1);
-				io.pause_line(0);
-				io.restore_screen();
+				IO.save_screen();
+				Misc3.print_spells(spell_index, i.value(), true, -1);
+				IO.pause_line(0);
+				IO.restore_screen();
 			}
 		}
 	}
 	
 	/* Go up one level					-RAK-	*/
-	public void go_up() {
+	public static void go_up() {
 		CaveType c_ptr;
 		boolean no_stairs = false;
 		
-		c_ptr = var.cave[py.char_row][py.char_col];
+		c_ptr = Variable.cave[Player.char_row][Player.char_col];
 		if (c_ptr.tptr != 0) {
-			if (t.t_list[c_ptr.tptr].tval == Constants.TV_UP_STAIR) {
-				var.dun_level--;
-				var.new_level_flag = true;
-				io.msg_print("You enter a maze of up staircases.");
-				io.msg_print("You pass through a one-way door.");
+			if (Treasure.t_list[c_ptr.tptr].tval == Constants.TV_UP_STAIR) {
+				Variable.dun_level--;
+				Variable.new_level_flag = true;
+				IO.msg_print("You enter a maze of up staircases.");
+				IO.msg_print("You pass through a one-way door.");
 			} else {
 				no_stairs = true;
 			}
@@ -1773,23 +1703,23 @@ public class Dungeon {
 		}
 		
 		if (no_stairs) {
-			io.msg_print("I see no up staircase here.");
-			var.free_turn_flag = true;
+			IO.msg_print("I see no up staircase here.");
+			Variable.free_turn_flag = true;
 		}
 	}
 	
 	/* Go down one level					-RAK-	*/
-	public void go_down() {
+	public static void go_down() {
 		CaveType c_ptr;
 		boolean no_stairs = false;
 		
-		c_ptr = var.cave[py.char_row][py.char_col];
+		c_ptr = Variable.cave[Player.char_row][Player.char_col];
 		if (c_ptr.tptr != 0) {
-			if (t.t_list[c_ptr.tptr].tval == Constants.TV_DOWN_STAIR) {
-				var.dun_level++;
-				var.new_level_flag = true;
-				io.msg_print("You enter a maze of down staircases.");
-				io.msg_print("You pass through a one-way door.");
+			if (Treasure.t_list[c_ptr.tptr].tval == Constants.TV_DOWN_STAIR) {
+				Variable.dun_level++;
+				Variable.new_level_flag = true;
+				IO.msg_print("You enter a maze of down staircases.");
+				IO.msg_print("You pass through a one-way door.");
 			} else {
 				no_stairs = true;
 			}
@@ -1798,93 +1728,93 @@ public class Dungeon {
 		}
 		
 		if (no_stairs) {
-			io.msg_print("I see no down staircase here.");
-			var.free_turn_flag = true;
+			IO.msg_print("I see no down staircase here.");
+			Variable.free_turn_flag = true;
 		}
 	}
 	
 	/* Jam a closed door					-RAK-	*/
-	public void jamdoor() {
+	public static void jamdoor() {
 		IntPointer y, x, dir = new IntPointer();
 		IntPointer i = new IntPointer(), j = new IntPointer();
 		CaveType c_ptr;
 		InvenType t_ptr, i_ptr;
 		String tmp_str;
 		
-		var.free_turn_flag = true;
-		y = new IntPointer(py.char_row);
-		x = new IntPointer(py.char_col);
-		if (mor1.get_dir("", dir)) {
-			m3.mmove(dir.value(), y, x);
-			c_ptr = var.cave[y.value()][x.value()];
+		Variable.free_turn_flag = true;
+		y = new IntPointer(Player.char_row);
+		x = new IntPointer(Player.char_col);
+		if (Moria1.get_dir("", dir)) {
+			Misc3.mmove(dir.value(), y, x);
+			c_ptr = Variable.cave[y.value()][x.value()];
 			if (c_ptr.tptr != 0) {
-				t_ptr = t.t_list[c_ptr.tptr];
+				t_ptr = Treasure.t_list[c_ptr.tptr];
 				if (t_ptr.tval == Constants.TV_CLOSED_DOOR) {
 					if (c_ptr.cptr == 0) {
-						if (m3.find_range(Constants.TV_SPIKE, Constants.TV_NEVER, i, j)) {
-							var.free_turn_flag = false;
-							io.count_msg_print("You jam the door with a spike.");
+						if (Misc3.find_range(Constants.TV_SPIKE, Constants.TV_NEVER, i, j)) {
+							Variable.free_turn_flag = false;
+							IO.count_msg_print("You jam the door with a spike.");
 							if (t_ptr.p1 > 0) {
 								t_ptr.p1 = -t_ptr.p1;	/* Make locked to stuck. */
 							}
 							/* Successive spikes have a progressively smaller effect.
 							 * Series is: 0 20 30 37 43 48 52 56 60 64 67 70 ... */
 							t_ptr.p1 -= 1 + 190 / (10 - t_ptr.p1);
-							i_ptr = t.inventory[i.value()];
+							i_ptr = Treasure.inventory[i.value()];
 							if (i_ptr.number > 1) {
 								i_ptr.number--;
-								t.inven_weight -= i_ptr.weight;
+								Treasure.inven_weight -= i_ptr.weight;
 							} else {
-								m3.inven_destroy(i.value());
+								Misc3.inven_destroy(i.value());
 							}
 						} else {
-							io.msg_print("But you have no spikes.");
+							IO.msg_print("But you have no spikes.");
 						}
 					} else {
-						var.free_turn_flag = false;
-						tmp_str = String.format("The %s is in your way!", mon.c_list[mon.m_list[c_ptr.cptr].mptr].name);
-						io.msg_print(tmp_str);
+						Variable.free_turn_flag = false;
+						tmp_str = String.format("The %s is in your way!", Monsters.c_list[Monsters.m_list[c_ptr.cptr].mptr].name);
+						IO.msg_print(tmp_str);
 					}
 				} else if (t_ptr.tval == Constants.TV_OPEN_DOOR) {
-					io.msg_print("The door must be closed first.");
+					IO.msg_print("The door must be closed first.");
 				} else {
-					io.msg_print("That isn't a door!");
+					IO.msg_print("That isn't a door!");
 				}
 			} else {
-				io.msg_print("That isn't a door!");
+				IO.msg_print("That isn't a door!");
 			}
 		}
 	}
 	
 	/* Refill the players lamp				-RAK-	*/
-	public void refill_lamp() {
+	public static void refill_lamp() {
 		IntPointer i = new IntPointer(), j = new IntPointer();
 		int k;
 		InvenType i_ptr;
 		
-		var.free_turn_flag = true;
-		k = t.inventory[Constants.INVEN_LIGHT].subval;
+		Variable.free_turn_flag = true;
+		k = Treasure.inventory[Constants.INVEN_LIGHT].subval;
 		if (k != 0) {
-			io.msg_print("But you are not using a lamp.");
-		} else if (!m3.find_range(Constants.TV_FLASK, Constants.TV_NEVER, i, j)) {
-			io.msg_print("You have no oil.");
+			IO.msg_print("But you are not using a lamp.");
+		} else if (!Misc3.find_range(Constants.TV_FLASK, Constants.TV_NEVER, i, j)) {
+			IO.msg_print("You have no oil.");
 		} else {
-			var.free_turn_flag = false;
-			i_ptr = t.inventory[Constants.INVEN_LIGHT];
-			i_ptr.p1 += t.inventory[i.value()].p1;
+			Variable.free_turn_flag = false;
+			i_ptr = Treasure.inventory[Constants.INVEN_LIGHT];
+			i_ptr.p1 += Treasure.inventory[i.value()].p1;
 			if (i_ptr.p1 > Constants.OBJ_LAMP_MAX) {
 				i_ptr.p1 = Constants.OBJ_LAMP_MAX;
-				io.msg_print ("Your lamp overflows, spilling oil on the ground.");
-				io.msg_print("Your lamp is full.");
+				IO.msg_print ("Your lamp overflows, spilling oil on the ground.");
+				IO.msg_print("Your lamp is full.");
 			} else if (i_ptr.p1 > Constants.OBJ_LAMP_MAX/2) {
-				io.msg_print ("Your lamp is more than half full.");
+				IO.msg_print ("Your lamp is more than half full.");
 			} else if (i_ptr.p1 == Constants.OBJ_LAMP_MAX/2) {
-				io.msg_print ("Your lamp is half full.");
+				IO.msg_print ("Your lamp is half full.");
 			} else {
-				io.msg_print ("Your lamp is less than half full.");
+				IO.msg_print ("Your lamp is less than half full.");
 			}
-			desc.desc_remain(i.value());
-			m3.inven_destroy(i.value());
+			Desc.desc_remain(i.value());
+			Misc3.inven_destroy(i.value());
 		}
 	}
 }

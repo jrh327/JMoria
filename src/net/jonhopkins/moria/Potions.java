@@ -28,40 +28,11 @@ import net.jonhopkins.moria.types.LongPointer;
 import net.jonhopkins.moria.types.PlayerMisc;
 
 public class Potions {
-	private Desc desc;
-	private IO io;
-	private Misc1 m1;
-	private Misc3 m3;
-	private Moria1 mor1;
-	private Player py;
-	private Spells spells;
-	private Treasure t;
-	private Variable var;
 	
-	private static Potions instance;
 	private Potions() { }
-	public static Potions getInstance() {
-		if (instance == null) {
-			instance = new Potions();
-			instance.init();
-		}
-		return instance;
-	}
-	
-	private void init() {
-		desc = Desc.getInstance();
-		io = IO.getInstance();
-		m1 = Misc1.getInstance();
-		m3 = Misc3.getInstance();
-		mor1 = Moria1.getInstance();
-		py = Player.getInstance();
-		spells = Spells.getInstance();
-		t = Treasure.getInstance();
-		var = Variable.getInstance();
-	}
 	
 	/* Potions for the quaffing				-RAK-	*/
-	public void quaff() {
+	public static void quaff() {
 		LongPointer i = new LongPointer();
 		long l;
 		IntPointer j = new IntPointer(), k = new IntPointer();
@@ -71,305 +42,305 @@ public class Potions {
 		PlayerMisc m_ptr;
 		PlayerFlags f_ptr;
 		
-		var.free_turn_flag = true;
-		if (t.inven_ctr == 0) {
-			io.msg_print("But you are not carrying anything.");
-		} else if (!m3.find_range(Constants.TV_POTION1, Constants.TV_POTION2, j, k)) {
-			io.msg_print("You are not carrying any potions.");
-		} else if (mor1.get_item(item_val, "Quaff which potion?", j.value(), k.value(), "", "")) {
-			i_ptr = t.inventory[item_val.value()];
+		Variable.free_turn_flag = true;
+		if (Treasure.inven_ctr == 0) {
+			IO.msg_print("But you are not carrying anything.");
+		} else if (!Misc3.find_range(Constants.TV_POTION1, Constants.TV_POTION2, j, k)) {
+			IO.msg_print("You are not carrying any potions.");
+		} else if (Moria1.get_item(item_val, "Quaff which potion?", j.value(), k.value(), "", "")) {
+			i_ptr = Treasure.inventory[item_val.value()];
 			i.value(i_ptr.flags);
-			var.free_turn_flag = false;
+			Variable.free_turn_flag = false;
 			ident = false;
 			if (i.value() == 0) {
-				io.msg_print ("You feel less thirsty.");
+				IO.msg_print ("You feel less thirsty.");
 				ident = true;
 			} else while (i.value() != 0) {
-				j.value(m1.bit_pos(i) + 1);
+				j.value(Misc1.bit_pos(i) + 1);
 				if (i_ptr.tval == Constants.TV_POTION2)
 					j.value(j.value() + 32);
 				/* Potions						*/
 				switch(j.value())
 				{
 				case 1:
-					if (m3.inc_stat(Constants.A_STR)) {
-						io.msg_print("Wow!  What bulging muscles!");
+					if (Misc3.inc_stat(Constants.A_STR)) {
+						IO.msg_print("Wow!  What bulging muscles!");
 						ident = true;
 					}
 					break;
 				case 2:
 					ident = true;
-					spells.lose_str();
+					Spells.lose_str();
 					break;
 				case 3:
-					if (m3.res_stat(Constants.A_STR)) {
-						io.msg_print("You feel warm all over.");
+					if (Misc3.res_stat(Constants.A_STR)) {
+						IO.msg_print("You feel warm all over.");
 						ident = true;
 					}
 					break;
 				case 4:
-					if (m3.inc_stat(Constants.A_INT)) {
-						io.msg_print("Aren't you brilliant!");
+					if (Misc3.inc_stat(Constants.A_INT)) {
+						IO.msg_print("Aren't you brilliant!");
 						ident = true;
 					}
 					break;
 				case 5:
 					ident = true;
-					spells.lose_int();
+					Spells.lose_int();
 					break;
 				case 6:
-					if (m3.res_stat(Constants.A_INT)) {
-						io.msg_print("You have have a warm feeling.");
+					if (Misc3.res_stat(Constants.A_INT)) {
+						IO.msg_print("You have have a warm feeling.");
 						ident = true;
 					}
 					break;
 				case 7:
-					if (m3.inc_stat(Constants.A_WIS)) {
-						io.msg_print("You suddenly have a profound thought!");
+					if (Misc3.inc_stat(Constants.A_WIS)) {
+						IO.msg_print("You suddenly have a profound thought!");
 						ident = true;
 					}
 					break;
 				case 8:
 					ident = true;
-					spells.lose_wis();
+					Spells.lose_wis();
 					break;
 				case 9:
-					if (m3.res_stat(Constants.A_WIS)) {
-						io.msg_print("You feel your wisdom returning.");
+					if (Misc3.res_stat(Constants.A_WIS)) {
+						IO.msg_print("You feel your wisdom returning.");
 						ident = true;
 					}
 					break;
 				case 10:
-					if (m3.inc_stat(Constants.A_CHR)) {
-						io.msg_print("Gee, ain't you cute!");
+					if (Misc3.inc_stat(Constants.A_CHR)) {
+						IO.msg_print("Gee, ain't you cute!");
 						ident = true;
 					}
 					break;
 				case 11:
 					ident = true;
-					spells.lose_chr();
+					Spells.lose_chr();
 					break;
 				case 12:
-					if (m3.res_stat(Constants.A_CHR)) {
-						io.msg_print("You feel your looks returning.");
+					if (Misc3.res_stat(Constants.A_CHR)) {
+						IO.msg_print("You feel your looks returning.");
 						ident = true;
 					}
 					break;
 				case 13:
-					ident = spells.hp_player(m1.damroll(2, 7));
+					ident = Spells.hp_player(Misc1.damroll(2, 7));
 					break;
 				case 14:
-					ident = spells.hp_player(m1.damroll(4, 7));
+					ident = Spells.hp_player(Misc1.damroll(4, 7));
 					break;
 				case 15:
-					ident = spells.hp_player(m1.damroll(6, 7));
+					ident = Spells.hp_player(Misc1.damroll(6, 7));
 					break;
 				case 16:
-					ident = spells.hp_player(1000);
+					ident = Spells.hp_player(1000);
 					break;
 				case 17:
-					if (m3.inc_stat(Constants.A_CON)) {
-						io.msg_print("You feel tingly for a moment.");
+					if (Misc3.inc_stat(Constants.A_CON)) {
+						IO.msg_print("You feel tingly for a moment.");
 						ident = true;
 					}
 					break;
 				case 18:
-					m_ptr = py.py.misc;
+					m_ptr = Player.py.misc;
 					if (m_ptr.exp < Constants.MAX_EXP) {
 						l = (m_ptr.exp / 2) + 10;
 						if (l > 100000L)  l = 100000L;
 						m_ptr.exp += l;
-						io.msg_print("You feel more experienced.");
-						m3.prt_experience();
+						IO.msg_print("You feel more experienced.");
+						Misc3.prt_experience();
 						ident = true;
 					}
 					break;
 				case 19:
-					f_ptr = py.py.flags;
+					f_ptr = Player.py.flags;
 					if (!f_ptr.free_act) {
 						/* paralysis must == 0, otherwise could not drink potion */
-						io.msg_print("You fall asleep.");
-						f_ptr.paralysis += m1.randint(4) + 4;
+						IO.msg_print("You fall asleep.");
+						f_ptr.paralysis += Misc1.randint(4) + 4;
 						ident = true;
 					}
 					break;
 				case 20:
-					f_ptr = py.py.flags;
+					f_ptr = Player.py.flags;
 					if (f_ptr.blind == 0) {
-						io.msg_print("You are covered by a veil of darkness.");
+						IO.msg_print("You are covered by a veil of darkness.");
 						ident = true;
 					}
-					f_ptr.blind += m1.randint(100) + 100;
+					f_ptr.blind += Misc1.randint(100) + 100;
 					break;
 				case 21:
-					f_ptr = py.py.flags;
+					f_ptr = Player.py.flags;
 					if (f_ptr.confused == 0) {
-						io.msg_print("Hey!  This is good stuff!  * Hick! *");
+						IO.msg_print("Hey!  This is good stuff!  * Hick! *");
 						ident = true;
 					}
-					f_ptr.confused += m1.randint(20) + 12;
+					f_ptr.confused += Misc1.randint(20) + 12;
 					break;
 				case 22:
-					f_ptr = py.py.flags;
+					f_ptr = Player.py.flags;
 					if (f_ptr.poisoned == 0) {
-						io.msg_print("You feel very sick.");
+						IO.msg_print("You feel very sick.");
 						ident = true;
 					}
-					f_ptr.poisoned += m1.randint(15) + 10;
+					f_ptr.poisoned += Misc1.randint(15) + 10;
 					break;
 				case 23:
-					if (py.py.flags.fast == 0) {
+					if (Player.py.flags.fast == 0) {
 						ident = true;
 					}
-					py.py.flags.fast += m1.randint(25) + 15;
+					Player.py.flags.fast += Misc1.randint(25) + 15;
 					break;
 				case 24:
-					if (py.py.flags.slow == 0) {
+					if (Player.py.flags.slow == 0) {
 						ident = true;
 					}
-					py.py.flags.slow += m1.randint(25) + 15;
+					Player.py.flags.slow += Misc1.randint(25) + 15;
 					break;
 				case 26:
-					if (m3.inc_stat(Constants.A_DEX)) {
-						io.msg_print("You feel more limber!");
+					if (Misc3.inc_stat(Constants.A_DEX)) {
+						IO.msg_print("You feel more limber!");
 						ident = true;
 					}
 					break;
 				case 27:
-					if (m3.res_stat(Constants.A_DEX)) {
-						io.msg_print("You feel less clumsy.");
+					if (Misc3.res_stat(Constants.A_DEX)) {
+						IO.msg_print("You feel less clumsy.");
 						ident = true;
 					}
 					break;
 				case 28:
-					if (m3.res_stat(Constants.A_CON)) {
-						io.msg_print("You feel your health returning!");
+					if (Misc3.res_stat(Constants.A_CON)) {
+						IO.msg_print("You feel your health returning!");
 						ident = true;
 					}
 					break;
 				case 29:
-					ident = spells.cure_blindness();
+					ident = Spells.cure_blindness();
 					break;
 				case 30:
-					ident = spells.cure_confusion();
+					ident = Spells.cure_confusion();
 					break;
 				case 31:
-					ident = spells.cure_poison();
+					ident = Spells.cure_poison();
 					break;
 				case 34:
-					if (py.py.misc.exp > 0) {
+					if (Player.py.misc.exp > 0) {
 						int m, scale;
-						io.msg_print("You feel your memories fade.");
+						IO.msg_print("You feel your memories fade.");
 						/* Lose between 1/5 and 2/5 of your experience */
-						m = py.py.misc.exp / 5;
-						if (py.py.misc.exp > Constants.MAX_SHORT) {
-							scale = (int)(Constants.MAX_LONG / py.py.misc.exp);
-							m += (m1.randint(scale) * py.py.misc.exp) / (scale * 5);
+						m = Player.py.misc.exp / 5;
+						if (Player.py.misc.exp > Constants.MAX_SHORT) {
+							scale = (int)(Constants.MAX_LONG / Player.py.misc.exp);
+							m += (Misc1.randint(scale) * Player.py.misc.exp) / (scale * 5);
 						} else {
-							m += m1.randint(py.py.misc.exp) / 5;
+							m += Misc1.randint(Player.py.misc.exp) / 5;
 						}
-						spells.lose_exp(m);
+						Spells.lose_exp(m);
 						ident = true;
 					}
 					break;
 				case 35:
-					f_ptr = py.py.flags;
-					spells.cure_poison();
+					f_ptr = Player.py.flags;
+					Spells.cure_poison();
 					if (f_ptr.food > 150)  f_ptr.food = 150;
 					f_ptr.paralysis = 4;
-					io.msg_print("The potion makes you vomit!");
+					IO.msg_print("The potion makes you vomit!");
 					ident = true;
 					break;
 				case 36:
-					if (py.py.flags.invuln == 0) {
+					if (Player.py.flags.invuln == 0) {
 						ident = true;
 					}
-					py.py.flags.invuln += m1.randint(10) + 10;
+					Player.py.flags.invuln += Misc1.randint(10) + 10;
 					break;
 				case 37:
-					if (py.py.flags.hero == 0) {
+					if (Player.py.flags.hero == 0) {
 						ident = true;
 					}
-					py.py.flags.hero += m1.randint(25) + 25;
+					Player.py.flags.hero += Misc1.randint(25) + 25;
 					break;
 				case 38:
-					if (py.py.flags.shero == 0) {
+					if (Player.py.flags.shero == 0) {
 						ident = true;
 					}
-					py.py.flags.shero += m1.randint(25) + 25;
+					Player.py.flags.shero += Misc1.randint(25) + 25;
 					break;
 				case 39:
-					ident = spells.remove_fear();
+					ident = Spells.remove_fear();
 					break;
 				case 40:
-					ident = spells.restore_level();
+					ident = Spells.restore_level();
 					break;
 				case 41:
-					f_ptr = py.py.flags;
+					f_ptr = Player.py.flags;
 					if (f_ptr.resist_heat == 0) {
 						ident = true;
 					}
-					f_ptr.resist_heat += m1.randint(10) + 10;
+					f_ptr.resist_heat += Misc1.randint(10) + 10;
 					break;
 				case 42:
-					f_ptr = py.py.flags;
+					f_ptr = Player.py.flags;
 					if (f_ptr.resist_cold == 0) {
 						ident = true;
 					}
-					f_ptr.resist_cold += m1.randint(10) + 10;
+					f_ptr.resist_cold += Misc1.randint(10) + 10;
 					break;
 				case 43:
-					if (py.py.flags.detect_inv == 0) {
+					if (Player.py.flags.detect_inv == 0) {
 						ident = true;
 					}
-					spells.detect_inv2(m1.randint(12) + 12);
+					Spells.detect_inv2(Misc1.randint(12) + 12);
 					break;
 				case 44:
-					ident = spells.slow_poison();
+					ident = Spells.slow_poison();
 					break;
 				case 45:
-					ident = spells.cure_poison();
+					ident = Spells.cure_poison();
 					break;
 				case 46:
-					m_ptr = py.py.misc;
+					m_ptr = Player.py.misc;
 					if (m_ptr.cmana < m_ptr.mana) {
 						m_ptr.cmana = m_ptr.mana;
 						ident = true;
-						io.msg_print("Your feel your head clear.");
-						m3.prt_cmana();
+						IO.msg_print("Your feel your head clear.");
+						Misc3.prt_cmana();
 					}
 					break;
 				case 47:
-					f_ptr = py.py.flags;
+					f_ptr = Player.py.flags;
 					if (f_ptr.tim_infra == 0) {
-						io.msg_print("Your eyes begin to tingle.");
+						IO.msg_print("Your eyes begin to tingle.");
 						ident = true;
 					}
-					f_ptr.tim_infra += 100 + m1.randint(100);
+					f_ptr.tim_infra += 100 + Misc1.randint(100);
 					break;
 				default:
-					io.msg_print("Internal error in potion()");
+					IO.msg_print("Internal error in potion()");
 					break;
 				}
 				/* End of Potions.					*/
 			}
 			if (ident) {
-				if (!desc.known1_p(i_ptr)) {
-					m_ptr = py.py.misc;
+				if (!Desc.known1_p(i_ptr)) {
+					m_ptr = Player.py.misc;
 					/* round half-way case up */
 					m_ptr.exp += (i_ptr.level + (m_ptr.lev >> 1)) / m_ptr.lev;
-					m3.prt_experience();
+					Misc3.prt_experience();
 					
-					desc.identify(item_val);
-					i_ptr = t.inventory[item_val.value()];
+					Desc.identify(item_val);
+					i_ptr = Treasure.inventory[item_val.value()];
 				}
-			} else if (!desc.known1_p(i_ptr)) {
-				desc.sample(i_ptr);
+			} else if (!Desc.known1_p(i_ptr)) {
+				Desc.sample(i_ptr);
 			}
 			
-			m1.add_food(i_ptr.p1);
-			desc.desc_remain(item_val.value());
-			m3.inven_destroy(item_val.value());
+			Misc1.add_food(i_ptr.p1);
+			Desc.desc_remain(item_val.value());
+			Misc3.inven_destroy(item_val.value());
 		}
 	}
 }

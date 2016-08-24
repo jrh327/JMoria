@@ -28,33 +28,22 @@ import net.jonhopkins.moria.types.PlayerRaceType;
 import net.jonhopkins.moria.types.SpellType;
 
 public class Player {
-	private static Player instance;
-	private Player() { }
-	public static Player getInstance() {
-		if (instance == null) {
-			instance = new Player();
-			instance.init();
-		}
-		return instance;
-	}
 	
-	private void init() {
-		
-	}
+	private Player() { }
 	
 	/* Player record for most player related info */
-	public PlayerType py = new PlayerType();
+	public static PlayerType py = new PlayerType();
 	
 	/* player location in dungeon */
-	public int char_row;
-	public int char_col;
+	public static int char_row;
+	public static int char_col;
 	/* calculated base hp values for player at each level, store them so that
 	 * drain life + restore life does not affect hit points */
-	public int[] player_hp = new int[Constants.MAX_PLAYER_LEVEL];
+	public static int[] player_hp = new int[Constants.MAX_PLAYER_LEVEL];
 	
 	/* Class titles for different levels				*/
 	//String[MAX_CLASS][MAX_PLAYER_LEVEL]
-	public String[][] player_title = {
+	public static String[][] player_title = {
 			/* Warrior	 */
 			{
 				"Rookie","Private","Soldier","Mercenary","Veteran(1st)","Veteran(2nd)",
@@ -125,7 +114,7 @@ public class Player {
 	
 	/* Base experience levels, may be adjusted up for race and/or class*/
 	//long[MAX_PLAYER_LEVEL]
-	public int[] player_exp = {
+	public static int[] player_exp = {
 			10,     25,     45,     70,     100,     140,     200,      280,
 		   380,    500,    650,    850,    1100,    1400,    1800,     2300,
 		  2900,   3600,   4400,   5400,    6800,    8400,   10200,    12500,
@@ -138,7 +127,7 @@ public class Player {
 		Racial Bases for: dis,srh,stl,fos,bth,bthb,bsav,hitdie,
 		infra, exp base, choice-classes */
 	//Race_type[MAX_RACES]
-	public PlayerRaceType[] race = {
+	public static PlayerRaceType[] race = {
 	   new PlayerRaceType("Human",	 0,  0,	 0,  0,	 0,  0,
 	      14,  6, 72,  6,180, 25, 66,  4,150, 20,
 	      0,  0,  0,  0,  0,  0,  0, 10,  0, 100, 0x3F
@@ -175,7 +164,7 @@ public class Player {
 	
 	/* Background information					*/
 	//Backgound_type[MAX_BACKGROUND]
-	public BackgroundType[] background = {
+	public static BackgroundType[] background = {
 			new BackgroundType("You are the illegitimate and unacknowledged child ", 10, 1, 2, 25),
 			new BackgroundType("You are the illegitimate but acknowledged child ", 20, 1, 2, 35),
 			new BackgroundType("You are one of several children ", 95, 1, 2, 45),
@@ -308,7 +297,7 @@ public class Player {
 	
 	/* Classes.							*/
 	//Class_type[MAX_CLASS]
-	public ClassType[] Class = {
+	public static ClassType[] Class = {
 			/*	  HP Dis Src Stl Fos bth btb sve S  I  W  D Co Ch  Spell Exp  spl */
 			new ClassType("Warrior",9, 25, 14, 1, 38, 70, 55, 18, 5,-2,-2, 2, 2,-1, Constants.NONE,    0, 0),
 			new ClassType("Mage",   0, 30, 16, 2, 20, 34, 20, 36,-5, 3, 0, 1,-2, 1, Constants.MAGE,   30, 1),
@@ -323,7 +312,7 @@ public class Player {
 	/* CLA_MISC_HIT is identical to CLA_SAVE, which takes advantage of
 	 * the fact that the save values are independent of the class */
 	//short[MAX_CLASS][MAX_LEV_ADJ]
-	public short[][] class_level_adj= {
+	public static short[][] class_level_adj= {
 			/*	       bth    bthb   device  disarm   save/misc hit  */
 			/* Warrior */ {	4,	4,	2,	2,	3 },
 			/* Mage    */ { 2,	2,	4,	3,	3 },
@@ -333,16 +322,16 @@ public class Player {
 			/* Paladin */ { 3,	3,	3,	2,	3 }
 	};
 	
-	public long spell_learned = 0;				/* bit mask of spells learned */
-	public long spell_worked = 0;				/* bit mask of spells tried and worked */
-	public long spell_forgotten = 0;			/* bit mask of spells learned but forgotten */
-	public int[] spell_order = new int[32];		/* order spells learned/remembered/forgotten */
+	public static long spell_learned = 0;			/* bit mask of spells learned */
+	public static long spell_worked = 0;			/* bit mask of spells tried and worked */
+	public static long spell_forgotten = 0;			/* bit mask of spells learned but forgotten */
+	public static int[] spell_order = new int[32];	/* order spells learned/remembered/forgotten */
 	
 	/* Warriors don't have spells, so there is no entry for them.  Note that
 	 * this means you must always subtract one from the py.misc.pclass before
 	 * indexing into magic_spell[]. */
 	//Spell_type[MAX_CLASS - 1][31]
-	public SpellType[][] magic_spell = {
+	public static SpellType[][] magic_spell = {
 			{	/* Mage	   */
 				new SpellType(  1,  1, 22,   1),
 				new SpellType(  1,  1, 23,   1),
@@ -511,7 +500,7 @@ public class Player {
 	};
 	
 	//String[62]
-	public String[] spell_names = {
+	public static String[] spell_names = {
 			/* Mage Spells */
 			"Magic Missile", "Detect Monsters", "Phase Door", "Light Area",
 			"Cure Light Wounds", "Find Hidden Traps/Doors", "Stinking Cloud",
@@ -537,7 +526,7 @@ public class Player {
 	/* 344 = Food Ration, 365 = Wooden Torch, 123 = Cloak, 318 = Beginners-Majik,
 	 * 103 = Soft Leather Armor, 30 = Stiletto, 322 = Beginners Handbook */
 	//short[MAX_CLASS][5]
-	public short[][] player_init = {
+	public static short[][] player_init = {
 		{ 344, 365, 123,  30, 103},	/* Warrior	 */
 		{ 344, 365, 123,  30, 318},	/* Mage		 */
 		{ 344, 365, 123,  30, 322},	/* Priest	 */

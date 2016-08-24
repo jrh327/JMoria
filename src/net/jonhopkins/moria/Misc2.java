@@ -26,40 +26,8 @@ import net.jonhopkins.moria.types.InvenType;
 import net.jonhopkins.moria.types.OptionDescType;
 
 public class Misc2 {
-	private IO io;
-	private Misc1 m1;
-	private Treasure t;
-	private Variable var;
 	
-	private static Misc2 instance;
 	private Misc2() { }
-	public static Misc2 getInstance() {
-		if (instance == null) {
-			instance = new Misc2();
-			instance.init();
-		}
-		return instance;
-	}
-	
-	private void init() {
-		io = IO.getInstance();
-		m1 = Misc1.getInstance();
-		t = Treasure.getInstance();
-		var = Variable.getInstance();
-		options = new OptionDescType[] {
-				new OptionDescType("Running: cut known corners", var.find_cut),
-				new OptionDescType("Running: examine potential corners", var.find_examine),
-				new OptionDescType("Running: print self during run", var.find_prself),
-				new OptionDescType("Running: stop when map sector changes", var.find_bound),
-				new OptionDescType("Running: run through open doors", var.find_ignore_doors),
-				new OptionDescType("Prompt to pick up objects", var.prompt_carry_flag),
-				new OptionDescType("Rogue like commands", var.rogue_like_commands),
-				new OptionDescType("Show weights in inventory", var.show_weight_flag),
-				new OptionDescType("Highlight and notice mineral seams", var.highlight_seams),
-				new OptionDescType("Beep for invalid character", var.sound_beep_flag),
-				new OptionDescType("Display rest/repeat counts", var.display_counts),
-				new OptionDescType("", new BooleanPointer(false)) };
-	}
 	
 	/**
 	 * Chance of treasure having magic abilities. Chance increases with each dungeon level -RAK-
@@ -67,7 +35,7 @@ public class Misc2 {
 	 * @param x - Index in the treasure array of the item being checked
 	 * @param level - Dungeon level at which the player found the object
 	 */
-	public void magic_treasure(int x, int level) {
+	public static void magic_treasure(int x, int level) {
 		InvenType t_ptr;
 		int chance, special, cursed, i;
 		int tmp;
@@ -78,7 +46,7 @@ public class Misc2 {
 		}
 		special = chance / Constants.OBJ_DIV_SPECIAL;
 		cursed  = (10 * chance) / Constants.OBJ_DIV_CURSED;
-		t_ptr = t.t_list[x];
+		t_ptr = Treasure.t_list[x];
 		
 		/* some objects appear multiple times in the object_list with different
 		 * levels, this is to make the object occur more often, however, for
@@ -89,10 +57,10 @@ public class Misc2 {
 		switch (t_ptr.tval)
 		{
 		case Constants.TV_SHIELD: case Constants.TV_HARD_ARMOR: case Constants.TV_SOFT_ARMOR:
-			if (m1.magik(chance)) {
-				t_ptr.toac += m1.m_bonus(1, 30, level);
-				if (m1.magik(special)) {
-					switch(m1.randint(9))
+			if (Misc1.magik(chance)) {
+				t_ptr.toac += Misc1.m_bonus(1, 30, level);
+				if (Misc1.magik(special)) {
+					switch(Misc1.randint(9))
 					{
 					case 1:
 						t_ptr.flags |= (Constants.TR_RES_LIGHT | Constants.TR_RES_COLD | Constants.TR_RES_ACID | Constants.TR_RES_FIRE);
@@ -122,8 +90,8 @@ public class Misc2 {
 						break;
 					}
 				}
-			} else if (m1.magik(cursed)) {
-				t_ptr.toac -= m1.m_bonus(1, 40, level);
+			} else if (Misc1.magik(cursed)) {
+				t_ptr.toac -= Misc1.m_bonus(1, 40, level);
 				t_ptr.cost = 0;
 				t_ptr.flags |= Constants.TR_CURSED;
 			}
@@ -132,25 +100,25 @@ public class Misc2 {
 		case Constants.TV_HAFTED: case Constants.TV_POLEARM: case Constants.TV_SWORD:
 			/* always show tohit/todam values if identified */
 			t_ptr.ident |= Constants.ID_SHOW_HITDAM;
-			if (m1.magik(chance)) {
-				t_ptr.tohit += m1.m_bonus(0, 40, level);
+			if (Misc1.magik(chance)) {
+				t_ptr.tohit += Misc1.m_bonus(0, 40, level);
 				/* Magical damage bonus now proportional to weapon base damage */
 				tmp = t_ptr.damage[0] * t_ptr.damage[1];
-				t_ptr.todam += m1.m_bonus(0, 4 * tmp, tmp * level / 10);
+				t_ptr.todam += Misc1.m_bonus(0, 4 * tmp, tmp * level / 10);
 				/* the 3*special/2 is needed because weapons are not as common as
 				 * before change to treasure distribution, this helps keep same
 				 * number of ego weapons same as before, see also missiles */
-				if (m1.magik(3 * special / 2)) {
-					switch(m1.randint(16))
+				if (Misc1.magik(3 * special / 2)) {
+					switch(Misc1.randint(16))
 					{
 					case 1:	/* Holy Avenger	 */
 						t_ptr.flags |= (Constants.TR_SEE_INVIS | Constants.TR_SUST_STAT | Constants.TR_SLAY_UNDEAD | Constants.TR_SLAY_EVIL | Constants.TR_STR);
 						t_ptr.tohit += 5;
 						t_ptr.todam += 5;
-						t_ptr.toac  += m1.randint(4);
+						t_ptr.toac  += Misc1.randint(4);
 						/* the value in p1 is used for strength increase */
 						/* p1 is also used for sustain stat */
-						t_ptr.p1    = m1.randint(4);
+						t_ptr.p1    = Misc1.randint(4);
 						t_ptr.name2 = Constants.SN_HA;
 						t_ptr.cost += t_ptr.p1 * 500;
 						t_ptr.cost += 10000;
@@ -162,10 +130,10 @@ public class Misc2 {
 								Constants.TR_STEALTH);
 						t_ptr.tohit += 3;
 						t_ptr.todam += 3;
-						t_ptr.toac  += 5 + m1.randint(5);
+						t_ptr.toac  += 5 + Misc1.randint(5);
 						t_ptr.name2 = Constants.SN_DF;
 						/* the value in p1 is used for stealth */
-						t_ptr.p1    = m1.randint(3);
+						t_ptr.p1    = Misc1.randint(3);
 						t_ptr.cost += t_ptr.p1 * 500;
 						t_ptr.cost += 7500;
 						break;
@@ -213,11 +181,11 @@ public class Misc2 {
 						break;
 					}
 				}
-			} else if (m1.magik(cursed)) {
-				t_ptr.tohit -= m1.m_bonus(1, 55, level);
+			} else if (Misc1.magik(cursed)) {
+				t_ptr.tohit -= Misc1.m_bonus(1, 55, level);
 				/* Magical damage bonus now proportional to weapon base damage */
 				tmp = t_ptr.damage[0] * t_ptr.damage[1];
-				t_ptr.todam -= m1.m_bonus(1, 11 * tmp / 2, tmp * level / 10);
+				t_ptr.todam -= Misc1.m_bonus(1, 11 * tmp / 2, tmp * level / 10);
 				t_ptr.flags |= Constants.TR_CURSED;
 				t_ptr.cost = 0;
 			}
@@ -226,12 +194,12 @@ public class Misc2 {
 		case Constants.TV_BOW:
 			/* always show tohit/todam values if identified */
 			t_ptr.ident |= Constants.ID_SHOW_HITDAM;
-			if (m1.magik(chance)) {
-				t_ptr.tohit += m1.m_bonus(1, 30, level);
-				t_ptr.todam += m1.m_bonus(1, 20, level); /* add damage. -CJS- */
-			} else if (m1.magik(cursed)) {
-				t_ptr.tohit -= m1.m_bonus(1, 50, level);
-				t_ptr.todam -= m1.m_bonus(1, 30, level); /* add damage. -CJS- */
+			if (Misc1.magik(chance)) {
+				t_ptr.tohit += Misc1.m_bonus(1, 30, level);
+				t_ptr.todam += Misc1.m_bonus(1, 20, level); /* add damage. -CJS- */
+			} else if (Misc1.magik(cursed)) {
+				t_ptr.tohit -= Misc1.m_bonus(1, 50, level);
+				t_ptr.todam -= Misc1.m_bonus(1, 30, level); /* add damage. -CJS- */
 				t_ptr.flags |= Constants.TR_CURSED;
 				t_ptr.cost = 0;
 			}
@@ -240,13 +208,13 @@ public class Misc2 {
 		case Constants.TV_DIGGING:
 			/* always show tohit/todam values if identified */
 			t_ptr.ident |= Constants.ID_SHOW_HITDAM;
-			if (m1.magik(chance)) {
-				tmp = m1.randint(3);
+			if (Misc1.magik(chance)) {
+				tmp = Misc1.randint(3);
 				if (tmp < 3) {
-					t_ptr.p1 += m1.m_bonus(0, 25, level);
+					t_ptr.p1 += Misc1.m_bonus(0, 25, level);
 				} else {
 					/* a cursed digging tool */
-					t_ptr.p1 = -m1.m_bonus(1, 30, level);
+					t_ptr.p1 = -Misc1.m_bonus(1, 30, level);
 					t_ptr.cost = 0;
 					t_ptr.flags |= Constants.TR_CURSED;
 				}
@@ -254,24 +222,24 @@ public class Misc2 {
 			break;
 			
 		case Constants.TV_GLOVES:
-			if (m1.magik(chance)) {
-				t_ptr.toac += m1.m_bonus(1, 20, level);
-				if (m1.magik(special)) {
-					if (m1.randint(2) == 1) {
+			if (Misc1.magik(chance)) {
+				t_ptr.toac += Misc1.m_bonus(1, 20, level);
+				if (Misc1.magik(special)) {
+					if (Misc1.randint(2) == 1) {
 						t_ptr.flags |= Constants.TR_FREE_ACT;
 						t_ptr.name2 = Constants.SN_FREE_ACTION;
 						t_ptr.cost += 1000;
 					} else {
 						t_ptr.ident |= Constants.ID_SHOW_HITDAM;
-						t_ptr.tohit += 1 + m1.randint(3);
-						t_ptr.todam += 1 + m1.randint(3);
+						t_ptr.tohit += 1 + Misc1.randint(3);
+						t_ptr.todam += 1 + Misc1.randint(3);
 						t_ptr.name2 = Constants.SN_SLAYING;
 						t_ptr.cost += (t_ptr.tohit + t_ptr.todam) * 250;
 					}
 				}
-			} else if (m1.magik(cursed)) {
-				if (m1.magik(special)) {
-					if (m1.randint(2) == 1) {
+			} else if (Misc1.magik(cursed)) {
+				if (Misc1.magik(special)) {
+					if (Misc1.randint(2) == 1) {
 						t_ptr.flags |= Constants.TR_DEX;
 						t_ptr.name2 = Constants.SN_CLUMSINESS;
 					} else {
@@ -279,19 +247,19 @@ public class Misc2 {
 						t_ptr.name2 = Constants.SN_WEAKNESS;
 					}
 					t_ptr.ident |= Constants.ID_SHOW_P1;
-					t_ptr.p1   = -m1.m_bonus(1, 10, level);
+					t_ptr.p1   = -Misc1.m_bonus(1, 10, level);
 				}
-				t_ptr.toac -= m1.m_bonus(1, 40, level);
+				t_ptr.toac -= Misc1.m_bonus(1, 40, level);
 				t_ptr.flags |= Constants.TR_CURSED;
 				t_ptr.cost = 0;
 			}
 			break;
 			
 		case Constants.TV_BOOTS:
-			if (m1.magik(chance)) {
-				t_ptr.toac += m1.m_bonus(1, 20, level);
-				if (m1.magik(special)) {
-					tmp = m1.randint(12);
+			if (Misc1.magik(chance)) {
+				t_ptr.toac += Misc1.m_bonus(1, 20, level);
+				if (Misc1.magik(special)) {
+					tmp = Misc1.randint(12);
 					if (tmp > 5) {
 						t_ptr.flags |= Constants.TR_FFALL;
 						t_ptr.name2 = Constants.SN_SLOW_DESCENT;
@@ -305,13 +273,13 @@ public class Misc2 {
 					} else { /* 2 - 5 */
 						t_ptr.flags |= Constants.TR_STEALTH;
 						t_ptr.ident |= Constants.ID_SHOW_P1;
-						t_ptr.p1 = m1.randint(3);
+						t_ptr.p1 = Misc1.randint(3);
 						t_ptr.name2 = Constants.SN_STEALTH;
 						t_ptr.cost += 500;
 					}
 				}
-			} else if (m1.magik(cursed)) {
-				tmp = m1.randint(3);
+			} else if (Misc1.magik(cursed)) {
+				tmp = Misc1.randint(3);
 				if (tmp == 1) {
 					t_ptr.flags |= Constants.TR_SPEED;
 					t_ptr.name2 = Constants.SN_SLOWNESS;
@@ -325,7 +293,7 @@ public class Misc2 {
 					t_ptr.weight = t_ptr.weight * 5;
 				}
 				t_ptr.cost = 0;
-				t_ptr.toac -= m1.m_bonus(2, 45, level);
+				t_ptr.toac -= Misc1.m_bonus(2, 45, level);
 				t_ptr.flags |= Constants.TR_CURSED;
 			}
 			break;
@@ -336,62 +304,62 @@ public class Misc2 {
 				chance += (int) (t_ptr.cost / 100);
 				special += special;
 			}
-			if (m1.magik(chance)) {
-				t_ptr.toac += m1.m_bonus(1, 20, level);
-				if (m1.magik(special)) {
+			if (Misc1.magik(chance)) {
+				t_ptr.toac += Misc1.m_bonus(1, 20, level);
+				if (Misc1.magik(special)) {
 					if (t_ptr.subval < 6) {
-						tmp = m1.randint(3);
+						tmp = Misc1.randint(3);
 						t_ptr.ident |= Constants.ID_SHOW_P1;
 						if (tmp == 1) {
-							t_ptr.p1 = m1.randint(2);
+							t_ptr.p1 = Misc1.randint(2);
 							t_ptr.flags |= Constants.TR_INT;
 							t_ptr.name2 = Constants.SN_INTELLIGENCE;
 							t_ptr.cost += t_ptr.p1 * 500;
 						} else if (tmp == 2) {
-							t_ptr.p1 = m1.randint(2);
+							t_ptr.p1 = Misc1.randint(2);
 							t_ptr.flags |= Constants.TR_WIS;
 							t_ptr.name2 = Constants.SN_WISDOM;
 							t_ptr.cost += t_ptr.p1 * 500;
 						} else {
-							t_ptr.p1 = 1 + m1.randint(4);
+							t_ptr.p1 = 1 + Misc1.randint(4);
 							t_ptr.flags |= Constants.TR_INFRA;
 							t_ptr.name2 = Constants.SN_INFRAVISION;
 							t_ptr.cost += t_ptr.p1 * 250;
 						}
 					} else {
-						switch(m1.randint(6))
+						switch(Misc1.randint(6))
 						{
 						case 1:
 							t_ptr.ident |= Constants.ID_SHOW_P1;
-							t_ptr.p1 = m1.randint(3);
+							t_ptr.p1 = Misc1.randint(3);
 							t_ptr.flags |= (Constants.TR_FREE_ACT | Constants.TR_CON |  Constants.TR_DEX | Constants.TR_STR);
 							t_ptr.name2 = Constants.SN_MIGHT;
 							t_ptr.cost += 1000 + t_ptr.p1 * 500;
 							break;
 						case 2:
 							t_ptr.ident |= Constants.ID_SHOW_P1;
-							t_ptr.p1 = m1.randint(3);
+							t_ptr.p1 = Misc1.randint(3);
 							t_ptr.flags |= (Constants.TR_CHR | Constants.TR_WIS);
 							t_ptr.name2 = Constants.SN_LORDLINESS;
 							t_ptr.cost += 1000 + t_ptr.p1 * 500;
 							break;
 						case 3:
 							t_ptr.ident |= Constants.ID_SHOW_P1;
-							t_ptr.p1 = m1.randint(3);
+							t_ptr.p1 = Misc1.randint(3);
 							t_ptr.flags |= (Constants.TR_RES_LIGHT | Constants.TR_RES_COLD |  Constants.TR_RES_ACID | Constants.TR_RES_FIRE | Constants.TR_INT);
 							t_ptr.name2 = Constants.SN_MAGI;
 							t_ptr.cost += 3000 + t_ptr.p1 * 500;
 							break;
 						case 4:
 							t_ptr.ident |= Constants.ID_SHOW_P1;
-							t_ptr.p1 = m1.randint(3);
+							t_ptr.p1 = Misc1.randint(3);
 							t_ptr.flags |= Constants.TR_CHR;
 							t_ptr.name2 = Constants.SN_BEAUTY;
 							t_ptr.cost += 750;
 							break;
 						case 5:
 							t_ptr.ident |= Constants.ID_SHOW_P1;
-							t_ptr.p1 = 5 * (1 + m1.randint(4));
+							t_ptr.p1 = 5 * (1 + Misc1.randint(4));
 							t_ptr.flags |= (Constants.TR_SEE_INVIS | Constants.TR_SEARCH);
 							t_ptr.name2 = Constants.SN_SEEING;
 							t_ptr.cost += 1000 + t_ptr.p1 * 100;
@@ -404,22 +372,22 @@ public class Misc2 {
 						}
 					}
 				}
-			} else if (m1.magik(cursed)) {
-				t_ptr.toac -= m1.m_bonus(1, 45, level);
+			} else if (Misc1.magik(cursed)) {
+				t_ptr.toac -= Misc1.m_bonus(1, 45, level);
 				t_ptr.flags |= Constants.TR_CURSED;
 				t_ptr.cost = 0;
-				if (m1.magik(special)) {
-					switch(m1.randint(7))
+				if (Misc1.magik(special)) {
+					switch(Misc1.randint(7))
 					{
 					case 1:
 						t_ptr.ident |= Constants.ID_SHOW_P1;
-						t_ptr.p1 = -m1.randint(5);
+						t_ptr.p1 = -Misc1.randint(5);
 						t_ptr.flags |= Constants.TR_INT;
 						t_ptr.name2 = Constants.SN_STUPIDITY;
 						break;
 					case 2:
 						t_ptr.ident |= Constants.ID_SHOW_P1;
-						t_ptr.p1 = -m1.randint(5);
+						t_ptr.p1 = -Misc1.randint(5);
 						t_ptr.flags |= Constants.TR_WIS;
 						t_ptr.name2 = Constants.SN_DULLNESS;
 						break;
@@ -433,7 +401,7 @@ public class Misc2 {
 						break;
 					case 5:
 						t_ptr.ident |= Constants.ID_SHOW_P1;
-						t_ptr.p1 = -m1.randint(5);
+						t_ptr.p1 = -Misc1.randint(5);
 						t_ptr.flags |= Constants.TR_STR;
 						t_ptr.name2 = Constants.SN_WEAKNESS;
 						break;
@@ -443,7 +411,7 @@ public class Misc2 {
 						break;
 					case 7:
 						t_ptr.ident |= Constants.ID_SHOW_P1;
-						t_ptr.p1 = -m1.randint(5);
+						t_ptr.p1 = -Misc1.randint(5);
 						t_ptr.flags |= Constants.TR_CHR;
 						t_ptr.name2 = Constants.SN_UGLINESS;
 						break;
@@ -456,18 +424,18 @@ public class Misc2 {
 			switch(t_ptr.subval)
 			{
 			case 0: case 1: case 2: case 3:
-				if (m1.magik(cursed)) {
-					t_ptr.p1 = -m1.m_bonus(1, 20, level);
+				if (Misc1.magik(cursed)) {
+					t_ptr.p1 = -Misc1.m_bonus(1, 20, level);
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
 				} else {
-					t_ptr.p1 = m1.m_bonus(1, 10, level);
+					t_ptr.p1 = Misc1.m_bonus(1, 10, level);
 					t_ptr.cost += t_ptr.p1 * 100;
 				}
 				break;
 			case 4:
-				if (m1.magik(cursed)) {
-					t_ptr.p1 = -m1.randint(3);
+				if (Misc1.magik(cursed)) {
+					t_ptr.p1 = -Misc1.randint(3);
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
 				} else {
@@ -475,36 +443,36 @@ public class Misc2 {
 				}
 				break;
 			case 5:
-				t_ptr.p1 = 5 * m1.m_bonus(1, 20, level);
+				t_ptr.p1 = 5 * Misc1.m_bonus(1, 20, level);
 				t_ptr.cost += t_ptr.p1 * 50;
-				if (m1.magik(cursed)) {
+				if (Misc1.magik(cursed)) {
 					t_ptr.p1 = -t_ptr.p1;
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
 				}
 				break;
 			case 19:     /* Increase damage	      */
-				t_ptr.todam += m1.m_bonus(1, 20, level);
+				t_ptr.todam += Misc1.m_bonus(1, 20, level);
 				t_ptr.cost += t_ptr.todam * 100;
-				if (m1.magik(cursed)) {
+				if (Misc1.magik(cursed)) {
 					t_ptr.todam = -t_ptr.todam;
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
 				}
 				break;
 			case 20:     /* Increase To-Hit	      */
-				t_ptr.tohit += m1.m_bonus(1, 20, level);
+				t_ptr.tohit += Misc1.m_bonus(1, 20, level);
 				t_ptr.cost += t_ptr.tohit * 100;
-				if (m1.magik(cursed)) {
+				if (Misc1.magik(cursed)) {
 					t_ptr.tohit = -t_ptr.tohit;
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
 				}
 				break;
 			case 21:     /* Protection	      */
-				t_ptr.toac += m1.m_bonus(1, 20, level);
+				t_ptr.toac += Misc1.m_bonus(1, 20, level);
 				t_ptr.cost += t_ptr.toac * 100;
-				if (m1.magik(cursed)) {
+				if (Misc1.magik(cursed)) {
 					t_ptr.toac = -t_ptr.toac;
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
@@ -516,10 +484,10 @@ public class Misc2 {
 				break;
 			case 30:     /* Slaying	      */
 				t_ptr.ident |= Constants.ID_SHOW_HITDAM;
-				t_ptr.todam += m1.m_bonus(1, 25, level);
-				t_ptr.tohit += m1.m_bonus(1, 25, level);
+				t_ptr.todam += Misc1.m_bonus(1, 25, level);
+				t_ptr.tohit += Misc1.m_bonus(1, 25, level);
 				t_ptr.cost += (t_ptr.tohit + t_ptr.todam) * 100;
-				if (m1.magik(cursed)) {
+				if (Misc1.magik(cursed)) {
 					t_ptr.tohit = -t_ptr.tohit;
 					t_ptr.todam = -t_ptr.todam;
 					t_ptr.flags |= Constants.TR_CURSED;
@@ -533,17 +501,17 @@ public class Misc2 {
 			
 		case Constants.TV_AMULET: /* Amulets	      */
 			if (t_ptr.subval < 2) {
-				if (m1.magik(cursed)) {
-					t_ptr.p1 = -m1.m_bonus(1, 20, level);
+				if (Misc1.magik(cursed)) {
+					t_ptr.p1 = -Misc1.m_bonus(1, 20, level);
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
 				} else {
-					t_ptr.p1 = m1.m_bonus(1, 10, level);
+					t_ptr.p1 = Misc1.m_bonus(1, 10, level);
 					t_ptr.cost += t_ptr.p1 * 100;
 				}
 			} else if (t_ptr.subval == 2) {
-				t_ptr.p1 = 5 * m1.m_bonus(1, 25, level);
-				if (m1.magik(cursed)) {
+				t_ptr.p1 = 5 * Misc1.m_bonus(1, 25, level);
+				if (Misc1.magik(cursed)) {
 					t_ptr.p1 = -t_ptr.p1;
 					t_ptr.cost = -t_ptr.cost;
 					t_ptr.flags |= Constants.TR_CURSED;
@@ -552,7 +520,7 @@ public class Misc2 {
 				}
 			} else if (t_ptr.subval == 8) {
 				/* amulet of the magi is never cursed */
-				t_ptr.p1 = 5 * m1.m_bonus(1, 25, level);
+				t_ptr.p1 = 5 * Misc1.m_bonus(1, 25, level);
 				t_ptr.cost += 20 * t_ptr.p1;
 			}
 			break;
@@ -561,7 +529,7 @@ public class Misc2 {
 			/* Dungeon found ones will be partially charged	 */
 		case Constants.TV_LIGHT:
 			if ((t_ptr.subval % 2) == 1) {
-				t_ptr.p1 = m1.randint(t_ptr.p1);
+				t_ptr.p1 = Misc1.randint(t_ptr.p1);
 				t_ptr.subval -= 1;
 			}
 			break;
@@ -569,30 +537,30 @@ public class Misc2 {
 		case Constants.TV_WAND:
 			switch(t_ptr.subval)
 			{
-			case 0:	  t_ptr.p1 = m1.randint(10) +	 6; break;
-			case 1:	  t_ptr.p1 = m1.randint(8)  +	 6; break;
-			case 2:	  t_ptr.p1 = m1.randint(5)  +	 6; break;
-			case 3:	  t_ptr.p1 = m1.randint(8)  +	 6; break;
-			case 4:	  t_ptr.p1 = m1.randint(4)  +	 3; break;
-			case 5:	  t_ptr.p1 = m1.randint(8)  +	 6; break;
-			case 6:	  t_ptr.p1 = m1.randint(20) +	 12; break;
-			case 7:	  t_ptr.p1 = m1.randint(20) +	 12; break;
-			case 8:	  t_ptr.p1 = m1.randint(10) +	 6; break;
-			case 9:	  t_ptr.p1 = m1.randint(12) +	 6; break;
-			case 10:   t_ptr.p1 = m1.randint(10) +	 12; break;
-			case 11:   t_ptr.p1 = m1.randint(3)  +	 3; break;
-			case 12:   t_ptr.p1 = m1.randint(8)  +	 6; break;
-			case 13:   t_ptr.p1 = m1.randint(10) +	 6; break;
-			case 14:   t_ptr.p1 = m1.randint(5)  +	 3; break;
-			case 15:   t_ptr.p1 = m1.randint(5)  +	 3; break;
-			case 16:   t_ptr.p1 = m1.randint(5)  +	 6; break;
-			case 17:   t_ptr.p1 = m1.randint(5)  +	 4; break;
-			case 18:   t_ptr.p1 = m1.randint(8)  +	 4; break;
-			case 19:   t_ptr.p1 = m1.randint(6)  +	 2; break;
-			case 20:   t_ptr.p1 = m1.randint(4)  +	 2; break;
-			case 21:   t_ptr.p1 = m1.randint(8)  +	 6; break;
-			case 22:   t_ptr.p1 = m1.randint(5)  +	 2; break;
-			case 23:   t_ptr.p1 = m1.randint(12) + 12; break;
+			case 0:	  t_ptr.p1 = Misc1.randint(10) +	 6; break;
+			case 1:	  t_ptr.p1 = Misc1.randint(8)  +	 6; break;
+			case 2:	  t_ptr.p1 = Misc1.randint(5)  +	 6; break;
+			case 3:	  t_ptr.p1 = Misc1.randint(8)  +	 6; break;
+			case 4:	  t_ptr.p1 = Misc1.randint(4)  +	 3; break;
+			case 5:	  t_ptr.p1 = Misc1.randint(8)  +	 6; break;
+			case 6:	  t_ptr.p1 = Misc1.randint(20) +	 12; break;
+			case 7:	  t_ptr.p1 = Misc1.randint(20) +	 12; break;
+			case 8:	  t_ptr.p1 = Misc1.randint(10) +	 6; break;
+			case 9:	  t_ptr.p1 = Misc1.randint(12) +	 6; break;
+			case 10:   t_ptr.p1 = Misc1.randint(10) +	 12; break;
+			case 11:   t_ptr.p1 = Misc1.randint(3)  +	 3; break;
+			case 12:   t_ptr.p1 = Misc1.randint(8)  +	 6; break;
+			case 13:   t_ptr.p1 = Misc1.randint(10) +	 6; break;
+			case 14:   t_ptr.p1 = Misc1.randint(5)  +	 3; break;
+			case 15:   t_ptr.p1 = Misc1.randint(5)  +	 3; break;
+			case 16:   t_ptr.p1 = Misc1.randint(5)  +	 6; break;
+			case 17:   t_ptr.p1 = Misc1.randint(5)  +	 4; break;
+			case 18:   t_ptr.p1 = Misc1.randint(8)  +	 4; break;
+			case 19:   t_ptr.p1 = Misc1.randint(6)  +	 2; break;
+			case 20:   t_ptr.p1 = Misc1.randint(4)  +	 2; break;
+			case 21:   t_ptr.p1 = Misc1.randint(8)  +	 6; break;
+			case 22:   t_ptr.p1 = Misc1.randint(5)  +	 2; break;
+			case 23:   t_ptr.p1 = Misc1.randint(12) + 12; break;
 			default:
 				break;
 			}
@@ -601,31 +569,31 @@ public class Misc2 {
 		case Constants.TV_STAFF:
 			switch(t_ptr.subval)
 			{
-			case 0:	  t_ptr.p1 = m1.randint(20) +	 12; break;
-			case 1:	  t_ptr.p1 = m1.randint(8)  +	 6; break;
-			case 2:	  t_ptr.p1 = m1.randint(5)  +	 6; break;
-			case 3:	  t_ptr.p1 = m1.randint(20) +	 12; break;
-			case 4:	  t_ptr.p1 = m1.randint(15) +	 6; break;
-			case 5:	  t_ptr.p1 = m1.randint(4)  +	 5; break;
-			case 6:	  t_ptr.p1 = m1.randint(5)  +	 3; break;
-			case 7:	  t_ptr.p1 = m1.randint(3)  +	 1;
+			case 0:	  t_ptr.p1 = Misc1.randint(20) +	 12; break;
+			case 1:	  t_ptr.p1 = Misc1.randint(8)  +	 6; break;
+			case 2:	  t_ptr.p1 = Misc1.randint(5)  +	 6; break;
+			case 3:	  t_ptr.p1 = Misc1.randint(20) +	 12; break;
+			case 4:	  t_ptr.p1 = Misc1.randint(15) +	 6; break;
+			case 5:	  t_ptr.p1 = Misc1.randint(4)  +	 5; break;
+			case 6:	  t_ptr.p1 = Misc1.randint(5)  +	 3; break;
+			case 7:	  t_ptr.p1 = Misc1.randint(3)  +	 1;
 			t_ptr.level = 10;
 			break;
-			case 8:	  t_ptr.p1 = m1.randint(3)  +	 1; break;
-			case 9:	  t_ptr.p1 = m1.randint(5)  +	 6; break;
-			case 10:   t_ptr.p1 = m1.randint(10) +	 12; break;
-			case 11:   t_ptr.p1 = m1.randint(5)  +	 6; break;
-			case 12:   t_ptr.p1 = m1.randint(5)  +	 6; break;
-			case 13:   t_ptr.p1 = m1.randint(5)  +	 6; break;
-			case 14:   t_ptr.p1 = m1.randint(10) +	 12; break;
-			case 15:   t_ptr.p1 = m1.randint(3)  +	 4; break;
-			case 16:   t_ptr.p1 = m1.randint(5)  +	 6; break;
-			case 17:   t_ptr.p1 = m1.randint(5)  +	 6; break;
-			case 18:   t_ptr.p1 = m1.randint(3)  +	 4; break;
-			case 19:   t_ptr.p1 = m1.randint(10) +	 12; break;
-			case 20:   t_ptr.p1 = m1.randint(3)  +	 4; break;
-			case 21:   t_ptr.p1 = m1.randint(3)  +	 4; break;
-			case 22:   t_ptr.p1 = m1.randint(10) + 6;
+			case 8:	  t_ptr.p1 = Misc1.randint(3)  +	 1; break;
+			case 9:	  t_ptr.p1 = Misc1.randint(5)  +	 6; break;
+			case 10:   t_ptr.p1 = Misc1.randint(10) +	 12; break;
+			case 11:   t_ptr.p1 = Misc1.randint(5)  +	 6; break;
+			case 12:   t_ptr.p1 = Misc1.randint(5)  +	 6; break;
+			case 13:   t_ptr.p1 = Misc1.randint(5)  +	 6; break;
+			case 14:   t_ptr.p1 = Misc1.randint(10) +	 12; break;
+			case 15:   t_ptr.p1 = Misc1.randint(3)  +	 4; break;
+			case 16:   t_ptr.p1 = Misc1.randint(5)  +	 6; break;
+			case 17:   t_ptr.p1 = Misc1.randint(5)  +	 6; break;
+			case 18:   t_ptr.p1 = Misc1.randint(3)  +	 4; break;
+			case 19:   t_ptr.p1 = Misc1.randint(10) +	 12; break;
+			case 20:   t_ptr.p1 = Misc1.randint(3)  +	 4; break;
+			case 21:   t_ptr.p1 = Misc1.randint(3)  +	 4; break;
+			case 22:   t_ptr.p1 = Misc1.randint(10) + 6;
 			t_ptr.level = 5;
 			break;
 			default:
@@ -634,43 +602,43 @@ public class Misc2 {
 			break;
 			
 		case Constants.TV_CLOAK:
-			if (m1.magik(chance)) {
-				if (m1.magik(special)) {
-					if (m1.randint(2) == 1) {
+			if (Misc1.magik(chance)) {
+				if (Misc1.magik(special)) {
+					if (Misc1.randint(2) == 1) {
 						t_ptr.name2 = Constants.SN_PROTECTION;
-						t_ptr.toac += m1.m_bonus(2, 40, level);
+						t_ptr.toac += Misc1.m_bonus(2, 40, level);
 						t_ptr.cost += 250;
 					} else {
-						t_ptr.toac += m1.m_bonus(1, 20, level);
+						t_ptr.toac += Misc1.m_bonus(1, 20, level);
 						t_ptr.ident |= Constants.ID_SHOW_P1;
-						t_ptr.p1 = m1.randint(3);
+						t_ptr.p1 = Misc1.randint(3);
 						t_ptr.flags |= Constants.TR_STEALTH;
 						t_ptr.name2 = Constants.SN_STEALTH;
 						t_ptr.cost += 500;
 					}
 				} else {
-					t_ptr.toac += m1.m_bonus(1, 20, level);
+					t_ptr.toac += Misc1.m_bonus(1, 20, level);
 				}
-			} else if (m1.magik(cursed)) {
-				tmp = m1.randint(3);
+			} else if (Misc1.magik(cursed)) {
+				tmp = Misc1.randint(3);
 				if (tmp == 1) {
 					t_ptr.flags |= Constants.TR_AGGRAVATE;
 					t_ptr.name2 = Constants.SN_IRRITATION;
-					t_ptr.toac  -= m1.m_bonus(1, 10, level);
+					t_ptr.toac  -= Misc1.m_bonus(1, 10, level);
 					t_ptr.ident |= Constants.ID_SHOW_HITDAM;
-					t_ptr.tohit -= m1.m_bonus(1, 10, level);
-					t_ptr.todam -= m1.m_bonus(1, 10, level);
+					t_ptr.tohit -= Misc1.m_bonus(1, 10, level);
+					t_ptr.todam -= Misc1.m_bonus(1, 10, level);
 					t_ptr.cost =  0;
 				} else if (tmp == 2) {
 					t_ptr.name2 = Constants.SN_VULNERABILITY;
-					t_ptr.toac -= m1.m_bonus(10, 100, level + 50);
+					t_ptr.toac -= Misc1.m_bonus(10, 100, level + 50);
 					t_ptr.cost = 0;
 				} else {
 					t_ptr.name2 = Constants.SN_ENVELOPING;
-					t_ptr.toac  -= m1.m_bonus(1, 10, level);
+					t_ptr.toac  -= Misc1.m_bonus(1, 10, level);
 					t_ptr.ident |= Constants.ID_SHOW_HITDAM;
-					t_ptr.tohit -= m1.m_bonus(2, 40, level+10);
-					t_ptr.todam -= m1.m_bonus(2, 40, level+10);
+					t_ptr.tohit -= Misc1.m_bonus(2, 40, level+10);
+					t_ptr.todam -= Misc1.m_bonus(2, 40, level+10);
 					t_ptr.cost = 0;
 				}
 				t_ptr.flags |= Constants.TR_CURSED;
@@ -678,7 +646,7 @@ public class Misc2 {
 			break;
 			
 		case Constants.TV_CHEST:
-			switch(m1.randint(level + 4))
+			switch(Misc1.randint(level + 4))
 			{
 			case 1:
 				t_ptr.flags = 0;
@@ -725,12 +693,12 @@ public class Misc2 {
 				/* always show tohit/todam values if identified */
 				t_ptr.ident |= Constants.ID_SHOW_HITDAM;
 				
-				if (m1.magik(chance)) {
-					t_ptr.tohit += m1.m_bonus(1, 35, level);
-					t_ptr.todam += m1.m_bonus(1, 35, level);
+				if (Misc1.magik(chance)) {
+					t_ptr.tohit += Misc1.m_bonus(1, 35, level);
+					t_ptr.todam += Misc1.m_bonus(1, 35, level);
 					/* see comment for weapons */
-					if (m1.magik(3 * special / 2)) {
-						switch(m1.randint(10))
+					if (Misc1.magik(3 * special / 2)) {
+						switch(Misc1.randint(10))
 						{
 						case 1: case 2: case 3:
 							t_ptr.name2 = Constants.SN_SLAYING;
@@ -768,9 +736,9 @@ public class Misc2 {
 							break;
 						}
 					}
-				} else if (m1.magik(cursed)) {
-					t_ptr.tohit -= m1.m_bonus(5, 55, level);
-					t_ptr.todam -= m1.m_bonus(5, 55, level);
+				} else if (Misc1.magik(cursed)) {
+					t_ptr.tohit -= Misc1.m_bonus(5, 55, level);
+					t_ptr.todam -= Misc1.m_bonus(5, 55, level);
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = 0;
 				}
@@ -778,14 +746,14 @@ public class Misc2 {
 			
 			t_ptr.number = 0;
 			for (i = 0; i < 7; i++) {
-				t_ptr.number += m1.randint(6);
+				t_ptr.number += Misc1.randint(6);
 			}
-			if (var.missile_ctr == Constants.MAX_SHORT) {
-				var.missile_ctr = -Constants.MAX_SHORT - 1;
+			if (Variable.missile_ctr == Constants.MAX_SHORT) {
+				Variable.missile_ctr = -Constants.MAX_SHORT - 1;
 			} else {
-				var.missile_ctr++;
+				Variable.missile_ctr++;
 			}
-			t_ptr.p1 = var.missile_ctr;
+			t_ptr.p1 = Variable.missile_ctr;
 			break;
 			
 		case Constants.TV_FOOD:
@@ -826,23 +794,36 @@ public class Misc2 {
 		}
 	}
 	
-	public OptionDescType[] options;
+	public static OptionDescType[] options = new OptionDescType[] {
+			new OptionDescType("Running: cut known corners", Variable.find_cut),
+			new OptionDescType("Running: examine potential corners", Variable.find_examine),
+			new OptionDescType("Running: print self during run", Variable.find_prself),
+			new OptionDescType("Running: stop when map sector changes", Variable.find_bound),
+			new OptionDescType("Running: run through open doors", Variable.find_ignore_doors),
+			new OptionDescType("Prompt to pick up objects", Variable.prompt_carry_flag),
+			new OptionDescType("Rogue like commands", Variable.rogue_like_commands),
+			new OptionDescType("Show weights in inventory", Variable.show_weight_flag),
+			new OptionDescType("Highlight and notice mineral seams", Variable.highlight_seams),
+			new OptionDescType("Beep for invalid character", Variable.sound_beep_flag),
+			new OptionDescType("Display rest/repeat counts", Variable.display_counts),
+			new OptionDescType("", new BooleanPointer(false))
+	};
 	
 	/* Set or unset various boolean options.		-CJS- */
-	public void set_options() {
+	public static void set_options() {
 		int i, max;
 		String string;
 		
-		io.prt("  ESC when finished, y/n to set options, <return> or - to move cursor", 0, 0);
+		IO.prt("  ESC when finished, y/n to set options, <return> or - to move cursor", 0, 0);
 		for (max = 0; options[max].o_prompt != ""; max++) {
 			string = String.format("%-38s: %s", options[max].o_prompt, (options[max].o_var.value() ? "yes" : "no "));
-			io.prt(string, max + 1, 0);
+			IO.prt(string, max + 1, 0);
 		}
-		io.erase_line(max + 1, 0);
+		IO.erase_line(max + 1, 0);
 		i = 0;
 		for(;;) {
-			io.move_cursor(i + 1, 40);
-			switch(io.inkey())
+			IO.move_cursor(i + 1, 40);
+			switch(IO.inkey())
 			{
 			case Constants.ESCAPE:
 				return;
@@ -864,7 +845,7 @@ public class Misc2 {
 				break;
 			case 'y':
 			case 'Y':
-				io.put_buffer("yes", i + 1, 40);
+				IO.put_buffer("yes", i + 1, 40);
 				options[i].o_var.value(true);
 				if (i + 1 < max) {
 					i++;
@@ -874,7 +855,7 @@ public class Misc2 {
 				break;
 			case 'n':
 			case 'N':
-				io.put_buffer("no ", i + 1, 40);
+				IO.put_buffer("no ", i + 1, 40);
 				options[i].o_var.value(false);
 				if (i + 1 < max) {
 					i++;
@@ -883,7 +864,7 @@ public class Misc2 {
 				}
 				break;
 			default:
-				io.bell();
+				IO.bell();
 				break;
 			}
 		}

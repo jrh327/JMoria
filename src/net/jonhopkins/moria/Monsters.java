@@ -163,7 +163,7 @@ public class Monsters {
 										*/
 	
 	//Creature_type[MAX_CREATURES]
-	public CreatureType[] c_list = {	//Name			  cmove,	  spells,defense,  exp, slp,aaf, ac,spd,char,		    hit-die,					  damage, lvl
+	public static CreatureType[] c_list = {	//Name		  cmove,	  spells,defense,  exp, slp,aaf, ac,spd,char,		    hit-die,					  damage, lvl
 		new CreatureType("Filthy Street Urchin",	0x0012000AL, 0x00000000L, 0x2034,    0,  40,  4,  1, 11, 'p', new int[] { 1, 4}, new int[] { 72,148,  0,  0},  0),
 		new CreatureType("Blubbering Idiot",		0x0012000AL, 0x00000000L, 0x2030,    0,   0,  6,  1, 11, 'p', new int[] { 1, 2}, new int[] { 79,  0,  0,  0},  0),
 		new CreatureType("Pitiful-Looking Beggar",	0x0012000AL, 0x00000000L, 0x2030,    0,  40, 10,  1, 11, 'p', new int[] { 1, 4}, new int[] { 72,  0,  0,  0},  0),
@@ -454,7 +454,7 @@ public class Monsters {
 	
 	/* ERROR: attack #35 is no longer used */
 	//M_attack_type[N_MONS_ATTS]
-	public MonsterAttackType[] monster_attacks = {
+	public static MonsterAttackType[] monster_attacks = {
 		/* 0 */
 		new MonsterAttackType(0, 0, 0, 0), new MonsterAttackType(1, 1, 1, 2), new MonsterAttackType(1, 1, 1, 3),
 		new MonsterAttackType(1, 1, 1, 4), new MonsterAttackType(1, 1, 1, 5), new MonsterAttackType(1, 1, 1, 6),
@@ -544,18 +544,16 @@ public class Monsters {
 		new MonsterAttackType(23, 1, 1, 1), new MonsterAttackType(23, 5, 1, 3), new MonsterAttackType(24, 5, 0, 0)
 	};
 	
-	private static Monsters instance;
 	private Monsters() { }
-	public static Monsters getInstance() {
-		if (instance == null) instance = new Monsters();
-		return instance;
-	}
 	
-	public MonsterType[] m_list = new MonsterType[Constants.MAX_MALLOC];
-	public int[] m_level = new int[Constants.MAX_MONS_LEVEL + 1];
+	public static MonsterType[] m_list = new MonsterType[Constants.MAX_MALLOC];
+	public static int[] m_level = new int[Constants.MAX_MONS_LEVEL + 1];
 	
 	/* Blank monster values	*/
-	public MonsterType blank_monster() { return new MonsterType(0, 0, 0, 0, 0, 0, 0, false, 0, 0); };
-	public int mfptr;			/* Cur free monster ptr	*/
-	public int mon_tot_mult;		/* # of repro's of creature	*/
+	public static MonsterType blank_monster() {
+		return new MonsterType(0, 0, 0, 0, 0, 0, 0, false, 0, 0);
+	}
+	
+	public static int mfptr;			/* Cur free monster ptr	*/
+	public static int mon_tot_mult;		/* # of repro's of creature	*/
 }

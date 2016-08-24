@@ -76,33 +76,12 @@ public class Treasure {
 		Chests:
 		Traps are added randomly by magic_init() in misc.c.	*/
 	
-	private static Treasure instance;
-	private Treasure() {
-		int i;
-		
-		for (i = 0; i < Constants.MAX_TALLOC; i++) {
-			t_list[i] = new InvenType();
-		}
-		for (i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
-			inventory[i] = new InvenType();
-		}
-	}
-	public static Treasure getInstance() {
-		if (instance == null) {
-			instance = new Treasure();
-			instance.init();
-		}
-		return instance;
-	}
-	
-	private void init() {
-		
-	}
+	private Treasure() { }
 	
 	/* Object list (All objects must be defined here)		 */
 	
 	//treasure_type object_list[MAX_OBJECTS]
-	public TreasureType[] object_list = {
+	public static TreasureType[] object_list = {
 	/* Dungeon items from 0 to MAX_DUNGEON_OBJ */
 	new TreasureType("Poison"			,0x00000001L,	Constants.TV_FOOD, ',',	/*  0*/
 	  500,	   0,	64,   1,   1,	0,   0,	 0,   0, new int[] {0,0}	,  7),
@@ -972,7 +951,7 @@ public class Treasure {
 	};
 	
 	//char *special_names[SN_ARRAY_SIZE]
-	public String[] special_names = {
+	public static String[] special_names = {
 		"",						"(R)",				"(RA)",
 		"(RF)",					"(RC)",				"(RL)",
 		"(HA)",					"(DF)",				"(SA)",
@@ -995,17 +974,29 @@ public class Treasure {
 	};
 	
 	/* Pairing things down for THINK C.  */
-	public int[] sorted_objects = new int[Constants.MAX_DUNGEON_OBJ];
+	public static int[] sorted_objects = new int[Constants.MAX_DUNGEON_OBJ];
 	
 	/* Identified objects flags					*/
-	public int[] object_ident = new int[Constants.OBJECT_IDENT_SIZE];
-	public int[] t_level = new int[Constants.MAX_OBJ_LEVEL + 1];
-	public InvenType[] t_list = new InvenType[Constants.MAX_TALLOC];
-	public InvenType[] inventory = new InvenType[Constants.INVEN_ARRAY_SIZE];
+	public static int[] object_ident = new int[Constants.OBJECT_IDENT_SIZE];
+	public static int[] t_level = new int[Constants.MAX_OBJ_LEVEL + 1];
+	public static InvenType[] t_list = new InvenType[Constants.MAX_TALLOC];
+	public static InvenType[] inventory = new InvenType[Constants.INVEN_ARRAY_SIZE];
 	
 	/* Treasure related values					*/
-	public int inven_ctr = 0;		/* Total different obj's	*/
-	public int inven_weight = 0;	/* Cur carried weight	*/
-	public int equip_ctr = 0;		/* Cur equipment ctr	*/
-	public int tcptr;				/* Cur treasure heap ptr	*/
+	public static int inven_ctr = 0;		/* Total different obj's	*/
+	public static int inven_weight = 0;	/* Cur carried weight	*/
+	public static int equip_ctr = 0;		/* Cur equipment ctr	*/
+	public static int tcptr;				/* Cur treasure heap ptr	*/
+	
+	static {
+		int i;
+		
+		for (i = 0; i < Constants.MAX_TALLOC; i++) {
+			t_list[i] = new InvenType();
+		}
+		for (i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
+			inventory[i] = new InvenType();
+		}
+	}
+	
 }

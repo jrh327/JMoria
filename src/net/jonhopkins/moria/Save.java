@@ -53,54 +53,23 @@ public class Save {
 	
 	/* these are used for the save file, to avoid having to pass them to every
 	 * procedure */
-	private File fileptr;
-	private InputStream fis;
-	private OutputStream fos;
-	private byte[] bytes;
-	private int b_ptr;
-	private byte xor_byte;
-	private int from_savefile;	/* can overwrite old savefile when save */
-	private long start_time;	/* time that play started */
+	private static File fileptr;
+	private static InputStream fis;
+	private static OutputStream fos;
+	private static byte[] bytes;
+	private static int b_ptr;
+	private static byte xor_byte;
+	private static int from_savefile;	/* can overwrite old savefile when save */
+	private static long start_time;	/* time that play started */
 	
-	private final int SIZEOF_CHAR = 2;
-	private final int SIZEOF_INT  = 4;
-	private final int SIZEOF_LONG = 8;
+	private static final int SIZEOF_CHAR = 2;
+	private static final int SIZEOF_INT  = 4;
+	private static final int SIZEOF_LONG = 8;
 	
-	private Death death;
-	private IO io;
-	private Misc1 m1;
-	private Misc3 m3;
-	private Monsters mon;
-	private Moria1 mor1;
-	private Player py;
-	private Signals sigs;
-	private Store1 store1;
-	private Treasure t;
-	private Variable var;
+	private static Signals sigs;
+	private static Store1 store1;
 	
-	private static Save instance;
 	private Save() { }
-	public static Save getInstance() {
-		if (instance == null) {
-			instance = new Save();
-			instance.init();
-		}
-		return instance;
-	}
-	
-	private void init() {
-		death = Death.getInstance();
-		io = IO.getInstance();
-		m1 = Misc1.getInstance();
-		m3 = Misc3.getInstance();
-		mon = Monsters.getInstance();
-		mor1 = Moria1.getInstance();
-		py = Player.getInstance();
-		sigs = Signals.getInstance();
-		store1 = Store1.getInstance();
-		t = Treasure.getInstance();
-		var = Variable.getInstance();
-	}
 	
 	/* This save package was brought to by			-JWT-
 	 * and							-RAK-
@@ -109,7 +78,7 @@ public class Save {
 	/* and completely rewritten again! for portability by -JEW- */
 	/* and completely rewritten yet again for java by -JRH- */
 	
-	private boolean sv_write() {
+	private static boolean sv_write() {
 		long l;
 		int i, j;
 		int count;
@@ -127,53 +96,53 @@ public class Save {
 		
 		/* clear the death flag when creating a HANGUP save file, so that player
 		 * can see tombstone when restart */
-		if (var.eof_flag > 0) {
-			var.death = false;
+		if (Variable.eof_flag > 0) {
+			Variable.death = false;
 		}
 		
 		l = 0;
-		if (var.find_cut.value()) {
+		if (Variable.find_cut.value()) {
 			l |= 0x1;
 		}
-		if (var.find_examine.value()) {
+		if (Variable.find_examine.value()) {
 			l |= 0x2;
 		}
-		if (var.find_prself.value()) {
+		if (Variable.find_prself.value()) {
 			l |= 0x4;
 		}
-		if (var.find_bound.value()) {
+		if (Variable.find_bound.value()) {
 			l |= 0x8;
 		}
-		if (var.prompt_carry_flag.value()) {
+		if (Variable.prompt_carry_flag.value()) {
 			l |= 0x10;
 		}
-		if (var.rogue_like_commands.value()) {
+		if (Variable.rogue_like_commands.value()) {
 			l |= 0x20;
 		}
-		if (var.show_weight_flag.value()) {
+		if (Variable.show_weight_flag.value()) {
 			l |= 0x40;
 		}
-		if (var.highlight_seams.value()) {
+		if (Variable.highlight_seams.value()) {
 			l |= 0x80;
 		}
-		if (var.find_ignore_doors.value()) {
+		if (Variable.find_ignore_doors.value()) {
 			l |= 0x100;
 		}
-		if (var.sound_beep_flag.value()) {
+		if (Variable.sound_beep_flag.value()) {
 			l |= 0x200;
 		}
-		if (var.display_counts.value()) {
+		if (Variable.display_counts.value()) {
 			l |= 0x400;
 		}
-		if (var.death) {
+		if (Variable.death) {
 			l |= 0x80000000L;	/* Sign bit */
 		}
-		if (var.total_winner) {
+		if (Variable.total_winner) {
 			l |= 0x40000000L;
 		}
 		
 		for (i = 0; i < Constants.MAX_CREATURES; i++) {
-			r_ptr = var.c_recall[i];
+			r_ptr = Variable.c_recall[i];
 			if (r_ptr.r_cmove != 0 || r_ptr.r_cdefense != 0 || r_ptr.r_kills != 0
 					|| r_ptr.r_spells != 0 || r_ptr.r_deaths != 0 || r_ptr.r_attacks[0] != 0
 					|| r_ptr.r_attacks[1] != 0 || r_ptr.r_attacks[2] != 0 || r_ptr.r_attacks[3] != 0)
@@ -193,8 +162,8 @@ public class Save {
 		
 		wr_long(l);
 		
-		m_ptr = py.py.misc;
-		wr_string(m_ptr.name, py.py.PLAYER_NAME_SIZE);
+		m_ptr = Player.py.misc;
+		wr_string(m_ptr.name, Player.py.PLAYER_NAME_SIZE);
 		wr_byte((m_ptr.male ? (byte)1 : (byte)0));
 		wr_int(m_ptr.au);
 		wr_int(m_ptr.max_exp);
@@ -235,13 +204,13 @@ public class Save {
 			wr_string(m_ptr.history[i], 60);
 		}
 		
-		s_ptr = py.py.stats;
+		s_ptr = Player.py.stats;
 		wr_ints(s_ptr.max_stat, 6);
 		wr_ints(s_ptr.cur_stat, 6);
 		wr_ints(s_ptr.mod_stat, 6);
 		wr_ints(s_ptr.use_stat, 6);
 		
-		f_ptr = py.py.flags;
+		f_ptr = Player.py.flags;
 		wr_long(f_ptr.status);
 		wr_int(f_ptr.rest);
 		wr_int(f_ptr.blind);
@@ -287,37 +256,37 @@ public class Save {
 		wr_byte((f_ptr.confuse_monster ? (byte)1 : (byte)0));
 		wr_int(f_ptr.new_spells);
 		
-		wr_int(var.missile_ctr);
-		wr_int(var.turn);
-		wr_int(t.inven_ctr);
-		for (i = 0; i < t.inven_ctr; i++) {
-			wr_item(t.inventory[i]);
+		wr_int(Variable.missile_ctr);
+		wr_int(Variable.turn);
+		wr_int(Treasure.inven_ctr);
+		for (i = 0; i < Treasure.inven_ctr; i++) {
+			wr_item(Treasure.inventory[i]);
 		}
 		for (i = Constants.INVEN_WIELD; i < Constants.INVEN_ARRAY_SIZE; i++) {
-			wr_item(t.inventory[i]);
+			wr_item(Treasure.inventory[i]);
 		}
-		wr_int(t.inven_weight);
-		wr_int(t.equip_ctr);
-		wr_long(py.spell_learned);
-		wr_long(py.spell_worked);
-		wr_long(py.spell_forgotten);
-		wr_ints(py.spell_order, 32);
-		wr_ints(t.object_ident, Constants.OBJECT_IDENT_SIZE);
-		wr_long(var.randes_seed);
-		wr_long(var.town_seed);
-		wr_int(var.last_msg);
+		wr_int(Treasure.inven_weight);
+		wr_int(Treasure.equip_ctr);
+		wr_long(Player.spell_learned);
+		wr_long(Player.spell_worked);
+		wr_long(Player.spell_forgotten);
+		wr_ints(Player.spell_order, 32);
+		wr_ints(Treasure.object_ident, Constants.OBJECT_IDENT_SIZE);
+		wr_long(Variable.randes_seed);
+		wr_long(Variable.town_seed);
+		wr_int(Variable.last_msg);
 		for (i = 0; i < Constants.MAX_SAVE_MSG; i++) {
-			wr_string(var.old_msg[i], Constants.VTYPESIZ);
+			wr_string(Variable.old_msg[i], Constants.VTYPESIZ);
 		}
 		
 		/* this indicates 'cheating' if it is a one */
-		wr_int(var.panic_save);
-		wr_byte((var.total_winner ? (byte)1 : (byte)0));
-		wr_int(var.noscore);
-		wr_ints(py.player_hp, Constants.MAX_PLAYER_LEVEL);
+		wr_int(Variable.panic_save);
+		wr_byte((Variable.total_winner ? (byte)1 : (byte)0));
+		wr_int(Variable.noscore);
+		wr_ints(Player.player_hp, Constants.MAX_PLAYER_LEVEL);
 		
 		for (i = 0; i < Constants.MAX_STORES; i++) {
-			st_ptr = var.store[i];
+			st_ptr = Variable.store[i];
 			wr_long((long)st_ptr.store_open);
 			wr_int((int)st_ptr.insult_cur);
 			wr_byte((byte)st_ptr.owner);
@@ -340,36 +309,36 @@ public class Save {
 		wr_long(l);
 		
 		/* starting with 5.2, put died_from string in savefile */
-		wr_string(var.died_from, 25);
+		wr_string(Variable.died_from, 25);
 		
 		/* starting with 5.2.2, put the max_score in the savefile */
-		l = death.total_points();
+		l = Death.total_points();
 		wr_long(l);
 		
 		/* starting with 5.2.2, put the birth_date in the savefile */
-		wr_long(var.birth_date);
+		wr_long(Variable.birth_date);
 		
 		/* only level specific info follows, this allows characters to be
 		 * resurrected, the dungeon level info is not needed for a resurrection */
-		if (var.death) {
+		if (Variable.death) {
 			/*if (ferror(fileptr) || fflush(fileptr) == EOF) {
 				return false;
 			}*/
 			return true;
 		}
 		
-		wr_int(var.dun_level);
-		wr_int(py.char_row);
-		wr_int(py.char_col);
-		wr_int(mon.mon_tot_mult);
-		wr_int(var.cur_height);
-		wr_int(var.cur_width);
-		wr_int(var.max_panel_rows);
-		wr_int(var.max_panel_cols);
+		wr_int(Variable.dun_level);
+		wr_int(Player.char_row);
+		wr_int(Player.char_col);
+		wr_int(Monsters.mon_tot_mult);
+		wr_int(Variable.cur_height);
+		wr_int(Variable.cur_width);
+		wr_int(Variable.max_panel_rows);
+		wr_int(Variable.max_panel_cols);
 		
 		for (i = 0; i < Constants.MAX_HEIGHT; i++) {
 			for (j = 0; j < Constants.MAX_WIDTH; j++) {
-				c_ptr = var.cave[i][j];
+				c_ptr = Variable.cave[i][j];
 				if (c_ptr.cptr != 0) {
 					wr_byte((byte)i);
 					wr_byte((byte)j);
@@ -380,7 +349,7 @@ public class Save {
 		wr_byte((byte)0xFF); /* marks end of cptr info */
 		for (i = 0; i < Constants.MAX_HEIGHT; i++) {
 			for (j = 0; j < Constants.MAX_WIDTH; j++) {
-				c_ptr = var.cave[i][j];
+				c_ptr = Variable.cave[i][j];
 				if (c_ptr.tptr != 0) {
 					wr_byte((byte)i);
 					wr_byte((byte)j);
@@ -395,7 +364,7 @@ public class Save {
 		prev_char = 0;
 		for (i = 0; i < Constants.MAX_HEIGHT; i++) {
 			for (j = 0; j < Constants.MAX_WIDTH; j++) {
-				c_ptr = var.cave[i][j];
+				c_ptr = Variable.cave[i][j];
 				char_tmp = (short)(c_ptr.fval | ((c_ptr.lr ? 1 : 0) << 4) | ((c_ptr.fm ? 1 : 0) << 5) | ((c_ptr.pl ? 1 : 0) << 6) | ((c_ptr.tl ? 1 : 0) << 7));
 				if (char_tmp != prev_char || count == Constants.MAX_UCHAR) {
 					wr_byte((byte)count);
@@ -417,22 +386,22 @@ public class Save {
 		 * symbol */
 		/* Or if the user moves the savefile from one machine to another, we
 		 * must have a consistent representation here.  */
-		for (i = t.tcptr - 1; i >= Constants.MIN_TRIX; i--) {
-			t_ptr = t.t_list[i];
-			if (t_ptr.tchar == var.wallsym) {
+		for (i = Treasure.tcptr - 1; i >= Constants.MIN_TRIX; i--) {
+			t_ptr = Treasure.t_list[i];
+			if (t_ptr.tchar == Variable.wallsym) {
 				t_ptr.tchar = '#';
 			}
 			if (t_ptr.tchar == 240) {
 				t_ptr.tchar = '#';
 			}
 		}
-		wr_int(t.tcptr);
-		for (i = Constants.MIN_TRIX; i < t.tcptr; i++) {
-			wr_item(t.t_list[i]);
+		wr_int(Treasure.tcptr);
+		for (i = Constants.MIN_TRIX; i < Treasure.tcptr; i++) {
+			wr_item(Treasure.t_list[i]);
 		}
-		wr_int(mon.mfptr);
-		for (i = Constants.MIN_MONIX; i < mon.mfptr; i++) {
-			wr_monster(mon.m_list[i]);
+		wr_int(Monsters.mfptr);
+		for (i = Constants.MIN_MONIX; i < Monsters.mfptr; i++) {
+			wr_monster(Monsters.m_list[i]);
 		}
 		
 		/*if (ferror(fileptr) || (fflush(fileptr) == EOF)) {
@@ -457,13 +426,13 @@ public class Save {
 		return true;
 	}
 	
-	public boolean save_char() {
+	public static boolean save_char() {
 		int i;
 		String temp;
 		
-		while (!_save_char(var.savefile)) {
-			temp = String.format("Savefile '%s' fails.", var.savefile);
-			io.msg_print(temp);
+		while (!_save_char(Variable.savefile)) {
+			temp = String.format("Savefile '%s' fails.", Variable.savefile);
+			IO.msg_print(temp);
 			i = 0;
 /*			if (access(var.savefile, 0) < 0 || !io.get_check("File exists. Delete old savefile?") || (i = unlink(var.savefile)) < 0) {
 				if (i < 0) {
@@ -480,27 +449,27 @@ public class Save {
 				}
 			}
 */
-			temp = String.format("Saving with %s...", var.savefile);
-			io.prt(temp, 0, 0);
+			temp = String.format("Saving with %s...", Variable.savefile);
+			IO.prt(temp, 0, 0);
 		}
 		return true;
 	}
 	
-	private boolean _save_char(String fnam) {
+	private static boolean _save_char(String fnam) {
 		String temp;
 		boolean ok;
 		int fd = 0;
 		short char_tmp;
 		
-		if (var.character_saved != 0) {
+		if (Variable.character_saved != 0) {
 			return true;	/* Nothing to save. */
 		}
 		
 		sigs.nosignals();
-		io.put_qio();
-		mor1.disturb(true, false);	/* Turn off resting and searching. */
-		mor1.change_speed(-var.pack_heavy);	/* Fix the speed */
-		var.pack_heavy = 0;
+		IO.put_qio();
+		Moria1.disturb(true, false);	/* Turn off resting and searching. */
+		Moria1.change_speed(-Variable.pack_heavy);	/* Fix the speed */
+		Variable.pack_heavy = 0;
 		ok = false;
 //		fileptr = fopen(var.savefile, "w");
 		
@@ -512,7 +481,7 @@ public class Save {
 			xor_byte = 0;
 			wr_int(Constants.PATCH_LEVEL);
 			xor_byte = 0;
-			char_tmp = (short)(m1.randint(256) - 1);
+			char_tmp = (short)(Misc1.randint(256) - 1);
 			wr_byte((byte)char_tmp);
 			/* Note that xor_byte is now equal to char_tmp */
 			
@@ -533,13 +502,13 @@ public class Save {
 			} else {
 				temp = String.format("Can't create new file %s", fnam);
 			}
-			io.msg_print(temp);
+			IO.msg_print(temp);
 			return false;
 		} else {
-			var.character_saved = 1;
+			Variable.character_saved = 1;
 		}
 		
-		var.turn = -1;
+		Variable.turn = -1;
 		sigs.signals();
 		
 		return true;
@@ -547,7 +516,7 @@ public class Save {
 	
 	/* Certain checks are omitted for the wizard. -CJS- */
 	
-	public boolean get_char(BooleanPointer generate) {
+	public static boolean get_char(BooleanPointer generate) {
 		int i, j;
 		int fd, c, total_count;
 		boolean ok;
@@ -590,13 +559,13 @@ public class Save {
 //			return false;	/* Don't bother with messages here. File absent. */
 //		}
 		
-		io.clear_screen();
+		IO.clear_screen();
 		
-		temp = String.format("Savefile %s present. Attempting restore.", var.savefile);
-		io.put_buffer(temp, 23, 0);
+		temp = String.format("Savefile %s present. Attempting restore.", Variable.savefile);
+		IO.put_buffer(temp, 23, 0);
 		
-		if (var.turn >= 0) {
-			io.msg_print("IMPOSSIBLE! Attempt to restore while still alive!");
+		if (Variable.turn >= 0) {
+			IO.msg_print("IMPOSSIBLE! Attempt to restore while still alive!");
 		
 		/* Allow restoring a file belonging to someone else, if we can delete it. */
 		/* Hence first try to read without doing a chmod. */
@@ -604,7 +573,7 @@ public class Save {
 //		} else if ((fd = open(var.savefile, O_RDONLY, 0)) < 0 && (chmod(var.savefile, 0400) < 0 || (fd = open(var.savefile, O_RDONLY, 0)) < 0)) {
 //			io.msg_print("Can't open file for reading.");
 		} else {
-			var.turn = -1;
+			Variable.turn = -1;
 			ok = true;
 			
 //			close(fd);
@@ -613,8 +582,8 @@ public class Save {
 				return _error(ok, fd, time_saved, version_maj, version_min);
 			}
 			
-			io.prt("Restoring Memory...", 0, 0);
-			io.put_qio();
+			IO.prt("Restoring Memory...", 0, 0);
+			IO.put_qio();
 			
 			xor_byte = 0;
 			version_maj = rd_byte();
@@ -628,7 +597,7 @@ public class Save {
 			/* COMPAT support savefiles from 5.0.14 to 5.0.17 */
 			/* support savefiles from 5.1.0 to present */
 			if ((version_maj != Constants.CUR_VERSION_MAJ) || (version_min == 0 && patch_level < 14)) {
-				io.prt("Sorry. This savefile is from a different version of umoria.", 2, 0);
+				IO.prt("Sorry. This savefile is from a different version of umoria.", 2, 0);
 				return _error(ok, fd, time_saved, version_maj, version_min);
 			}
 			
@@ -637,7 +606,7 @@ public class Save {
 				if (int_tmp >= Constants.MAX_CREATURES) {
 					return _error(ok, fd, time_saved, version_maj, version_min);
 				}
-				r_ptr = var.c_recall[int_tmp];
+				r_ptr = Variable.c_recall[int_tmp];
 				r_ptr.r_cmove = rd_long();
 				r_ptr.r_spells = rd_long();
 				r_ptr.r_kills = rd_int();
@@ -655,41 +624,41 @@ public class Save {
 			}
 			l = rd_long();
 			
-			var.find_cut.value((l & 0x1) != 0);
-			var.find_examine.value((l & 0x2) != 0);
-			var.find_prself.value((l & 0x4) != 0);
-			var.find_bound.value((l & 0x8) != 0);
-			var.prompt_carry_flag.value((l & 0x10) != 0);
-			var.rogue_like_commands.value((l & 0x20) != 0);
-			var.show_weight_flag.value((l & 0x40) != 0);
-			var.highlight_seams.value((l & 0x80) != 0);
-			var.find_ignore_doors.value((l & 0x100) != 0);
+			Variable.find_cut.value((l & 0x1) != 0);
+			Variable.find_examine.value((l & 0x2) != 0);
+			Variable.find_prself.value((l & 0x4) != 0);
+			Variable.find_bound.value((l & 0x8) != 0);
+			Variable.prompt_carry_flag.value((l & 0x10) != 0);
+			Variable.rogue_like_commands.value((l & 0x20) != 0);
+			Variable.show_weight_flag.value((l & 0x40) != 0);
+			Variable.highlight_seams.value((l & 0x80) != 0);
+			Variable.find_ignore_doors.value((l & 0x100) != 0);
 			/* save files before 5.2.2 don't have sound_beep_flag, set it on
 			 * for compatibility */
 			if ((version_min < 2) || (version_min == 2 && patch_level < 2)) {
-				var.sound_beep_flag.value(true);
+				Variable.sound_beep_flag.value(true);
 			} else {
-				var.sound_beep_flag.value((l & 0x200) != 0);
+				Variable.sound_beep_flag.value((l & 0x200) != 0);
 			}
 			/* save files before 5.2.2 don't have display_counts, set it on
 			 * for compatibility */
 			if ((version_min < 2) || (version_min == 2 && patch_level < 2)) {
-				var.display_counts.value(true);
+				Variable.display_counts.value(true);
 			} else {
-				var.display_counts.value((l & 0x400) != 0);
+				Variable.display_counts.value((l & 0x400) != 0);
 			}
 			
 			/* Don't allow resurrection of total_winner characters.  It causes
 			 * problems because the character level is out of the allowed range.  */
-			if (var.to_be_wizard && (l & 0x40000000L) != 0) {
-				io.msg_print("Sorry, this character is retired from moria.");
-				io.msg_print("You can not resurrect a retired character.");
-			} else if (var.to_be_wizard && (l & 0x80000000L) != 0 && io.get_check("Resurrect a dead character?")) {
+			if (Variable.to_be_wizard && (l & 0x40000000L) != 0) {
+				IO.msg_print("Sorry, this character is retired from moria.");
+				IO.msg_print("You can not resurrect a retired character.");
+			} else if (Variable.to_be_wizard && (l & 0x80000000L) != 0 && IO.get_check("Resurrect a dead character?")) {
 				l &= ~0x80000000L;
 			}
 			if ((l & 0x80000000L) == 0) {
-				m_ptr = py.py.misc;
-				m_ptr.name = rd_string(py.py.PLAYER_NAME_SIZE);
+				m_ptr = Player.py.misc;
+				m_ptr.name = rd_string(Player.py.PLAYER_NAME_SIZE);
 				m_ptr.male = (rd_byte() == 1);
 				m_ptr.au = rd_int();
 				m_ptr.max_exp = rd_int();
@@ -730,13 +699,13 @@ public class Save {
 					m_ptr.history[i] = rd_string(60);
 				}
 				
-				s_ptr = py.py.stats;
+				s_ptr = Player.py.stats;
 				rd_ints(s_ptr.max_stat, 6);
 				rd_ints(s_ptr.cur_stat, 6);
 				rd_ints(s_ptr.mod_stat, 6);
 				rd_ints(s_ptr.use_stat, 6);
 				
-				f_ptr = py.py.flags;
+				f_ptr = Player.py.flags;
 				f_ptr.status = rd_long();
 				f_ptr.rest = rd_int();
 				f_ptr.blind = rd_int();
@@ -782,40 +751,40 @@ public class Save {
 				f_ptr.confuse_monster = (rd_byte() == 1);
 				f_ptr.new_spells = rd_byte();
 				
-				var.missile_ctr = rd_int();
-				var.turn = rd_int();
-				t.inven_ctr = rd_int();
-				if (t.inven_ctr > Constants.INVEN_WIELD) {
+				Variable.missile_ctr = rd_int();
+				Variable.turn = rd_int();
+				Treasure.inven_ctr = rd_int();
+				if (Treasure.inven_ctr > Constants.INVEN_WIELD) {
 					return _error(ok, fd, time_saved, version_maj, version_min);
 				}
-				for (i = 0; i < t.inven_ctr; i++) {
-					rd_item(t.inventory[i]);
+				for (i = 0; i < Treasure.inven_ctr; i++) {
+					rd_item(Treasure.inventory[i]);
 				}
 				for (i = Constants.INVEN_WIELD; i < Constants.INVEN_ARRAY_SIZE; i++) {
-					rd_item(t.inventory[i]);
+					rd_item(Treasure.inventory[i]);
 				}
-				t.inven_weight = rd_int();
-				t.equip_ctr = rd_int();
-				py.spell_learned = rd_long();
-				py.spell_worked = rd_long();
-				py.spell_forgotten = rd_long();
-				rd_ints(py.spell_order, 32);
-				rd_ints(t.object_ident, Constants.OBJECT_IDENT_SIZE);
-				var.randes_seed = rd_long();
-				var.town_seed = rd_long();
-				var.last_msg = rd_int();
+				Treasure.inven_weight = rd_int();
+				Treasure.equip_ctr = rd_int();
+				Player.spell_learned = rd_long();
+				Player.spell_worked = rd_long();
+				Player.spell_forgotten = rd_long();
+				rd_ints(Player.spell_order, 32);
+				rd_ints(Treasure.object_ident, Constants.OBJECT_IDENT_SIZE);
+				Variable.randes_seed = rd_long();
+				Variable.town_seed = rd_long();
+				Variable.last_msg = rd_int();
 				for (i = 0; i < Constants.MAX_SAVE_MSG; i++) {
-					var.old_msg[i] = rd_string(Constants.VTYPESIZ);
+					Variable.old_msg[i] = rd_string(Constants.VTYPESIZ);
 				}
 				
-				var.panic_save = rd_int();
-				var.total_winner = (rd_int() == 1);
-				var.noscore = rd_int();
-				rd_ints(py.player_hp, Constants.MAX_PLAYER_LEVEL);
+				Variable.panic_save = rd_int();
+				Variable.total_winner = (rd_int() == 1);
+				Variable.noscore = rd_int();
+				rd_ints(Player.player_hp, Constants.MAX_PLAYER_LEVEL);
 				
 				if ((version_min >= 2) || (version_min == 1 && patch_level >= 3)) {
 					for (i = 0; i < Constants.MAX_STORES; i++) {
-						st_ptr = var.store[i];
+						st_ptr = Variable.store[i];
 						st_ptr.store_open = rd_int();
 						st_ptr.insult_cur = rd_int();
 						st_ptr.owner = rd_byte();
@@ -837,72 +806,72 @@ public class Save {
 				}
 				
 				if (version_min >= 2) {
-					var.died_from = rd_string(25);
+					Variable.died_from = rd_string(25);
 				}
 				
 				if ((version_min >= 3) || (version_min == 2 && patch_level >= 2)) {
-					var.max_score = rd_int();
+					Variable.max_score = rd_int();
 				} else {
-					var.max_score = 0;
+					Variable.max_score = 0;
 				}
 				
 				if ((version_min >= 3) || (version_min == 2 && patch_level >= 2)) {
-					var.birth_date = rd_long();
+					Variable.birth_date = rd_long();
 				} else {
-					var.birth_date = java.util.Calendar.getInstance().getTimeInMillis();
+					Variable.birth_date = java.util.Calendar.getInstance().getTimeInMillis();
 				}
 			}
 			if (/*(c = getc(fileptr)) == EOF ||*/ (l & 0x80000000L) != 0) {
 				if ((l & 0x80000000L) == 0) {
-					if (!var.to_be_wizard || var.turn < 0) {
+					if (!Variable.to_be_wizard || Variable.turn < 0) {
 						return _error(ok, fd, time_saved, version_maj, version_min);
 					}
-					io.prt("Attempting a resurrection!", 0, 0);
-					if (py.py.misc.chp < 0) {
-						py.py.misc.chp =	 0;
-						py.py.misc.chp_frac = 0;
+					IO.prt("Attempting a resurrection!", 0, 0);
+					if (Player.py.misc.chp < 0) {
+						Player.py.misc.chp =	 0;
+						Player.py.misc.chp_frac = 0;
 					}
 					/* don't let him starve to death immediately */
-					if (py.py.flags.food < 0) {
-						py.py.flags.food = 0;
+					if (Player.py.flags.food < 0) {
+						Player.py.flags.food = 0;
 					}
 					/* don't let him die of poison again immediately */
-					if (py.py.flags.poisoned > 1) {
-						py.py.flags.poisoned = 1;
+					if (Player.py.flags.poisoned > 1) {
+						Player.py.flags.poisoned = 1;
 					}
-					var.dun_level = 0; /* Resurrect on the town level. */
-					var.character_generated = true;
+					Variable.dun_level = 0; /* Resurrect on the town level. */
+					Variable.character_generated = true;
 					/* set noscore to indicate a resurrection, and don't enter
 					 * wizard mode */
-					var.to_be_wizard = false;
-					var.noscore |= 0x1;
+					Variable.to_be_wizard = false;
+					Variable.noscore |= 0x1;
 				} else {
 					/* Make sure that this message is seen, since it is a bit
 					 * more interesting than the other messages.  */
-					io.msg_print("Restoring Memory of a departed spirit...");
-					var.turn = -1;
+					IO.msg_print("Restoring Memory of a departed spirit...");
+					Variable.turn = -1;
 				}
-				io.put_qio();
+				IO.put_qio();
 				return closefiles(ok, fd, time_saved, version_maj, version_min);
 			}
 //			if (ungetc(c, fileptr) == EOF) {
 //				return _error(ok, fd, time_saved, version_maj, version_min);
 //			}
 			
-			io.prt("Restoring Character...", 0, 0);
-			io.put_qio();
+			IO.prt("Restoring Character...", 0, 0);
+			IO.put_qio();
 			
 			/* only level specific info should follow, not present for dead
 			 * characters */
 			
-			var.dun_level = rd_int();
-			py.char_row = rd_int();
-			py.char_col = rd_int();
-			mon.mon_tot_mult = rd_int();
-			var.cur_height = rd_int();
-			var.cur_width = rd_int();
-			var.max_panel_rows = rd_int();
-			var.max_panel_cols = rd_int();
+			Variable.dun_level = rd_int();
+			Player.char_row = rd_int();
+			Player.char_col = rd_int();
+			Monsters.mon_tot_mult = rd_int();
+			Variable.cur_height = rd_int();
+			Variable.cur_width = rd_int();
+			Variable.max_panel_rows = rd_int();
+			Variable.max_panel_cols = rd_int();
 			
 			/* read in the creature ptr info */
 			char_tmp = rd_byte();
@@ -913,7 +882,7 @@ public class Save {
 				if (xchar > Constants.MAX_WIDTH || ychar > Constants.MAX_HEIGHT) {
 					return _error(ok, fd, time_saved, version_maj, version_min);
 				}
-				var.cave[ychar][xchar].cptr = char_tmp;
+				Variable.cave[ychar][xchar].cptr = char_tmp;
 				char_tmp = rd_byte();
 			}
 			/* read in the treasure ptr info */
@@ -925,11 +894,11 @@ public class Save {
 				if (xchar > Constants.MAX_WIDTH || ychar > Constants.MAX_HEIGHT) {
 					return _error(ok, fd, time_saved, version_maj, version_min);
 				}
-				var.cave[ychar][xchar].tptr = char_tmp;
+				Variable.cave[ychar][xchar].tptr = char_tmp;
 				char_tmp = rd_byte();
 			}
 			/* read in the rest of the cave info */
-			c_ptr = var.cave[0][0];
+			c_ptr = Variable.cave[0][0];
 			total_count = 0;
 			while (total_count != Constants.MAX_HEIGHT * Constants.MAX_WIDTH) {
 				count = rd_byte();
@@ -948,26 +917,26 @@ public class Save {
 				total_count += count;
 			}
 			
-			t.tcptr = rd_int();
-			if (t.tcptr > Constants.MAX_TALLOC) {
+			Treasure.tcptr = rd_int();
+			if (Treasure.tcptr > Constants.MAX_TALLOC) {
 				return _error(ok, fd, time_saved, version_maj, version_min);
 			}
-			for (i = Constants.MIN_TRIX; i < t.tcptr; i++) {
-				rd_item(t.t_list[i]);
+			for (i = Constants.MIN_TRIX; i < Treasure.tcptr; i++) {
+				rd_item(Treasure.t_list[i]);
 			}
-			mon.mfptr = rd_int();
-			if (mon.mfptr > Constants.MAX_MALLOC) {
+			Monsters.mfptr = rd_int();
+			if (Monsters.mfptr > Constants.MAX_MALLOC) {
 				return _error(ok, fd, time_saved, version_maj, version_min);
 			}
-			for (i = Constants.MIN_MONIX; i < mon.mfptr; i++) {
-				rd_monster(mon.m_list[i]);
+			for (i = Constants.MIN_MONIX; i < Monsters.mfptr; i++) {
+				rd_monster(Monsters.m_list[i]);
 			}
 			
 			/* change walls and floors to graphic symbols */
-			for (i = t.tcptr - 1; i >= Constants.MIN_TRIX; i--) {
-				t_ptr = t.t_list[t.tcptr - 1];
+			for (i = Treasure.tcptr - 1; i >= Constants.MIN_TRIX; i--) {
+				t_ptr = Treasure.t_list[Treasure.tcptr - 1];
 				if (t_ptr.tchar == '#') {
-					t_ptr.tchar = var.wallsym;
+					t_ptr.tchar = Variable.wallsym;
 				}
 			}
 			
@@ -975,7 +944,7 @@ public class Save {
 			
 			if ((version_min == 1 && patch_level < 3) || (version_min == 0)) {
 				for (i = 0; i < Constants.MAX_STORES; i++) {
-					st_ptr = var.store[i];
+					st_ptr = Variable.store[i];
 					st_ptr.store_open = rd_int();
 					st_ptr.insult_cur = rd_int();
 					st_ptr.owner = rd_byte();
@@ -1003,33 +972,33 @@ public class Save {
 //				return _error(ok, fd, time_saved, version_maj, version_min);
 //			}
 			
-			if (var.turn < 0) {
+			if (Variable.turn < 0) {
 				return _error(ok, fd, time_saved, version_maj, version_min);	/* Assume bad data. */
 			} else {
 				/* don't overwrite the killed by string if character is dead */
-				if (py.py.misc.chp >= 0) {
-					var.died_from = "(alive and well)";
+				if (Player.py.misc.chp >= 0) {
+					Variable.died_from = "(alive and well)";
 				}
-				var.character_generated = true;
+				Variable.character_generated = true;
 			}
 			
 			closefiles(ok, fd, time_saved, version_maj, version_min);
 		}
 		
-		var.turn = -1;
-		io.prt("Please try again without that savefile.", 1, 0);
+		Variable.turn = -1;
+		IO.prt("Please try again without that savefile.", 1, 0);
 		sigs.signals();
-		death.exit_game();
+		Death.exit_game();
 		
 		return false;	/* not reached, unless on mac */
 	}
 	
-	private boolean _error(boolean ok, int fd, long time_saved, int version_maj, int version_min) {
+	private static boolean _error(boolean ok, int fd, long time_saved, int version_maj, int version_min) {
 //		return closefiles(ok, fd, time_saved, version_maj, version_min);
 		return false;
 	}
 	
-	private boolean closefiles(boolean ok, int fd, long time_saved, int version_maj, int version_min) {
+	private static boolean closefiles(boolean ok, int fd, long time_saved, int version_maj, int version_min) {
 		long age;
 		String temp;
 		
@@ -1043,27 +1012,27 @@ public class Save {
 //		}
 		
 		if (!ok) {
-			io.msg_print("Error during reading of file.");
+			IO.msg_print("Error during reading of file.");
 		} else {
 			/* let the user overwrite the old savefile when save/quit */
 			from_savefile = 1;
 			
 			sigs.signals();
 			
-			if (var.panic_save == 1) {
+			if (Variable.panic_save == 1) {
 				temp = String.format("This game is from a panic save.  Score will not be added to scoreboard.");
-				io.msg_print(temp);
-			} else if ((var.noscore & 0x04) == 0 && death.duplicate_character()) {
+				IO.msg_print(temp);
+			} else if ((Variable.noscore & 0x04) == 0 && Death.duplicate_character()) {
 				temp = String.format("This character is already on the scoreboard; it will not be scored again.");
-				io.msg_print(temp);
-				var.noscore |= 0x4;
+				IO.msg_print(temp);
+				Variable.noscore |= 0x4;
 			}
 			
-			if (var.turn >= 0) {
+			if (Variable.turn >= 0) {
 				/* Only if a full restoration. */
-				var.weapon_heavy = false;
-				var.pack_heavy = 0;
-				m3.check_strength();
+				Variable.weapon_heavy = false;
+				Variable.pack_heavy = 0;
+				Misc3.check_strength();
 				
 				/* rotate store inventory, depending on how old the save file */
 				/* is foreach day old (rounded up), call store_maint */
@@ -1083,8 +1052,8 @@ public class Save {
 				}
 			}
 			
-			if (var.noscore == 0) {
-				io.msg_print("This save file cannot be used to get on the score board.");
+			if (Variable.noscore == 0) {
+				IO.msg_print("This save file cannot be used to get on the score board.");
 			}
 			
 			if (version_maj != Constants.CUR_VERSION_MAJ || version_min != Constants.CUR_VERSION_MIN) {
@@ -1093,10 +1062,10 @@ public class Save {
 						version_maj, version_min,
 						version_min <= Constants.CUR_VERSION_MIN ? "accepted" : "risky" ,
 						Constants.CUR_VERSION_MAJ, Constants.CUR_VERSION_MIN);
-				io.msg_print(temp);
+				IO.msg_print(temp);
 			}
 			
-			if (var.turn >= 0) {
+			if (Variable.turn >= 0) {
 				return true;
 			} else {
 				return false;	/* Only restored options and monster memory. */
@@ -1105,7 +1074,7 @@ public class Save {
 		return false;
 	}
 	
-	private void wr_byte(byte c) {
+	private static void wr_byte(byte c) {
 		if (b_ptr >= bytes.length) {
 			bytes = Arrays.copyOf(bytes, bytes.length * 2);
 		}
@@ -1114,31 +1083,31 @@ public class Save {
 		b_ptr++;
 	}
 	
-	private void wr_char(char c) {
+	private static void wr_char(char c) {
 		for (int i = 0; i < SIZEOF_CHAR; i++) {
 			wr_byte((byte)(c >> (8 * i)));
 		}
 	}
 	
-	private void wr_int(int s) {
+	private static void wr_int(int s) {
 		for (int i = 0; i < SIZEOF_INT; i++) {
 			wr_byte((byte)(s >> (8 * i)));
 		}
 	}
 	
-	private void wr_long(long l) {
+	private static void wr_long(long l) {
 		for (int i = 0; i < SIZEOF_LONG; i++) {
 			wr_byte((byte)(l >> (8 * i)));
 		}
 	}
 	
-	private void wr_bytes(byte[] c, int count) {
+	private static void wr_bytes(byte[] c, int count) {
 		for (int i = 0; i < count; i++) {
 			wr_byte(c[i]);
 		}
 	}
 	
-	private void wr_string(String str, int len) {
+	private static void wr_string(String str, int len) {
 		char[] c = str.toCharArray();
 		int i;
 		
@@ -1153,7 +1122,7 @@ public class Save {
 		}
 	}
 	
-	private void wr_ints(int[] s, int count) {
+	private static void wr_ints(int[] s, int count) {
 		int i;
 		
 		for (i = 0; i < s.length; i++) {
@@ -1167,7 +1136,7 @@ public class Save {
 		}
 	}
 	
-	private void wr_item(InvenType item) {
+	private static void wr_item(InvenType item) {
 		wr_int(item.index);
 		wr_int(item.name2);
 		wr_string(item.inscrip, item.INSCRIP_SIZE);
@@ -1188,7 +1157,7 @@ public class Save {
 		wr_int(item.ident);
 	}
 	
-	private void wr_monster(MonsterType mon) {
+	private static void wr_monster(MonsterType mon) {
 		wr_int(mon.hp);
 		wr_int(mon.csleep);
 		wr_int(mon.cspeed);
@@ -1201,7 +1170,7 @@ public class Save {
 		wr_byte((byte)(mon.confused > 0 ? 0x1 : 0x0));
 	}
 	
-	private byte getNextByte() {
+	private static byte getNextByte() {
 		if (b_ptr >= bytes.length) {
 			return 0;
 		}
@@ -1210,7 +1179,7 @@ public class Save {
 		return b;
 	}
 	
-	private byte rd_byte() {
+	private static byte rd_byte() {
 		byte c, ptr;
 		
 		c = getNextByte();
@@ -1220,7 +1189,7 @@ public class Save {
 		return ptr;
 	}
 	
-	private char rd_char() {
+	private static char rd_char() {
 		char c = 0;
 		
 		for (int i = 0; i < SIZEOF_CHAR; i++) {
@@ -1230,7 +1199,7 @@ public class Save {
 		return c;
 	}
 	
-	private int rd_int() {
+	private static int rd_int() {
 		int s;
 		s = 0;
 		
@@ -1241,7 +1210,7 @@ public class Save {
 		return s;
 	}
 	
-	private long rd_long() {
+	private static long rd_long() {
 		long l = 0;
 		
 		for (int i = 0; i < SIZEOF_LONG; i++) {
@@ -1251,7 +1220,7 @@ public class Save {
 		return l;
 	}
 	
-	private void rd_bytes(byte[] ch_ptr, int count) {
+	private static void rd_bytes(byte[] ch_ptr, int count) {
 		int i;
 		if (count > ch_ptr.length) {
 			count = ch_ptr.length;
@@ -1264,7 +1233,7 @@ public class Save {
 		}
 	}
 	
-	private String rd_string(int len) {
+	private static String rd_string(int len) {
 		char[] str = new char[len];
 		int i;
 		
@@ -1286,7 +1255,7 @@ public class Save {
 		return new String(str);
 	}
 	
-	private void rd_ints(int[] ptr, int count) {
+	private static void rd_ints(int[] ptr, int count) {
 		int i;
 		
 		for (i = 0; i < ptr.length; i++) {
@@ -1300,7 +1269,7 @@ public class Save {
 		}
 	}
 	
-	private void rd_item(InvenType item) {
+	private static void rd_item(InvenType item) {
 		item.index = rd_int();
 		item.name2 = rd_byte();
 		item.inscrip = rd_string(item.INSCRIP_SIZE);
@@ -1321,7 +1290,7 @@ public class Save {
 		item.ident = rd_byte();
 	}
 	
-	private void rd_monster(MonsterType mon) {
+	private static void rd_monster(MonsterType mon) {
 		mon.hp = rd_int();
 		mon.csleep = rd_int();
 		mon.cspeed = rd_int();
@@ -1337,11 +1306,11 @@ public class Save {
 	/* functions called from death.c to implement the score file */
 	
 	/* set the local fileptr to the scorefile fileptr */
-	public void set_fileptr(java.io.File file) {
+	public static void set_fileptr(java.io.File file) {
 		fileptr = file;
 	}
 	
-	public void wr_highscore(HighScoreType score) {
+	public static void wr_highscore(HighScoreType score) {
 		/* Save the encryption byte for robustness.  */
 		wr_byte(xor_byte);
 		
@@ -1356,11 +1325,11 @@ public class Save {
 		wr_int(score.sex);
 		wr_int(score.race);
 		wr_int(score.Class);
-		wr_string(score.name, py.py.PLAYER_NAME_SIZE);
+		wr_string(score.name, Player.py.PLAYER_NAME_SIZE);
 		wr_string(score.died_from, 25);
 	}
 	
-	public void rd_highscore(HighScoreType score) {
+	public static void rd_highscore(HighScoreType score) {
 		/* Read the encryption byte.  */
 		xor_byte = rd_byte();
 		
@@ -1375,7 +1344,7 @@ public class Save {
 		score.sex = rd_int();
 		score.race = rd_int();
 		score.Class = rd_int();
-		score.name = rd_string(py.py.PLAYER_NAME_SIZE);
+		score.name = rd_string(Player.py.PLAYER_NAME_SIZE);
 		score.died_from = rd_string(25);
 	}
 }

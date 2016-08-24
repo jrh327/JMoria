@@ -25,6 +25,7 @@ import net.jonhopkins.moria.types.InvenType;
 import net.jonhopkins.moria.types.TreasureType;
 
 public class Sets {
+	
 	public static final int set_room = 1;
 	public static boolean set_room(int element) {
 		if ((element == Constants.DARK_FLOOR) || (element == Constants.LIGHT_FLOOR)) {
