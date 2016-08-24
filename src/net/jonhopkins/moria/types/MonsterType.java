@@ -22,19 +22,6 @@
 package net.jonhopkins.moria.types;
 
 public final class MonsterType {
-	public MonsterType(int _hp, int _csleep, int _cspeed, int _mptr, int _fy, int _fx, int _cdis, boolean _ml, int _stunned, int _confused) {
-		hp = _hp;
-		csleep = _csleep;
-		cspeed = _cspeed;
-		mptr = _mptr;
-		fy = _fy;
-		fx = _fx;
-		cdis = _cdis;
-		ml = _ml;
-		stunned = _stunned;
-		confused = _confused;
-	}
-	
 	/**
 	 * Hitpoints
 	 */
@@ -72,4 +59,31 @@ public final class MonsterType {
 	public boolean ml;
 	public int stunned;
 	public int confused;
+	
+	public MonsterType(int hp, int csleep, int cspeed, int mptr, int fy, 
+			int fx, int cdis, boolean ml, int stunned, int confused) {
+		this.hp = hp;
+		this.csleep = csleep;
+		this.cspeed = cspeed;
+		this.mptr = mptr;
+		this.fy = fy;
+		this.fx = fx;
+		this.cdis = cdis;
+		this.ml = ml;
+		this.stunned = stunned;
+		this.confused = confused;
+	}
+	
+	public void copyInto(MonsterType monster) {
+		monster.hp = this.hp;
+		monster.csleep = this.csleep;
+		monster.cspeed = this.cspeed;
+		monster.mptr = this.mptr;
+		monster.fy = this.fy;
+		monster.fx = this.fx;
+		monster.cdis = this.cdis;
+		monster.ml = this.ml;
+		monster.stunned = this.stunned;
+		monster.confused = this.confused;
+	}
 }

@@ -327,19 +327,6 @@ public class Moria3 {
 		}
 	}
 	
-	private static void mondeepcopy(MonsterType to, MonsterType from) {
-		to.hp = from.hp;
-		to.csleep = from.csleep;
-		to.cspeed = from.cspeed;
-		to.mptr = from.mptr;
-		to.fy = from.fy;
-		to.fx = from.fx;
-		to.cdis = from.cdis;
-		to.ml = from.ml;
-		to.stunned = from.stunned;
-		to.confused = from.confused;
-	}
-	
 	/* Deletes a monster entry from the level		-RAK-	*/
 	public static void delete_monster(int j) {
 		MonsterType m_ptr;
@@ -352,10 +339,10 @@ public class Moria3 {
 		if (j != Monsters.mfptr - 1) {
 			m_ptr = Monsters.m_list[Monsters.mfptr - 1];
 			Variable.cave[m_ptr.fy][m_ptr.fx].cptr = j;
-			mondeepcopy(Monsters.m_list[j], Monsters.m_list[Monsters.mfptr - 1]);
+			Monsters.m_list[Monsters.mfptr - 1].copyInto(Monsters.m_list[j]);
 		}
 		Monsters.mfptr--;
-		mondeepcopy(Monsters.m_list[Monsters.mfptr], Monsters.blank_monster());
+		Monsters.blank_monster().copyInto(Monsters.m_list[Monsters.mfptr]);
 		if (Monsters.mon_tot_mult > 0) {
 			Monsters.mon_tot_mult--;
 		}
@@ -394,9 +381,9 @@ public class Moria3 {
 		if (j != Monsters.mfptr - 1) {
 			m_ptr = Monsters.m_list[Monsters.mfptr - 1];
 			Variable.cave[m_ptr.fy][m_ptr.fx].cptr = j;
-			mondeepcopy(Monsters.m_list[j], Monsters.m_list[Monsters.mfptr - 1]);
+			Monsters.m_list[Monsters.mfptr - 1].copyInto(Monsters.m_list[j]);
 		}
-		mondeepcopy(Monsters.m_list[Monsters.mfptr - 1], Monsters.blank_monster());
+		Monsters.blank_monster().copyInto(Monsters.m_list[Monsters.mfptr - 1]);
 		Monsters.mfptr--;
 	}
 	
