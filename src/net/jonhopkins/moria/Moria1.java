@@ -884,9 +884,9 @@ public class Moria1 {
 												if (!IO.get_com( "Put ring on which hand (l/r/L/R)?", query)) {
 													item = -1;
 													slot = -1;
-												} else if (query.value()== 'l') {
+												} else if (query.value() == 'l') {
 													slot = Constants.INVEN_LEFT;
-												} else if (query.value()== 'r') {
+												} else if (query.value() == 'r') {
 													slot = Constants.INVEN_RIGHT;
 												} else {
 													if (query.value() == 'L') {
@@ -932,9 +932,9 @@ public class Moria1 {
 									Variable.free_turn_flag = false;
 									
 									/* first remove new item from inventory */
-									tmp_obj = Treasure.inventory[item];
-									i_ptr = new InvenType();
-									tmp_obj.copyInto(i_ptr);
+									tmp_obj = new InvenType();
+									Treasure.inventory[item].copyInto(tmp_obj);
+									i_ptr = tmp_obj;
 									
 									wear_high--;
 									/* Fix for torches	   */
