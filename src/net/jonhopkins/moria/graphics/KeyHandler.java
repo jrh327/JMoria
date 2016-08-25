@@ -21,43 +21,38 @@
 package net.jonhopkins.moria.graphics;
 
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-class KeyHandler {
+class KeyHandler implements KeyListener {
 	public void handleKey(KeyEvent event) {
-		int keystroke = event.getKeyCode();
+		char keyChar;
+		int keyCode = event.getKeyCode();
 		
-		if (keystroke == 16 || keystroke == 17 || keystroke == 18) {
+		switch (keyCode) {
+		case 16:
+		case 17:
+		case 18:
 			return;
+		case KeyEvent.VK_LEFT:
+			keyChar = KeyEvent.VK_LEFT;
+			break;
+		case KeyEvent.VK_UP:
+			keyChar = KeyEvent.VK_UP;
+			break;
+		case KeyEvent.VK_RIGHT:
+			keyChar = KeyEvent.VK_RIGHT;
+			break;
+		case KeyEvent.VK_DOWN:
+			keyChar = KeyEvent.VK_DOWN;
+			break;
+		default:
+			keyChar = event.getKeyChar();
+			break;
 		}
 		
-		if (event.getModifiersEx() == 64) {
-			keystroke |= MOD_SHIFT;
-		} else if (event.getModifiersEx() == 128) {
-			keystroke |= MOD_CTRL;
-		} else if (event.getModifiersEx() == 192) {
-			keystroke |= MOD_CTRLSHIFT;
-		} else if (event.getModifiersEx() == 512) {
-			keystroke |= MOD_ALT;
-		} else if (event.getModifiersEx() == 576) {
-			keystroke |= MOD_ALTSHIFT;
-		} else if (event.getModifiersEx() == 640) {
-			keystroke |= MOD_CTRLALT;
-		}
-		
-		if (event.getKeyCode() == KeyEvent.VK_RIGHT ) {
-			lastkeyhit = 39;
-		} else if (event.getKeyCode() == KeyEvent.VK_LEFT ) {
-			lastkeyhit = 37;
-		} else if (event.getKeyCode() == KeyEvent.VK_UP ) {
-			lastkeyhit = 38;
-		} else if (event.getKeyCode() == KeyEvent.VK_DOWN ) {
-			lastkeyhit = 40;
-		} else { 
-			lastkeyhit = event.getKeyChar();
-		}
-		queue.add(new Character((char)lastkeyhit));
+		queue.add(keyChar);
 	}
 	
 	public boolean isKeyAvailable() {
@@ -72,18 +67,24 @@ class KeyHandler {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		lastkeyhit = 0;
 		
 		return ch;
 	}
 	
-	private final short MOD_SHIFT		=	0x0100;
-	private final short MOD_CTRL		=	0x0200;
-	private final short MOD_ALT			=	0x0400;
-	private final short MOD_CTRLSHIFT	=	0x0800;
-	private final short MOD_ALTSHIFT	=	0x1000;
-	private final short MOD_CTRLALT		=	0x2000;
-	
-	private int lastkeyhit = 0;
 	private BlockingQueue<Character> queue = new ArrayBlockingQueue<Character>(10);
+	
+	@Override
+	public void keyTyped(KeyEvent event) {
+		
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent event) {
+		handleKey(event);
+	}
+	
+	@Override
+	public void keyReleased(KeyEvent event) {
+		
+	}
 }

@@ -31,7 +31,6 @@ public class IO {
 	//struct screen { int dumb; };
 	
 	private static boolean curses_on = false;
-	private static Output curses;
 	private static Window stdscr;
 	private static Window savescr;		/* Spare window for saving the screen. -CJS-*/
 	
@@ -74,10 +73,8 @@ public class IO {
 	}
 	
 	/* initializes curses routines */
-	public static void init_curses(Output output) {
+	public static void init_curses() {
 		int i, y, x;
-		
-		curses = output;
 		
 		/*
 		Window w = new Window(40, 20, true, "Moria");
@@ -126,11 +123,11 @@ public class IO {
 		 * guaranteed to be true.  */
 		
 		/* check tab settings, exit with error if they are not 8 spaces apart */
-		curses.moveCursor(0, 0);
+		Output.moveCursor(0, 0);
 		for (i = 1; i < 10; i++) {
-			curses.addCharacter('\t');
-			y = curses.getCursorY();
-			x = curses.getCursorX();
+			Output.addCharacter('\t');
+			y = Output.getCursorY();
+			x = Output.getCursorX();
 			
 			if (y != 0 || x != i * 8) {
 				break;
@@ -142,8 +139,8 @@ public class IO {
 			Death.exit_game();
 		}
 		
-		stdscr = curses.getWindow();
-		savescr = new Window(24, 80);
+		stdscr = Output.getWindow();
+		savescr = new Window(Output.getHeight(), Output.getWidth());
 	}
 	
 	/* Set up the terminal into a suitable state for moria.	 -CJS- */
@@ -173,7 +170,7 @@ public class IO {
 		
 		tmp_str = out_str.substring(0, len);
 		//tmp_str [79 - col] = '\0';
-		curses.moveCursorAddString(col, row, tmp_str);
+		Output.moveCursorAddString(col, row, tmp_str);
 		//if (mvaddstr(row, col, tmp_str) == ERR) {
 		//	abort();
 			/* clear msg_flag to avoid problems with unflushed messages */
@@ -189,7 +186,7 @@ public class IO {
 	/* Dump the IO buffer to terminal			-RAK-	*/
 	public static void put_qio() {
 		Variable.screen_change = true;	/* Let inven_command know something has changed. */
-		curses.refresh();
+		Output.refresh();
 	}
 	
 	/* Put the terminal in the original mode.			   -CJS- */
@@ -206,8 +203,8 @@ public class IO {
 		}   /* And let it be read. */
 		/* this moves curses to bottom right corner */
 		//mvcur(stdscr._cury, stdscr._curx, LINES-1, 0);
-		curses.moveCursor(0, LINES - 1);
-		curses.closeWindow();
+		Output.moveCursor(0, LINES - 1);
+		Output.closeWindow();
 		//endwin();  /* exit curses */
 		//fflush (stdout);
 		//msdos_noraw();
@@ -300,7 +297,7 @@ public class Console {
 		put_qio();			/* Dump IO buffer		*/
 		Variable.command_count = 0;	/* Just to be safe -CJS- */
 		while (true) {
-			i = curses.getch();
+			i = Output.getch();
 			
 			/* some machines may not sign extend. */
 			if (i == 0 /* EOF */) {
@@ -309,7 +306,7 @@ public class Console {
 				 * prompt. */
 				Variable.msg_flag = Constants.FALSE;
 				
-				curses.refresh();
+				Output.refresh();
 				if (!Variable.character_generated || Variable.character_saved != 0) {
 					Death.exit_game();
 				}
@@ -338,17 +335,17 @@ public class Console {
 	}
 	
 	public static boolean isKeyAvailable() {
-		return curses.kbhit();
+		return Output.kbhit();
 	}
 	
 	public static char getch() {
-		return curses.getch();
+		return Output.getch();
 	}
 	
 	/* Flush the buffer					-RAK-	*/
 	public static void flush() {
-		while (curses.kbhit()) {
-			curses.getch();
+		while (Output.kbhit()) {
+			Output.getch();
 		}
 		/* used to call put_qio() here to drain output, but it is not necessary */
 	}
@@ -359,8 +356,8 @@ public class Console {
 			msg_print("");
 		}
 		
-		curses.moveCursor(col, row);
-		curses.clearToEndOfLine();
+		Output.moveCursor(col, row);
+		Output.clearToEndOfLine();
 	}
 	
 	/* Clears screen */
@@ -368,12 +365,12 @@ public class Console {
 		if (Variable.msg_flag > 0) {
 			msg_print("");
 		}
-		curses.clear();
+		Output.clear();
 	}
 	
 	public static void clear_from(int row) {
-		curses.moveCursor(0, row);
-		curses.clearToBottom();
+		Output.moveCursor(0, row);
+		Output.clearToBottom();
 	}
 	
 	/* Outputs a char to a given interpolated y, x position	-RAK-	*/
@@ -384,7 +381,7 @@ public class Console {
 		
 		row -= Variable.panel_row_prt;/* Real co-ords convert to screen positions */
 		col -= Variable.panel_col_prt;
-		curses.moveCursorAddCharacter(col, row, ch);
+		Output.moveCursorAddCharacter(col, row, ch);
 		//if (mvaddch(row, col, ch) == ERR) {
 		//	abort();
 			/* clear msg_flag to avoid problems with unflushed messages */
@@ -403,7 +400,7 @@ public class Console {
 		
 		row -= Variable.panel_row_prt;/* Real co-ords convert to screen positions */
 		col -= Variable.panel_col_prt;
-		curses.moveCursor(col, row);
+		Output.moveCursor(col, row);
 		//if (move(row, col) == ERR) {
 		//	abort();
 			/* clear msg_flag to avoid problems with unflushed messages */
@@ -431,14 +428,14 @@ public class Console {
 			msg_print("");
 		}
 		
-		curses.moveCursor(col, row);
-		curses.clearToEndOfLine();
+		Output.moveCursor(col, row);
+		Output.clearToEndOfLine();
 		put_buffer(str_buff, row, col);
 	}
 	
 	/* move cursor to a given y, x position */
 	public static void move_cursor(int row, int col) {
-		curses.moveCursor(col, row);
+		Output.moveCursor(col, row);
 	}
 	
 	/* Outputs message to top line of screen				*/
@@ -481,8 +478,8 @@ public class Console {
 		}
 		
 		if (!combine_messages) {
-			curses.moveCursor(0, Constants.MSG_LINE);
-			curses.clearToEndOfLine();
+			Output.moveCursor(0, Constants.MSG_LINE);
+			Output.clearToEndOfLine();
 		}
 		
 		/* Make the null string a special case.  -CJS- */
@@ -505,7 +502,7 @@ public class Console {
 				//strncpy(var.old_msg[var.last_msg], str_buff, Constants.VTYPESIZ);
 				//var.old_msg[var.last_msg][Constants.VTYPESIZ - 1] = '\0';
 			}
-			curses.refresh();
+			Output.refresh();
 		} else {
 			Variable.msg_flag = Constants.FALSE;
 		}
@@ -518,17 +515,17 @@ public class Console {
 		
 		prt(prompt, 0, 0);
 		//getyx(stdscr, y, x);
-		y = curses.getCursorY();
-		x = curses.getCursorX();
+		y = Output.getCursorY();
+		x = Output.getCursorX();
 		
 		x = y;
 		res = y;
 		
 		if (x > 73) {
-			curses.moveCursor(73, 0);
+			Output.moveCursor(73, 0);
 		}
 		
-		curses.addString(" [y/n]");
+		Output.addString(" [y/n]");
 		
 		do {
 			res = inkey();
@@ -571,12 +568,12 @@ public class Console {
 		aborted = false;
 		flag = false;
 		
-		curses.moveCursor(column, row);
+		Output.moveCursor(column, row);
 		for (i = slen; i > 0; i--) {
-			curses.addCharacter(' ');
+			Output.addCharacter(' ');
 		}
 		
-		curses.moveCursor(column, row);
+		Output.moveCursor(column, row);
 		
 		start_col = column;
 		end_col = column + slen - 1;
@@ -607,7 +604,7 @@ public class Console {
 					if (!(i >= 32 && i <= 126) || column > end_col) {
 						bell();
 					} else {
-						curses.moveCursorAddCharacter(column, row, (char)i);
+						Output.moveCursorAddCharacter(column, row, (char)i);
 						//*p++ = i;
 						in_str += (char)i;
 						column++;
@@ -657,11 +654,11 @@ public class Console {
 	}
 	
 	public static void save_screen() {
-		curses.overwrite(stdscr, savescr);
+		Output.overwrite(stdscr, savescr);
 	}
 	
 	public static void restore_screen() {
-		curses.overwrite(savescr, stdscr);
+		Output.overwrite(savescr, stdscr);
 		//touchwin(stdscr);
 	}
 	
@@ -673,7 +670,9 @@ public class Console {
 			return;
 		}
 		
-		System.out.println("\007");
+		//System.out.println("\007");
+		//System.out.flush();
+		java.awt.Toolkit.getDefaultToolkit().beep();
 	}
 	
 	/* definitions used by screen_map() */
@@ -719,12 +718,12 @@ public class Console {
 		
 		save_screen();
 		clear_screen();
-		curses.moveCursorAddCharacter(0, 0, CH(TL));
+		Output.moveCursorAddCharacter(0, 0, CH(TL));
 		for (i = 0; i < Constants.MAX_WIDTH / RATIO; i++) {
-			curses.addCharacter(CH(HE));
+			Output.addCharacter(CH(HE));
 		}
 		
-		curses.addCharacter(CH(TR));
+		Output.addCharacter(CH(TR));
 		
 		orow = -1;
 		map[Constants.MAX_WIDTH / RATIO] = '\0';
@@ -736,7 +735,7 @@ public class Console {
 			 		 * written, and mvprintw() causes the fp emulation library to be
 			 		 * linked with PC-Moria, makes the program 10K bigger */
 					prntscrnbuf = String.format("%c%s%c",CH(VE), map, CH(VE));
-					curses.moveCursorAddString(0, orow + 1, prntscrnbuf);
+					Output.moveCursorAddString(0, orow + 1, prntscrnbuf);
 				}
 				
 				for (j = 0; j < Constants.MAX_WIDTH / RATIO; j++) {
@@ -763,19 +762,19 @@ public class Console {
 		
 		if (orow >= 0) {
 			prntscrnbuf = String.format("%c%s%c",CH(VE), map, CH(VE));
-			curses.moveCursorAddString(0, orow + 1, prntscrnbuf);
+			Output.moveCursorAddString(0, orow + 1, prntscrnbuf);
 		}
 		
-		curses.moveCursorAddCharacter(0, orow + 2, CH(BL));
+		Output.moveCursorAddCharacter(0, orow + 2, CH(BL));
 		for (i = 0; i < Constants.MAX_WIDTH / RATIO; i++) {
-			curses.addCharacter(CH(HE));
+			Output.addCharacter(CH(HE));
 		}
 		
-		curses.addCharacter(CH(BR));
+		Output.addCharacter(CH(BR));
 		
-		curses.moveCursorAddString(23, 23, "Hit any key to continue");
+		Output.moveCursorAddString(23, 23, "Hit any key to continue");
 		if (mycol > 0) {
-			curses.moveCursor(mycol, myrow);
+			Output.moveCursor(mycol, myrow);
 		}
 		inkey();
 		restore_screen();

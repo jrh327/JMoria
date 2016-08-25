@@ -72,22 +72,15 @@
 package net.jonhopkins.moria;
 
 import java.applet.Applet;
-import java.awt.Color;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 
 import net.jonhopkins.moria.graphics.Output;
 import net.jonhopkins.moria.types.BooleanPointer;
 import net.jonhopkins.moria.types.InvenType;
 
-public class Main extends Applet implements KeyListener {
+public class Main extends Applet {
 	public void init() {
-		setFocusable(true);
-		curses = new Output(24, 80, Color.BLACK, this);
-		curses.refresh();
-		addKeyListener(this);
-		
+		Output.initialize(this);
 		main(2, new char[] { 'n', 'r' });
 	}
 	
@@ -122,18 +115,6 @@ public class Main extends Applet implements KeyListener {
 		}*/
 	}
 	
-	public void keyPressed(KeyEvent event) {
-		curses.handleKey(event);
-	}
-	
-	public void keyReleased(KeyEvent event) {
-		//displayInfo(event, "RELEASED");
-	}
-	
-	public void keyTyped(KeyEvent event) {
-		//displayInfo(event, "TYPED");
-	}
-	
 	//long _stksize = 18000;		/*(SAJ) for MWC	*/
 	//unsigned _stklen = 0x3fff;	/* increase stack from 4K to 16K */
 	
@@ -155,7 +136,7 @@ public class Main extends Applet implements KeyListener {
 		Files.init_scorefile();
 		
 		/* use curses */
-		IO.init_curses(curses);
+		IO.init_curses();
 		
 		/* catch those nasty signals */
 		/* must come after init_curses as some of the signal handlers use curses */
@@ -413,5 +394,4 @@ public class Main extends Applet implements KeyListener {
 	
 	private static final long serialVersionUID = 6414814785166412325L;
 	boolean running;
-	public Output curses;
 }

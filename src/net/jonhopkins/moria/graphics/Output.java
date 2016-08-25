@@ -21,338 +21,167 @@
 package net.jonhopkins.moria.graphics;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.applet.Applet;
 import java.util.ArrayList;
 
 public final class Output {
-	public Output(Applet a) {
-		this(25, 80, Color.black, a);
+	private static Output output = null;
+	private Output() {
+		
 	}
-	public Output(int h, int w, Color c, Applet a) {
-		main = a;
+	
+	public static void initialize(Applet app) {
+		if (output == null) {
+			output = new Output(app);
+		}
+		createNewWindow(25, 80, 0, 0);
+	}
+	
+	private Output(Applet app) {
+		main = app;
 		
 		windows = new ArrayList<Window>();
 		windowStack = new ArrayList<Integer>();
 		
-		createNewWindow(h, w, 0, 0);
-		
 		main.setVisible(true);
+		main.setFocusable(true);
 		
-		addKeyHandler(this);
+		keyHandler = new KeyHandler();
+		main.addKeyListener(keyHandler);
+		
+		main.requestFocus();
 	}
 	
-	public void addKeyHandler(Output curses) {
-		keyHandler = new KeyHandler();
+	public static void addCharacter(char ch) {
+		output.windowInFocus.addCharacter(ch);
+		output.windowInFocus.advanceCursor();
 	}
-	public void handleKey(KeyEvent event) {
-		keyHandler.handleKey(event);
+	
+	public static void moveCursorAddCharacter(int x, int y, char ch) {
+		output.windowInFocus.moveCursor(x, y);
+		output.windowInFocus.addCharacter(ch);
+		output.windowInFocus.advanceCursor();
 	}
-	public void addCharacter(char ch) {
-		windowInFocus.addCharacter(ch);
-		windowInFocus.advanceCursor();
+	
+	public static void addString(String str) {
+		output.windowInFocus.addString(str);
 	}
-	public void moveCursorAddCharacter(int x, int y, char ch) {
-		windowInFocus.moveCursor(x, y);
-		windowInFocus.addCharacter(ch);
-		windowInFocus.advanceCursor();
+	
+	public static void moveCursorAddString(int x, int y, String str) {
+		output.windowInFocus.moveCursor(x, y);
+		output.windowInFocus.addString(str, x, y);
 	}
-	public void placeCharacter(char ch) {
-		windowInFocus.addCharacter(ch);
+	
+	public static void moveCursor(int x, int y) {
+		output.windowInFocus.moveCursor(x, y);
 	}
-	public void placeCharacterAt(int x, int y, char ch) {
-		windowInFocus.addCharacter(ch, x, y);
+	
+	public static boolean kbhit() {
+		return output.keyHandler.isKeyAvailable();
 	}
-	public void moveCursorPlaceCharacter(int x, int y, char ch) {
-		windowInFocus.moveCursor(x, y);
-		windowInFocus.addCharacter(ch);
-	}
-	public void addString(String str) {
-		windowInFocus.addString(str);
-	}
-	public void addStringAt(String str, int x, int y) {
-		windowInFocus.addString(str, x, y);
-	}
-	public void moveCursorAddString(int x, int y, String str) {
-		windowInFocus.moveCursor(x, y);
-		windowInFocus.addString(str, x, y);
-	}
-	public void addSubstring(String str, int offset, int length) {
-		windowInFocus.addSubstring(str, offset, length);
-	}
-	public void addSubstringAt(String str, int offset, int length, int x, int y) {
-		windowInFocus.addSubstring(str, offset, length, x, y);
-	}
-	public void moveCursorAddSubstring(String str, int offset, int length, int x, int y) {
-		windowInFocus.moveCursor(x, y);
-		windowInFocus.addSubstring(str, offset, length, x, y);
-	}
-	public void moveCursor(int x, int y) {
-		windowInFocus.moveCursor(x, y);
-	}
-	public boolean kbhit() {
-		return keyHandler.isKeyAvailable();
-	}
-	public char getch() {
+	
+	public static char getch() {
 		char ch = 0;
-		main.requestFocus();
+		output.main.requestFocus();
 		try {
-			ch = keyHandler.requestKeyHit();
+			ch = output.keyHandler.requestKeyHit();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return ch;
 	}
-	public char getCharacter() {
-		return windowInFocus.getCharacter();
-	}
-	public char getCharacter(int x, int y) {
-		return windowInFocus.getCharacter(x, y);
+	
+	public static void clearToEndOfLine() {
+		output.windowInFocus.clearToEndOfLine();
 	}
 	
-	public String getString(int l) {
-		return windowInFocus.getString(l);
+	public static void clearToBottom() {
+		output.windowInFocus.clearToBottom();
 	}
-	public String getStringAt(int x, int y, int l) {
-		return windowInFocus.getString(x, y, l);
+	
+	public static void clear() {
+		output.windowInFocus.clear();
 	}
-	public String moveCursorGetString(int x, int y, int l) {
-		windowInFocus.moveCursor(x, y);
-		return windowInFocus.getString(x, y, l);
-	}
-	public void insertLine() {
-		windowInFocus.insertLine();
-	}
-	public void insertLineAt(int y) {
-		windowInFocus.insertLine(y);
-	}
-	public void deleteCharacter() {
-		windowInFocus.delete();
-	}
-	public void deleteCharaterAt(int x, int y) {
-		windowInFocus.delete(x, y);
-	}
-	public void moveCursorDeleteCharacter(int x, int y) {
-		windowInFocus.moveCursor(x, y);
-		windowInFocus.delete(x, y);
-	}
-	public void deleteLine() {
-		windowInFocus.deleteLine();
-	}
-	public void deleteLineAt(int y) {
-		windowInFocus.deleteLine(y);
-	}
-	public void moveCursorDeleteLine(int x, int y) {
-		windowInFocus.moveCursor(x, y);
-		windowInFocus.deleteLine(y);
-	}
-	public void clearToEndOfLine() {
-		windowInFocus.clearToEndOfLine();
-	}
-	public void clearToEndOfLineFrom(int x, int y) {
-		windowInFocus.clearToEndOfLine(x, y);
-	}
-	public void moveCursorClearToEndOfLine(int x, int y) {
-		windowInFocus.moveCursor(x, y);
-		windowInFocus.clearToEndOfLine(x, y);
-	}
-	public void clearToBottom() {
-		windowInFocus.clearToBottom();
-	}
-	public void clearToBottomFrom(int x, int y) {
-		windowInFocus.clearToBottom(x, y);
-	}
-	public void moveCursorClearToBottom(int x, int y) {
-		windowInFocus.moveCursor(x, y);
-		windowInFocus.clearToBottom(x, y);
-	}
-	public void clear() {
-		windowInFocus.clear();
-	}
-	public void mvwin(int dir) {
-		switch(dir) {
-		case 1:
-			windowInFocus.moveWindowUp();
-			break;
-		case 2:
-			windowInFocus.moveWindowDown();
-			break;
-		case 3:
-			windowInFocus.moveWindowRight();
-			break;
-		case 4:
-			windowInFocus.moveWindowLeft();
-			break;
-		default:
-			break;
-		}
+	
+	private static Window createNewWindow(int height, int width, int offsetx, int offsety) {
+		output.windowInFocus = new Window(height, width, offsetx, offsety);
+		output.windows.add(output.windowInFocus);
+		output.windowStack.add(0, output.windows.size() - 1);
 		
-		refreshAllWindows();
-	}
-	public void scrollCursor(int dir) {
-		windowInFocus.scrollCursor(dir);
-	}
-	public Window createNewWindow(int height, int width, int offsetx, int offsety) {
-		windowInFocus = new Window(height, width, offsetx, offsety);
-		windows.add(windowInFocus);
-		windowStack.add(0, windows.size() - 1);
-		
-		if (windows.size() == 1) {
-			main.setBackground(Color.black);
-			main.resize(windowInFocus.getWidth() * fWidth, windowInFocus.getHeight() * fHeight);
+		if (output.windows.size() == 1) {
+			output.main.setBackground(Color.black);
+			output.main.resize(
+					output.windowInFocus.getWidth() * output.fWidth,
+					output.windowInFocus.getHeight() * output.fHeight);
 			
-			bufferImg = main.createImage(windowInFocus.getWidth() * fWidth, windowInFocus.getHeight() * fHeight);
-			bufferGraphics = bufferImg.getGraphics();
-			bufferGraphics.setFont(new Font("Lucida Console", Font.PLAIN, 12));
+			output.bufferImg = output.main.createImage(
+					output.windowInFocus.getWidth() * output.fWidth,
+					output.windowInFocus.getHeight() * output.fHeight);
+			output.bufferGraphics = output.bufferImg.getGraphics();
+			output.bufferGraphics.setFont(new Font("Lucida Console", Font.PLAIN, 12));
 		}
 		
 		refresh();
-		return windowInFocus;
+		return output.windowInFocus;
 	}
-	public void setFocusNextWindow() {
-		if (windowStack.get(0) == windows.size() - 1) {
-			return;
-		}
-		
-		setFocusWindow(windowStack.get(0) + 1);
-	}
-	public void setFocusPreviousWindow() {
-		if (windowStack.get(0) == 0) {
-			return;
-		}
-		
-		setFocusWindow(windowStack.get(0) - 1);
-	}
-	public void setFocusWindow(int index) {
-		if (index < 0 || index >= windows.size()) {
-			return;
-		}
-		
-		windowInFocus.setFocus(false);
-		windowInFocus = windows.get(index);
-		windowInFocus.setFocus(true);
-		
-		int i = 0;
-		for (; i < windows.size(); i++) {
-			if (windowStack.get(i) == index) {
-				break;
-			}
-		}
-		
-		for (; i > 0; i--) {
-			windowStack.set(i, windowStack.get(i - 1));
-		}
-		
-		windowStack.set(0, index);
-		refreshAllWindows();
-	}
-	public void toggleBlink() {
-		//windowInFocus.toggleBlink();
-	}
-	public void toggleBold() {
-		//windowInFocus.toggleBold();
-	}
-	public void toggleDim() {
-		//windowInFocus.toggleDim();
-	}
-	public void toggleInvisible() {
-		//windowInFocus.toggleInvisible();
-	}
-	public void toggleLow() {
-		//windowInFocus.toggleLow();
-	}
-	public void toggleProtected() {
-		//windowInFocus.toggleProtected();
-	}
-	public void toggleReverseVideo() {
-		//windowInFocus.toggleReverseVideo();
-	}
-	public void toggleStandout() {
-		//windowInFocus.toggleStandout();
-	}
-	public void toggleUnderline() {
-		//windowInFocus.toggleUnderline();
-	}
-	public void closeWindow() {
-		if (windowStack.size() == 1) {
+	
+	public static void closeWindow() {
+		if (output.windowStack.size() == 1) {
 			System.exit(0);
 		}
 		
-		int indexOfWindowClosing = windowStack.get(0);
-		windows.remove((int)windowStack.get(0));
-		windowStack.remove(0);
+		int indexOfWindowClosing = output.windowStack.get(0);
+		output.windows.remove((int)output.windowStack.get(0));
+		output.windowStack.remove(0);
 		
-		for (int i = 0; i < windows.size(); i++) {
-			if (windowStack.get(i) > indexOfWindowClosing) {
-				windowStack.set(i, windowStack.get(i) - 1);
+		for (int i = 0; i < output.windows.size(); i++) {
+			if (output.windowStack.get(i) > indexOfWindowClosing) {
+				output.windowStack.set(i, output.windowStack.get(i) - 1);
 			}
 		}
 		
-		windowInFocus = windows.get(windowStack.get(0));
-		windowInFocus.setFocus(true);
+		output.windowInFocus = output.windows.get(output.windowStack.get(0));
+		output.windowInFocus.setFocus(true);
 		refreshAllWindows();
 	}
-	public int getHeight() {
-		return windowInFocus.getHeight();
-	}
-	public int getWidth() {
-		return windowInFocus.getWidth();
-	}
-	public int getOffsetX() {
-		return windowInFocus.getOffsetX();
-	}
-	public int getOffsetY() {
-		return windowInFocus.getOffsetY();
-	}
-	public int getCursorX() {
-		return windowInFocus.getCursorX();
-	}
-	public int getCursorY() {
-		return windowInFocus.getCursorY();
-	}
-	public void addBorder() {
-		windowInFocus.addBorder();
-	}
-	public void setBackgroundColor(int bgColor) {
-		if (bgColor == windowInFocus.getBackgroundColor()) {
-			return;
-		}
-		
-		windowInFocus.setBackgroundColor(bgColor);
-		refresh();
-	}
-	public void setForegroundColor(int fgColor) {
-		if (fgColor == windowInFocus.getForeGroundColor()) {
-			return;
-		}
-		
-		windowInFocus.setForegroundColor(fgColor);
-		refresh();
-	}
-	public void refresh() {
-		windowInFocus.refresh(bufferGraphics);
-		main.getGraphics().drawImage(bufferImg, 0, 0, main);
-	}
-	public void refreshWholeWindow() {
-		windowInFocus.refreshAll(bufferGraphics);
-		main.getGraphics().drawImage(bufferImg, 0, 0, main);
-	}
-	public void refreshAllWindows() {
-		bufferGraphics.clearRect(0, 0, main.getWidth(), main.getHeight());
-		
-		for (int i = windows.size() - 1; i >= 0; i--) {
-			windows.get(windowStack.get(i)).refreshAll(bufferGraphics);
-		}
-		
-		windowInFocus.refreshAll(bufferGraphics);
-		main.getGraphics().drawImage(bufferImg, 0, 0, main);
+	
+	public static int getHeight() {
+		return output.windowInFocus.getHeight();
 	}
 	
-	public Window getWindow() {
-		return windowInFocus;
+	public static int getWidth() {
+		return output.windowInFocus.getWidth();
 	}
 	
-	public void overwrite(Window win1, Window win2) {
+	public static int getCursorX() {
+		return output.windowInFocus.getCursorX();
+	}
+	
+	public static int getCursorY() {
+		return output.windowInFocus.getCursorY();
+	}
+	
+	public static void refresh() {
+		output.windowInFocus.refresh(output.bufferGraphics);
+		output.main.getGraphics().drawImage(output.bufferImg, 0, 0, output.main);
+	}
+	
+	private static void refreshAllWindows() {
+		output.bufferGraphics.clearRect(0, 0, output.main.getWidth(), output.main.getHeight());
+		
+		for (int i = output.windows.size() - 1; i >= 0; i--) {
+			output.windows.get(output.windowStack.get(i)).refreshAll(output.bufferGraphics);
+		}
+		
+		output.windowInFocus.refreshAll(output.bufferGraphics);
+		output.main.getGraphics().drawImage(output.bufferImg, 0, 0, output.main);
+	}
+	
+	public static Window getWindow() {
+		return output.windowInFocus;
+	}
+	
+	public static void overwrite(Window win1, Window win2) {
 		win1.overwrite(win2);
 	}
 	
