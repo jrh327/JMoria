@@ -55,7 +55,7 @@ public class Desc {
 	public static void magic_init() {
 		int h, i, j, k;
 		String tmp;
-		String string;
+		StringBuilder string;
 		
 		Misc1.set_seed(Variable.randes_seed);
 		
@@ -97,14 +97,14 @@ public class Desc {
 			Tables.mushrooms[j] = tmp;
 		}
 		for (h = 0; h < Constants.MAX_TITLES; h++) {
-			string = "";
+			string = new StringBuilder();
 			k = Misc1.randint(2) + 1;
 			for (i = 0; i < k; i++) {
 				for (j = Misc1.randint(2); j > 0; j--) {
-					string = string.concat(Tables.syllables[Misc1.randint(Constants.MAX_SYLLABLES) - 1]);
+					string = string.append(Tables.syllables[Misc1.randint(Constants.MAX_SYLLABLES) - 1]);
 				}
 				if (i < k - 1) {
-					string = string.concat(" ");
+					string = string.append(' ');
 				}
 			}
 			int len = 9;
@@ -112,11 +112,9 @@ public class Desc {
 				len = string.length();
 			}
 			if (string.charAt(len - 1) == ' ') {
-				string = string.substring(0, len - 1);
-			} else {
-				string = string.substring(0, len);
+				string.setLength(len - 1);
 			}
-			 titles[h] = string;
+			titles[h] = string.toString();
 		}
 		Misc1.reset_seed();
 	}

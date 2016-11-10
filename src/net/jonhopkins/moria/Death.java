@@ -21,6 +21,8 @@
  */
 package net.jonhopkins.moria;
 
+import java.util.Calendar;
+
 import net.jonhopkins.moria.types.HighScoreType;
 import net.jonhopkins.moria.types.PlayerMisc;
 import net.jonhopkins.moria.types.Stats;
@@ -33,14 +35,26 @@ public class Death {
 	private Death() { }
 	
 	public static String date() {
-		String tmp;
-		long clockvar;
+		int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK); 
 		
-		clockvar = System.currentTimeMillis();  //time((long *) 0);
-		//tmp = ctime(&clockvar);
-		tmp = String.valueOf(clockvar);
-		tmp = tmp.substring(0, 10);
-		return tmp;
+		switch (day) {
+		case Calendar.SUNDAY:
+			return "Sunday";
+		case Calendar.MONDAY:
+			return "Monday";
+		case Calendar.TUESDAY:
+			return "Tuesday";
+		case Calendar.WEDNESDAY:
+			return "Wednesday";
+		case Calendar.THURSDAY:
+			return "Thursday";
+		case Calendar.FRIDAY:
+			return "Friday";
+		case Calendar.SATURDAY:
+			return "Saturday";
+		default:
+			return "Sunday";
+		}
 	}
 	
 	/* Centers a string within a 31 character string		-JWT-	 */

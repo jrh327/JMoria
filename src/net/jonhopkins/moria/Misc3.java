@@ -305,6 +305,14 @@ public class Misc3 {
 		IO.put_buffer(out_val, row, column);
 	}
 	
+	/**
+	 * Print long number (7 digits of space) with header at given row, column
+	 * 
+	 * @param header - The header to print
+	 * @param num - The number to print
+	 * @param row - The vertical position at which to print
+	 * @param column - The horizonal position at which to print
+	 */
 	public static void prt_7lnum(String header, int num, int row, int column) {
 		String out_val;
 		
@@ -1148,7 +1156,7 @@ public class Misc3 {
 	public static void get_name() {
 		IO.prt("Enter your player's name  [press <RETURN> when finished]", 21, 2);
 		IO.put_buffer(blank_string.substring(BLANK_LENGTH - 23), 2, 15);
-		if ((Player.py.misc.name = IO.get_string(2, 15, 23)).length() == 0 || Player.py.misc.name.charAt(0) == '0') {
+		if ((Player.py.misc.name = IO.get_string(2, 15, 23)).isEmpty() || Player.py.misc.name.isEmpty()) {
 			Player.py.misc.name = user_name();
 			IO.put_buffer(Player.py.misc.name, 2, 15);
 		}

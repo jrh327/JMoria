@@ -184,7 +184,18 @@ public class Recall {
 		mp = Variable.c_recall[mon_num];
 		cp = Monsters.c_list[mon_num];
 		if (Variable.wizard) {
-			save_mem = mp;
+			save_mem = new MonsterRecallType();
+			save_mem.r_cmove = mp.r_cmove;
+			save_mem.r_spells = mp.r_spells;
+			save_mem.r_kills = mp.r_kills;
+			save_mem.r_deaths = mp.r_deaths;
+			save_mem.r_cdefense = mp.r_cdefense;
+			save_mem.r_wake = mp.r_wake;
+			save_mem.r_ignore = mp.r_ignore;
+			for (int att = 0; att < mp.r_attacks.length; att++) {
+				save_mem.r_attacks[att] = mp.r_attacks[att];
+			}
+			
 			mp.r_kills = Constants.MAX_SHORT;
 			mp.r_wake = mp.r_ignore = Constants.MAX_UCHAR;
 			j = ((cp.cmove & Constants.CM_4D2_OBJ) * 8)
@@ -626,7 +637,9 @@ public class Recall {
 			mp.r_cdefense = save_mem.r_cdefense;
 			mp.r_wake = save_mem.r_wake;
 			mp.r_ignore = save_mem.r_ignore;
-			mp.r_attacks = save_mem.r_attacks;
+			for (int att = 0; att < mp.r_attacks.length; att++) {
+				mp.r_attacks[att] = save_mem.r_attacks[att];
+			}
 		}
 		return IO.inkey();
 	}

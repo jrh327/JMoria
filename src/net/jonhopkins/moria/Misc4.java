@@ -39,7 +39,7 @@ public class Misc4 {
 				tmp_str = Desc.objdes(Treasure.inventory[item_val.value()], true);
 				out_val = String.format("Inscribing %s", tmp_str);
 				IO.msg_print(out_val);
-				if (!Treasure.inventory[item_val.value()].inscrip.equals("")) {
+				if (!Treasure.inventory[item_val.value()].inscrip.isEmpty()) {
 					out_val = String.format("Replace %s New inscription:", Treasure.inventory[item_val.value()].inscrip);
 				} else {
 					out_val = "Inscription: ";
