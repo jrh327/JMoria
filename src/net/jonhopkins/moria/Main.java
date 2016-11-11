@@ -167,9 +167,11 @@ public class Main extends Applet {
 			case 'S':
 				Death.display_scores(true);
 				Death.exit_game();
+				break;
 			case 's':
 				Death.display_scores(true);
 				Death.exit_game();
+				break;
 			case 'W':
 			case 'w':
 				Variable.to_be_wizard = true;
@@ -205,9 +207,9 @@ public class Main extends Applet {
 		/* Auto-restart of saved file */
 		if (argv[0] != Constants.CNIL) {
 			Variable.savefile = "" + argv[0];
-		} else if (!(p = System.getenv("MORIA_SAV")).equals(null)) {
+		} else if ((p = System.getenv("MORIA_SAV")) != null) {
 			Variable.savefile =  p;
-		} else if (!(p = System.getenv("HOME")).equals(null)) {
+		} else if ((p = System.getenv("HOME")) != null) {
 			Variable.savefile = String.format("%s/%s", p, Config.MORIA_SAV);
 		} else {
 			Variable.savefile = Config.MORIA_SAV;

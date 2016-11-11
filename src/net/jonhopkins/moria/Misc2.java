@@ -528,7 +528,7 @@ public class Misc2 {
 			/* Subval should be even for store, odd for dungeon*/
 			/* Dungeon found ones will be partially charged	 */
 		case Constants.TV_LIGHT:
-			if ((t_ptr.subval % 2) == 1) {
+			if ((t_ptr.subval % 2) != 0) {
 				t_ptr.p1 = Misc1.randint(t_ptr.p1);
 				t_ptr.subval -= 1;
 			}
@@ -815,7 +815,7 @@ public class Misc2 {
 		String string;
 		
 		IO.prt("  ESC when finished, y/n to set options, <return> or - to move cursor", 0, 0);
-		for (max = 0; options[max].o_prompt != ""; max++) {
+		for (max = 0; !options[max].o_prompt.isEmpty(); max++) {
 			string = String.format("%-38s: %s", options[max].o_prompt, (options[max].o_var.value() ? "yes" : "no "));
 			IO.prt(string, max + 1, 0);
 		}
