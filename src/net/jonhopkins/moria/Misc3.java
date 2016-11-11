@@ -1170,7 +1170,7 @@ public class Misc3 {
 	private static String getlogin() {
 		String cp;
 		
-		if ((cp = System.getenv("USER")).equals(null)) {
+		if ((cp = System.getenv("USER")) == null) {
 			cp = "player";
 		}
 		return cp;
@@ -1845,7 +1845,7 @@ public class Misc3 {
 		}
 		
 		if (new_spells == 0) {
-			String.format(tmp_str, "You can't learn any new %ss!", (stat == Constants.A_INT ? "spell" : "prayer"));
+			tmp_str = String.format("You can't learn any new %ss!", (stat == Constants.A_INT ? "spell" : "prayer"));
 			IO.msg_print(tmp_str);
 			Variable.free_turn_flag = true;
 		} else {
