@@ -1020,7 +1020,7 @@ public class Store2 {
 		} /* end of for (counter) */
 		if (last_item == -1) {
 			IO.msg_print("You have nothing to sell to this store!");
-		} else if (Moria1.get_item(item_val, "Which one? ", first_item, last_item, mask.toString(), "I do not buy such items.")) {
+		} else if (Moria1.get_item(item_val, "Which one? ", first_item, last_item, new String(mask), "I do not buy such items.")) {
 			Misc3.take_one_item(sold_obj, Treasure.inventory[item_val.value()]);
 			tmp_str = Desc.objdes(sold_obj, true);
 			out_val = String.format("Selling %s (%c)", tmp_str, item_val.value() + 'a');

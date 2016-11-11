@@ -697,8 +697,8 @@ public class Console {
 	
 	public static void screen_map() {
 		int i, j;
-		int[] map = new int[Constants.MAX_WIDTH / RATIO + 1];
-		int tmp;
+		char[] map = new char[Constants.MAX_WIDTH / RATIO + 1];
+		char tmp;
 		int[] priority = new int[256];
 		int row, orow, col, myrow = 0, mycol = 0;
 		//char[] prntscrnbuf = new char[80];
@@ -734,7 +734,7 @@ public class Console {
 					/* can not use mvprintw() on ibmpc, because PC-Curses is horribly
 			 		 * written, and mvprintw() causes the fp emulation library to be
 			 		 * linked with PC-Moria, makes the program 10K bigger */
-					prntscrnbuf = String.format("%c%s%c",CH(VE), map, CH(VE));
+					prntscrnbuf = String.format("%c%s%c", CH(VE), new String(map), CH(VE));
 					Output.moveCursorAddString(0, orow + 1, prntscrnbuf);
 				}
 				
@@ -761,7 +761,7 @@ public class Console {
 		}
 		
 		if (orow >= 0) {
-			prntscrnbuf = String.format("%c%s%c",CH(VE), map, CH(VE));
+			prntscrnbuf = String.format("%c%s%c",CH(VE), new String(map), CH(VE));
 			Output.moveCursorAddString(0, orow + 1, prntscrnbuf);
 		}
 		

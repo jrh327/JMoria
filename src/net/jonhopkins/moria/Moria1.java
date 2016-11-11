@@ -748,7 +748,7 @@ public class Moria1 {
 					} else {
 						disp = "";
 					}
-					prt1 = String.format("(%c-%c%s%s, space to break, ESC to exit) %s which one?",
+					prt1 = String.format("(%c-%c%s%s%s, space to break, ESC to exit) %s which one?",
 							from + 'a', to + 'a', disp, swap, 
 							((command == 'w' || command == 'd') ? ", 0-9" : ""),
 							prompt);

@@ -122,7 +122,7 @@ public class Files {
 		int i;
 		
 		file = new File(filename);
-		if (file.equals("")) {
+		if (!file.exists()) {
 			tmp_str = String.format("Can not find help file \"%s\".\n", filename);
 			IO.prt(tmp_str, 0, 0);
 			return;
@@ -146,7 +146,9 @@ public class Files {
 					break;
 				}
 			}
+			br.close();
 			in.close();
+			fstream.close();
 		}catch (IOException e){
 			e.printStackTrace();
 		}
@@ -194,7 +196,7 @@ public class Files {
 			}
 			IO.prt("File name: ", 0, 0);
 			if ((filename1 = IO.get_string(0, 11, 64)).length() > 0) {
-				if (!(file1 = new File(filename1)).equals("")) {
+				if ((file1 = new File(filename1)).exists()) {
 					tmp_str = String.format("%d", nobj);
 					IO.prt(tmp_str.concat(" random objects being produced..."), 0, 0);
 					IO.put_qio();
