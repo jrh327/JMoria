@@ -131,8 +131,9 @@ public class Prayer {
 						Spells.cure_poison();
 						break;
 					case 18:
-						if (Moria1.get_dir("", dir))
+						if (Moria1.get_dir("", dir)) {
 							Spells.fire_ball(Constants.GF_HOLY_ORB, dir.value(), Player.char_row, Player.char_col, (Misc1.damroll(3, 6) + Player.py.misc.lev), "Black Sphere");
+						}
 						break;
 					case 19:
 						Spells.hp_player(Misc1.damroll(8, 4));
@@ -179,7 +180,7 @@ public class Prayer {
 								i.value(i.value() + 1)) {
 							Misc3.res_stat(i.value());
 						}
-						Spells.dispel_creature(Constants.CD_EVIL, (int)(4 * Player.py.misc.lev));
+						Spells.dispel_creature(Constants.CD_EVIL, 4 * Player.py.misc.lev);
 						Spells.turn_undead();
 						if (Player.py.flags.invuln < 3) {
 							Player.py.flags.invuln = 3;

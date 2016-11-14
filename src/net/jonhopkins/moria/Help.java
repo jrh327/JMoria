@@ -33,8 +33,7 @@ public class Help {
 		int i, n;
 		
 		if (IO.get_com("Enter character to be identified :", command)) {
-			switch(command.value())
-			{
+			switch (command.value()) {
 			/* every printing ASCII character is listed here, in the order in which
 			 * they appear in the ASCII character set */
 			case ' ': IO.prt("  - An open pit.", 0, 0); break;
@@ -143,7 +142,7 @@ public class Help {
 		}
 		/* Allow access to monster memory. -CJS- */
 		n = 0;
-		for (i = Constants.MAX_CREATURES-1; i >= 0; i--) {
+		for (i = Constants.MAX_CREATURES - 1; i >= 0; i--) {
 			if ((Monsters.c_list[i].cchar == command.value()) && Recall.bool_roff_recall(i)) {
 				if (n == 0) {
 					IO.put_buffer("You recall those details? [y/n]", 0, 40);

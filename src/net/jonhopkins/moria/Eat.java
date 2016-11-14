@@ -24,7 +24,6 @@ package net.jonhopkins.moria;
 import net.jonhopkins.moria.types.PlayerFlags;
 import net.jonhopkins.moria.types.IntPointer;
 import net.jonhopkins.moria.types.InvenType;
-import net.jonhopkins.moria.types.LongPointer;
 import net.jonhopkins.moria.types.PlayerMisc;
 
 public class Eat {
@@ -33,7 +32,7 @@ public class Eat {
 	
 	/* Eat some food.					-RAK-	*/
 	public static void eat() {
-		LongPointer i = new LongPointer();
+		IntPointer i = new IntPointer();
 		IntPointer j = new IntPointer(), k = new IntPointer(), item_val = new IntPointer();
 		boolean ident;
 		PlayerFlags f_ptr;
@@ -41,11 +40,11 @@ public class Eat {
 		InvenType i_ptr;
 		
 		Variable.free_turn_flag = true;
-		if (Treasure.inven_ctr == 0)
+		if (Treasure.inven_ctr == 0) {
 			IO.msg_print("But you are not carrying anything.");
-		else if (!Misc3.find_range(Constants.TV_FOOD, Constants.TV_NEVER, j, k))
+		} else if (!Misc3.find_range(Constants.TV_FOOD, Constants.TV_NEVER, j, k)) {
 			IO.msg_print("You are not carrying any food.");
-		else if (Moria1.get_item(item_val, "Eat what?", j.value(), k.value(), "", "")) {
+		} else if (Moria1.get_item(item_val, "Eat what?", j.value(), k.value(), "", "")) {
 			i_ptr = Treasure.inventory[item_val.value()];
 			Variable.free_turn_flag = false;
 			i.value(i_ptr.flags);
@@ -53,8 +52,7 @@ public class Eat {
 			while (i.value() != 0) {
 				j.value(Misc1.bit_pos(i) + 1);
 				/* Foods					*/
-				switch(j.value())
-				{
+				switch(j.value()) {
 					case 1:
 						f_ptr = Player.py.flags;
 						f_ptr.poisoned += Misc1.randint(10) + i_ptr.level;

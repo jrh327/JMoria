@@ -23,10 +23,10 @@ package net.jonhopkins.moria.graphics;
 import java.awt.Color;
 
 final class Cursor {
-	public Cursor() {
+	Cursor() {
 		this(0, 0);
 	}
-	public Cursor(int x, int y) {
+	Cursor(int x, int y) {
 		this.x = x;
 		this.y = y;
 		c = Color.white;

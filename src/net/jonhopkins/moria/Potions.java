@@ -24,7 +24,6 @@ package net.jonhopkins.moria;
 import net.jonhopkins.moria.types.PlayerFlags;
 import net.jonhopkins.moria.types.IntPointer;
 import net.jonhopkins.moria.types.InvenType;
-import net.jonhopkins.moria.types.LongPointer;
 import net.jonhopkins.moria.types.PlayerMisc;
 
 public class Potions {
@@ -33,7 +32,7 @@ public class Potions {
 	
 	/* Potions for the quaffing				-RAK-	*/
 	public static void quaff() {
-		LongPointer i = new LongPointer();
+		IntPointer i = new IntPointer();
 		long l;
 		IntPointer j = new IntPointer(), k = new IntPointer();
 		IntPointer item_val = new IntPointer();
@@ -57,8 +56,9 @@ public class Potions {
 				ident = true;
 			} else while (i.value() != 0) {
 				j.value(Misc1.bit_pos(i) + 1);
-				if (i_ptr.tval == Constants.TV_POTION2)
+				if (i_ptr.tval == Constants.TV_POTION2) {
 					j.value(j.value() + 32);
+				}
 				/* Potions						*/
 				switch(j.value())
 				{

@@ -128,8 +128,9 @@ public class Magic {
 						}
 						break;
 					case 16:
-						if (Moria1.get_dir("", dir))
+						if (Moria1.get_dir("", dir)) {
 							Spells.wall_to_mud(dir.value(), Player.char_row, Player.char_col);
+						}
 						break;
 					case 17:
 						Spells.create_food();
@@ -193,7 +194,7 @@ public class Magic {
 						break;
 					}
 					/* End of spells.				     */
-					if (Variable.free_turn_flag == false) {
+					if (!Variable.free_turn_flag) {
 						p_ptr = Player.py.misc;
 						if ((Player.spell_worked & (1L << choice.value())) == 0) {
 							p_ptr.exp += m_ptr.sexp << 2;

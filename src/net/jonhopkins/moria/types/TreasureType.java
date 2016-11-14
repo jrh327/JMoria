@@ -36,7 +36,7 @@ public final class TreasureType {
 	/**
 	 * Special flags
 	 */
-	public long flags;
+	public int flags;
 	
 	/**
 	 * Category number
@@ -103,7 +103,7 @@ public final class TreasureType {
 	 */
 	public int level;
 	
-	public TreasureType(String name, long flags, int tval, char tchar, int p1,
+	public TreasureType(String name, int flags, int tval, char tchar, int p1,
 			int cost, int subval, int number, int weight, int tohit, 
 			int todam, int ac, int toac, int[] damage, int level) {
 		this.name = name;

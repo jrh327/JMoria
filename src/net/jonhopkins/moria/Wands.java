@@ -23,7 +23,6 @@ package net.jonhopkins.moria;
 
 import net.jonhopkins.moria.types.IntPointer;
 import net.jonhopkins.moria.types.InvenType;
-import net.jonhopkins.moria.types.LongPointer;
 import net.jonhopkins.moria.types.PlayerMisc;
 
 public class Wands {
@@ -32,7 +31,7 @@ public class Wands {
 	
 	/* Wands for the aiming.				*/
 	public static void aim() {
-		LongPointer i = new LongPointer();
+		IntPointer i = new IntPointer();
 		int l;
 		boolean ident;
 		IntPointer item_val = new IntPointer(), dir = new IntPointer();
@@ -159,7 +158,7 @@ public class Wands {
 							ident = true;
 							break;
 						case 24:
-							i.value(1L << (Misc1.randint(23) - 1));
+							i.value(1 << (Misc1.randint(23) - 1));
 							break;
 						default:
 							IO.msg_print("Internal error in wands()");

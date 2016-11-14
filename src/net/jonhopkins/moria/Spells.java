@@ -78,10 +78,11 @@ public class Spells {
 					
 					m_name = monster_name(m_ptr, r_ptr);
 					if ((Misc1.randint(Constants.MAX_MONS_LEVEL) < r_ptr.level) || (Constants.CD_NO_SLEEP & r_ptr.cdefense) > 0) {
-						if (m_ptr.ml && (r_ptr.cdefense & Constants.CD_NO_SLEEP) > 0)
+						if (m_ptr.ml && (r_ptr.cdefense & Constants.CD_NO_SLEEP) > 0) {
 							Variable.c_recall[m_ptr.mptr].r_cdefense |= Constants.CD_NO_SLEEP;
-							out_val = String.format("%s is unaffected.", m_name);
-							IO.msg_print(out_val);
+						}
+						out_val = String.format("%s is unaffected.", m_name);
+						IO.msg_print(out_val);
 					} else {
 						sleep = true;
 						m_ptr.csleep = 500;
@@ -504,7 +505,7 @@ public class Spells {
 			if ((dist > Constants.OBJ_BOLT_RANGE) || c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {
 				flag = true;
 			} else {
-				if (c_ptr.pl == false && c_ptr.tl == false) {
+				if (!c_ptr.pl && !c_ptr.tl) {
 					/* set pl so that mor1.lite_spot will work */
 					c_ptr.pl = true;
 					if (c_ptr.fval == Constants.LIGHT_FLOOR) {
@@ -600,8 +601,7 @@ public class Spells {
 	
 	/* Return flags for given type area affect		-RAK-	*/
 	public static void get_flags(int typ, IntPointer weapon_type, IntPointer harm_type, IntPointer destroy) {
-		switch(typ)
-		{
+		switch(typ) {
 		case Constants.GF_MAGIC_MISSILE:
 			weapon_type.value(0);
 			harm_type.value(  0);
@@ -643,8 +643,7 @@ public class Spells {
 	}
 	
 	private static boolean check_destroy(int func, InvenType item) {
-		switch (func)
-		{
+		switch (func) {
 		case 0:
 			return Sets.set_null(item);
 		case 1:
@@ -865,7 +864,7 @@ public class Spells {
 		IntPointer harm_type = new IntPointer();
 		IntPointer weapon_type = new IntPointer();
 		IntPointer destroy = new IntPointer();
-		long tmp, treas;
+		int tmp, treas;
 		CaveType c_ptr;
 		MonsterType m_ptr;
 		CreatureType r_ptr;
@@ -927,13 +926,13 @@ public class Spells {
 							if (dam == 0) {
 								dam = 1;
 							}
-							switch(typ)
-							{
+							switch(typ) {
 							case Constants.GF_LIGHTNING: Moria2.light_dam(dam, ddesc); break;
 							case Constants.GF_POISON_GAS: Moria2.poison_gas(dam, ddesc); break;
 							case Constants.GF_ACID: Moria2.acid_dam(dam, ddesc); break;
 							case Constants.GF_FROST: Moria2.cold_dam(dam, ddesc); break;
 							case Constants.GF_FIRE: Moria2.fire_dam(dam, ddesc); break;
+							default: break;
 							}
 						}
 					}
@@ -1746,11 +1745,17 @@ public class Spells {
 			
 			num = num / 5;
 			if (num < 3) {
-				if (num == 0) IO.msg_print("You feel a little better.");
-				else	      IO.msg_print("You feel better.");
+				if (num == 0) {
+					IO.msg_print("You feel a little better.");
+				} else {
+					IO.msg_print("You feel better.");
+				}
 			} else {
-				if (num < 7) IO.msg_print("You feel much better.");
-				else	     IO.msg_print("You feel very good.");
+				if (num < 7) {
+					IO.msg_print("You feel much better.");
+				} else {
+					IO.msg_print("You feel very good.");
+				}
 			}
 			res = true;
 		}
@@ -2118,8 +2123,7 @@ public class Spells {
 		CaveType c_ptr;
 		
 		c_ptr = Variable.cave[y][x];
-		switch(typ)
-		{
+		switch(typ) {
 		case 1: case 2: case 3:
 			c_ptr.fval  = Constants.CORR_FLOOR;
 			break;
@@ -2131,6 +2135,8 @@ public class Spells {
 			break;
 		case 6: case 9: case 12:
 			c_ptr.fval  = Constants.QUARTZ_WALL;
+			break;
+		default:
 			break;
 		}
 		c_ptr.pl = false;

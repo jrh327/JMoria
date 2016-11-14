@@ -46,7 +46,7 @@ public final class InvenType {
 	/**
 	 * Special flags
 	 */
-	public long flags;
+	public int flags;
 	
 	/**
 	 * Category number

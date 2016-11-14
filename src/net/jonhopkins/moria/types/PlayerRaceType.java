@@ -22,37 +22,40 @@
 package net.jonhopkins.moria.types;
 
 public final class PlayerRaceType {
-	public PlayerRaceType(String race, int adj_str, int adj_int, int adj_wis, int adj_dex, int adj_con, int adj_chr, int base_age, int max_age, int mbase_ht,
-			int mmax_ht, int mbase_wt, int mmax_wt, int fbase_ht, int fmax_ht, int fbase_wt, int fmax_wt, int dis, int _srh, int _stl,
-			int _fos, int _bth, int _bthb, int sav, int hitdie, int inf, int exp, int classtype) {
-		trace = race;
-		str_adj = adj_str;
-		int_adj = adj_int;
-		wis_adj = adj_wis;
-		dex_adj = adj_dex;
-		con_adj = adj_con;
-		chr_adj = adj_chr;
-		b_age = base_age;
-		m_age = max_age;
-		m_b_ht = mbase_ht;
-		m_m_ht = mmax_ht;
-		m_b_wt = mbase_wt;
-		m_m_wt = mmax_wt;
-		f_b_ht = fbase_ht;
-		f_m_ht = fmax_ht;
-		f_b_wt = fbase_wt;
-		f_m_wt = fmax_wt;
-		b_dis = dis;
-		srh = _srh;
-		stl = _stl;
-		fos = _fos;
-		bth = _bth;
-		bthb = _bthb;
-		bsav = sav;
-		bhitdie = hitdie;
-		infra = inf;
-		b_exp = exp;
-		rtclass = classtype;
+	public PlayerRaceType(String race, int adj_str, int adj_int, int adj_wis,
+			int adj_dex, int adj_con, int adj_chr, int base_age, int max_age,
+			int mbase_ht, int mmax_ht, int mbase_wt, int mmax_wt,
+			int fbase_ht, int fmax_ht, int fbase_wt, int fmax_wt, int dis,
+			int srh, int stl, int fos, int bth, int bthb, int sav, int hitdie,
+			int inf, int exp, int classtype) {
+		this.trace = race;
+		this.str_adj = adj_str;
+		this.int_adj = adj_int;
+		this.wis_adj = adj_wis;
+		this.dex_adj = adj_dex;
+		this.con_adj = adj_con;
+		this.chr_adj = adj_chr;
+		this.b_age = base_age;
+		this.m_age = max_age;
+		this.m_b_ht = mbase_ht;
+		this.m_m_ht = mmax_ht;
+		this.m_b_wt = mbase_wt;
+		this.m_m_wt = mmax_wt;
+		this.f_b_ht = fbase_ht;
+		this.f_m_ht = fmax_ht;
+		this.f_b_wt = fbase_wt;
+		this.f_m_wt = fmax_wt;
+		this.b_dis = dis;
+		this.srh = srh;
+		this.stl = stl;
+		this.fos = fos;
+		this.bth = bth;
+		this.bthb = bthb;
+		this.bsav = sav;
+		this.bhitdie = hitdie;
+		this.infra = inf;
+		this.b_exp = exp;
+		this.rtclass = classtype;
 	}
 	
 	/**

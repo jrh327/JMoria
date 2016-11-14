@@ -39,11 +39,12 @@ public class Textures {
 			img = ImageIO.read(new File("chars.png"));
 		} catch (IOException e) {
 			System.err.println("Could not load chars.png");
+			e.printStackTrace();
 			return null;
 		}
 		
-		for (int i = 0; i < 120; i++) {
-			tmp.put((Character.valueOf((char)(i + 32))).toString(), img.getSubimage((i % 26) * 10, (int)(i / 26) * 19, 10, 19));
+		for (char i = 0; i < 120; i++) {
+			tmp.put((Character.valueOf((char)(i + 32))).toString(), img.getSubimage((i % 26) * 10, (i / 26) * 19, 10, 19));
 		}
 		
 		return tmp;

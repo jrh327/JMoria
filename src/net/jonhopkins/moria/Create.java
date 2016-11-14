@@ -192,12 +192,12 @@ public class Create {
 		boolean flag;
 		int start_pos, end_pos, cur_len;
 		int line_ctr, new_start = 0, social_class;
-		String history_block;
+		StringBuilder history_block;
 		BackgroundType b_ptr;
 		
 		/* Get a block of history text				*/
 		hist_ptr = Player.py.misc.prace * 3 + 1;
-		history_block = "";
+		history_block = new StringBuilder();
 		social_class = Misc1.randint(4);
 		cur_ptr = 0;
 		do {
@@ -209,7 +209,7 @@ public class Create {
 						cur_ptr++;
 					}
 					b_ptr = Player.background[cur_ptr];
-					history_block = history_block.concat(b_ptr.info);
+					history_block = history_block.append(b_ptr.info);
 					social_class += b_ptr.bonus - 50;
 					if (hist_ptr > b_ptr.next) {
 						cur_ptr = 0;
@@ -397,8 +397,8 @@ public class Create {
 				/* initialize hit_points array */
 				/* put bounds on total possible hp, only succeed if it is within
 				 * 1/8 of average value */
-				min_value = (Constants.MAX_PLAYER_LEVEL*3/8 * (m_ptr.hitdie-1)) + Constants.MAX_PLAYER_LEVEL;
-				max_value = (Constants.MAX_PLAYER_LEVEL*5/8 * (m_ptr.hitdie-1)) + Constants.MAX_PLAYER_LEVEL;
+				min_value = (Constants.MAX_PLAYER_LEVEL * 3 / 8 * (m_ptr.hitdie - 1)) + Constants.MAX_PLAYER_LEVEL;
+				max_value = (Constants.MAX_PLAYER_LEVEL * 5 / 8 * (m_ptr.hitdie - 1)) + Constants.MAX_PLAYER_LEVEL;
 				Player.player_hp[0] = m_ptr.hitdie;
 				do {
 					for (i = 1; i < Constants.MAX_PLAYER_LEVEL; i++) {

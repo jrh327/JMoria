@@ -110,8 +110,8 @@ public class Window {
 	}
 	
 	public void delete(int x, int y) {
-		if ((char)bufferScreen[y][x] == '\n') {
-			if ((char)bufferScreen[y + 1][cursorMinX] == '\0' || y == cursorMaxY) {
+		if (bufferScreen[y][x] == '\n') {
+			if (bufferScreen[y + 1][cursorMinX] == '\0' || y == cursorMaxY) {
 				bufferScreen[y][x] = 0;
 				return;
 			} else if (x == cursorMinX) {
@@ -280,7 +280,7 @@ public class Window {
 		
 		for (int i = height - 1; i >= 0; i--) {
 			for (int j = 0; j < width; j++) {
-				currentChar = (char)bufferScreen[i][j];
+				currentChar = bufferScreen[i][j];
 				if (currentChar < ' ') {
 					currentChar = ' ';
 				}
@@ -297,7 +297,7 @@ public class Window {
 		
 		for (int i = height - 1; i >= 0; i--) {
 			for (int j = 0; j < width; j++) {
-				currentChar = (char)bufferScreen[i][j];
+				currentChar = bufferScreen[i][j];
 				
 				if (currentChar < ' ') {
 					currentChar = ' ';
@@ -312,9 +312,7 @@ public class Window {
 	
 	public void overwrite(Window win) {
 		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				win.bufferScreen[i][j] = bufferScreen[i][j];
-			}
+			System.arraycopy(bufferScreen[i], 0, win.bufferScreen[i], 0, bufferScreen[i].length);
 		}
 	}
 	

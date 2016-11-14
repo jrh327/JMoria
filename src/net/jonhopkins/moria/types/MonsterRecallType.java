@@ -22,8 +22,8 @@
 package net.jonhopkins.moria.types;
 
 public final class MonsterRecallType {
-	public long r_cmove;
-    public long r_spells;
+	public int r_cmove;
+    public int r_spells;
     public int r_kills, r_deaths;
     public int r_cdefense;
     public int r_wake, r_ignore;

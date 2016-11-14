@@ -24,7 +24,6 @@ package net.jonhopkins.moria;
 import net.jonhopkins.moria.types.CaveType;
 import net.jonhopkins.moria.types.PlayerFlags;
 import net.jonhopkins.moria.types.IntPointer;
-import net.jonhopkins.moria.types.LongPointer;
 import net.jonhopkins.moria.types.MonsterType;
 
 public class Misc1 {
@@ -99,7 +98,7 @@ public class Misc1 {
 		long randval;
 		
 		randval = Rnd.rnd();
-		return ((int)(randval % maxval) + 1);
+		return (int)(randval % maxval) + 1;
 	}
 	
 	/**
@@ -141,13 +140,13 @@ public class Misc1 {
 				iindex = low + ((iindex - low) >> 1);
 			} else {
 				low = iindex;
-				iindex = iindex + ((high - iindex) >> 1);
+				iindex += ((high - iindex) >> 1);
 			}
 		}
 		
 		/* might end up one below target, check that here */
 		if (Tables.normal_table[iindex] < tmp) {
-			iindex = iindex + 1;
+			++iindex;
 		}
 		
 		/* normal_table is based on SD of 64, so adjust the index value here,
@@ -185,28 +184,6 @@ public class Misc1 {
 	}
 	
 	/**
-	 * Returns position of first set bit and clears that bit -RAK-
-	 * 
-	 * @param test - The long being checked for its first set bit
-	 * @return The position of the first set bit
-	 */
-	public static int bit_pos(LongPointer test) {
-		int i;
-		long mask = 0x1;
-		
-		for (i = 0; i < 32; i++) {
-			if ((test.value() & mask) != 0) {
-				test.value(test.value() & ~mask);
-				return i;
-			}
-			mask <<= 1;
-		}
-		
-		/* no one bits found */
-		return -1;
-	}
-	
-	/**
 	 * Checks a co-ordinate for in bounds status -RAK-
 	 * 
 	 * @param y - The vertical position of the point to check
@@ -214,11 +191,7 @@ public class Misc1 {
 	 * @return True if the coordinate is within the level, otherwise false
 	 */
 	public static boolean in_bounds(int y, int x) {
-		if ((y > 0) && (y < Variable.cur_height - 1) && (x > 0) && (x < Variable.cur_width - 1)) {
-			return true;
-		} else {
-			return false;
-		}
+		return (y > 0) && (y < Variable.cur_height - 1) && (x > 0) && (x < Variable.cur_width - 1);
 	}
 	
 	/**
@@ -287,11 +260,10 @@ public class Misc1 {
 	 * @return Whether the point is within the screen
 	 */
 	public static boolean panel_contains(int y, int x) {
-		if ((y >= Variable.panel_row_min) && (y <= Variable.panel_row_max) && (x >= Variable.panel_col_min) && (x <= Variable.panel_col_max)) {
-			return true;
-		} else {
-			return false;
-		}
+		return (y >= Variable.panel_row_min)
+				&& (y <= Variable.panel_row_max)
+				&& (x >= Variable.panel_col_min)
+				&& (x <= Variable.panel_col_max);
 	}
 	
 	/**
@@ -315,7 +287,7 @@ public class Misc1 {
 			dx = -dx;
 		}
 		
-		return ((((dy + dx) << 1) - (dy > dx ? dx : dy)) >> 1);
+		return (((dy + dx) << 1) - ((dy > dx) ? dx : dy)) >> 1;
 	}
 	
 	/**
@@ -467,103 +439,101 @@ public class Misc1 {
 		 * scale factor, scale = abs(deltaX * deltaY * 2), so that we can use
 		 * integer arithmetic. */
 		
-		{
-			int px,		/* x position				*/
-			p_y,		/* y position				*/
-			scale2;		/* above scale factor / 2	*/
-			int scale,	/* above scale factor		*/
-			xSign,		/* sign of deltaX			*/
-			ySign,		/* sign of deltaY			*/
-			m;			/* slope or 1/slope of LOS	*/
+		int px,		/* x position				*/
+		p_y,		/* y position				*/
+		scale2;		/* above scale factor / 2	*/
+		int scale,	/* above scale factor		*/
+		xSign,		/* sign of deltaX			*/
+		ySign,		/* sign of deltaY			*/
+		m;			/* slope or 1/slope of LOS	*/
+		
+		scale2 = Math.abs(deltaX * deltaY);
+		scale = scale2 << 1;
+		xSign = (deltaX < 0) ? -1 : 1;
+		ySign = (deltaY < 0) ? -1 : 1;
+		
+		/* Travel from one end of the line to the other, oriented along
+		 * the longer axis. */
+		
+		if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+			int dy;		/* "fractional" y position	*/
+			/* We start at the border between the first and second tiles,
+			 * where the y offset = .5 * slope.  Remember the scale
+			 * factor.  We have:
+			 * 
+			 * m = deltaY / deltaX * 2 * (deltaY * deltaX)
+			 *   = 2 * deltaY * deltaY. */
 			
-			scale2 = Math.abs(deltaX * deltaY);
-			scale = scale2 << 1;
-			xSign = (deltaX < 0) ? -1 : 1;
-			ySign = (deltaY < 0) ? -1 : 1;
+			dy = deltaY * deltaY;
+			m = dy << 1;
+			px = fromX + xSign;
 			
-			/* Travel from one end of the line to the other, oriented along
-			 * the longer axis. */
+			/* Consider the special case where slope == 1. */
+			if (dy == scale2) {
+				p_y = fromY + ySign;
+				dy -= scale;
+			} else {
+				p_y = fromY;
+			}
 			
-			if (Math.abs(deltaX) >= Math.abs(deltaY)) {
-				int dy;		/* "fractional" y position	*/
-				/* We start at the border between the first and second tiles,
-				 * where the y offset = .5 * slope.  Remember the scale
-				 * factor.  We have:
-				 * 
-				 * m = deltaY / deltaX * 2 * (deltaY * deltaX)
-				 *   = 2 * deltaY * deltaY. */
+			while (toX - px != 0) {
+				if (Variable.cave[p_y][px].fval >= Constants.MIN_CLOSED_SPACE) {
+					return false;
+				}
 				
-				dy = deltaY * deltaY;
-				m = dy << 1;
-				px = fromX + xSign;
-				
-				/* Consider the special case where slope == 1. */
-				if (dy == scale2) {
-					p_y = fromY + ySign;
+				dy += m;
+				if (dy < scale2) {
+					px += xSign;
+				} else if (dy > scale2) {
+					p_y += ySign;
+					if (Variable.cave[p_y][px].fval >= Constants.MIN_CLOSED_SPACE) {
+						return false;
+					}
+					px += xSign;
 					dy -= scale;
 				} else {
-					p_y = fromY;
+					/* This is the case, dy == scale2, where the LOS
+					 * exactly meets the corner of a tile. */
+					px += xSign;
+					p_y += ySign;
+					dy -= scale;
 				}
-				
-				while (toX - px != 0) {
+			}
+			return true;
+		} else {
+			int dx;		/* "fractional" x position	*/
+			dx = deltaX * deltaX;
+			m = dx << 1;
+			
+			p_y = fromY + ySign;
+			if (dx == scale2) {
+				px = fromX + xSign;
+				dx -= scale;
+			} else {
+				px = fromX;
+			}
+			
+			while (toY - p_y != 0) {
+				if (Variable.cave[p_y][px].fval >= Constants.MIN_CLOSED_SPACE) {
+					return false;
+				}
+				dx += m;
+				if (dx < scale2) {
+					p_y += ySign;
+				} else if (dx > scale2) {
+					px += xSign;
 					if (Variable.cave[p_y][px].fval >= Constants.MIN_CLOSED_SPACE) {
 						return false;
 					}
-					
-					dy += m;
-					if (dy < scale2) {
-						px += xSign;
-					} else if (dy > scale2) {
-						p_y += ySign;
-						if (Variable.cave[p_y][px].fval >= Constants.MIN_CLOSED_SPACE) {
-							return false;
-						}
-						px += xSign;
-						dy -= scale;
-					} else {
-						/* This is the case, dy == scale2, where the LOS
-						 * exactly meets the corner of a tile. */
-						px += xSign;
-						p_y += ySign;
-						dy -= scale;
-					}
-				}
-				return true;
-			} else {
-				int dx;		/* "fractional" x position	*/
-				dx = deltaX * deltaX;
-				m = dx << 1;
-				
-				p_y = fromY + ySign;
-				if (dx == scale2) {
-					px = fromX + xSign;
+					p_y += ySign;
 					dx -= scale;
 				} else {
-					px = fromX;
+					px += xSign;
+					p_y += ySign;
+					dx -= scale;
 				}
-				
-				while (toY - p_y != 0) {
-					if (Variable.cave[p_y][px].fval >= Constants.MIN_CLOSED_SPACE) {
-						return false;
-					}
-					dx += m;
-					if (dx < scale2) {
-						p_y += ySign;
-					} else if (dx > scale2) {
-						px += xSign;
-						if (Variable.cave[p_y][px].fval >= Constants.MIN_CLOSED_SPACE) {
-							return false;
-						}
-						p_y += ySign;
-						dx -= scale;
-					} else {
-						px += xSign;
-						p_y += ySign;
-						dx -= scale;
-					}
-				}
-				return true;
 			}
+			return true;
 		}
 	}
 	
@@ -614,14 +584,8 @@ public class Misc1 {
 	 * @return Whether the point is lit or field-marked
 	 */
 	public static boolean test_light(int y, int x) {
-		CaveType cave_ptr;
-		
-		cave_ptr = Variable.cave[y][x];
-		if (cave_ptr.pl  || cave_ptr.tl  || cave_ptr.fm ) {
-			return true;
-		} else {
-			return false;
-		}
+		CaveType cave_ptr = Variable.cave[y][x];
+		return cave_ptr.pl  || cave_ptr.tl  || cave_ptr.fm;
 	}
 	
 	/**
@@ -664,19 +628,18 @@ public class Misc1 {
 				mon_ptr = Monsters.m_list[i];
 				if ((cur_dis < mon_ptr.cdis) && (randint(3) == 1)) {
 					/* Never compact away the Balrog!! */
-					if ((Monsters.c_list[mon_ptr.mptr].cmove & Constants.CM_WIN) != 0) {
-						/* Do nothing */
-						;
-					/* in case this is called from within creatures(), this is a
-					 * horrible hack, the m_list/creatures() code needs to be
-					 * rewritten */
-					} else if (Variable.hack_monptr < i) {
-						Moria3.delete_monster(i);
-						delete_any = true;
-					} else {
-						/* fix1_delete_monster() does not decrement mfptr, so
-						 * don't set delete_any if this was called */
-						Moria3.fix1_delete_monster(i);
+					if ((Monsters.c_list[mon_ptr.mptr].cmove & Constants.CM_WIN) == 0) {
+						/* in case this is called from within creatures(), this is a
+						 * horrible hack, the m_list/creatures() code needs to be
+						 * rewritten */
+						if (Variable.hack_monptr < i) {
+							Moria3.delete_monster(i);
+							delete_any = true;
+						} else {
+							/* fix1_delete_monster() does not decrement mfptr, so
+							 * don't set delete_any if this was called */
+							Moria3.fix1_delete_monster(i);
+						}
 					}
 				}
 			}
@@ -687,7 +650,7 @@ public class Misc1 {
 					return false;
 				}
 			}
-		} while (delete_any == false);
+		} while (!delete_any);
 		return true;
 	}
 	
@@ -737,7 +700,7 @@ public class Misc1 {
 				return -1;
 			}
 		}
-		return (Monsters.mfptr++);
+		return Monsters.mfptr++;
 	}
 	
 	/**
@@ -747,7 +710,7 @@ public class Misc1 {
 	 * @return Number of hitpoints
 	 */
 	public static int max_hp(int[] array) {
-		return(array[0] * array[1]);
+		return array[0] * array[1];
 	}
 	
 	/**
@@ -853,7 +816,7 @@ public class Misc1 {
 			}
 			if (randint(Constants.MON_NASTY) == 1) {
 				i = randnor (0, 4);
-				level = level + Math.abs(i) + 1;
+				level += Math.abs(i) + 1;
 				if (level > Constants.MAX_MONS_LEVEL) {
 					level = Constants.MAX_MONS_LEVEL;
 				}
@@ -1012,7 +975,7 @@ public class Misc1 {
 		ctr = 0;
 		cur_dis = 66;
 		do {
-			for (i = 0; i < Variable.cur_height; i++)
+			for (i = 0; i < Variable.cur_height; i++) {
 				for (j = 0; j < Variable.cur_width; j++) {
 					cave_ptr = Variable.cave[i][j];
 					if ((cave_ptr.tptr != 0) && (distance(i, j, Player.char_row, Player.char_col) > cur_dis)) {
@@ -1044,7 +1007,10 @@ public class Misc1 {
 						}
 					}
 				}
-			if (ctr == 0)  cur_dis -= 6;
+			}
+			if (ctr == 0) {
+				cur_dis -= 6;
+			}
 		} while (ctr <= 0);
 		if (cur_dis < 66)  prt_map();
 	}
@@ -1058,7 +1024,7 @@ public class Misc1 {
 		if (Treasure.tcptr == Constants.MAX_TALLOC) {
 			compact_objects();
 		}
-		return (Treasure.tcptr++);
+		return Treasure.tcptr++;
 	}
 	
 	/**
@@ -1095,11 +1061,7 @@ public class Misc1 {
 	 * @return Whether the object is enchanted
 	 */
 	public static boolean magik(int chance) {
-		if (randint(100) <= chance) {
-			return true;
-		} else {
-			return false;
-		}
+		return randint(100) <= chance;
 	}
 	
 	/* Enchant a bonus based on degree desired -RAK- */

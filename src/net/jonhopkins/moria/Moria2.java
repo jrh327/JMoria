@@ -45,7 +45,7 @@ public class Moria2 {
 			/* change secret door to closed door */
 			t_ptr.index = Constants.OBJ_CLOSED_DOOR;
 			t_ptr.tval = Treasure.object_list[Constants.OBJ_CLOSED_DOOR].tval;
-			t_ptr.tchar = (char)Treasure.object_list[Constants.OBJ_CLOSED_DOOR].tchar;
+			t_ptr.tchar = Treasure.object_list[Constants.OBJ_CLOSED_DOOR].tchar;
 			Moria1.lite_spot(y, x);
 		}
 	}
@@ -221,8 +221,8 @@ public class Moria2 {
 	 * over two complete cycles. The chome array maps a direction on
 	 * to its position in the cycle.
 	 */
-	private static int cycle[] = { 1, 2, 3, 6, 9, 8, 7, 4, 1, 2, 3, 6, 9, 8, 7, 4, 1 };
-	private static int chome[] = { -1, 8, 9, 10, 7, -1, 11, 6, 5, 4 };
+	private static int[] cycle = new int[] { 1, 2, 3, 6, 9, 8, 7, 4, 1, 2, 3, 6, 9, 8, 7, 4, 1 };
+	private static int[] chome =  new int[] { -1, 8, 9, 10, 7, -1, 11, 6, 5, 4 };
 	private static boolean find_openarea, find_breakright, find_breakleft;
 	private static int find_direction, find_prevdir; /* Keep a record of which way we are going. */
 	
@@ -239,12 +239,15 @@ public class Moria2 {
 		} else {
 			find_direction = dir;
 			Variable.find_flag = 1;
-			find_breakright = find_breakleft = false;
+			find_breakright = false;
+			find_breakleft = false;
 			find_prevdir = dir;
 			if (Player.py.flags.blind < 1) {
 				i = chome[dir];
-				deepleft = deepright = false;
-				shortright = shortleft = false;
+				deepleft = false;
+				deepright = false;
+				shortright = false;
+				shortleft = false;
 				if (see_wall(cycle[i + 1], Player.char_row, Player.char_col)) {
 					find_breakleft = true;
 					shortleft = true;

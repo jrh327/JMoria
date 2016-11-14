@@ -132,17 +132,23 @@ public class Recall {
 	private static int roffpline;		/* Place to print line now being loaded. */
 	
 	//#define plural(c, ss, sp)	((c) == 1 ? ss : sp)
-	private static String plural(int c, String ss, String sp) { return ((c == 1) ? ss : sp); }
+	private static String plural(int c, String ss, String sp) {
+		return (c == 1) ? ss : sp;
+	}
 	
 	/* Number of kills needed for information. */
 	
 	/* the higher the level of the monster, the fewer the kills you need */
 	//#define knowarmor(l,d)		((d) > 304 / (4 + (l)))
-	private static boolean knowarmor(int l, int d) { return ((d) > (304 / (4 + (l)))); }
+	private static boolean knowarmor(int l, int d) {
+		return d > (304 / (4 + l));
+	}
 	/* the higher the level of the monster, the fewer the attacks you need,
 	 * the more damage an attack does, the more attacks you need */
 	//#define knowdamage(l,a,d)	((4 + (l))*(a) > 80 * (d))
-	private static boolean knowdamage(int l, int a, int d) { return ((4 + (l)) * (a) > 80 * (d)); }
+	private static boolean knowdamage(int l, int a, int d) {
+		return (4 + l) * a > 80 * d;
+	}
 	
 	private Recall() { }
 	
@@ -174,10 +180,10 @@ public class Recall {
 		MonsterRecallType mp;
 		CreatureType cp;
 		int i, k;
-		long j;
+		int j;
 		int templong;
 		int mspeed;
-		long rcmove, rspells;
+		int rcmove, rspells;
 		int rcdefense;
 		MonsterRecallType save_mem = new MonsterRecallType();
 		
@@ -192,12 +198,11 @@ public class Recall {
 			save_mem.r_cdefense = mp.r_cdefense;
 			save_mem.r_wake = mp.r_wake;
 			save_mem.r_ignore = mp.r_ignore;
-			for (int att = 0; att < mp.r_attacks.length; att++) {
-				save_mem.r_attacks[att] = mp.r_attacks[att];
-			}
+			System.arraycopy(mp.r_attacks, 0, save_mem.r_attacks, 0, mp.r_attacks.length);
 			
 			mp.r_kills = Constants.MAX_SHORT;
-			mp.r_wake = mp.r_ignore = Constants.MAX_UCHAR;
+			mp.r_wake = Constants.MAX_UCHAR;
+			mp.r_ignore = Constants.MAX_UCHAR;
 			j = ((cp.cmove & Constants.CM_4D2_OBJ) * 8)
 					+ ((cp.cmove & Constants.CM_2D2_OBJ) * 4)
 					+ ((cp.cmove & Constants.CM_1D2_OBJ) * 2)
@@ -214,9 +219,9 @@ public class Recall {
 			j = 0;
 			pu = cp.damage;
 			
-			while (pu[(int)j] != 0 && j < 4) {
+			while (pu[j] != 0 && j < 4) {
 				/* Turbo C needs a 16 bit int for the array index.  */
-				mp.r_attacks[(int)j] = Constants.MAX_UCHAR;
+				mp.r_attacks[j] = Constants.MAX_UCHAR;
 				j++;
 			}
 			/* A little hack to enable the display of info for Quylthulgs.  */
@@ -233,7 +238,7 @@ public class Recall {
 		temp = String.format("The %s:\n", cp.name);
 		roff(temp);
 		/* Conflict history. */
-		if(mp.r_deaths > 0) {
+		if (mp.r_deaths > 0) {
 			temp = String.format("%d of the contributors to your monster memory %s", mp.r_deaths, plural(mp.r_deaths, "has", "have") );
 			roff(temp);
 			roff(" been killed by this creature, and ");
@@ -277,7 +282,7 @@ public class Recall {
 			roff(" moves");
 			if ((rcmove & Constants.CM_RANDOM_MOVE) != 0) {
 				/* Turbo C needs a 16 bit int for the array index.  */
-				roff(desc_howmuch[(int)((rcmove & Constants.CM_RANDOM_MOVE) >> 3)]);
+				roff(desc_howmuch[(rcmove & Constants.CM_RANDOM_MOVE) >> 3]);
 				roff(" erratically");
 			}
 			if (mspeed == 1) {
@@ -345,7 +350,8 @@ public class Recall {
 			 * must use long arithmetic to avoid overflow */
 			j = ((cp.mexp * cp.level % Player.py.misc.lev) * 1000 / Player.py.misc.lev + 5) / 10;
 			
-			temp = String.format(" creature is worth %d.%02d point%s", templong, j, (templong == 1 && j == 0 ? "" : "s"));
+			temp = String.format(" creature is worth %d.%02d point%s",
+					templong, j, ((templong == 1 && j == 0) ? "" : "s"));
 			roff(temp);
 			
 			if (Player.py.misc.lev / 10 == 1) {
@@ -426,7 +432,9 @@ public class Recall {
 		if (knowarmor(cp.level, mp.r_kills)) {
 			temp = String.format(" It has an armor rating of %d", cp.ac);
 			roff(temp);
-			temp = String.format(" and a%s life rating of %dd%d.", ((cp.cdefense & Constants.CD_MAX_HP) != 0 ? " maximized" : ""), cp.hd[0], cp.hd[1]);
+			temp = String.format(" and a%s life rating of %dd%d.",
+					(((cp.cdefense & Constants.CD_MAX_HP) != 0) ? " maximized" : ""),
+					cp.hd[0], cp.hd[1]);
 			roff(temp);
 		}
 		/* Do we know how clever they are? Special abilities. */
@@ -564,7 +572,7 @@ public class Recall {
 		k = 0;
 		for (j = 0; j < 4; j++) {
 			/* Turbo C needs a 16 bit int for the array index.  */
-			if (mp.r_attacks[(int)j] != 0) {
+			if (mp.r_attacks[j] != 0) {
 				k++;
 			}
 		}
@@ -637,9 +645,7 @@ public class Recall {
 			mp.r_cdefense = save_mem.r_cdefense;
 			mp.r_wake = save_mem.r_wake;
 			mp.r_ignore = save_mem.r_ignore;
-			for (int att = 0; att < mp.r_attacks.length; att++) {
-				mp.r_attacks[att] = save_mem.r_attacks[att];
-			}
+			System.arraycopy(save_mem.r_attacks, 0, mp.r_attacks, 0, mp.r_attacks.length);
 		}
 		return IO.inkey();
 	}
@@ -647,7 +653,7 @@ public class Recall {
 	/* Print out strings, filling up lines as we go. */
 	public static void roff(String p) {
 		//String q, r;
-		
+		// TODO pretty sure this is wrong. fix in master and pull in
 		for (int i = 0; i < p.length(); i++) {
 			roffp = roffp + p.charAt(i);
 			if (p.charAt(i) == '\n' || roffp.length() > 80) {

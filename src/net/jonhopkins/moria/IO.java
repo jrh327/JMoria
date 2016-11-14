@@ -199,7 +199,7 @@ public class IO {
 		try {
 			Thread.sleep(2);
 		} catch (InterruptedException e) {
-			
+			e.printStackTrace();
 		}   /* And let it be read. */
 		/* this moves curses to bottom right corner */
 		//mvcur(stdscr._cury, stdscr._curx, LINES-1, 0);
@@ -533,11 +533,7 @@ public class Console {
 		
 		erase_line(0, 0);
 		
-		if (res == 'Y' || res == 'y') {
-			return true;
-		} else {
-			return false;
-		}
+		return res == 'Y' || res == 'y';
 	}
 	
 	/* Prompts (optional) and returns ord value of input char	*/
@@ -545,8 +541,9 @@ public class Console {
 	public static boolean get_com(String prompt, CharPointer command) {
 		boolean res;
 		
-		if (prompt != null)
+		if (prompt != null) {
 			prt(prompt, 0, 0);
+		}
 		
 		command.value(inkey());
 		if (command.value() == Constants.ESCAPE) {
@@ -562,7 +559,7 @@ public class Console {
 	/* Function returns false if <ESCAPE> is input	*/
 	public static String get_string(int row, int column, int slen) {
 		int start_col, end_col, i;
-		String in_str = "";
+		StringBuilder in_str = new StringBuilder(slen);
 		boolean flag, aborted;
 		
 		aborted = false;
@@ -597,7 +594,7 @@ public class Console {
 						put_buffer(" ", row, column);
 						move_cursor(row, column);
 						//*--p = '\0';
-						in_str = in_str.substring(0, in_str.length() - 1);
+						in_str.setLength(in_str.length() - 1);
 					}
 					break;
 				default:
@@ -606,7 +603,7 @@ public class Console {
 					} else {
 						Output.moveCursorAddCharacter(column, row, (char)i);
 						//*p++ = i;
-						in_str += (char)i;
+						in_str.append((char)i);
 						column++;
 					}
 					break;
@@ -614,14 +611,14 @@ public class Console {
 	    } while ((!flag) && (!aborted));
 		
 		if (aborted) {
-			return in_str;
+			return in_str.toString();
 		}
 		/* Remove trailing blanks	*/
 		while (in_str.length() > 1 && in_str.charAt(in_str.length() - 1) == ' ') {
-			in_str = in_str.substring(0, in_str.length() - 1);
+			in_str.setLength(in_str.length() - 1);
 		}
 		
-		return in_str;
+		return in_str.toString();
 	}
 	
 	/* Pauses for user response before returning		-RAK-	*/

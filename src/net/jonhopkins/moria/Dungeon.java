@@ -26,7 +26,6 @@ import net.jonhopkins.moria.types.CharPointer;
 import net.jonhopkins.moria.types.PlayerFlags;
 import net.jonhopkins.moria.types.IntPointer;
 import net.jonhopkins.moria.types.InvenType;
-import net.jonhopkins.moria.types.LongPointer;
 import net.jonhopkins.moria.types.PlayerMisc;
 import net.jonhopkins.moria.types.SpellType;
 
@@ -76,7 +75,8 @@ public class Dungeon {
 		Monsters.mon_tot_mult = 0;
 		Variable.cave[Player.char_row][Player.char_col].cptr = 1;
 		/* Ensure we display the panel. Used to do this with a global var. -CJS- */
-		Variable.panel_row = Variable.panel_col = -1;
+		Variable.panel_row = -1;
+		Variable.panel_col = -1;
 		/* Light up the area around character	   */
 		Misc4.check_view();
 		/* must do this after panel_row/col set to -1, because mor1.search_off() will
@@ -232,7 +232,9 @@ public class Dungeon {
 				Moria1.disturb(true, false);
 			}
 			/* Regenerate	       */
-			if (f_ptr.regenerate) regen_amount = regen_amount * 3 / 2;
+			if (f_ptr.regenerate) {
+				regen_amount = regen_amount * 3 / 2;
+			}
 			if ((Player.py.flags.status & Constants.PY_SEARCH) != 0 || f_ptr.rest != 0) {
 				regen_amount = regen_amount * 2;
 			}
@@ -327,6 +329,8 @@ public class Dungeon {
 						break;
 					case 6:
 						i = ((Variable.turn % 4) == 0) ? 1 : 0;
+						break;
+					default:
 						break;
 					}
 					Moria1.take_hit(i, "poison");
@@ -568,7 +572,7 @@ public class Dungeon {
 			/* Allow for a slim chance of detect enchantment -CJS- */
 			/* for 1st level char, check once every 2160 turns
 			 * for 40th level char, check once every 416 turns */
-			if (((Variable.turn & 0xF) == 0) && (f_ptr.confused == 0) && (Misc1.randint((int)(10 + 750 / (5 + Player.py.misc.lev))) == 1)) {
+			if (((Variable.turn & 0xF) == 0) && (f_ptr.confused == 0) && (Misc1.randint(10 + 750 / (5 + Player.py.misc.lev)) == 1)) {
 				String tmp_str;
 				
 				for (i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
@@ -578,7 +582,7 @@ public class Dungeon {
 					i_ptr = Treasure.inventory[i];
 					/* if in inventory, succeed 1 out of 50 times,
 					 * if in equipment list, success 1 out of 10 times */
-					if ((i_ptr.tval != Constants.TV_NOTHING) && enchanted(i_ptr) && (Misc1.randint(i < 22 ? 50 : 10) == 1)) {
+					if ((i_ptr.tval != Constants.TV_NOTHING) && enchanted(i_ptr) && (Misc1.randint((i < 22) ? 50 : 10) == 1)) {
 						//extern char *describe_use();
 						
 						tmp_str = String.format("There's something about what you are %s...", Moria1.describe_use(i));
@@ -1183,7 +1187,7 @@ public class Dungeon {
 					if (p_y == cy && p_x == cx) {
 						tmp_str = "";
 					} else {
-						tmp_str = String.format("%s%s of", p_y < cy ? " North" : p_y > cy ? " South" : "", p_x < cx ? " West" : p_x > cx ? " East" : "");
+						tmp_str = String.format("%s%s of", (p_y < cy) ? " North" : (p_y > cy) ? " South" : "", (p_x < cx) ? " West" : (p_x > cx) ? " East" : "");
 					}
 					out_val = String.format("Map sector [%d,%d], which is%s your sector. Look which direction?", p_y, p_x, tmp_str);
 					if (!Moria1.get_dir(out_val, dir_val)) {
@@ -1377,6 +1381,7 @@ public class Dungeon {
 								i = Integer.parseInt(tmp_str);
 							} catch (NumberFormatException e) {
 								System.err.println("tmp_str cannot be converted to an integer in Dungeon.do_command()");
+								e.printStackTrace();
 								i = 0;
 							}
 						}
@@ -1631,7 +1636,7 @@ public class Dungeon {
 	
 	/* Examine a Book					-RAK-	*/
 	public static void examine_book() {
-		LongPointer j;
+		IntPointer j;
 		IntPointer i = new IntPointer(), k = new IntPointer();
 		IntPointer item_val = new IntPointer();
 		boolean flag;
@@ -1666,7 +1671,7 @@ public class Dungeon {
 				IO.msg_print("You do not understand the language.");
 			} else {
 				i.value(0);
-				j = new LongPointer(Treasure.inventory[item_val.value()].flags);
+				j = new IntPointer(Treasure.inventory[item_val.value()].flags);
 				while (j.value() != 0) {
 					k.value(Misc1.bit_pos(j));
 					s_ptr = Player.magic_spell[Player.py.misc.pclass - 1][k.value()];

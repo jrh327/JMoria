@@ -147,7 +147,7 @@ public class Save {
 					|| r_ptr.r_spells != 0 || r_ptr.r_deaths != 0 || r_ptr.r_attacks[0] != 0
 					|| r_ptr.r_attacks[1] != 0 || r_ptr.r_attacks[2] != 0 || r_ptr.r_attacks[3] != 0)
 			{
-				wr_int((int)i);
+				wr_int(i);
 				wr_long(r_ptr.r_cmove);
 				wr_long(r_ptr.r_spells);
 				wr_int(r_ptr.r_kills);
@@ -288,7 +288,7 @@ public class Save {
 		for (i = 0; i < Constants.MAX_STORES; i++) {
 			st_ptr = Variable.store[i];
 			wr_long((long)st_ptr.store_open);
-			wr_int((int)st_ptr.insult_cur);
+			wr_int(st_ptr.insult_cur);
 			wr_byte((byte)st_ptr.owner);
 			wr_byte((byte)st_ptr.store_ctr);
 			wr_int(st_ptr.good_buy);
@@ -607,8 +607,8 @@ public class Save {
 					return _error(ok, fd, time_saved, version_maj, version_min);
 				}
 				r_ptr = Variable.c_recall[int_tmp];
-				r_ptr.r_cmove = rd_long();
-				r_ptr.r_spells = rd_long();
+				r_ptr.r_cmove = rd_int();
+				r_ptr.r_spells = rd_int();
 				r_ptr.r_kills = rd_int();
 				r_ptr.r_deaths = rd_int();
 				r_ptr.r_cdefense = rd_int();
@@ -765,9 +765,9 @@ public class Save {
 				}
 				Treasure.inven_weight = rd_int();
 				Treasure.equip_ctr = rd_int();
-				Player.spell_learned = rd_long();
-				Player.spell_worked = rd_long();
-				Player.spell_forgotten = rd_long();
+				Player.spell_learned = rd_int();
+				Player.spell_worked = rd_int();
+				Player.spell_forgotten = rd_int();
 				rd_ints(Player.spell_order, 32);
 				rd_ints(Treasure.object_ident, Constants.OBJECT_IDENT_SIZE);
 				Variable.randes_seed = rd_long();
@@ -874,11 +874,11 @@ public class Save {
 			Variable.max_panel_cols = rd_int();
 			
 			/* read in the creature ptr info */
-			char_tmp = rd_byte();
+			char_tmp = rd_byte() & 0xFF;
 			while (char_tmp != 0xFF) {
 				ychar = char_tmp;
-				xchar = rd_byte();
-				char_tmp = rd_byte();
+				xchar = rd_byte() & 0xFF;
+				char_tmp = rd_byte() & 0xFF;
 				if (xchar > Constants.MAX_WIDTH || ychar > Constants.MAX_HEIGHT) {
 					return _error(ok, fd, time_saved, version_maj, version_min);
 				}
@@ -886,16 +886,16 @@ public class Save {
 				char_tmp = rd_byte();
 			}
 			/* read in the treasure ptr info */
-			char_tmp = rd_byte();
+			char_tmp = rd_byte() & 0xFF;
 			while (char_tmp != 0xFF) {
 				ychar = char_tmp;
-				xchar = rd_byte();
-				char_tmp = rd_byte();
+				xchar = rd_byte() & 0xFF;
+				char_tmp = rd_byte() & 0xFF;
 				if (xchar > Constants.MAX_WIDTH || ychar > Constants.MAX_HEIGHT) {
 					return _error(ok, fd, time_saved, version_maj, version_min);
 				}
 				Variable.cave[ychar][xchar].tptr = char_tmp;
-				char_tmp = rd_byte();
+				char_tmp = rd_byte() & 0xFF;
 			}
 			/* read in the rest of the cave info */
 			c_ptr = Variable.cave[0][0];
@@ -1060,16 +1060,13 @@ public class Save {
 				temp = String.format(
 						"Save file version %d.%d %s on game version %d.%d.",
 						version_maj, version_min,
-						version_min <= Constants.CUR_VERSION_MIN ? "accepted" : "risky" ,
+						(version_min <= Constants.CUR_VERSION_MIN) ? "accepted" : "risky" ,
 						Constants.CUR_VERSION_MAJ, Constants.CUR_VERSION_MIN);
 				IO.msg_print(temp);
 			}
 			
-			if (Variable.turn >= 0) {
-				return true;
-			} else {
-				return false;	/* Only restored options and monster memory. */
-			}
+			return Variable.turn >= 0;
+			/* If false, only restored options and monster memory. */
 		}
 		return false;
 	}
@@ -1140,7 +1137,7 @@ public class Save {
 		wr_int(item.index);
 		wr_int(item.name2);
 		wr_string(item.inscrip, item.INSCRIP_SIZE);
-		wr_long(item.flags);
+		wr_int(item.flags);
 		wr_int(item.tval);
 		wr_int(item.tchar);
 		wr_int(item.p1);
@@ -1167,7 +1164,7 @@ public class Save {
 		wr_int(mon.cdis);
 		wr_byte((byte)(mon.ml ? 0x1 : 0x0));
 		wr_int(mon.stunned);
-		wr_byte((byte)(mon.confused > 0 ? 0x1 : 0x0));
+		wr_byte((byte)((mon.confused > 0) ? 0x1 : 0x0));
 	}
 	
 	private static byte getNextByte() {
@@ -1273,7 +1270,7 @@ public class Save {
 		item.index = rd_int();
 		item.name2 = rd_byte();
 		item.inscrip = rd_string(item.INSCRIP_SIZE);
-		item.flags = rd_long();
+		item.flags = rd_int();
 		item.tval = rd_byte();
 		item.tchar = (char)rd_byte();
 		item.p1 = rd_int();

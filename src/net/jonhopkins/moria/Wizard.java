@@ -44,8 +44,8 @@ public class Wizard {
 		for (i = 0; i < Variable.cur_height; i++) {
 			for (j = 0; j < Variable.cur_width; j++) {
 				if (Variable.cave[i][j].fval <= Constants.MAX_CAVE_FLOOR) {
-					for (k = i-1; k <= i+1; k++) {
-						for (l = j-1; l <= j+1; l++) {
+					for (k = i - 1; k <= i + 1; k++) {
+						for (l = j - 1; l <= j + 1; l++) {
 							c_ptr = Variable.cave[k][l];
 							c_ptr.pl = flag;
 							if (!flag) {
@@ -68,274 +68,290 @@ public class Wizard {
 		
 		a_ptr = Player.py.stats.max_stat;
 		IO.prt("(3 - 118) Strength     = ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 25, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > 2) && (tmp_val < 119)) {
-				a_ptr[Constants.A_STR] = tmp_val;
-				Misc3.res_stat(Constants.A_STR);
-			}
-		} else {
+		tmp_str = IO.get_string(0, 25, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > 2) && (tmp_val < 119)) {
+			a_ptr[Constants.A_STR] = tmp_val;
+			Misc3.res_stat(Constants.A_STR);
 		}
 		
 		IO.prt("(3 - 118) Intelligence = ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 25, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > 2) && (tmp_val < 119)) {
-				a_ptr[Constants.A_INT] = tmp_val;
-				Misc3.res_stat(Constants.A_INT);
-			}
-		} else {
+		tmp_str = IO.get_string(0, 25, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > 2) && (tmp_val < 119)) {
+			a_ptr[Constants.A_INT] = tmp_val;
+			Misc3.res_stat(Constants.A_INT);
 		}
 		
 		IO.prt("(3 - 118) Wisdom       = ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 25, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > 2) && (tmp_val < 119)) {
-				a_ptr[Constants.A_WIS] = tmp_val;
-				Misc3.res_stat(Constants.A_WIS);
-			}
-		} else {
+		tmp_str = IO.get_string(0, 25, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > 2) && (tmp_val < 119)) {
+			a_ptr[Constants.A_WIS] = tmp_val;
+			Misc3.res_stat(Constants.A_WIS);
 		}
 		
 		IO.prt("(3 - 118) Dexterity    = ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 25, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > 2) && (tmp_val < 119)) {
-				a_ptr[Constants.A_DEX] = tmp_val;
-				Misc3.res_stat(Constants.A_DEX);
-			}
-		} else {
+		tmp_str = IO.get_string(0, 25, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > 2) && (tmp_val < 119)) {
+			a_ptr[Constants.A_DEX] = tmp_val;
+			Misc3.res_stat(Constants.A_DEX);
 		}
 		
 		IO.prt("(3 - 118) Constitution = ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 25, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > 2) && (tmp_val < 119)) {
-				a_ptr[Constants.A_CON] = tmp_val;
-				Misc3.res_stat(Constants.A_CON);
-			}
-		} else {
+		tmp_str = IO.get_string(0, 25, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > 2) && (tmp_val < 119)) {
+			a_ptr[Constants.A_CON] = tmp_val;
+			Misc3.res_stat(Constants.A_CON);
 		}
 		
 		IO.prt("(3 - 118) Charisma     = ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 25, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > 2) && (tmp_val < 119)) {
-				a_ptr[Constants.A_CHR] = tmp_val;
-				Misc3.res_stat(Constants.A_CHR);
-			}
-		} else {
+		tmp_str = IO.get_string(0, 25, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > 2) && (tmp_val < 119)) {
+			a_ptr[Constants.A_CHR] = tmp_val;
+			Misc3.res_stat(Constants.A_CHR);
 		}
 		
 		m_ptr = Player.py.misc;
 		IO.prt("(1 - 32767) Hit points = ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 25, 5)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > 0) && (tmp_val <= Constants.MAX_SHORT)) {
-				m_ptr.mhp  = tmp_val;
-				m_ptr.chp  = tmp_val;
-				m_ptr.chp_frac = 0;
-				Misc3.prt_mhp();
-				Misc3.prt_chp();
-			}
-		} else {
+		tmp_str = IO.get_string(0, 25, 5);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > 0) && (tmp_val <= Constants.MAX_SHORT)) {
+			m_ptr.mhp  = tmp_val;
+			m_ptr.chp  = tmp_val;
+			m_ptr.chp_frac = 0;
+			Misc3.prt_mhp();
+			Misc3.prt_chp();
 		}
 		
 		IO.prt("(0 - 32767) Mana       = ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 25, 5)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > -1) && (tmp_val <= Constants.MAX_SHORT) && (!tmp_str.equals(""))) {
-				m_ptr.mana  = tmp_val;
-				m_ptr.cmana = tmp_val;
-				m_ptr.cmana_frac = 0;
-				Misc3.prt_cmana();
-			}
-		} else {
+		tmp_str = IO.get_string(0, 25, 5);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > -1) && (tmp_val <= Constants.MAX_SHORT)) {
+			m_ptr.mana  = tmp_val;
+			m_ptr.cmana = tmp_val;
+			m_ptr.cmana_frac = 0;
+			Misc3.prt_cmana();
 		}
 		
 		tmp_str = String.format("Current=%d  Gold = ", m_ptr.au);
 		tmp_val = tmp_str.length();
 		IO.prt(tmp_str, 0, 0);
-		if ((tmp_str = IO.get_string(0, tmp_val, 7)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
-				tmp_val = 0;
-			}
-			if (tmp_val > -1 && (!tmp_str.equals(""))) {
-				m_ptr.au = tmp_val;
-				Misc3.prt_gold();
-			}
-		} else {
+		tmp_str = IO.get_string(0, tmp_val, 7);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if (tmp_val > -1) {
+			m_ptr.au = tmp_val;
+			Misc3.prt_gold();
 		}
 		
 		tmp_str = String.format("Current=%d  (0-200) Searching = ", m_ptr.srh);
 		tmp_val = tmp_str.length();
 		IO.prt(tmp_str, 0, 0);
-		if ((tmp_str = IO.get_string(0, tmp_val, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > -1) && (tmp_val < 201) && (!tmp_str.equals(""))) {
-				m_ptr.srh  = tmp_val;
-			}
-		} else {
+		tmp_str = IO.get_string(0, tmp_val, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > -1) && (tmp_val < 201)) {
+			m_ptr.srh  = tmp_val;
 		}
 		
 		tmp_str = String.format("Current=%d  (-1-18) Stealth = ", m_ptr.stl);
 		tmp_val = tmp_str.length();
 		IO.prt(tmp_str, 0, 0);
-		if ((tmp_str = IO.get_string(0, tmp_val, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > -2) && (tmp_val < 19) && (!tmp_str.equals(""))) {
-				m_ptr.stl  = tmp_val;
-			}
-		} else {
+		tmp_str = IO.get_string(0, tmp_val, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > -2) && (tmp_val < 19)) {
+			m_ptr.stl  = tmp_val;
 		}
 		
 		tmp_str = String.format("Current=%d  (0-200) Disarming = ", m_ptr.disarm);
 		tmp_val = tmp_str.length();
 		IO.prt(tmp_str, 0, 0);
-		if ((tmp_str = IO.get_string(0, tmp_val, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > -1) && (tmp_val < 201) && (!tmp_str.equals(""))) {
-				m_ptr.disarm = tmp_val;
-			}
-		} else {
+		tmp_str = IO.get_string(0, tmp_val, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > -1) && (tmp_val < 201)) {
+			m_ptr.disarm = tmp_val;
 		}
 		
 		tmp_str = String.format("Current=%d  (0-100) Save = ", m_ptr.save);
 		tmp_val = tmp_str.length();
 		IO.prt(tmp_str, 0, 0);
-		if ((tmp_str = IO.get_string(0, tmp_val, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > -1) && (tmp_val < 201) && (!tmp_str.equals(""))) {
-				m_ptr.save = tmp_val;
-			}
-		} else {
+		tmp_str = IO.get_string(0, tmp_val, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > -1) && (tmp_val < 201)) {
+			m_ptr.save = tmp_val;
 		}
 		
 		tmp_str = String.format("Current=%d  (0-200) Base to hit = ", m_ptr.bth);
 		tmp_val = tmp_str.length();
 		IO.prt(tmp_str, 0, 0);
-		if ((tmp_str = IO.get_string(0, tmp_val, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > -1) && (tmp_val < 201) && (!tmp_str.equals(""))) {
-				m_ptr.bth = tmp_val;
-			}
-		} else {
+		tmp_str = IO.get_string(0, tmp_val, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > -1) && (tmp_val < 201)) {
+			m_ptr.bth = tmp_val;
 		}
 		
 		tmp_str = String.format("Current=%d  (0-200) Bows/Throwing = ", m_ptr.bthb);
 		tmp_val = tmp_str.length();
 		IO.prt(tmp_str, 0, 0);
-		if ((tmp_str = IO.get_string(0, tmp_val, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if ((tmp_val > -1) && (tmp_val < 201) && (!tmp_str.equals(""))) {
-				m_ptr.bthb = tmp_val;
-			}
-		} else {
+		tmp_str = IO.get_string(0, tmp_val, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if ((tmp_val > -1) && (tmp_val < 201)) {
+			m_ptr.bthb = tmp_val;
 		}
 		
 		tmp_str = String.format("Current=%d  Weight = ", m_ptr.wt);
 		tmp_val = tmp_str.length();
 		IO.prt(tmp_str, 0, 0);
-		if ((tmp_str = IO.get_string(0, tmp_val, 3)).length() > 0) {
-			try {
-				tmp_val = Integer.parseInt(tmp_str);
-			} catch (NumberFormatException e) {
-				System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
-				tmp_val = 0;
-			}
-			if (tmp_val > -1 && (!tmp_str.equals(""))) {
-				m_ptr.wt = tmp_val;
-			}
-		} else {
+		tmp_str = IO.get_string(0, tmp_val, 3);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
+		try {
+			tmp_val = Integer.parseInt(tmp_str);
+		} catch (NumberFormatException e) {
+			System.err.println("Could not convert tmp_str to an integer in Wizard.change_character()");
+			e.printStackTrace();
+			tmp_val = 0;
+		}
+		if (tmp_val > -1) {
+			m_ptr.wt = tmp_val;
 		}
 		
 		CharPointer tmp_ch = new CharPointer();
@@ -354,7 +370,6 @@ public class Wizard {
 	/* Wizard routine for creating objects			-RAK-	*/
 	public static void wizard_create() {
 		int tmp_val;
-		long tmp_lval;
 		String tmp_str;
 		InvenType i_ptr;
 		InvenType forge = new InvenType();
@@ -369,180 +384,208 @@ public class Wizard {
 		i_ptr.ident = Constants.ID_KNOWN2|Constants.ID_STOREBOUGHT;
 		
 		IO.prt("Tval   : ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 9, 3)).length() == 0) {
+		tmp_str = IO.get_string(0, 9, 3);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.tval = tmp_val;
 		
 		IO.prt("Tchar  : ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 9, 1)).length() == 0) {
+		tmp_str = IO.get_string(0, 9, 1);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		i_ptr.tchar = tmp_str.charAt(0);
 		
 		IO.prt("Subval : ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 9, 5)).length() == 0) {
+		tmp_str = IO.get_string(0, 9, 5);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.subval = tmp_val;
 		
 		IO.prt("Weight : ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 9, 5)).length() == 0) {
+		tmp_str = IO.get_string(0, 9, 5);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.weight = tmp_val;
 		
 		IO.prt("Number : ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 9, 5)).length() == 0)
+		tmp_str = IO.get_string(0, 9, 5);
+		if (tmp_str.isEmpty()) {
 			return;
+		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.number = tmp_val;
 		
 		IO.prt("Damage (dice): ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 15, 3)).length() == 0) {
+		tmp_str = IO.get_string(0, 15, 3);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.damage[0] = tmp_val;
 		
 		IO.prt("Damage (sides): ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 16, 3)).length() == 0) {
+		tmp_str = IO.get_string(0, 16, 3);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.damage[1] = tmp_val;
 		
 		IO.prt("+To hit: ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 9, 3)).length() == 0) {
+		tmp_str = IO.get_string(0, 9, 3);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.tohit = tmp_val;
 		
 		IO.prt("+To dam: ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 9, 3)).length() == 0) {
+		tmp_str = IO.get_string(0, 9, 3);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.todam = tmp_val;
 		
 		IO.prt("AC     : ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 9, 3)).length() == 0) {
+		tmp_str = IO.get_string(0, 9, 3);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.ac = tmp_val;
 		
 		IO.prt("+To AC : ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 9, 3)).length() == 0) {
+		tmp_str = IO.get_string(0, 9, 3);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.toac = tmp_val;
 		
 		IO.prt("P1     : ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 9, 5)).length() == 0) {
+		tmp_str = IO.get_string(0, 9, 5);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.p1 = tmp_val;
 		
 		IO.prt("Flags (In HEX): ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 16, 8)).length() == 0) {
+		tmp_str = IO.get_string(0, 16, 8);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
-		/* can't be constant string, this causes problems with the GCC compiler
-	 	 * and some scanf routines */
 		
 		try {
-			tmp_lval = Long.parseLong(tmp_str);
+			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
-			System.err.println("Could not convert tmp_str to a long in Wizard.wizard_create()");
-			tmp_lval = 0;
+			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
+			tmp_val = 0;
 		}
 		//finds a long in tmp_str and places it in tmp_lval
 		//pattern = "%lx";
 		//sscanf(tmp_str, pattern, tmp_lval);
-		i_ptr.flags = tmp_lval;
+		i_ptr.flags = tmp_val;
 		
 		IO.prt("Cost : ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 9, 8)).length() == 0) {
+		tmp_str = IO.get_string(0, 9, 8);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.cost = tmp_val;
 		
 		IO.prt("Level : ", 0, 0);
-		if ((tmp_str = IO.get_string(0, 10, 3)).length() == 0) {
+		tmp_str = IO.get_string(0, 10, 3);
+		if (tmp_str.isEmpty()) {
 			return;
 		}
 		try {
 			tmp_val = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
 			System.err.println("Could not convert tmp_str to an integer in Wizard.wizard_create()");
+			e.printStackTrace();
 			tmp_val = 0;
 		}
 		i_ptr.level = tmp_val;

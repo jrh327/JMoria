@@ -54,14 +54,12 @@ public class Misc2 {
 		 * as the object with the lowest level */
 		
 		/* Depending on treasure type, it can have certain magical properties*/
-		switch (t_ptr.tval)
-		{
+		switch (t_ptr.tval) {
 		case Constants.TV_SHIELD: case Constants.TV_HARD_ARMOR: case Constants.TV_SOFT_ARMOR:
 			if (Misc1.magik(chance)) {
 				t_ptr.toac += Misc1.m_bonus(1, 30, level);
 				if (Misc1.magik(special)) {
-					switch(Misc1.randint(9))
-					{
+					switch(Misc1.randint(9)) {
 					case 1:
 						t_ptr.flags |= (Constants.TR_RES_LIGHT | Constants.TR_RES_COLD | Constants.TR_RES_ACID | Constants.TR_RES_FIRE);
 						t_ptr.name2 = Constants.SN_R;
@@ -88,6 +86,8 @@ public class Misc2 {
 						t_ptr.name2 = Constants.SN_RL;
 						t_ptr.cost += 500;
 						break;
+					default:
+						break;
 					}
 				}
 			} else if (Misc1.magik(cursed)) {
@@ -109,8 +109,7 @@ public class Misc2 {
 				 * before change to treasure distribution, this helps keep same
 				 * number of ego weapons same as before, see also missiles */
 				if (Misc1.magik(3 * special / 2)) {
-					switch(Misc1.randint(16))
-					{
+					switch(Misc1.randint(16)) {
 					case 1:	/* Holy Avenger	 */
 						t_ptr.flags |= (Constants.TR_SEE_INVIS | Constants.TR_SUST_STAT | Constants.TR_SLAY_UNDEAD | Constants.TR_SLAY_EVIL | Constants.TR_STR);
 						t_ptr.tohit += 5;
@@ -178,6 +177,8 @@ public class Misc2 {
 						t_ptr.todam++;
 						t_ptr.name2 = Constants.SN_FB;
 						t_ptr.cost += 1200;
+						break;
+					default:
 						break;
 					}
 				}
@@ -301,7 +302,7 @@ public class Misc2 {
 		case Constants.TV_HELM:  /* Helms */
 			if ((t_ptr.subval >= 6) && (t_ptr.subval <= 8)) {
 				/* give crowns a higher chance for magic */
-				chance += (int) (t_ptr.cost / 100);
+				chance += (t_ptr.cost / 100);
 				special += special;
 			}
 			if (Misc1.magik(chance)) {
@@ -327,8 +328,7 @@ public class Misc2 {
 							t_ptr.cost += t_ptr.p1 * 250;
 						}
 					} else {
-						switch(Misc1.randint(6))
-						{
+						switch(Misc1.randint(6)) {
 						case 1:
 							t_ptr.ident |= Constants.ID_SHOW_P1;
 							t_ptr.p1 = Misc1.randint(3);
@@ -369,6 +369,8 @@ public class Misc2 {
 							t_ptr.name2 = Constants.SN_REGENERATION;
 							t_ptr.cost += 1500;
 							break;
+						default:
+							break;
 						}
 					}
 				}
@@ -377,8 +379,7 @@ public class Misc2 {
 				t_ptr.flags |= Constants.TR_CURSED;
 				t_ptr.cost = 0;
 				if (Misc1.magik(special)) {
-					switch(Misc1.randint(7))
-					{
+					switch(Misc1.randint(7)) {
 					case 1:
 						t_ptr.ident |= Constants.ID_SHOW_P1;
 						t_ptr.p1 = -Misc1.randint(5);
@@ -415,14 +416,15 @@ public class Misc2 {
 						t_ptr.flags |= Constants.TR_CHR;
 						t_ptr.name2 = Constants.SN_UGLINESS;
 						break;
+					default:
+						break;
 					}
 				}
 			}
 			break;
 			
 		case Constants.TV_RING: /* Rings	      */
-			switch(t_ptr.subval)
-			{
+			switch(t_ptr.subval) {
 			case 0: case 1: case 2: case 3:
 				if (Misc1.magik(cursed)) {
 					t_ptr.p1 = -Misc1.m_bonus(1, 20, level);
@@ -535,8 +537,7 @@ public class Misc2 {
 			break;
 			
 		case Constants.TV_WAND:
-			switch(t_ptr.subval)
-			{
+			switch(t_ptr.subval) {
 			case 0:	  t_ptr.p1 = Misc1.randint(10) +	 6; break;
 			case 1:	  t_ptr.p1 = Misc1.randint(8)  +	 6; break;
 			case 2:	  t_ptr.p1 = Misc1.randint(5)  +	 6; break;
@@ -567,8 +568,7 @@ public class Misc2 {
 			break;
 			
 		case Constants.TV_STAFF:
-			switch(t_ptr.subval)
-			{
+			switch(t_ptr.subval) {
 			case 0:	  t_ptr.p1 = Misc1.randint(20) +	 12; break;
 			case 1:	  t_ptr.p1 = Misc1.randint(8)  +	 6; break;
 			case 2:	  t_ptr.p1 = Misc1.randint(5)  +	 6; break;
@@ -646,8 +646,7 @@ public class Misc2 {
 			break;
 			
 		case Constants.TV_CHEST:
-			switch(Misc1.randint(level + 4))
-			{
+			switch(Misc1.randint(level + 4)) {
 			case 1:
 				t_ptr.flags = 0;
 				t_ptr.name2 = Constants.SN_EMPTY;
@@ -698,8 +697,7 @@ public class Misc2 {
 					t_ptr.todam += Misc1.m_bonus(1, 35, level);
 					/* see comment for weapons */
 					if (Misc1.magik(3 * special / 2)) {
-						switch(Misc1.randint(10))
-						{
+						switch(Misc1.randint(10)) {
 						case 1: case 2: case 3:
 							t_ptr.name2 = Constants.SN_SLAYING;
 							t_ptr.tohit += 5;
@@ -733,6 +731,8 @@ public class Misc2 {
 							t_ptr.todam += 3;
 							t_ptr.name2 = Constants.SN_DRAGON_SLAYING;
 							t_ptr.cost += 35;
+							break;
+						default:
 							break;
 						}
 					}

@@ -23,6 +23,7 @@ package net.jonhopkins.moria.graphics;
 import java.awt.*;
 import java.applet.Applet;
 import java.util.ArrayList;
+import java.util.List;
 
 public final class Output {
 	private static Output output = null;
@@ -83,11 +84,7 @@ public final class Output {
 	public static char getch() {
 		char ch = 0;
 		output.main.requestFocus();
-		try {
-			ch = output.keyHandler.requestKeyHit();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		ch = output.keyHandler.requestKeyHit();
 		return ch;
 	}
 	
@@ -187,8 +184,8 @@ public final class Output {
 	
 	private Window windowInFocus;
 	private KeyHandler keyHandler;
-	private ArrayList<Window> windows;
-	private ArrayList<Integer> windowStack;
+	private List<Window> windows;
+	private List<Integer> windowStack;
 	private Image bufferImg;
 	private Graphics bufferGraphics;
 	private Applet main;

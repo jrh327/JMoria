@@ -26,7 +26,6 @@ import net.jonhopkins.moria.types.CreatureType;
 import net.jonhopkins.moria.types.PlayerFlags;
 import net.jonhopkins.moria.types.IntPointer;
 import net.jonhopkins.moria.types.InvenType;
-import net.jonhopkins.moria.types.LongPointer;
 import net.jonhopkins.moria.types.PlayerMisc;
 import net.jonhopkins.moria.types.MonsterType;
 import net.jonhopkins.moria.types.MonsterRecallType;
@@ -254,6 +253,8 @@ public class Creature {
 				mm[4] = 3;
 			}
 			break;
+		default:
+			break;
 		}
 	}
 	
@@ -312,8 +313,7 @@ public class Creature {
 				adesc = 99;
 			}
 			p_ptr = Player.py.misc;
-			switch(attype)
-			{
+			switch (attype) {
 			case 1:	/*Normal attack  */
 				if (Moria1.test_hit(60, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
@@ -445,8 +445,7 @@ public class Creature {
 				 * multiple attacks */
 				Moria1.disturb(true, false);
 				tmp_str = cdesc;
-				switch(adesc)
-				{
+				switch (adesc) {
 				case 1: IO.msg_print(tmp_str.concat("hits you.")); break;
 				case 2: IO.msg_print(tmp_str.concat("bites you.")); break;
 				case 3: IO.msg_print(tmp_str.concat("claws you.")); break;
@@ -466,8 +465,7 @@ public class Creature {
 				case 17: IO.msg_print(tmp_str.concat("tramples you.")); break;
 				case 18: IO.msg_print(tmp_str.concat("drools on you.")); break;
 				case 19:
-					switch(Misc1.randint(9))
-					{
+					switch(Misc1.randint(9)) {
 					case 1: IO.msg_print(tmp_str.concat("insults you!")); break;
 					case 2: IO.msg_print(tmp_str.concat("insults your mother!")); break;
 					case 3: IO.msg_print(tmp_str.concat("gives you the finger!")); break;
@@ -477,6 +475,7 @@ public class Creature {
 					case 7: IO.msg_print(tmp_str.concat("dances around you!"));break;
 					case 8: IO.msg_print(tmp_str.concat("makes obscene gestures!")); break;
 					case 9: IO.msg_print(tmp_str.concat("moons you!!!")); break;
+					default: break;
 					}
 					break;
 				case 99: IO.msg_print(tmp_str.concat("is repelled.")); break;
@@ -495,8 +494,7 @@ public class Creature {
 				}
 				
 				damage = Misc1.damroll(adice, asides);
-				switch(attype)
-				{
+				switch (attype) {
 				case 1:	/*Normal attack	*/
 					/* round half-way case down */
 					damage -= ((p_ptr.pac + p_ptr.ptoac) * damage) / 200;
@@ -675,8 +673,7 @@ public class Creature {
 					break;
 				case 21:	/*Disenchant	   */
 					flag = false;
-					switch(Misc1.randint(7))
-					{
+					switch (Misc1.randint(7)) {
 					case 1: i.value(Constants.INVEN_WIELD);	break;
 					case 2: i.value(Constants.INVEN_BODY);	break;
 					case 3: i.value(Constants.INVEN_ARM);	break;
@@ -684,6 +681,7 @@ public class Creature {
 					case 5: i.value(Constants.INVEN_HANDS);	break;
 					case 6: i.value(Constants.INVEN_HEAD);	break;
 					case 7: i.value(Constants.INVEN_FEET);	break;
+					default: break;
 					}
 					i_ptr = Treasure.inventory[i.value()];
 					if (i_ptr.tohit > 0) {
@@ -721,9 +719,9 @@ public class Creature {
 					if (Misc3.find_range(Constants.TV_FOOD, Constants.TV_NEVER, i, j)) {
 						Misc3.inven_destroy(i.value());
 						IO.msg_print("It got at your rations!");
-					}
-					else
+					} else {
 						notice = false;
+					}
 					break;
 				case 23:	/*Eat light	   */
 					i_ptr = Treasure.inventory[Constants.INVEN_LIGHT];
@@ -810,7 +808,7 @@ public class Creature {
 	}
 	
 	/* Make the move if possible, five choices		-RAK-	*/
-	public static void make_move(int monptr, int[] mm, LongPointer rcmove) {
+	public static void make_move(int monptr, int[] mm, IntPointer rcmove) {
 		int i;
 		IntPointer newy = new IntPointer(), newx = new IntPointer();
 		boolean do_turn, do_move, stuck_door;
@@ -975,10 +973,10 @@ public class Creature {
 	/* cast_spell = true if creature changes position	*/
 	/* took_turn  = true if creature casts a spell		*/
 	public static boolean mon_cast_spell(int monptr) {
-		LongPointer i;
+		IntPointer i;
 		IntPointer y, x;
 		int thrown_spell, r1;
-		long chance;
+		int chance;
 		int k;
 		int[] spell_choice = new int[30];
 		String cdesc, outval, ddesc;
@@ -994,7 +992,7 @@ public class Creature {
 		r_ptr = Monsters.c_list[m_ptr.mptr];
 		chance = (r_ptr.spells & Constants.CS_FREQ);
 		/* 1 in x chance of casting spell		   */
-		if (Misc1.randint((int)chance) != 1) {
+		if (Misc1.randint(chance) != 1) {
 			took_turn = false;
 		/* Must be within certain range		   */
 		} else if (m_ptr.cdis > Constants.MAX_SPELL_DIS) {
@@ -1023,7 +1021,7 @@ public class Creature {
 			/* End DIED_FROM		       */
 			
 			/* Extract all possible spells into spell_choice */
-			i = new LongPointer(r_ptr.spells & ~Constants.CS_FREQ);
+			i = new IntPointer(r_ptr.spells & ~Constants.CS_FREQ);
 			k = 0;
 			while (i.value() != 0) {
 				spell_choice[k] = Misc1.bit_pos(i);
@@ -1147,7 +1145,7 @@ public class Creature {
 						outval = String.format("%sappears healthier.", cdesc);
 						IO.msg_print(outval);
 					}
-					r1 = (Misc1.randint((int)r_ptr.level) >> 1) + 1;
+					r1 = (Misc1.randint(r_ptr.level) >> 1) + 1;
 					if (r1 > Player.py.misc.cmana) {
 						r1 = Player.py.misc.cmana;
 						Player.py.misc.cmana = 0;
@@ -1265,7 +1263,7 @@ public class Creature {
 	}
 	
 	/* Move the critters about the dungeon			-RAK-	*/
-	public static void mon_move(int monptr, LongPointer rcmove) {
+	public static void mon_move(int monptr, IntPointer rcmove) {
 		int i, j;
 		int k, dir;
 		boolean move_test;
@@ -1294,7 +1292,7 @@ public class Creature {
 				k++;
 			}
 			if ((k < 4) && (Misc1.randint(k * Constants.MON_MULT_ADJ) == 1)) {
-				if (multiply_monster((int)m_ptr.fy, (int)m_ptr.fx, m_ptr.mptr, monptr)) {
+				if (multiply_monster(m_ptr.fy, m_ptr.fx, m_ptr.mptr, monptr)) {
 					rcmove.value(rcmove.value() | Constants.CM_MULTIPLY);
 				}
 			}
@@ -1455,8 +1453,8 @@ public class Creature {
 		int i, k;
 		MonsterType m_ptr;
 		MonsterRecallType r_ptr;
-		long notice;
-		LongPointer rcmove = new LongPointer();
+		int notice;
+		IntPointer rcmove = new IntPointer();
 		boolean wake, ignore;
 		String cdesc;
 		

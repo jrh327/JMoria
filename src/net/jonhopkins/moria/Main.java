@@ -81,7 +81,7 @@ import net.jonhopkins.moria.types.InvenType;
 public class Main extends Applet {
 	public void init() {
 		Output.initialize(this);
-		main(2, new char[] { 'n', 'r' });
+		moria_main(2, new char[] { 'n', 'r' });
 	}
 	
 	public void start() {
@@ -90,12 +90,14 @@ public class Main extends Applet {
 		running = false;
 		Thread.currentThread().interrupt();
 		System.exit(0);
+		return;
 	}
 	
 	public void destroy() {
 		running = false;
 		Thread.currentThread().interrupt();
 		System.exit(0);
+		return;
 	}
 	
 	public void run() {
@@ -119,7 +121,7 @@ public class Main extends Applet {
 	//unsigned _stklen = 0x3fff;	/* increase stack from 4K to 16K */
 	
 	/* Initialize, restore, and get the ball rolling.	-RAK-	*/
-	int main(int argc, char[] argv) {
+	int moria_main(int argc, char[] argv) {
 		int seed;
 		BooleanPointer generate = new BooleanPointer();
 		String p;
@@ -176,12 +178,14 @@ public class Main extends Applet {
 			case 'w':
 				Variable.to_be_wizard = true;
 				
-				if (Character.isDigit(argv[i + 2]))
+				if (Character.isDigit(argv[i + 2])) {
 					try {
 						seed = Integer.parseInt("" + argv[i + 2]);
 					} catch (NumberFormatException e) {
+						e.printStackTrace();
 						seed = 0;
 					}
+				}
 				break;
 			default:
 				System.out.println("Usage: moria [-norsw] [savefile]\n");

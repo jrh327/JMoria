@@ -60,23 +60,24 @@ public class Death {
 	/* Centers a string within a 31 character string		-JWT-	 */
 	public static String center_string(String centered_str, String in_str) {
 		int i, j;
+		StringBuilder centered = new StringBuilder(in_str.length());
 		
 		i = in_str.length();
 		j = 15 - i / 2;
 		
 		for (i = 0; i < j - 1; i++) {
-			centered_str = centered_str + '*';
+			centered.append('*');
 		}
 		if ((in_str.length() % 2) == 0) {
-			centered_str = centered_str + '*';
+			centered.append('*');
 		}
-		centered_str = centered_str + ' ' + in_str + ' ';
+		centered.append(' ').append(in_str).append(' ');
 		for (i = 0; i < j - 1; i++) {
-			centered_str = centered_str + '*';
+			centered.append('*');
 		}
 		
 		//centered_str = String.format("%*s%s%*s", j, "", in_str, 31 - i - j, "");
-		return centered_str;
+		return centered.toString();
 	}
 	
 	/* The following code is provided especially for systems which		-CJS-
@@ -312,7 +313,7 @@ public class Death {
 		IO.put_buffer("|            killed by            |", 15, 9);
 		p = Variable.died_from;
 		i = p.length();
-		p = p + ".";  /* add a trailing period */
+		p += ".";  /* add a trailing period */
 		str = String.format("| %s |", center_string (tmp_str, p));
 		IO.put_buffer(str, 16, 9);
 		p = p.substring(0, p.length() - 1);	 /* strip off the period */
@@ -328,7 +329,8 @@ public class Death {
 			IO.flush();
 			IO.put_buffer("(ESC to abort, return to print on screen, or file name)", 23, 0);
 			IO.put_buffer("Character record?", 22, 0);
-			if ((str = IO.get_string(22, 18, 60)).length() > 0) {
+			str = IO.get_string(22, 18, 60);
+			if (!str.isEmpty()) {
 				for (i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
 					Desc.known1(Treasure.inventory[i]);
 					Desc.known2(Treasure.inventory[i]);

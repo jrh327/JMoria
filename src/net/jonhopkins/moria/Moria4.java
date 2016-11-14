@@ -577,7 +577,7 @@ public class Moria4 {
 			query = IO.inkey();
 			if (query == 'r' || query == 'R') {
 				IO.save_screen();
-				query = (char)Recall.roff_recall(j);
+				query = Recall.roff_recall(j);
 				IO.restore_screen();
 			}
 		}
@@ -687,8 +687,7 @@ public class Moria4 {
 		
 		/* Using Bows,  slings,  or crossbows	*/
 		if (Treasure.inventory[Constants.INVEN_WIELD].tval == Constants.TV_BOW) {
-			switch(Treasure.inventory[Constants.INVEN_WIELD].p1)
-			{
+			switch(Treasure.inventory[Constants.INVEN_WIELD].p1) {
 			case 1:
 				if (i_ptr.tval == Constants.TV_SLING_AMMO) {	/* Sling and ammo */
 					tbth.value(Player.py.misc.bthb);
@@ -742,6 +741,8 @@ public class Moria4 {
 					tdam.value(tdam.value() * 4);
 					tdis.value(35);
 				}
+				break;
+			default:
 				break;
 			}
 		}
@@ -926,7 +927,7 @@ public class Moria4 {
 			} else {
 				m_name = Character.toUpperCase(m_name.charAt(0)) + m_name.substring(1);	/* Capitalize */
 				/* Can not stun Balrog */
-				avg_max_hp = ((c_ptr.cdefense & Constants.CD_MAX_HP) != 0 ? c_ptr.hd[0] * c_ptr.hd[1] : (c_ptr.hd[0] * (c_ptr.hd[1] + 1)) >> 1);
+				avg_max_hp = (((c_ptr.cdefense & Constants.CD_MAX_HP) != 0) ? c_ptr.hd[0] * c_ptr.hd[1] : (c_ptr.hd[0] * (c_ptr.hd[1] + 1)) >> 1);
 				if ((100 + Misc1.randint(400) + Misc1.randint(400)) > (m_ptr.hp + avg_max_hp)) {
 					m_ptr.stunned += Misc1.randint(3) + 1;
 					if (m_ptr.stunned > 24)	m_ptr.stunned = 24;

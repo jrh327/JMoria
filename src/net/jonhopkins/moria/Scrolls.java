@@ -23,7 +23,6 @@ package net.jonhopkins.moria;
 
 import net.jonhopkins.moria.types.IntPointer;
 import net.jonhopkins.moria.types.InvenType;
-import net.jonhopkins.moria.types.LongPointer;
 import net.jonhopkins.moria.types.PlayerMisc;
 
 public class Scrolls {
@@ -32,7 +31,7 @@ public class Scrolls {
 	
 	/* Scrolls for the reading				-RAK-	*/
 	public static void read_scroll() {
-		LongPointer i = new LongPointer();
+		IntPointer i = new IntPointer();
 		IntPointer j = new IntPointer(), k = new IntPointer(), item_val = new IntPointer(), y, x;
 		IntPointer ptr;
 		boolean enchant;

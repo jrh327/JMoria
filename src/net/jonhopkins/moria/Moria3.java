@@ -25,7 +25,6 @@ import net.jonhopkins.moria.types.CaveType;
 import net.jonhopkins.moria.types.CreatureType;
 import net.jonhopkins.moria.types.IntPointer;
 import net.jonhopkins.moria.types.InvenType;
-import net.jonhopkins.moria.types.LongPointer;
 import net.jonhopkins.moria.types.PlayerMisc;
 import net.jonhopkins.moria.types.MonsterType;
 import net.jonhopkins.moria.types.SpellType;
@@ -232,7 +231,7 @@ public class Moria3 {
 	 * returns 1 if choose a spell in book to cast
 	 * returns 0 if don't choose a spell, i.e. exit with an escape */
 	public static int cast_spell(String prompt, int item_val, IntPointer sn, IntPointer sc) {
-		LongPointer j;
+		IntPointer j;
 		int i, k;
 		int[] spell = new int[31];
 		int result, first_spell;
@@ -240,7 +239,7 @@ public class Moria3 {
 		
 		result = -1;
 		i = 0;
-		j = new LongPointer(Treasure.inventory[item_val].flags);
+		j = new IntPointer(Treasure.inventory[item_val].flags);
 		first_spell = Misc1.bit_pos(j);
 		/* set j again, since bit_pos modified it */
 		j.value(Treasure.inventory[item_val].flags & Player.spell_learned);
@@ -271,7 +270,8 @@ public class Moria3 {
 	/* sit there.						       */
 	public static void carry(int y, int x, boolean pickup) {
 		int locn, i;
-		String out_val, tmp_str;
+		String out_val;
+		StringBuilder tmp_str;
 		CaveType c_ptr;
 		InvenType i_ptr;
 		
@@ -283,7 +283,7 @@ public class Moria3 {
 			/* There's GOLD in them thar hills!      */
 			if (i == Constants.TV_GOLD) {
 				Player.py.misc.au += i_ptr.cost;
-				tmp_str = Desc.objdes(i_ptr, true);
+				tmp_str = new StringBuilder().append(Desc.objdes(i_ptr, true));
 				out_val = String.format("You have found %d gold pieces worth of %s", i_ptr.cost, tmp_str);
 				Misc3.prt_gold();
 				delete_object(y, x);
@@ -292,31 +292,37 @@ public class Moria3 {
 				if (Misc3.inven_check_num(i_ptr)) {	/* Too many objects?	    */
 					/* Okay,  pick it up      */
 					if (pickup && Variable.prompt_carry_flag.value()) {
-						tmp_str = Desc.objdes(i_ptr, true);
+						tmp_str = new StringBuilder().append(Desc.objdes(i_ptr, true));
 						/* change the period to a question mark */
-						tmp_str = tmp_str.substring(0, tmp_str.length() - 1) + "?";
-						out_val = String.format("Pick up %s", tmp_str);
+						tmp_str = new StringBuilder()
+								.append(tmp_str.substring(0, tmp_str.length() - 1))
+								.append('?');
+						out_val = String.format("Pick up %s",
+								tmp_str.toString());
 						pickup = IO.get_check(out_val);
 					}
 					/* Check to see if it will change the players speed. */
 					if (pickup && !Misc3.inven_check_weight(i_ptr)) {
-						tmp_str = Desc.objdes(i_ptr, true);
+						tmp_str = new StringBuilder().append(Desc.objdes(i_ptr, true));
 						/* change the period to a question mark */
-						tmp_str = tmp_str.substring(0, tmp_str.length() - 1) + "?";
-						out_val = String.format("Exceed your weight limit to pick up %s", tmp_str);
+						tmp_str = new StringBuilder()
+								.append(tmp_str.substring(0, tmp_str.length() - 1))
+								.append('?');
+						out_val = String.format("Exceed your weight limit to pick up %s",
+								tmp_str.toString());
 						pickup = IO.get_check(out_val);
 					}
 					/* Attempt to pick up an object.	       */
 					if (pickup) {
 						locn = Misc3.inven_carry(i_ptr);
-						tmp_str = Desc.objdes(Treasure.inventory[locn], true);
-						out_val = String.format("You have %s (%c)", tmp_str, locn + 'a');
+						tmp_str = new StringBuilder().append(Desc.objdes(Treasure.inventory[locn], true));
+						out_val = String.format("You have %s (%c)", tmp_str.toString(), locn + 'a');
 						IO.msg_print(out_val);
 						delete_object(y, x);
 					}
 				} else {
-					tmp_str = Desc.objdes(i_ptr, true);
-					out_val = String.format("You can't carry %s", tmp_str);
+					tmp_str = new StringBuilder().append(Desc.objdes(i_ptr, true));
+					out_val = String.format("You can't carry %s", tmp_str.toString());
 					IO.msg_print(out_val);
 				}
 			}
@@ -460,9 +466,9 @@ public class Moria3 {
 	/* based on flags set in the main creature record		 */
 	/* Returns a mask of bits from the given flags which indicates what the
 	 * monster is seen to have dropped.  This may be added to monster memory. */
-	public static long monster_death(int y, int x, long flags) {
+	public static int monster_death(int y, int x, long flags) {
 		int i, number;
-		long dump, res;
+		int dump, res;
 		
 		if ((flags & Constants.CM_CARRY_OBJ) != 0) {
 			i = 1;
@@ -530,13 +536,13 @@ public class Moria3 {
 	/* Decreases monsters hit points and deletes monster if needed.	*/
 	/* (Picking on my babies.)			       -RAK-   */
 	public static int mon_take_hit(int monptr, int dam) {
-		long i;
+		int i;
 		int new_exp, new_exp_frac;
 		MonsterType m_ptr;
 		PlayerMisc p_ptr;
 		CreatureType c_ptr;
 		int m_take_hit;
-		long tmp;
+		int tmp;
 		
 		m_ptr = Monsters.m_list[monptr];
 		m_ptr.hp -= dam;
@@ -1018,13 +1024,14 @@ public class Moria3 {
 				 * LIGHT_FLOOR or DARK_FLOOR */
 				found = false;
 				for (i = y - 1; i <= y + 1; i++) {
-					for (j = x - 1; j <= x + 1; j++)
+					for (j = x - 1; j <= x + 1; j++) {
 						if (Variable.cave[i][j].fval <= Constants.MAX_CAVE_ROOM) {
 							c_ptr.fval = Variable.cave[i][j].fval;
 							c_ptr.pl = Variable.cave[i][j].pl;
 							found = true;
 							break;
 						}
+					}
 				}
 				if (!found) {
 					c_ptr.fval = Constants.CORR_FLOOR;

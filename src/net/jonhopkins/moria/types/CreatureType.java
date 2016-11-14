@@ -30,12 +30,12 @@ public final class CreatureType {
 	/**
 	 * Bit field
 	 */
-	public long cmove;
+	public int cmove;
 	
 	/**
 	 * Creature spells
 	 */
-	public long spells;
+	public int spells;
 	
 	/**
 	 * Bit field
@@ -87,7 +87,7 @@ public final class CreatureType {
 	 */
 	public int level;
 	
-	public CreatureType(String name, long cmove, long spells, int cdefense,
+	public CreatureType(String name, int cmove, int spells, int cdefense,
 			int mexp, int sleep, int aaf, int ac, int speed, char cchar,
 			int hd[], int damage[], int level) {
 		this.name = name;

@@ -42,6 +42,7 @@ public class Files {
 		if (Variable.highscore_fp == null) {
 			System.err.printf("Can't open score file \"%s\"\n", Config.MORIA_TOP);
 			System.exit(1);
+			return;
 		}
 		/* can't leave it open, since this causes problems on networked PCs and VMS,
 		 * we DO want to check to make sure we can open the file, though */
@@ -176,6 +177,7 @@ public class Files {
 		try {
 			level = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
+			e.printStackTrace();
 			level = 0;
 		}
 		IO.prt("Produce how many objects?: ", 0, 0);
@@ -188,6 +190,7 @@ public class Files {
 		try {
 			nobj = Integer.parseInt(tmp_str);
 		} catch (NumberFormatException e) {
+			e.printStackTrace();
 			nobj = 1;
 		}
 		if ((nobj > 0) && (level > -1) && (level < 1201)) {
@@ -205,6 +208,7 @@ public class Files {
 						output = new BufferedWriter(new FileWriter(file1));
 					} catch (IOException e) {
 						IO.prt("Files.print_objects(): Failed to open file as BufferedWriter.", 0, 0);
+						e.printStackTrace();
 						return;
 					}
 					try {

@@ -22,26 +22,28 @@
 package net.jonhopkins.moria.types;
 
 public final class ClassType {
-	public ClassType(String _title, int _hd, int dis, int srh, int stl, int fos, int bth, int bthb, int sav,
-			int adj_str, int adj_int, int adj_wis, int adj_dex, int adj_con, int adj_chr, int _spell, int exp, int first_spell_level) {
-		title = _title;
-		adj_hd = _hd;
-		mdis = dis;
-		msrh = srh;
-		mstl = stl;
-		mfos = fos;
-		mbth = bth;
-		mbthb = bthb;
-		msav = sav;
-		madj_str = adj_str;
-		madj_int = adj_int;
-		madj_wis = adj_wis;
-		madj_dex = adj_dex;
-		madj_con = adj_con;
-		madj_chr = adj_chr;
-		spell = _spell;
-		m_exp = exp;
-		first_spell_lev = first_spell_level;
+	public ClassType(String title, int hd, int dis, int srh, int stl, int fos,
+			int bth, int bthb, int sav, int adj_str, int adj_int, int adj_wis,
+			int adj_dex, int adj_con, int adj_chr, int spell, int exp,
+			int first_spell_level) {
+		this.title = title;
+		this.adj_hd = hd;
+		this.mdis = dis;
+		this.msrh = srh;
+		this.mstl = stl;
+		this.mfos = fos;
+		this.mbth = bth;
+		this.mbthb = bthb;
+		this.msav = sav;
+		this.madj_str = adj_str;
+		this.madj_int = adj_int;
+		this.madj_wis = adj_wis;
+		this.madj_dex = adj_dex;
+		this.madj_con = adj_con;
+		this.madj_chr = adj_chr;
+		this.spell = spell;
+		this.m_exp = exp;
+		this.first_spell_lev = first_spell_level;
 	}
 	
 	/**

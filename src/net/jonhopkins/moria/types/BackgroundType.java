@@ -22,12 +22,12 @@
 package net.jonhopkins.moria.types;
 
 public final class BackgroundType {
-	public BackgroundType(String _info, int _roll, int _chart, int _next, int _bonus) {
-		info = _info;
-		roll = _roll;
-		chart = _chart;
-		next = _next;
-		bonus = _bonus;
+	public BackgroundType(String info, int roll, int chart, int next, int bonus) {
+		this.info = info;
+		this.roll = roll;
+		this.chart = chart;
+		this.next = next;
+		this.bonus = bonus;
 	}
 	
 

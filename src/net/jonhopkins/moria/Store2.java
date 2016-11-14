@@ -446,8 +446,9 @@ public class Store2 {
 				flag = false;
 				break;
 			}
-			for (p = 0; out_val.charAt(p) == ' '; p++) {
-				;
+			p = 0;
+			while (out_val.charAt(p) == ' ') {
+				p++;
 			}
 			if (out_val.charAt(p) == '+' || out_val.charAt(p) == '-') {
 				increment = true;
@@ -457,6 +458,7 @@ public class Store2 {
 					i = Integer.parseInt(out_val);
 				} catch (NumberFormatException e) {
 					System.err.println("Could not convert out_val to an integer in Store2.get_haggle()");
+					e.printStackTrace();
 					i = 0;
 				}
 				/* Don't accept a zero here.  Turn off increment if it was zero
@@ -475,6 +477,7 @@ public class Store2 {
 					i = Integer.parseInt(out_val);
 				} catch (NumberFormatException e) {
 					System.err.println("Could not convert out_val to an integer in Store2.get_haggle()");
+					e.printStackTrace();
 					i = 0;
 				}
 			}
@@ -1008,7 +1011,7 @@ public class Store2 {
 		last_item = -1;
 		for (counter = 0; counter < Treasure.inven_ctr; counter++) {
 			flag = store_buy(store_num, Treasure.inventory[counter].tval);
-			mask[counter] = (char)(flag ? 1 : 0);
+			mask[counter] = (flag ? (char)1 : (char)0);
 			if (flag) {
 				if (counter < first_item) {
 					first_item = counter;

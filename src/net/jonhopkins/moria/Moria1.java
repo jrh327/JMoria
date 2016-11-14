@@ -467,11 +467,12 @@ public class Moria1 {
 	/* Used to verify if this really is the item we wish to	 -CJS-
 	 * wear or read. */
 	public static boolean verify(String prompt, int item) {
-		String out_str, object;
+		String out_str;
+		StringBuilder object = new StringBuilder();
 		
-		object = Desc.objdes(Treasure.inventory[item], true);
-		object = object.substring(0, object.length() - 1).concat("?");	/* change the period to a question mark */
-		out_str = String.format("%s %s", prompt, object);
+		object.append(Desc.objdes(Treasure.inventory[item], true));
+		object.replace(object.length() - 1, object.length() - 1, "?");	/* change the period to a question mark */
+		out_str = String.format("%s %s", prompt, object.toString());
 		return IO.get_check(out_str);
 	}
 	
@@ -549,6 +550,8 @@ public class Moria1 {
 				scr_left = show_equip(Variable.show_weight_flag.value(), scr_left);
 				line = Treasure.equip_ctr;
 				break;
+			default:
+				break;
 			}
 			if (line >= scr_base) {
 				scr_base = line + 1;
@@ -568,7 +571,8 @@ public class Moria1 {
 		boolean selecting;
 		String prompt, swap, disp, string;
 		CharPointer which = new CharPointer(), query = new CharPointer();
-		String prt1, prt2;
+		StringBuilder prt1;
+		StringBuilder prt2;
 		InvenType i_ptr;
 		InvenType tmp_obj;
 		
@@ -672,9 +676,12 @@ public class Moria1 {
 				if (Treasure.inventory[Constants.INVEN_WIELD].tval == Constants.TV_NOTHING && Treasure.inventory[Constants.INVEN_AUX].tval == Constants.TV_NOTHING) {
 					IO.msg_print("But you are wielding no weapons.");
 				} else if ((Constants.TR_CURSED & Treasure.inventory[Constants.INVEN_WIELD].flags) != 0) {
-					prt1 = Desc.objdes(Treasure.inventory[Constants.INVEN_WIELD], false);
-					prt2 = String.format("The %s you are wielding appears to be cursed.", prt1);
-					IO.msg_print(prt2);
+					prt1 = new StringBuilder()
+							.append(Desc.objdes(Treasure.inventory[Constants.INVEN_WIELD], false));
+					prt2 = new StringBuilder()
+							.append(String.format("The %s you are wielding appears to be cursed.",
+									prt1.toString()));
+					IO.msg_print(prt2.toString());
 				} else {
 					Variable.free_turn_flag = false;
 					tmp_obj = Treasure.inventory[Constants.INVEN_AUX];
@@ -686,9 +693,10 @@ public class Moria1 {
 					py_bonuses(Treasure.inventory[Constants.INVEN_AUX], -1);	/* Subtract bonuses */
 					py_bonuses(Treasure.inventory[Constants.INVEN_WIELD], 1);	/* Add bonuses    */
 					if (Treasure.inventory[Constants.INVEN_WIELD].tval != Constants.TV_NOTHING) {
-						prt1 = "Primary weapon   : ";
-						prt2 = Desc.objdes(Treasure.inventory[Constants.INVEN_WIELD], true);
-						IO.msg_print(prt1.concat(prt2));
+						prt1 = new StringBuilder().append("Primary weapon   : ");
+						prt2 = new StringBuilder()
+								.append(Desc.objdes(Treasure.inventory[Constants.INVEN_WIELD], true));
+						IO.msg_print(prt1.append(prt2).toString());
 					} else {
 						IO.msg_print("No primary weapon.");
 					}
@@ -748,13 +756,14 @@ public class Moria1 {
 					} else {
 						disp = "";
 					}
-					prt1 = String.format("(%c-%c%s%s%s, space to break, ESC to exit) %s which one?",
+					prt1 = new StringBuilder()
+							.append(String.format("(%c-%c%s%s%s, space to break, ESC to exit) %s which one?",
 							from + 'a', to + 'a', disp, swap, 
 							((command == 'w' || command == 'd') ? ", 0-9" : ""),
-							prompt);
+							prompt));
 					
 					/* Abort everything. */
-					if (!IO.get_com(prt1, which)) {
+					if (!IO.get_com(prt1.toString(), which)) {
 						selecting = false;
 						which.value(Constants.ESCAPE);
 					
@@ -793,10 +802,11 @@ public class Moria1 {
 									m <= to && ((Treasure.inventory[m].inscrip.charAt(0) != which.value())
 											|| (Treasure.inventory[m].inscrip.length() > 1));
 									m++);
-							if (m <= to)
+							if (m <= to) {
 								item = m;
-							else 
+							} else {
 								item = -1;
+							}
 						}
 						else if ((which.value() >= 'A') && (which.value() <= 'Z')) {
 							item = which.value() - 'A';
@@ -911,14 +921,16 @@ public class Moria1 {
 								}
 								if (item >= 0 && Treasure.inventory[slot].tval != Constants.TV_NOTHING) {
 									if ((Constants.TR_CURSED & Treasure.inventory[slot].flags) != 0) {
-										prt1 = Desc.objdes(Treasure.inventory[slot], false);
-										prt2 = String.format("The %s you are ", prt1);
+										prt1 = new StringBuilder()
+												.append(Desc.objdes(Treasure.inventory[slot], false));
+										prt2 = new StringBuilder()
+												.append(String.format("The %s you are ", prt1.toString()));
 										if (slot == Constants.INVEN_HEAD) {
-											prt2 = prt2.concat("wielding ");
+											prt2.append("wielding ");
 										} else {
-											prt2 = prt2.concat("wearing ");
+											prt2.append("wearing ");
 										}
-										IO.msg_print(prt2.concat("appears to be cursed."));
+										IO.msg_print(prt2.append("appears to be cursed.").toString());
 										item = -1;
 									} else if (Treasure.inventory[item].subval == Constants.ITEM_GROUP_MIN && Treasure.inventory[item].number > 1 && !Misc3.inven_check_num(Treasure.inventory[slot])) {
 										/* this can happen if try to wield a torch, and
@@ -970,7 +982,7 @@ public class Moria1 {
 									} else {
 										string = "You are wearing";
 									}
-									prt2 = Desc.objdes(i_ptr, true);
+									prt2 = new StringBuilder().append(Desc.objdes(i_ptr, true));
 									/* Get the right equipment letter. */
 									tmp = Constants.INVEN_WIELD;
 									item = 0;
@@ -980,8 +992,9 @@ public class Moria1 {
 										}
 									}
 									
-									prt1 = String.format("%s %s (%c)", string, prt2, 'a' + item);
-									IO.msg_print(prt1);
+									prt1 = new StringBuilder()
+											.append(String.format("%s %s (%c)", string, prt2, 'a' + item));
+									IO.msg_print(prt1.toString());
 									/* this is a new weapon, so clear the heavy flag */
 									if (slot == Constants.INVEN_WIELD) {
 										Variable.weapon_heavy = false;
@@ -996,11 +1009,18 @@ public class Moria1 {
 								}
 							} else {	/* command == 'd' */
 								if (Treasure.inventory[item].number > 1) {
-									prt1 = Desc.objdes(Treasure.inventory[item], true);
-									prt1 = prt1.substring(0, prt1.length() - 1).concat("?");
-									prt2 = String.format("Drop all %s [y/n]", prt1);
-									prt1 = prt1.substring(0, prt1.length() - 1).concat(".");
-									IO.prt(prt2, 0, 0);
+									prt1 = new StringBuilder()
+											.append(Desc.objdes(Treasure.inventory[item], true));
+									prt1 = new StringBuilder()
+											.append(prt1.substring(0, prt1.length() - 1))
+											.append('?');
+									prt2 = new StringBuilder()
+											.append(String.format("Drop all %s [y/n]",
+													prt1.toString()));
+									prt1 = new StringBuilder()
+											.append(prt1.substring(0, prt1.length() - 1))
+											.append('.');
+									IO.prt(prt2.toString(), 0, 0);
 									query.value(IO.inkey());
 									if (query.value()!= 'y' && query.value()!= 'n') {
 										if (query.value()!= Constants.ESCAPE) {
@@ -1016,7 +1036,7 @@ public class Moria1 {
 								}
 								if (item >= 0) {
 									Variable.free_turn_flag = false;    /* Player turn   */
-									Misc3.inven_drop(item, query.value()== 'y');
+									Misc3.inven_drop(item, query.value() == 'y');
 									Misc3.check_strength();
 								}
 								selecting = false;
@@ -1050,13 +1070,20 @@ public class Moria1 {
 				/* Put an appropriate header. */
 				if (scr_state == INVEN_SCR) {
 					if (!Variable.show_weight_flag.value()|| Treasure.inven_ctr == 0) {
-						prt1 = String.format("You are carrying %d.%d pounds. In your pack there is %s",
-								Treasure.inven_weight / 10, Treasure.inven_weight % 10, (Treasure.inven_ctr == 0 ? "nothing." : "-"));
+						prt1 = new StringBuilder()
+								.append(String.format("You are carrying %d.%d pounds. In your pack there is %s",
+										Treasure.inven_weight / 10,
+										Treasure.inven_weight % 10,
+										((Treasure.inven_ctr == 0) ? "nothing." : "-")));
 					} else {
-						prt1 = String.format("You are carrying %d.%d pounds. Your capacity is %d.%d pounds. %s",
-								Treasure.inven_weight / 10, Treasure.inven_weight % 10, Misc3.weight_limit() / 10, Misc3.weight_limit() % 10, "In your pack is -");
+						prt1 = new StringBuilder()
+								.append(String.format("You are carrying %d.%d pounds. Your capacity is %d.%d pounds. %s",
+										Treasure.inven_weight / 10,
+										Treasure.inven_weight % 10,
+										Misc3.weight_limit() / 10, Misc3.weight_limit() % 10,
+										"In your pack is -"));
 					}
-					IO.prt(prt1, 0, 0);
+					IO.prt(prt1.toString(), 0, 0);
 				} else if (scr_state == WEAR_SCR) {
 					if (wear_high < wear_low) {
 						IO.prt("You have nothing you could wield.", 0, 0);
@@ -1121,23 +1148,22 @@ public class Moria1 {
 				if (full) {
 					out_val = String.format(
 							"(%s: %c-%c,%s%s / for %s, or ESC) %s",
-							(i_scr > 0 ? "Inven" : "Equip"), i + 'a', j + 'a',
-							(i_scr > 0 ? " 0-9," : ""),
-							(redraw ? "" : " * to see,"),
-							(i_scr > 0 ? "Equip" : "Inven"), pmt);
+							((i_scr > 0) ? "Inven" : "Equip"), i + 'a', j + 'a',
+							((i_scr > 0) ? " 0-9," : ""),
+							((redraw) ? "" : " * to see,"),
+							((i_scr > 0) ? "Equip" : "Inven"), pmt);
 				} else {
 					out_val = String.format(
 							"(Items %c-%c,%s%s ESC to exit) %s", 
 							i + 'a', j + 'a',			   
-							(i_scr > 0 ? " 0-9," : ""),
-							(redraw ? "" : " * for inventory list,"), pmt);
+							((i_scr > 0) ? " 0-9," : ""),
+							((redraw) ? "" : " * for inventory list,"), pmt);
 				}
 				test_flag = false;
 				IO.prt(out_val, 0, 0);
 				do {
 					which = IO.inkey();
-					switch(which)
-					{
+					switch(which) {
 					case Constants.ESCAPE:
 						test_flag = true;
 						Variable.free_turn_flag = true;
@@ -1147,7 +1173,7 @@ public class Moria1 {
 						if (full) {
 							if (i_scr > 0) {
 								if (Treasure.equip_ctr == 0) {
-									IO.prt("But you're not using anything -more-",0,0);
+									IO.prt("But you're not using anything -more-", 0, 0);
 									IO.inkey();
 								} else {
 									i_scr = 0;
@@ -1164,7 +1190,7 @@ public class Moria1 {
 								IO.prt(out_val, 0, 0);
 							} else {
 								if (Treasure.inven_ctr == 0) {
-									IO.prt("But you're not carrying anything -more-",0,0);
+									IO.prt("But you're not carrying anything -more-", 0, 0);
 									IO.inkey();
 								} else {
 									i_scr = 1;
@@ -1173,7 +1199,7 @@ public class Moria1 {
 										j = Treasure.inven_ctr;
 										while (j < Treasure.equip_ctr) {
 											j++;
-											IO.erase_line (j, 0);
+											IO.erase_line(j, 0);
 										}
 									}
 									j = Treasure.inven_ctr - 1;
@@ -1208,7 +1234,7 @@ public class Moria1 {
 						} else {
 							com_val.value(which - 'a');
 						}
-						if ((com_val.value()>= i) && (com_val.value()<= j) && (mask.equals("") || mask.length() > com_val.value())) {
+						if ((com_val.value() >= i) && (com_val.value() <= j) && (mask.isEmpty() || mask.length() > com_val.value())) {
 							if (i_scr == 0) {
 								i = 21;
 								j = com_val.value();
@@ -1267,8 +1293,7 @@ public class Moria1 {
 	
 	/* map rogue_like direction commands into numbers */
 	public static char map_roguedir(char comval) {
-		switch(comval)
-		{
+		switch(comval) {
 		case Constants.KEY_LEFT:
 		case 'h':
 			comval = '4';
@@ -1299,6 +1324,8 @@ public class Moria1 {
 			break;
 		case '.':
 			comval = '5';
+			break;
+		default:
 			break;
 		}
 		return comval;
@@ -1404,8 +1431,9 @@ public class Moria1 {
 	
 	/* Lights up given location				-RAK-	*/
 	public static void lite_spot(int y, int x) {
-		if (Misc1.panel_contains(y, x))
+		if (Misc1.panel_contains(y, x)) {
 			IO.print(Misc1.loc_symbol(y, x), y, x);
+		}
 	}
 	
 	/* Normal movement					*/
@@ -1556,6 +1584,7 @@ public class Moria1 {
 						rest_num = Integer.parseInt(rest_str);
 					} catch (NumberFormatException e) {
 						System.err.println("Could not convert " + rest_str + " to an integer in Moria1.rest()");
+						e.printStackTrace();
 						rest_num = 0;
 					}
 				}
@@ -1599,11 +1628,7 @@ public class Moria1 {
 		/* pth could be less than 0 if player wielding weapon too heavy for him */
 		/* always miss 1 out of 20, always hit 1 out of 20 */
 		die = Misc1.randint(20);
-		if ((die != 1) && ((die == 20) || ((i > 0) && (Misc1.randint (i) > ac)))) {	/* normal hit */
-			return true;
-		} else {
-			return false;
-		}
+		return (die != 1) && ((die == 20) || ((i > 0) && (Misc1.randint (i) > ac)));	/* normal hit */
 	}
 	
 	/* Decreases players hit points and sets death flag if necessary*/

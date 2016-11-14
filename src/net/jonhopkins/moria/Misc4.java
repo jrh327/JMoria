@@ -49,7 +49,8 @@ public class Misc4 {
 					j = 12;
 				}
 				IO.prt(out_val, 0, 0);
-				if (!(out_val = IO.get_string(0, out_val.length(), j)).equals("")) {
+				out_val = IO.get_string(0, out_val.length(), j);
+				if (!out_val.isEmpty()) {
 					inscribe(Treasure.inventory[item_val.value()], out_val);
 				}
 			}

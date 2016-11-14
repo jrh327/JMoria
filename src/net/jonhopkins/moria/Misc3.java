@@ -187,11 +187,17 @@ public class Misc3 {
 					|| (Variable.cave[i][j].tptr != 0)
 					|| (i == Player.char_row && j == Player.char_col));
 			if (typ < 4) {	/* typ == 2 not used, used to be visible traps */
-				if (typ == 1) place_trap(i, j, Misc1.randint(Constants.MAX_TRAP) - 1); /* typ == 1 */
-				else	      place_rubble(i, j); /* typ == 3 */
+				if (typ == 1) {
+					place_trap(i, j, Misc1.randint(Constants.MAX_TRAP) - 1); /* typ == 1 */
+				} else {
+					place_rubble(i, j); /* typ == 3 */
+				}
 			} else {
-				if (typ == 4) place_gold(i, j); /* typ == 4 */
-				else	      place_object(i, j, false); /* typ == 5 */
+				if (typ == 4) {
+					place_gold(i, j); /* typ == 4 */
+				} else {
+					place_object(i, j, false); /* typ == 5 */
+				}
 			}
 		}
 	}
@@ -374,21 +380,21 @@ public class Misc3 {
 		
 		value = Player.py.stats.use_stat[stat];
 		if (value > 117) {
-			return(7);
+			return 7;
 		} else if (value > 107) {
-			return(6);
+			return 6;
 		} else if (value > 87) {
-			return(5);
+			return 5;
 		} else if (value > 67) {
-			return(4);
+			return 4;
 		} else if (value > 17) {
-			return(3);
+			return 3;
 		} else if (value > 14) {
-			return(2);
+			return 2;
 		} else if (value > 7) {
-			return(1);
+			return 1;
 		} else {
-			return(0);
+			return 0;
 		}
 	}
 	
@@ -403,35 +409,35 @@ public class Misc3 {
 		
 		charisma = Player.py.stats.use_stat[Constants.A_CHR];
 		if (charisma > 117) {
-			return(90);
+			return 90;
 		} else if (charisma > 107) {
-			return(92);
+			return 92;
 		} else if (charisma > 87) {
-			return(94);
+			return 94;
 		} else if (charisma > 67) {
-			return(96);
+			return 96;
 		} else if (charisma > 18) {
-			return(98);
+			return 98;
 		} else {
 			switch(charisma)
 			{
-			case 18:	return(100);
-			case 17:	return(101);
-			case 16:	return(102);
-			case 15:	return(103);
-			case 14:	return(104);
-			case 13:	return(106);
-			case 12:	return(108);
-			case 11:	return(110);
-			case 10:	return(112);
-			case 9:  	return(114);
-			case 8:  	return(116);
-			case 7:  	return(118);
-			case 6:  	return(120);
-			case 5:  	return(122);
-			case 4:  	return(125);
-			case 3:  	return(130);
-			default: 	return(100);
+			case 18:	return 100;
+			case 17:	return 101;
+			case 16:	return 102;
+			case 15:	return 103;
+			case 14:	return 104;
+			case 13:	return 106;
+			case 12:	return 108;
+			case 11:	return 110;
+			case 10:	return 112;
+			case 9:  	return 114;
+			case 8:  	return 116;
+			case 7:  	return 118;
+			case 6:  	return 120;
+			case 5:  	return 122;
+			case 4:  	return 125;
+			case 3:  	return 130;
+			default: 	return 100;
 			}
 		}
 	}
@@ -446,17 +452,17 @@ public class Misc3 {
 		
 		con = Player.py.stats.use_stat[Constants.A_CON];
 		if (con < 7) {
-			return(con - 7);
+			return con - 7;
 		} else if (con < 17) {
-			return(0);
+			return 0;
 		} else if (con ==  17) {
-			return(1);
+			return 1;
 		} else if (con <  94) {
-			return(2);
+			return 2;
 		} else if (con < 117) {
-			return(3);
+			return 3;
 		} else {
-			return(4);
+			return 4;
 		}
 	}
 	
@@ -848,24 +854,45 @@ public class Misc3 {
 		int total, stat;
 		
 		stat = Player.py.stats.use_stat[Constants.A_DEX];
-		if		(stat <   4)	total = -3;
-		else if (stat <   6)	total = -2;
-		else if (stat <   8)	total = -1;
-		else if (stat <  16)	total =	 0;
-		else if (stat <  17)	total =	 1;
-		else if (stat <  18)	total =	 2;
-		else if (stat <  69)	total =	 3;
-		else if (stat < 118)	total =	 4;
-		else					total =	 5;
+		if (stat < 4) {
+			total = -3;
+		} else if (stat < 6) {
+			total = -2;
+		} else if (stat < 8) {
+			total = -1;
+		} else if (stat < 16) {
+			total = 0;
+		} else if (stat < 17) {
+			total = 1;
+		} else if (stat < 18) {
+			total = 2;
+		} else if (stat < 69) {
+			total = 3;
+		} else if (stat < 118) {
+			total = 4;
+		} else {
+			total = 5;
+		}
+		
 		stat = Player.py.stats.use_stat[Constants.A_STR];
-		if		(stat <   4)	total -= 3;
-		else if (stat <   5)	total -= 2;
-		else if (stat <   7)	total -= 1;
-		else if (stat <  18)	total -= 0;
-		else if (stat <  94)	total += 1;
-		else if (stat < 109)	total += 2;
-		else if (stat < 117)	total += 3;
-		else					total += 4;
+		if (stat < 4) {
+			total -= 3;
+		} else if (stat < 5) {
+			total -= 2;
+		} else if (stat < 7) {
+			total -= 1;
+		} else if (stat < 18) {
+			total -= 0;
+		} else if (stat < 94) {
+			total += 1;
+		} else if (stat < 109) {
+			total += 2;
+		} else if (stat < 117) {
+			total += 3;
+		} else {
+			total += 4;
+		}
+		
 		return total;
 	}
 	
@@ -876,16 +903,27 @@ public class Misc3 {
 		int stat;
 		
 		stat = Player.py.stats.use_stat[Constants.A_DEX];
-		if		(stat <   4)	return -4;
-		else if (stat ==  4)	return -3;
-		else if (stat ==  5)	return -2;
-		else if (stat ==  6)	return -1;
-		else if (stat <  15)	return  0;
-		else if (stat <  18)	return  1;
-		else if (stat <  59)	return  2;
-		else if (stat <  94)	return  3;
-		else if (stat < 117)	return  4;
-		else					return  5;
+		if (stat < 4) {
+			return -4;
+		} else if (stat == 4) {
+			return -3;
+		} else if (stat == 5) {
+			return -2;
+		} else if (stat == 6) {
+			return -1;
+		} else if (stat < 15) {
+			return 0;
+		} else if (stat < 18) {
+			return 1;
+		} else if (stat < 59) {
+			return 2;
+		} else if (stat < 94) {
+			return 3;
+		} else if (stat < 117) {
+			return 4;
+		} else {
+			return 5;
+		}
 	}
 	
 	/**
@@ -895,18 +933,31 @@ public class Misc3 {
 		int stat;
 		
 		stat = Player.py.stats.use_stat[Constants.A_DEX];
-		if		(stat <   4)	return -8;
-		else if (stat ==  4)	return -6;
-		else if (stat ==  5)	return -4;
-		else if (stat ==  6)	return -2;
-		else if (stat ==  7)	return -1;
-		else if (stat <  13)	return  0;
-		else if (stat <  16)	return  1;
-		else if (stat <  18)	return  2;
-		else if (stat <  59)	return  4;
-		else if (stat <  94)	return  5;
-		else if (stat < 117)	return  6;
-		else					return  8;
+		if (stat < 4) {
+			return -8;
+		} else if (stat == 4) {
+			return -6;
+		} else if (stat == 5) {
+			return -4;
+		} else if (stat == 6) {
+			return -2;
+		} else if (stat == 7) {
+			return -1;
+		} else if (stat < 13) {
+			return  0;
+		} else if (stat < 16) {
+			return  1;
+		} else if (stat < 18) {
+			return  2;
+		} else if (stat < 59) {
+			return  4;
+		} else if (stat < 94) {
+			return  5;
+		} else if (stat < 117) {
+			return  6;
+		} else {
+			return  8;
+		}
 	}
 	
 	/**
@@ -916,15 +967,25 @@ public class Misc3 {
 		int stat;
 		
 		stat = Player.py.stats.use_stat[Constants.A_STR];
-		if		(stat <   4)	return -2;
-		else if (stat <   5)	return -1;
-		else if (stat <  16)	return  0;
-		else if (stat <  17)	return  1;
-		else if (stat <  18)	return  2;
-		else if (stat <  94)	return  3;
-		else if (stat < 109)	return  4;
-		else if (stat < 117)	return  5;
-		else					return  6;
+		if (stat < 4) {
+			return -2;
+		} else if (stat < 5) {
+			return -1;
+		} else if (stat < 16) {
+			return  0;
+		} else if (stat < 17) {
+			return  1;
+		} else if (stat < 18) {
+			return  2;
+		} else if (stat < 94) {
+			return  3;
+		} else if (stat < 109) {
+			return  4;
+		} else if (stat < 117) {
+			return  5;
+		} else {
+			return  6;
+		}
 	}
 	
 	/**
@@ -1248,8 +1309,9 @@ public class Misc3 {
 	public static void take_one_item(InvenType s_ptr, InvenType i_ptr) {
 		i_ptr.copyInto(s_ptr);
 		if ((s_ptr.number > 1) && (s_ptr.subval >= Constants.ITEM_SINGLE_STACK_MIN)
-				&& (s_ptr.subval <= Constants.ITEM_SINGLE_STACK_MAX))
+				&& (s_ptr.subval <= Constants.ITEM_SINGLE_STACK_MAX)) {
 			s_ptr.number = 1;
+		}
 	}
 	
 	/**
@@ -1398,11 +1460,7 @@ public class Misc3 {
 			i = 0;
 		}
 		
-		if (Variable.pack_heavy != i) {
-			return false;
-		} else {
-			return true;
-		}
+		return Variable.pack_heavy == i;
 	}
 	
 	/**
@@ -1538,7 +1596,7 @@ public class Misc3 {
 		} else {
 			col = 31;
 		}
-		offset = (Player.Class[Player.py.misc.pclass].spell == Constants.MAGE ? Constants.SPELL_OFFSET : Constants.PRAYER_OFFSET);
+		offset = ((Player.Class[Player.py.misc.pclass].spell == Constants.MAGE) ? Constants.SPELL_OFFSET : Constants.PRAYER_OFFSET);
 		IO.erase_line(1, col);
 		IO.put_buffer("Name", 1, col + 5);
 		IO.put_buffer("Lv Mana Fail", 1, col + 35);
@@ -1585,7 +1643,7 @@ public class Misc3 {
 		flag = false;
 		out_str = String.format("(Spells %c-%c, *=List, <ESCAPE>=exit) %s", spell[0] + 'a' - first_spell, spell[num - 1] + 'a' - first_spell, prompt);
 		redraw = false;
-		offset = (Player.Class[Player.py.misc.pclass].spell == Constants.MAGE ?
+		offset = ((Player.Class[Player.py.misc.pclass].spell == Constants.MAGE) ?
 				Constants.SPELL_OFFSET : Constants.PRAYER_OFFSET);
 		while (!flag && IO.get_com(out_str, choice)) {
 			if (Character.isUpperCase(choice.value())) {
@@ -1634,7 +1692,7 @@ public class Misc3 {
 				IO.bell();
 			}
 			if (sn.value() == -2) {
-				tmp_str = String.format("You don't know that %s.", (offset == Constants.SPELL_OFFSET ? "spell" : "prayer"));
+				tmp_str = String.format("You don't know that %s.", ((offset == Constants.SPELL_OFFSET) ? "spell" : "prayer"));
 				IO.msg_print(tmp_str);
 			}
 		}
@@ -1659,8 +1717,8 @@ public class Misc3 {
 	 */
 	public static void calc_spells(int stat) {
 		int i;
-		long mask;
-		long spell_flag;
+		int mask;
+		int spell_flag;
 		int j, offset;
 		int num_allowed = 0, new_spells, num_known, levels;
 		String tmp_str;
@@ -1679,7 +1737,7 @@ public class Misc3 {
 	    }
 		
 		/* check to see if know any spells greater than level, eliminate them */
-		for (i = 31, mask = 0x80000000L; mask != 0; mask >>= 1, i--) {
+		for (i = 31, mask = 0x80000000; mask != 0; mask >>= 1, i--) {
 			if ((mask & Player.spell_learned) != 0) {
 				if (msp_ptr[i].slevel > p_ptr.lev) {
 					Player.spell_learned &= ~mask;
@@ -1694,13 +1752,13 @@ public class Misc3 {
 		
 		/* calc number of spells allowed */
 		levels = p_ptr.lev - Player.Class[p_ptr.pclass].first_spell_lev + 1;
-		switch(stat_adj(stat))
-		{
+		switch(stat_adj(stat)) {
 		case 0:			num_allowed = 0; break;
 		case 1: case 2: case 3: num_allowed = 1 * levels; break;
 		case 4: case 5: num_allowed = 3 * levels / 2; break;
 		case 6:		    num_allowed = 2 * levels; break;
 		case 7:		    num_allowed = 5 * levels / 2; break;
+		default: break;
 		}
 		
 		num_known = 0;
@@ -1722,7 +1780,7 @@ public class Misc3 {
 				if (j == 99) {
 					mask = 0x0;
 				} else {
-					mask = 1L << j;
+					mask = 1 << j;
 				}
 				if ((mask & Player.spell_forgotten) != 0) {
 					if (msp_ptr[j].slevel <= p_ptr.lev) {
@@ -1741,7 +1799,7 @@ public class Misc3 {
 				/* determine which spells player can learn */
 				/* must check all spells here, in gain_spell() we actually check
 				 * if the books are present */
-				spell_flag = 0x7FFFFFFFL & ~Player.spell_learned;
+				spell_flag = 0x7FFFFFFF & ~Player.spell_learned;
 				
 				mask = 0x1;
 				i = 0;
@@ -1769,7 +1827,7 @@ public class Misc3 {
 				if (j == 99) {
 					mask = 0x0;
 				} else {
-					mask = 1L << j;
+					mask = 1 << j;
 				}
 				
 				if ((mask & Player.spell_learned) != 0) {
@@ -1845,7 +1903,7 @@ public class Misc3 {
 		}
 		
 		if (new_spells == 0) {
-			tmp_str = String.format("You can't learn any new %ss!", (stat == Constants.A_INT ? "spell" : "prayer"));
+			tmp_str = String.format("You can't learn any new %ss!", ((stat == Constants.A_INT) ? "spell" : "prayer"));
 			IO.msg_print(tmp_str);
 			Variable.free_turn_flag = true;
 		} else {
@@ -1882,9 +1940,7 @@ public class Misc3 {
 				diff_spells = new_spells - i;
 				new_spells = i;
 			}
-			if (new_spells == 0)
-				;
-			else if (stat == Constants.A_INT) {
+			if (new_spells != 0 && stat == Constants.A_INT) {
 				/* get to choose which mage spells will be learned */
 				IO.save_screen();
 				print_spells (spells, i, false, -1);
@@ -2209,20 +2265,37 @@ public class Misc3 {
 			return 1;
 		} else {
 			wtohit.value(0);
-			if      (d <  10)	dex_index = 0;
-			else if (d <  19)	dex_index = 1;
-			else if (d <  68)	dex_index = 2;
-			else if (d < 108)	dex_index = 3;
-			else if (d < 118)	dex_index = 4;
-			else				dex_index = 5;
+			if (d < 10) {
+				dex_index = 0;
+			} else if (d < 19) {
+				dex_index = 1;
+			} else if (d < 68) {
+				dex_index = 2;
+			} else if (d < 108) {
+				dex_index = 3;
+			} else if (d < 118) {
+				dex_index = 4;
+			} else {
+				dex_index = 5;
+			}
+			
 			adj_weight = (s * 10 / weight);
-			if      (adj_weight < 2)	str_index = 0;
-			else if (adj_weight < 3)	str_index = 1;
-			else if (adj_weight < 4)	str_index = 2;
-			else if (adj_weight < 5)	str_index = 3;
-			else if (adj_weight < 7)	str_index = 4;
-			else if (adj_weight < 9)	str_index = 5;
-			else						str_index = 6;
+			if (adj_weight < 2) {
+				str_index = 0;
+			} else if (adj_weight < 3) {
+				str_index = 1;
+			} else if (adj_weight < 4) {
+				str_index = 2;
+			} else if (adj_weight < 5) {
+				str_index = 3;
+			} else if (adj_weight < 7) {
+				str_index = 4;
+			} else if (adj_weight < 9) {
+				str_index = 5;
+			} else {
+				str_index = 6;
+			}
+			
 			return Tables.blows_table[str_index][dex_index];
 		}
 	}
@@ -2387,11 +2460,7 @@ public class Misc3 {
 		/* MPW C couldn't handle the expression, so split it into two parts */
 		short temp = Player.class_level_adj[Player.py.misc.pclass][Constants.CLA_SAVE];
 
-		if (Misc1.randint(100) <= (Player.py.misc.save + stat_adj(Constants.A_WIS) + (temp * Player.py.misc.lev / 3))) {
-			return true;
-		} else {
-			return false;
-		}
+		return Misc1.randint(100) <= (Player.py.misc.save + stat_adj(Constants.A_WIS) + (temp * Player.py.misc.lev / 3));
 	}
 	
 	/**
