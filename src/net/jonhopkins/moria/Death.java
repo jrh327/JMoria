@@ -58,7 +58,7 @@ public class Death {
 	}
 	
 	/* Centers a string within a 31 character string		-JWT-	 */
-	public static String center_string(String centered_str, String in_str) {
+	public static String centerString(String centered_str, String in_str) {
 		int i, j;
 		StringBuilder centered = new StringBuilder(in_str.length());
 		
@@ -90,7 +90,7 @@ public class Death {
 
 	/* An flock HACK.  LOCK_SH and LOCK_EX are not distinguished.  DO NOT release
 	 * a lock which you failed to set!  ALWAYS release a lock you set! */
-	private static int flock(int f, int l) {
+	private static int lockFile(int f, int l) {
 		Stats sbuf;
 /*
 		char lockname[80];
@@ -126,7 +126,7 @@ public class Death {
 		return 0;
 	}
 	
-	public static void display_scores(boolean show_player) {
+	public static void displayScores(boolean show_player) {
 /*
 		int i, rank;
 		High_scores score;
@@ -202,7 +202,7 @@ public class Death {
 */
 	}
 	
-	public static boolean duplicate_character () {
+	public static boolean isDuplicateCharacter() {
 		/* Only check for duplicate characters under unix and VMS.  */
 /*
 		High_scores score;
@@ -262,33 +262,33 @@ public class Death {
 	}
 	
 	/* Prints the gravestone of the character		-RAK-	 */
-	private static void print_tomb() {
+	private static void printTomb() {
 		String str, tmp_str = "";
 		int i;
 		String day;
 		String p;
 		
-		IO.clear_screen();
-		IO.put_buffer("_______________________", 1, 15);
-		IO.put_buffer("/", 2, 14);
-		IO.put_buffer("\\         ___", 2, 38);
-		IO.put_buffer("/", 3, 13);
-		IO.put_buffer("\\ ___   /   \\      ___", 3, 39);
-		IO.put_buffer("/            RIP            \\   \\  :   :     /   \\", 4, 12);
-		IO.put_buffer("/", 5, 11);
-		IO.put_buffer("\\  : _;,,,;_    :   :", 5, 41);
-		str = String.format("/%s\\,;_          _;,,,;_", center_string(tmp_str, Player.py.misc.name));
-		IO.put_buffer(str, 6, 10);
-		IO.put_buffer("|               the               |   ___", 7, 9);
+		IO.clearScreen();
+		IO.putBuffer("_______________________", 1, 15);
+		IO.putBuffer("/", 2, 14);
+		IO.putBuffer("\\         ___", 2, 38);
+		IO.putBuffer("/", 3, 13);
+		IO.putBuffer("\\ ___   /   \\      ___", 3, 39);
+		IO.putBuffer("/            RIP            \\   \\  :   :     /   \\", 4, 12);
+		IO.putBuffer("/", 5, 11);
+		IO.putBuffer("\\  : _;,,,;_    :   :", 5, 41);
+		str = String.format("/%s\\,;_          _;,,,;_", centerString(tmp_str, Player.py.misc.name));
+		IO.putBuffer(str, 6, 10);
+		IO.putBuffer("|               the               |   ___", 7, 9);
 		if (!Variable.total_winner) {
-			p = Misc3.title_string();
+			p = Misc3.getPlayerTitle();
 		} else {
 			p = "Magnificent";
 		}
-		str = String.format("| %s |  /   \\", center_string(tmp_str, p));
-		IO.put_buffer(str, 8, 9);
-		IO.put_buffer("|", 9, 9);
-		IO.put_buffer("|  :   :", 9, 43);
+		str = String.format("| %s |  /   \\", centerString(tmp_str, p));
+		IO.putBuffer(str, 8, 9);
+		IO.putBuffer("|", 9, 9);
+		IO.putBuffer("|  :   :", 9, 43);
 		if (!Variable.total_winner) {
 			p = Player.Class[Player.py.misc.pclass].title;
 		} else if (Player.py.misc.male) {
@@ -296,63 +296,63 @@ public class Death {
 		} else {
 			p = "*Queen*";
 		}
-		str = String.format("| %s | _;,,,;_   ____", center_string(tmp_str, p));
-		IO.put_buffer (str, 10, 9);
+		str = String.format("| %s | _;,,,;_   ____", centerString(tmp_str, p));
+		IO.putBuffer (str, 10, 9);
 		str = String.format("Level : %d", Player.py.misc.lev);
-		str = String.format("| %s |          /    \\", center_string(tmp_str, str));
-		IO.put_buffer (str, 11, 9);
+		str = String.format("| %s |          /    \\", centerString(tmp_str, str));
+		IO.putBuffer (str, 11, 9);
 		str = String.format("%d Exp", Player.py.misc.exp);
-		str = String.format("| %s |          :    :", center_string(tmp_str, str));
-		IO.put_buffer (str, 12, 9);
+		str = String.format("| %s |          :    :", centerString(tmp_str, str));
+		IO.putBuffer (str, 12, 9);
 		str = String.format("%d Au", Player.py.misc.au);
-		str = String.format("| %s |          :    :", center_string(tmp_str, str));
-		IO.put_buffer (str, 13, 9);
+		str = String.format("| %s |          :    :", centerString(tmp_str, str));
+		IO.putBuffer (str, 13, 9);
 		str = String.format("Died on Level : %d", Variable.dun_level);
-		str = String.format("| %s |         _;,,,,;_", center_string(tmp_str, str));
-		IO.put_buffer(str, 14, 9);
-		IO.put_buffer("|            killed by            |", 15, 9);
+		str = String.format("| %s |         _;,,,,;_", centerString(tmp_str, str));
+		IO.putBuffer(str, 14, 9);
+		IO.putBuffer("|            killed by            |", 15, 9);
 		p = Variable.died_from;
 		i = p.length();
 		p += ".";  /* add a trailing period */
-		str = String.format("| %s |", center_string (tmp_str, p));
-		IO.put_buffer(str, 16, 9);
+		str = String.format("| %s |", centerString (tmp_str, p));
+		IO.putBuffer(str, 16, 9);
 		p = p.substring(0, p.length() - 1);	 /* strip off the period */
 		day = date();
-		str = String.format("| %s |", center_string(tmp_str, day));
-		IO.put_buffer(str, 17, 9);
-		IO.put_buffer("*|   *     *     *    *   *     *  | *", 18, 8);
-		IO.put_buffer("________)/\\\\_)_/___(\\/___(//_\\)/_\\//__\\\\(/_|_)_______", 19, 0);
+		str = String.format("| %s |", centerString(tmp_str, day));
+		IO.putBuffer(str, 17, 9);
+		IO.putBuffer("*|   *     *     *    *   *     *  | *", 18, 8);
+		IO.putBuffer("________)/\\\\_)_/___(\\/___(//_\\)/_\\//__\\\\(/_|_)_______", 19, 0);
 		
 		boolean retry = true;
 		while (retry) {
 			retry = false;
 			IO.flush();
-			IO.put_buffer("(ESC to abort, return to print on screen, or file name)", 23, 0);
-			IO.put_buffer("Character record?", 22, 0);
-			str = IO.get_string(22, 18, 60);
+			IO.putBuffer("(ESC to abort, return to print on screen, or file name)", 23, 0);
+			IO.putBuffer("Character record?", 22, 0);
+			str = IO.getString(22, 18, 60);
 			if (!str.isEmpty()) {
 				for (i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
-					Desc.known1(Treasure.inventory[i]);
-					Desc.known2(Treasure.inventory[i]);
+					Desc.identifyItem(Treasure.inventory[i]);
+					Desc.identifyItemPlusses(Treasure.inventory[i]);
 				}
-				Moria1.calc_bonuses();
+				Moria1.calcBonuses();
 				if (str.length() > 0) {
-					if (!Files.file_character(str)) {
+					if (!Files.fileCharacter(str)) {
 						retry = true;
 					}
 				} else {
-					IO.clear_screen();
-					Misc3.display_char();
-					IO.put_buffer("Type ESC to skip the inventory:", 23, 0);
+					IO.clearScreen();
+					Misc3.displayCharacter();
+					IO.putBuffer("Type ESC to skip the inventory:", 23, 0);
 					if (IO.inkey() != Constants.ESCAPE) {
-						IO.clear_screen();
-						IO.msg_print("You are using:");
-						Moria1.show_equip(true, 0);
-						IO.msg_print("");
-						IO.msg_print("You are carrying:");
-						IO.clear_from(1);
-						Moria1.show_inven(0, Treasure.inven_ctr - 1, true, 0, "");
-						IO.msg_print("");
+						IO.clearScreen();
+						IO.printMessage("You are using:");
+						Moria1.showEquippedItems(true, 0);
+						IO.printMessage("");
+						IO.printMessage("You are carrying:");
+						IO.clearFrom(1);
+						Moria1.showInventory(0, Treasure.inven_ctr - 1, true, 0, "");
+						IO.printMessage("");
 					}
 				}
 			}
@@ -360,14 +360,14 @@ public class Death {
 	}
 	
 	/* Calculates the total number of points earned		-JWT-	 */
-	public static int total_points() {
+	public static int getTotalPoints() {
 		int total;
 		int i;
 		
 		total = Player.py.misc.max_exp + (100 * Player.py.misc.max_dlv);
 		total += Player.py.misc.au / 100;
 		for (i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
-			total += Store1.item_value(Treasure.inventory[i]);
+			total += Store1.getItemValue(Treasure.inventory[i]);
 		}
 		total += Variable.dun_level * 50;
 		
@@ -388,18 +388,18 @@ public class Death {
 		long curpos;
 		String string;
 		
-		IO.clear_screen();
+		IO.clearScreen();
 		
 		if (Variable.noscore != 0) {
 			return;
 		}
 		
 		if (Variable.panic_save == 1) {
-			IO.msg_print("Sorry, scores for games restored from panic save files are not saved.");
+			IO.printMessage("Sorry, scores for games restored from panic save files are not saved.");
 			return;
 		}
 		
-		new_entry.points = total_points();
+		new_entry.points = getTotalPoints();
 		new_entry.birth_date = Variable.birth_date;
 		new_entry.uid =  1000000; //(getgid()*1000) + getuid();
 		new_entry.mhp = Player.py.misc.mhp;
@@ -549,54 +549,54 @@ public class Death {
 		Variable.dun_level = 0;
 		Variable.died_from = "Ripe Old Age";
 		p_ptr = Player.py.misc;
-		Spells.restore_level();
+		Spells.restoreLevel();
 		p_ptr.lev += Constants.MAX_PLAYER_LEVEL;
 		p_ptr.au += 250000L;
 		p_ptr.max_exp += 5000000L;
 		p_ptr.exp = p_ptr.max_exp;
 		
 		/* Let the player know that he did good.	 */
-		IO.clear_screen();
-		IO.put_buffer("#", 1, 34);
-		IO.put_buffer("#####", 2, 32);
-		IO.put_buffer("#", 3, 34);
-		IO.put_buffer(",,,  $$$  ,,,", 4, 28);
-		IO.put_buffer(",,=$   \"$$$$$\"   $=,,", 5, 24);
-		IO.put_buffer(",$$        $$$        $$,", 6, 22);
-		IO.put_buffer("*>         <*>         <*", 7, 22);
-		IO.put_buffer("$$         $$$         $$", 8, 22);
-		IO.put_buffer("\"$$        $$$        $$\"", 9, 22);
-		IO.put_buffer("\"$$       $$$       $$\"", 10, 23);
+		IO.clearScreen();
+		IO.putBuffer("#", 1, 34);
+		IO.putBuffer("#####", 2, 32);
+		IO.putBuffer("#", 3, 34);
+		IO.putBuffer(",,,  $$$  ,,,", 4, 28);
+		IO.putBuffer(",,=$   \"$$$$$\"   $=,,", 5, 24);
+		IO.putBuffer(",$$        $$$        $$,", 6, 22);
+		IO.putBuffer("*>         <*>         <*", 7, 22);
+		IO.putBuffer("$$         $$$         $$", 8, 22);
+		IO.putBuffer("\"$$        $$$        $$\"", 9, 22);
+		IO.putBuffer("\"$$       $$$       $$\"", 10, 23);
 		p = "*#########*#########*";
-		IO.put_buffer(p, 11, 24);
-		IO.put_buffer(p, 12, 24);
-		IO.put_buffer("Veni, Vidi, Vici!", 15, 26);
-		IO.put_buffer("I came, I saw, I conquered!", 16, 21);
+		IO.putBuffer(p, 11, 24);
+		IO.putBuffer(p, 12, 24);
+		IO.putBuffer("Veni, Vidi, Vici!", 15, 26);
+		IO.putBuffer("I came, I saw, I conquered!", 16, 21);
 		if (p_ptr.male) {
-			IO.put_buffer("All Hail the Mighty King!", 17, 22);
+			IO.putBuffer("All Hail the Mighty King!", 17, 22);
 		} else {
-			IO.put_buffer("All Hail the Mighty Queen!", 17, 22);
+			IO.putBuffer("All Hail the Mighty Queen!", 17, 22);
 		}
 		IO.flush();
-		IO.pause_line(23);
+		IO.pauseLine(23);
 	}
 	
 	/* Handles the gravestone end top-twenty routines	-RAK-	 */
-	public static void exit_game() {
+	public static void exitGame() {
 		/* What happens upon dying.				-RAK-	 */
-		IO.msg_print("");
+		IO.printMessage("");
 		IO.flush();  /* flush all input */
-		Signals.nosignals();	 /* Can't interrupt or suspend. */
+		Signals.noSignals();	 /* Can't interrupt or suspend. */
 		/* If the game has been saved, then save sets turn back to -1, which
 		 * inhibits the printing of the tomb.	 */
 		if (Variable.turn >= 0) {
 			if (Variable.total_winner) {
 				kingly();
 			}
-			print_tomb();
+			printTomb();
 		}
 		if (Variable.character_generated && Variable.character_saved == 0) {
-			Save.save_char();		/* Save the memory at least. */
+			Save.saveCharacter();		/* Save the memory at least. */
 		}
 		/* add score to scorefile if applicable */
 		if (Variable.character_generated) {
@@ -605,10 +605,10 @@ public class Death {
 			 * on stdin detected.  */
 			Variable.character_saved = 0;
 			highscores();
-			display_scores(true);
+			displayScores(true);
 		}
-		IO.erase_line(23, 0);
-		IO.restore_term();
+		IO.eraseLine(23, 0);
+		IO.restoreTerminal();
 		System.exit(0);
 	}
 }

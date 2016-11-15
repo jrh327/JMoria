@@ -32,7 +32,7 @@ public class Moria2 {
 	
 	/* Change a trap from invisible to visible		-RAK-	*/
 	/* Note: Secret doors are handled here				 */
-	public static void change_trap(int y, int x) {
+	public static void revealTrap(int y, int x) {
 		CaveType c_ptr;
 		InvenType t_ptr;
 		
@@ -40,13 +40,13 @@ public class Moria2 {
 		t_ptr = Treasure.t_list[c_ptr.tptr];
 		if (t_ptr.tval == Constants.TV_INVIS_TRAP) {
 			t_ptr.tval = Constants.TV_VIS_TRAP;
-			Moria1.lite_spot(y, x);
+			Moria1.lightUpSpot(y, x);
 		} else if (t_ptr.tval == Constants.TV_SECRET_DOOR) {
 			/* change secret door to closed door */
 			t_ptr.index = Constants.OBJ_CLOSED_DOOR;
 			t_ptr.tval = Treasure.object_list[Constants.OBJ_CLOSED_DOOR].tval;
 			t_ptr.tchar = Treasure.object_list[Constants.OBJ_CLOSED_DOOR].tchar;
-			Moria1.lite_spot(y, x);
+			Moria1.lightUpSpot(y, x);
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class Moria2 {
 		if (p_ptr.confused > 0) {
 			chance = chance / 10;
 		}
-		if ((p_ptr.blind > 0) || Moria1.no_light()) {
+		if ((p_ptr.blind > 0) || Moria1.playerHasNoLight()) {
 			chance = chance / 10;
 		}
 		if (p_ptr.image > 0) {
@@ -70,34 +70,34 @@ public class Moria2 {
 		}
 		for (i = (y - 1); i <= (y + 1); i++) {
 			for (j = (x - 1); j <= (x + 1); j++) {
-				if (Misc1.randint(100) < chance) {	/* always in_bounds here */
+				if (Misc1.randomInt(100) < chance) {	/* always in_bounds here */
 					c_ptr = Variable.cave[i][j];
 					/* Search for hidden objects		   */
 					if (c_ptr.tptr != 0) {
 						t_ptr = Treasure.t_list[c_ptr.tptr];
 						/* Trap on floor?		       */
 						if (t_ptr.tval == Constants.TV_INVIS_TRAP) {
-							tmp_str2 = Desc.objdes(t_ptr, true);
+							tmp_str2 = Desc.describeObject(t_ptr, true);
 							tmp_str = String.format("You have found %s", tmp_str2);
-							IO.msg_print(tmp_str);
-							change_trap(i, j);
-							end_find();
+							IO.printMessage(tmp_str);
+							revealTrap(i, j);
+							endFind();
 						
 						/* Secret door?		       */
 						} else if (t_ptr.tval == Constants.TV_SECRET_DOOR) {
-							IO.msg_print("You have found a secret door.");
-							change_trap(i, j);
-							end_find();
+							IO.printMessage("You have found a secret door.");
+							revealTrap(i, j);
+							endFind();
 						
 						/* Chest is trapped?	       */
 						} else if (t_ptr.tval == Constants.TV_CHEST) {
 							/* mask out the treasure bits */
 							if ((t_ptr.flags & Constants.CH_TRAPPED) > 1) {
-								if (!Desc.known2_p(t_ptr)) {
-									Desc.known2(t_ptr);
-									IO.msg_print("You have discovered a trap on the chest!");
+								if (!Desc.arePlussesKnownByPlayer(t_ptr)) {
+									Desc.identifyItemPlusses(t_ptr);
+									IO.printMessage("You have discovered a trap on the chest!");
 								} else {
-									IO.msg_print("The chest is trapped!");
+									IO.printMessage("The chest is trapped!");
 								}
 							}
 						}
@@ -226,7 +226,7 @@ public class Moria2 {
 	private static boolean find_openarea, find_breakright, find_breakleft;
 	private static int find_direction, find_prevdir; /* Keep a record of which way we are going. */
 	
-	public static void find_init(int dir) {
+	public static void findInit(int dir) {
 		IntPointer row, col;
 		int i;
 		boolean deepleft, deepright;
@@ -234,7 +234,7 @@ public class Moria2 {
 		
 		row = new IntPointer(Player.char_row);
 		col = new IntPointer(Player.char_col);
-		if (!Misc3.mmove(dir, row, col)) {
+		if (!Misc3.moveMonster(dir, row, col)) {
 			Variable.find_flag = 0;
 		} else {
 			find_direction = dir;
@@ -248,17 +248,17 @@ public class Moria2 {
 				deepright = false;
 				shortright = false;
 				shortleft = false;
-				if (see_wall(cycle[i + 1], Player.char_row, Player.char_col)) {
+				if (canSeeWall(cycle[i + 1], Player.char_row, Player.char_col)) {
 					find_breakleft = true;
 					shortleft = true;
-				} else if (see_wall(cycle[i + 1], row.value(), col.value())) {
+				} else if (canSeeWall(cycle[i + 1], row.value(), col.value())) {
 					find_breakleft = true;
 					deepleft = true;
 				}
-				if (see_wall(cycle[i - 1], Player.char_row, Player.char_col)) {
+				if (canSeeWall(cycle[i - 1], Player.char_row, Player.char_col)) {
 					find_breakright = true;
 					shortright = true;
-				} else if (see_wall(cycle[i - 1], row.value(), col.value())) {
+				} else if (canSeeWall(cycle[i - 1], row.value(), col.value())) {
 					find_breakright = true;
 					deepright = true;
 				}
@@ -274,7 +274,7 @@ public class Moria2 {
 					/* else if there is a wall two spaces ahead and seem to be in a
 					 * corridor, then force a turn into the side corridor, must
 					 * be moving straight into a corridor here */
-					} else if (see_wall(cycle[i], row.value(), col.value())) {
+					} else if (canSeeWall(cycle[i], row.value(), col.value())) {
 						if (shortleft && !shortright) {
 							find_prevdir = cycle[i - 2];
 						} else if (shortright && !shortleft) {
@@ -294,41 +294,41 @@ public class Moria2 {
 		 * of find mode, when the initial position of the character must be erased.
 		 * Hence we must do the erasure here.  */
 		if (! Variable.light_flag && ! Variable.find_prself.value()) {
-			IO.print(Misc1.loc_symbol(Player.char_row, Player.char_col), Player.char_row, Player.char_col);
+			IO.print(Misc1.locateSymbol(Player.char_row, Player.char_col), Player.char_row, Player.char_col);
 		}
 		
-		Moria3.move_char(dir, true);
+		Moria3.movePlayer(dir, true);
 		if (Variable.find_flag == 0) {
 			Variable.command_count = 0;
 		}
 	}
 	
-	public static void find_run() {
+	public static void findRun() {
 		/* prevent infinite loops in find mode, will stop after moving 100 times */
 		if (Variable.find_flag++ > 100) {
-			IO.msg_print("You stop running to catch your breath.");
-			end_find();
+			IO.printMessage("You stop running to catch your breath.");
+			endFind();
 		} else {
-			Moria3.move_char(find_direction, true);
+			Moria3.movePlayer(find_direction, true);
 		}
 	}
 	
 	/* Switch off the run flag - and get the light correct. -CJS- */
-	public static void end_find() {
+	public static void endFind() {
 		if (Variable.find_flag > 0) {
 			Variable.find_flag = 0;
-			Moria1.move_light(Player.char_row, Player.char_col, Player.char_row, Player.char_col);
+			Moria1.moveLight(Player.char_row, Player.char_col, Player.char_row, Player.char_col);
 		}
 	}
 	
 	/* Do we see a wall? Used in running.		-CJS- */
-	public static boolean see_wall(int dir, int y, int x) {
+	public static boolean canSeeWall(int dir, int y, int x) {
 		char c;
 		IntPointer y1 = new IntPointer(y), x1 = new IntPointer(x);
 		
-		if (!Misc3.mmove(dir, y1, x1)) {	/* check to see if movement there possible */
+		if (!Misc3.moveMonster(dir, y1, x1)) {	/* check to see if movement there possible */
 			return true;
-		} else if ((c = Misc1.loc_symbol(y1.value(), x1.value())) == Variable.wallsym || c == '%') {
+		} else if ((c = Misc1.locateSymbol(y1.value(), x1.value())) == Variable.wallsym || c == '%') {
 			return true;
 		} else {
 			return false;
@@ -336,11 +336,11 @@ public class Moria2 {
 	}
 	
 	/* Do we see anything? Used in running.		-CJS- */
-	public static boolean see_nothing(int dir, int y, int x) {
+	public static boolean canSeeNothing(int dir, int y, int x) {
 		IntPointer y1 = new IntPointer(y), x1 = new IntPointer(x);
-		if (!Misc3.mmove(dir, y1, x1)) {	/* check to see if movement there possible */
+		if (!Misc3.moveMonster(dir, y1, x1)) {	/* check to see if movement there possible */
 			return false;
-		} else if (Misc1.loc_symbol(y1.value(), x1.value()) == ' ') {
+		} else if (Misc1.locateSymbol(y1.value(), x1.value()) == ' ') {
 			return true;
 		} else {
 			return false;
@@ -348,7 +348,7 @@ public class Moria2 {
 	}
 	
 	/* Determine the next direction for a run, or if we should stop.  -CJS- */
-	public static void area_affect(int dir, int y, int x) {
+	public static void areaAffect(int dir, int y, int x) {
 		int newdir, t1, check_dir = 0;
 		boolean inv;
 		IntPointer row = new IntPointer(), col = new IntPointer();
@@ -365,14 +365,14 @@ public class Moria2 {
 				newdir = cycle[chome[dir] + i];
 				row.value(y);
 				col.value(x);
-				if (Misc3.mmove(newdir, row, col)) {
+				if (Misc3.moveMonster(newdir, row, col)) {
 					/* Objects player can see (Including doors?) cause a stop. */
 					c_ptr = Variable.cave[row.value()][col.value()];
 					if (Variable.player_light || c_ptr.tl || c_ptr.pl || c_ptr.fm) {
 						if (c_ptr.tptr != 0) {
 							t1 = Treasure.t_list[c_ptr.tptr].tval;
 							if (t1 != Constants.TV_INVIS_TRAP && t1 != Constants.TV_SECRET_DOOR && (t1 != Constants.TV_OPEN_DOOR || !Variable.find_ignore_doors.value())) {
-								end_find();
+								endFind();
 								return;
 							}
 						}
@@ -380,7 +380,7 @@ public class Moria2 {
 						/* the monster should be visible since update_mon() checks
 						 * for the special case of being in find mode */
 						if (c_ptr.cptr > 1 && Monsters.m_list[c_ptr.cptr].ml) {
-							end_find();
+							endFind();
 							return;
 						}
 						inv = false;
@@ -393,22 +393,22 @@ public class Moria2 {
 							/* Have we found a break? */
 							if (i < 0) {
 								if (find_breakright) {
-									end_find();
+									endFind();
 									return;
 								}
 							} else if (i > 0) {
 								if (find_breakleft) {
-									end_find();
+									endFind();
 									return;
 								}
 							}
 						} else if (option == 0) {
 							option = newdir;	/* The first new direction. */
 						} else if (option2 != 0) {
-							end_find();	/* Three new directions. STOP. */
+							endFind();	/* Three new directions. STOP. */
 							return;
 						} else if (option != cycle[chome[dir] + i - 1]) {
-							end_find();	/* If not adjacent to prev, STOP */
+							endFind();	/* If not adjacent to prev, STOP */
 							return;
 						} else {
 							/* Two adjacent choices. Make option2 the diagonal,
@@ -428,13 +428,13 @@ public class Moria2 {
 						 * previously open. */
 						if (i < 0) {
 							if (find_breakleft) {
-								end_find();
+								endFind();
 								return;
 							}
 							find_breakright = true;
 						} else if (i > 0) {
 							if (find_breakright) {
-								end_find();
+								endFind();
 								return;
 							}
 							find_breakleft = true;
@@ -460,18 +460,18 @@ public class Moria2 {
 					/* Two options! */
 					row.value(y);
 					col.value(x);
-					Misc3.mmove(option, row, col);
-					if (!see_wall(option, row.value(), col.value()) || !see_wall(check_dir, row.value(), col.value())) {
+					Misc3.moveMonster(option, row, col);
+					if (!canSeeWall(option, row.value(), col.value()) || !canSeeWall(check_dir, row.value(), col.value())) {
 						/* Don't see that it is closed off.  This could be a
 						 * potential corner or an intersection. */
-						if (Variable.find_examine.value() && see_nothing(option, row.value(), col.value()) && see_nothing(option2, row.value(), col.value())) {
+						if (Variable.find_examine.value() && canSeeNothing(option, row.value(), col.value()) && canSeeNothing(option2, row.value(), col.value())) {
 							/* Can not see anything ahead and in the direction we are
 							 * turning, assume that it is a potential corner. */
 							find_direction = option;
 							find_prevdir = option2;
 						} else {
 							/* STOP: we are next to an intersection or a room */
-							end_find();
+							endFind();
 						}
 					} else if (Variable.find_cut.value()) {
 						/* This corner is seen to be enclosed; we cut the corner. */
@@ -491,7 +491,7 @@ public class Moria2 {
 	/* AC gets worse					-RAK-	*/
 	/* Note: This routine affects magical AC bonuses so that stores	  */
 	/*	 can detect the damage.					 */
-	public static boolean minus_ac(long typ_dam) {
+	public static boolean minusAc(long typ_dam) {
 		int i, j;
 		int[] tmp = new int[6];
 		boolean minus;
@@ -526,19 +526,19 @@ public class Moria2 {
 		}
 		minus = false;
 		if (i > 0) {
-			j = tmp[Misc1.randint(i) - 1];
+			j = tmp[Misc1.randomInt(i) - 1];
 			i_ptr = Treasure.inventory[j];
 			if ((i_ptr.flags & typ_dam) != 0) {
-				tmp_str = Desc.objdes(Treasure.inventory[j], false);
+				tmp_str = Desc.describeObject(Treasure.inventory[j], false);
 				out_val = String.format("Your %s resists damage!", tmp_str);
-				IO.msg_print(out_val);
+				IO.printMessage(out_val);
 				minus = true;
 			} else if ((i_ptr.ac + i_ptr.toac) > 0) {
-				tmp_str = Desc.objdes(Treasure.inventory[j], false);
+				tmp_str = Desc.describeObject(Treasure.inventory[j], false);
 				out_val = String.format("Your %s is damaged!", tmp_str);
-				IO.msg_print(out_val);
+				IO.printMessage(out_val);
 				i_ptr.toac--;
-				Moria1.calc_bonuses();
+				Moria1.calcBonuses();
 				minus = true;
 			}
 		}
@@ -546,75 +546,75 @@ public class Moria2 {
 	}
 	
 	/* Corrode the unsuspecting person's armor		 -RAK-	 */
-	public static void corrode_gas(String kb_str) {
-		if (!minus_ac(Constants.TR_RES_ACID)) {
-			Moria1.take_hit(Misc1.randint(8), kb_str);
+	public static void corrodeGas(String kb_str) {
+		if (!minusAc(Constants.TR_RES_ACID)) {
+			Moria1.takeHit(Misc1.randomInt(8), kb_str);
 		}
-		if (Misc3.inven_damage(Sets.set_corrodes, 5) > 0) {
-			IO.msg_print("There is an acrid smell coming from your pack.");
+		if (Misc3.damageInvenItem(Sets.SET_CORRODES, 5) > 0) {
+			IO.printMessage("There is an acrid smell coming from your pack.");
 		}
 	}
 	
 	/* Poison gas the idiot.				-RAK-	*/
-	public static void poison_gas(int dam, String kb_str) {
-		Moria1.take_hit(dam, kb_str);
-		Player.py.flags.poisoned += 12 + Misc1.randint(dam);
+	public static void poisonGas(int dam, String kb_str) {
+		Moria1.takeHit(dam, kb_str);
+		Player.py.flags.poisoned += 12 + Misc1.randomInt(dam);
 	}
 	
 	/* Burn the fool up.					-RAK-	*/
-	public static void fire_dam(int dam, String kb_str) {
+	public static void fireDamage(int dam, String kb_str) {
 		if (Player.py.flags.fire_resist > 0) {
 			dam = dam / 3;
 		}
 		if (Player.py.flags.resist_heat > 0) {
 			dam = dam / 3;
 		}
-		Moria1.take_hit(dam, kb_str);
-		if (Misc3.inven_damage(Sets.set_flammable, 3) > 0) {
-			IO.msg_print("There is smoke coming from your pack!");
+		Moria1.takeHit(dam, kb_str);
+		if (Misc3.damageInvenItem(Sets.SET_FLAMMABLE, 3) > 0) {
+			IO.printMessage("There is smoke coming from your pack!");
 		}
 	}
 	
 	/* Freeze him to death.				-RAK-	*/
-	public static void cold_dam(int dam, String kb_str) {
+	public static void coldDamage(int dam, String kb_str) {
 		if (Player.py.flags.cold_resist > 0) {
 			dam = dam / 3;
 		}
 		if (Player.py.flags.resist_cold > 0) {
 			dam = dam / 3;
 		}
-		Moria1.take_hit(dam, kb_str);
-		if (Misc3.inven_damage(Sets.set_frost_destroy, 5) > 0) {
-			IO.msg_print("Something shatters inside your pack!");
+		Moria1.takeHit(dam, kb_str);
+		if (Misc3.damageInvenItem(Sets.SET_FROST_DESTROY, 5) > 0) {
+			IO.printMessage("Something shatters inside your pack!");
 		}
 	}
 	
 	/* Lightning bolt the sucker away.			-RAK-	*/
-	public static void light_dam(int dam, String kb_str) {
+	public static void lightningDamage(int dam, String kb_str) {
 		if (Player.py.flags.lght_resist > 0) {
-			Moria1.take_hit((dam / 3), kb_str);
+			Moria1.takeHit((dam / 3), kb_str);
 		} else {
-			Moria1.take_hit(dam, kb_str);
+			Moria1.takeHit(dam, kb_str);
 		}
-		if (Misc3.inven_damage(Sets.set_lightning_destroy, 3) > 0) {
-			IO.msg_print("There are sparks coming from your pack!");
+		if (Misc3.damageInvenItem(Sets.SET_LIGHTNING_DESTROY, 3) > 0) {
+			IO.printMessage("There are sparks coming from your pack!");
 		}
 	}
 	
 	/* Throw acid on the hapless victim			-RAK-	*/
-	public static void acid_dam(int dam, String kb_str) {
+	public static void acidDamage(int dam, String kb_str) {
 		int flag;
 		
 		flag = 0;
-		if (minus_ac(Constants.TR_RES_ACID)) {
+		if (minusAc(Constants.TR_RES_ACID)) {
 			flag = 1;
 		}
 		if (Player.py.flags.acid_resist > 0) {
 			flag += 2;
 		}
-		Moria1.take_hit(dam / (flag + 1), kb_str);
-		if (Misc3.inven_damage(Sets.set_acid_affect, 3) > 0) {
-			IO.msg_print("There is an acrid smell coming from your pack!");
+		Moria1.takeHit(dam / (flag + 1), kb_str);
+		if (Misc3.damageInvenItem(Sets.SET_ACID_AFFECT, 3) > 0) {
+			IO.printMessage("There is an acrid smell coming from your pack!");
 		}
 	}
 }

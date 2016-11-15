@@ -35,7 +35,7 @@ public class Store1 {
 	 * @param i_ptr - The item whose value is being returned
 	 * @return The market value of the item in i_ptr
 	 */
-	public static int item_value(InvenType i_ptr) {
+	public static int getItemValue(InvenType i_ptr) {
 		int value;
 		
 		value = i_ptr.cost;
@@ -44,7 +44,7 @@ public class Store1 {
 			value = 0;
 		} else if (((i_ptr.tval >= Constants.TV_BOW) && (i_ptr.tval <= Constants.TV_SWORD)) || ((i_ptr.tval >= Constants.TV_BOOTS) && (i_ptr.tval <= Constants.TV_SOFT_ARMOR))) {
 			/* Weapons and armor	*/
-			if (!Desc.known2_p(i_ptr)) {
+			if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
 				value = Treasure.object_list[i_ptr.index].cost;
 			} else if ((i_ptr.tval >= Constants.TV_BOW) && (i_ptr.tval <= Constants.TV_SWORD)) {
 				if (i_ptr.tohit < 0) {
@@ -65,7 +65,7 @@ public class Store1 {
 			}
 		} else if ((i_ptr.tval >= Constants.TV_SLING_AMMO) && (i_ptr.tval <= Constants.TV_SPIKE)) {
 			/* Ammo			*/
-			if (!Desc.known2_p(i_ptr)) {
+			if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
 				value = Treasure.object_list[i_ptr.index].cost;
 			} else {
 				if (i_ptr.tohit < 0) {
@@ -82,19 +82,19 @@ public class Store1 {
 			}
 		} else if ((i_ptr.tval == Constants.TV_SCROLL1) || (i_ptr.tval == Constants.TV_SCROLL2) || (i_ptr.tval == Constants.TV_POTION1) || (i_ptr.tval == Constants.TV_POTION2)) {
 			/* Potions, Scrolls, and Food	*/
-			if (!Desc.known1_p(i_ptr)) {
+			if (!Desc.isKnownByPlayer(i_ptr)) {
 				value = 20;
 			}
 		} else if (i_ptr.tval == Constants.TV_FOOD) {
-			if ((i_ptr.subval < (Constants.ITEM_SINGLE_STACK_MIN + Constants.MAX_MUSH)) && !Desc.known1_p(i_ptr)) {
+			if ((i_ptr.subval < (Constants.ITEM_SINGLE_STACK_MIN + Constants.MAX_MUSH)) && !Desc.isKnownByPlayer(i_ptr)) {
 				value = 1;
 			}
 		} else if ((i_ptr.tval == Constants.TV_AMULET) || (i_ptr.tval == Constants.TV_RING)) {
 			/* Rings and amulets	*/
-			if (!Desc.known1_p(i_ptr)) {
+			if (!Desc.isKnownByPlayer(i_ptr)) {
 				/* player does not know what type of ring/amulet this is */
 				value = 45;
-			} else if (!Desc.known2_p(i_ptr)) {
+			} else if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
 				/* player knows what type of ring, but does not know whether it is
 				 * cursed or not, if refuse to buy cursed objects here, then
 				 * player can use this to 'identify' cursed objects */
@@ -102,18 +102,18 @@ public class Store1 {
 			}
 		} else if ((i_ptr.tval == Constants.TV_STAFF) || (i_ptr.tval == Constants.TV_WAND)) {
 			/* Wands and staffs*/
-			if (!Desc.known1_p(i_ptr)) {
+			if (!Desc.isKnownByPlayer(i_ptr)) {
 				if (i_ptr.tval == Constants.TV_WAND) {
 					value = 50;
 				} else {
 					value = 70;
 				}
-			} else if (Desc.known2_p(i_ptr)) {
+			} else if (Desc.arePlussesKnownByPlayer(i_ptr)) {
 				value = i_ptr.cost + (i_ptr.cost / 20) * i_ptr.p1;
 			}
 		} else if (i_ptr.tval == Constants.TV_DIGGING) {
 			/* picks and shovels */
-			if (!Desc.known2_p(i_ptr)) {
+			if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
 				value = Treasure.object_list[i_ptr.index].cost;
 			} else {
 				if (i_ptr.p1 < 0) {
@@ -144,12 +144,12 @@ public class Store1 {
 	 * @param item - Item being checked
 	 * @return The store's asking price for the item
 	 */
-	public static int sell_price(int snum, IntPointer max_sell, IntPointer min_sell, InvenType item) {
+	public static int getSellPrice(int snum, IntPointer max_sell, IntPointer min_sell, InvenType item) {
 		int i;
 		StoreType s_ptr;
 		
 		s_ptr = Variable.store[snum];
-		i = item_value(item);
+		i = getItemValue(item);
 		/* check item.cost in case it is cursed, check i in case it is damaged */
 		if ((item.cost > 0) && (i > 0)) {
 			i = i * Tables.rgold_adj[Tables.owners[s_ptr.owner].owner_race][Player.py.misc.prace] / 100;
@@ -171,7 +171,7 @@ public class Store1 {
 	 * @param store_num - Store number
 	 * @return Return true if there is room in the store, otherwise false
 	 */
-	public static boolean store_check_num(InvenType t_ptr, int store_num) {
+	public static boolean isStoreFull(InvenType t_ptr, int store_num) {
 		boolean store_check;
 		int i;
 		StoreType s_ptr;
@@ -204,7 +204,7 @@ public class Store1 {
 	 * @param icost - Cost of the item being added
 	 * @param i_ptr - Item being added
 	 */
-	public static void insert_store(int store_num, int pos, int icost, InvenType i_ptr) {
+	public static void insertStore(int store_num, int pos, int icost, InvenType i_ptr) {
 		int i;
 		StoreType s_ptr;
 		
@@ -225,7 +225,7 @@ public class Store1 {
 	 * @param ipos - Stores the position in the store's inventory
 	 * @param t_ptr - Item being added
 	 */
-	public static void store_carry(int store_num, IntPointer ipos, InvenType t_ptr) {
+	public static void storeCarry(int store_num, IntPointer ipos, InvenType t_ptr) {
 		int item_num, item_val;
 		boolean flag;
 		int typ, subt;
@@ -234,7 +234,7 @@ public class Store1 {
 		StoreType s_ptr;
 		
 		ipos.value(-1);
-		if (sell_price(store_num, icost, dummy, t_ptr) > 0) {
+		if (getSellPrice(store_num, icost, dummy, t_ptr) > 0) {
 			s_ptr = Variable.store[store_num];
 			item_val = 0;
 			item_num = t_ptr.number;
@@ -252,7 +252,7 @@ public class Store1 {
 						 * strictly greater than group_min, not for torches, this
 						 * must be recalculated for entire group */
 						if (subt > Constants.ITEM_GROUP_MIN) {
-							sell_price(store_num, icost, dummy, i_ptr);
+							getSellPrice(store_num, icost, dummy, i_ptr);
 							s_ptr.store_inven[item_val].scost = -icost.value();
 						
 						/* must let group objects (except torches) stack over 24
@@ -264,14 +264,14 @@ public class Store1 {
 					}
 				} else if (typ > i_ptr.tval) {
 					/* Insert into list		*/
-					insert_store(store_num, item_val, icost.value(), t_ptr);
+					insertStore(store_num, item_val, icost.value(), t_ptr);
 					flag = true;
 					ipos.value(item_val);
 				}
 				item_val++;
 			} while ((item_val < s_ptr.store_ctr) && (!flag));
 			if (!flag) {	/* Becomes last item in list	*/
-				insert_store(store_num, s_ptr.store_ctr, icost.value(), t_ptr);
+				insertStore(store_num, s_ptr.store_ctr, icost.value(), t_ptr);
 				ipos.value(s_ptr.store_ctr - 1);
 			}
 		}
@@ -285,7 +285,7 @@ public class Store1 {
 	 * @param item_val - Item's position in the store's inventory
 	 * @param one_of - If false, destroy entire slot
 	 */
-	public static void store_destroy(int store_num, int item_val, boolean one_of) {
+	public static void storeDestroy(int store_num, int item_val, boolean one_of) {
 		int j, number;
 		StoreType s_ptr;
 		InvenType i_ptr;
@@ -300,7 +300,7 @@ public class Store1 {
 			if (one_of) {
 				number = 1;
 			} else {
-				number = Misc1.randint(i_ptr.number);
+				number = Misc1.randomInt(i_ptr.number);
 			}
 		} else {
 			number = i_ptr.number;
@@ -313,7 +313,7 @@ public class Store1 {
 				s_ptr.store_inven[j + 1].sitem.copyInto(s_ptr.store_inven[j].sitem);
 				s_ptr.store_inven[j].scost = s_ptr.store_inven[j + 1].scost;
 			}
-			Desc.invcopy(s_ptr.store_inven[s_ptr.store_ctr - 1].sitem, Constants.OBJ_NOTHING);
+			Desc.copyIntoInventory(s_ptr.store_inven[s_ptr.store_ctr - 1].sitem, Constants.OBJ_NOTHING);
 			s_ptr.store_inven[s_ptr.store_ctr - 1].scost = 0;
 			s_ptr.store_ctr--;
 		}
@@ -322,21 +322,21 @@ public class Store1 {
 	/**
 	 * Initializes the stores with owners. -RAK-
 	 */
-	public static void store_init() {
+	public static void storeInit() {
 		int i, j, k;
 		StoreType s_ptr;
 		
 		i = Constants.MAX_OWNERS / Constants.MAX_STORES;
 		for (j = 0; j < Constants.MAX_STORES; j++) {
 			s_ptr = Variable.store[j];
-			s_ptr.owner = Constants.MAX_STORES * (Misc1.randint(i) - 1) + j;
+			s_ptr.owner = Constants.MAX_STORES * (Misc1.randomInt(i) - 1) + j;
 			s_ptr.insult_cur = 0;
 			s_ptr.store_open = 0;
 			s_ptr.store_ctr	= 0;
 			s_ptr.good_buy = 0;
 			s_ptr.bad_buy = 0;
 			for (k = 0; k < Constants.STORE_INVEN_MAX; k++) {
-				Desc.invcopy(s_ptr.store_inven[k].sitem, Constants.OBJ_NOTHING);
+				Desc.copyIntoInventory(s_ptr.store_inven[k].sitem, Constants.OBJ_NOTHING);
 				s_ptr.store_inven[k].scost = 0;
 			}
 		}
@@ -347,7 +347,7 @@ public class Store1 {
 	 * 
 	 * @param store_num - Store number
 	 */
-	public static void store_create(int store_num) {
+	public static void storeCreate(int store_num) {
 		int i, tries;
 		int cur_pos;
 		IntPointer dummy = new IntPointer();
@@ -355,20 +355,20 @@ public class Store1 {
 		InvenType t_ptr;
 		
 		tries = 0;
-		cur_pos = Misc1.popt();
+		cur_pos = Misc1.popTreasure();
 		s_ptr = Variable.store[store_num];
 		do {
-			i = Tables.store_choice[store_num][Misc1.randint(Constants.STORE_CHOICES) - 1];
-			Desc.invcopy(Treasure.t_list[cur_pos], i);
-			Misc2.magic_treasure(cur_pos, Constants.OBJ_TOWN_LEVEL);
+			i = Tables.store_choice[store_num][Misc1.randomInt(Constants.STORE_CHOICES) - 1];
+			Desc.copyIntoInventory(Treasure.t_list[cur_pos], i);
+			Misc2.addMagicToTreasure(cur_pos, Constants.OBJ_TOWN_LEVEL);
 			t_ptr = Treasure.t_list[cur_pos];
-			if (store_check_num(t_ptr, store_num)) {
+			if (isStoreFull(t_ptr, store_num)) {
 				if ((t_ptr.cost > 0) &&	(t_ptr.cost < Tables.owners[s_ptr.owner].max_cost)) {
 					/* Item must be good	*/
 					/* equivalent to calling ident_spell(), except will not
 					 * change the object_ident array */
-					Desc.store_bought(t_ptr);
-					store_carry(store_num, dummy, t_ptr);
+					Desc.setStoreBought(t_ptr);
+					storeCarry(store_num, dummy, t_ptr);
 					tries = 10;
 				}
 			}
@@ -380,7 +380,7 @@ public class Store1 {
 	/**
 	 * Initialize and up-keep the store's inventory. -RAK-
 	 */
-	public static void store_maint() {
+	public static void storeInventoryInit() {
 		int i, j;
 		StoreType s_ptr;
 		
@@ -388,22 +388,22 @@ public class Store1 {
 			s_ptr = Variable.store[i];
 			s_ptr.insult_cur = 0;
 			if (s_ptr.store_ctr >= Constants.STORE_MIN_INVEN) {
-				j = Misc1.randint(Constants.STORE_TURN_AROUND);
+				j = Misc1.randomInt(Constants.STORE_TURN_AROUND);
 				if (s_ptr.store_ctr >= Constants.STORE_MAX_INVEN) {
 					j += 1 + s_ptr.store_ctr - Constants.STORE_MAX_INVEN;
 				}
 				while (--j >= 0) {
-					store_destroy(i, Misc1.randint(s_ptr.store_ctr) - 1, false);
+					storeDestroy(i, Misc1.randomInt(s_ptr.store_ctr) - 1, false);
 				}
 			}
 			
 			if (s_ptr.store_ctr <= Constants.STORE_MAX_INVEN) {
-				j = Misc1.randint(Constants.STORE_TURN_AROUND);
+				j = Misc1.randomInt(Constants.STORE_TURN_AROUND);
 				if (s_ptr.store_ctr < Constants.STORE_MIN_INVEN) {
 					j += Constants.STORE_MIN_INVEN - s_ptr.store_ctr;
 				}
 				while (--j >= 0) {
-					store_create(i);
+					storeCreate(i);
 				}
 			}
 		}
@@ -416,7 +416,7 @@ public class Store1 {
 	 * @param minprice - Minimum selling price
 	 * @return Whether the player needs to haggle
 	 */
-	public static boolean noneedtobargain(int store_num, int minprice) {
+	public static boolean doesNotNeedToBargain(int store_num, int minprice) {
 		boolean flagnoneed;
 		int bargain_record;
 		StoreType s_ptr;
@@ -438,7 +438,7 @@ public class Store1 {
 	 * @param price - Store price
 	 * @param minprice - Minimum selling price
 	 */
-	public static void updatebargain(int store_num, int price, int minprice) {
+	public static void updateBargain(int store_num, int price, int minprice) {
 		StoreType s_ptr;
 		
 		s_ptr = Variable.store[store_num];

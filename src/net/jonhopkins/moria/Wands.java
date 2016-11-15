@@ -42,148 +42,148 @@ public class Wands {
 		
 		Variable.free_turn_flag = true;
 		if (Treasure.inven_ctr == 0) {
-			IO.msg_print("But you are not carrying anything.");
-		} else if (!Misc3.find_range(Constants.TV_WAND, Constants.TV_NEVER, j, k)) {
-			IO.msg_print("You are not carrying any wands.");
-		} else if (Moria1.get_item(item_val, "Aim which wand?", j.value(), k.value(), "", "")) {
+			IO.printMessage("But you are not carrying anything.");
+		} else if (!Misc3.findRange(Constants.TV_WAND, Constants.TV_NEVER, j, k)) {
+			IO.printMessage("You are not carrying any wands.");
+		} else if (Moria1.getItemId(item_val, "Aim which wand?", j.value(), k.value(), "", "")) {
 			i_ptr = Treasure.inventory[item_val.value()];
 			Variable.free_turn_flag = false;
-			if (Moria1.get_dir("", dir)) {
+			if (Moria1.getDirection("", dir)) {
 				if (Player.py.flags.confused > 0) {
-					IO.msg_print("You are confused.");
+					IO.printMessage("You are confused.");
 					do {
-						dir.value(Misc1.randint(9));
+						dir.value(Misc1.randomInt(9));
 					} while (dir.value() == 5);
 				}
 				ident = false;
 				m_ptr = Player.py.misc;
-				chance = m_ptr.save + Misc3.stat_adj(Constants.A_INT) - i_ptr.level + (Player.class_level_adj[m_ptr.pclass][Constants.CLA_DEVICE] * m_ptr.lev / 3);
+				chance = m_ptr.save + Misc3.adjustStat(Constants.A_INT) - i_ptr.level + (Player.class_level_adj[m_ptr.pclass][Constants.CLA_DEVICE] * m_ptr.lev / 3);
 				if (Player.py.flags.confused > 0) {
 					chance = chance / 2;
 				}
-				if ((chance < Constants.USE_DEVICE) && (Misc1.randint(Constants.USE_DEVICE - chance + 1) == 1)) {
+				if ((chance < Constants.USE_DEVICE) && (Misc1.randomInt(Constants.USE_DEVICE - chance + 1) == 1)) {
 					chance = Constants.USE_DEVICE; /* Give everyone a slight chance */
 				}
 				if (chance <= 0)	chance = 1;
-				if (Misc1.randint(chance) < Constants.USE_DEVICE) {
-					IO.msg_print("You failed to use the wand properly.");
+				if (Misc1.randomInt(chance) < Constants.USE_DEVICE) {
+					IO.printMessage("You failed to use the wand properly.");
 				} else if (i_ptr.p1 > 0) {
 					i.value(i_ptr.flags);
 					i_ptr.p1--;
 					while (i.value() != 0) {
-						j.value(Misc1.bit_pos(i) + 1);
+						j.value(Misc1.firstBitPos(i) + 1);
 						k.value(Player.char_row);
 						l = Player.char_col;
 						/* Wands			 */
 						switch(j.value())
 						{
 						case 1:
-							IO.msg_print("A line of blue shimmering light appears.");
-							Spells.light_line(dir.value(), Player.char_row, Player.char_col);
+							IO.printMessage("A line of blue shimmering light appears.");
+							Spells.lightLine(dir.value(), Player.char_row, Player.char_col);
 							ident = true;
 							break;
 						case 2:
-							Spells.fire_bolt(Constants.GF_LIGHTNING, dir.value(), k.value(), l, Misc1.damroll(4, 8), Player.spell_names[8]);
+							Spells.fireBolt(Constants.GF_LIGHTNING, dir.value(), k.value(), l, Misc1.damageRoll(4, 8), Player.spell_names[8]);
 							ident = true;
 							break;
 						case 3:
-							Spells.fire_bolt(Constants.GF_FROST, dir.value(), k.value(), l, Misc1.damroll(6, 8), Player.spell_names[14]);
+							Spells.fireBolt(Constants.GF_FROST, dir.value(), k.value(), l, Misc1.damageRoll(6, 8), Player.spell_names[14]);
 							ident = true;
 							break;
 						case 4:
-							Spells.fire_bolt(Constants.GF_FIRE, dir.value(), k.value(), l, Misc1.damroll(9, 8), Player.spell_names[22]);
+							Spells.fireBolt(Constants.GF_FIRE, dir.value(), k.value(), l, Misc1.damageRoll(9, 8), Player.spell_names[22]);
 							ident = true;
 							break;
 						case 5:
-							ident = Spells.wall_to_mud(dir.value(), k.value(), l);
+							ident = Spells.transformWallToMud(dir.value(), k.value(), l);
 							break;
 						case 6:
-							ident = Spells.poly_monster(dir.value(), k.value(), l);
+							ident = Spells.polymorphMonster(dir.value(), k.value(), l);
 							break;
 						case 7:
-							ident = Spells.hp_monster(dir.value(), k.value(), l, -Misc1.damroll(4, 6));
+							ident = Spells.changeMonsterHitpoints(dir.value(), k.value(), l, -Misc1.damageRoll(4, 6));
 							break;
 						case 8:
-							ident = Spells.speed_monster(dir.value(), k.value(), l, 1);
+							ident = Spells.speedMonster(dir.value(), k.value(), l, 1);
 							break;
 						case 9:
-							ident = Spells.speed_monster(dir.value(), k.value(), l, -1);
+							ident = Spells.speedMonster(dir.value(), k.value(), l, -1);
 							break;
 						case 10:
-							ident = Spells.confuse_monster(dir.value(), k.value(), l);
+							ident = Spells.confuseMonster(dir.value(), k.value(), l);
 							break;
 						case 11:
-							ident = Spells.sleep_monster(dir.value(), k.value(), l);
+							ident = Spells.sleepMonster(dir.value(), k.value(), l);
 							break;
 						case 12:
-							ident = Spells.drain_life(dir.value(), k.value(), l);
+							ident = Spells.drainLife(dir.value(), k.value(), l);
 							break;
 						case 13:
-							ident = Spells.td_destroy2(dir.value(), k.value(), l);
+							ident = Spells.destroyTrapsAndDoors(dir.value(), k.value(), l);
 							break;
 						case 14:
-							Spells.fire_bolt(Constants.GF_MAGIC_MISSILE, dir.value(), k.value(), l, Misc1.damroll(2, 6), Player.spell_names[0]);
+							Spells.fireBolt(Constants.GF_MAGIC_MISSILE, dir.value(), k.value(), l, Misc1.damageRoll(2, 6), Player.spell_names[0]);
 							ident = true;
 							break;
 						case 15:
-							ident = Spells.build_wall(dir.value(), k.value(), l);
+							ident = Spells.buildWall(dir.value(), k.value(), l);
 							break;
 						case 16:
-							ident = Spells.clone_monster(dir.value(), k.value(), l);
+							ident = Spells.cloneMonster(dir.value(), k.value(), l);
 							break;
 						case 17:
-							ident = Spells.teleport_monster(dir.value(), k.value(), l);
+							ident = Spells.teleportMonsters(dir.value(), k.value(), l);
 							break;
 						case 18:
-							ident = Spells.disarm_all(dir.value(), k.value(), l);
+							ident = Spells.disarmAll(dir.value(), k.value(), l);
 							break;
 						case 19:
-							Spells.fire_ball(Constants.GF_LIGHTNING, dir.value(), k.value(), l, 32, "Lightning Ball");
+							Spells.fireBall(Constants.GF_LIGHTNING, dir.value(), k.value(), l, 32, "Lightning Ball");
 							ident = true;
 							break;
 						case 20:
-							Spells.fire_ball(Constants.GF_FROST, dir.value(), k.value(), l, 48, "Cold Ball");
+							Spells.fireBall(Constants.GF_FROST, dir.value(), k.value(), l, 48, "Cold Ball");
 							ident = true;
 							break;
 						case 21:
-							Spells.fire_ball(Constants.GF_FIRE, dir.value(), k.value(), l, 72, Player.spell_names[28]);
+							Spells.fireBall(Constants.GF_FIRE, dir.value(), k.value(), l, 72, Player.spell_names[28]);
 							ident = true;
 							break;
 						case 22:
-							Spells.fire_ball(Constants.GF_POISON_GAS, dir.value(), k.value(), l, 12, Player.spell_names[6]);
+							Spells.fireBall(Constants.GF_POISON_GAS, dir.value(), k.value(), l, 12, Player.spell_names[6]);
 							ident = true;
 							break;
 						case 23:
-							Spells.fire_ball(Constants.GF_ACID, dir.value(), k.value(), l, 60, "Acid Ball");
+							Spells.fireBall(Constants.GF_ACID, dir.value(), k.value(), l, 60, "Acid Ball");
 							ident = true;
 							break;
 						case 24:
-							i.value(1 << (Misc1.randint(23) - 1));
+							i.value(1 << (Misc1.randomInt(23) - 1));
 							break;
 						default:
-							IO.msg_print("Internal error in wands()");
+							IO.printMessage("Internal error in wands()");
 							break;
 						}
 						/* End of Wands.		    */
 					}
 					if (ident) {
-						if (!Desc.known1_p(i_ptr)) {
+						if (!Desc.isKnownByPlayer(i_ptr)) {
 							m_ptr = Player.py.misc;
 							/* round half-way case up */
 							m_ptr.exp += (i_ptr.level + (m_ptr.lev >> 1)) / m_ptr.lev;
-							Misc3.prt_experience();
+							Misc3.printExperience();
 							
 							Desc.identify(item_val);
 							i_ptr = Treasure.inventory[item_val.value()];
 						}
-					} else if (!Desc.known1_p(i_ptr)) {
+					} else if (!Desc.isKnownByPlayer(i_ptr)) {
 						Desc.sample(i_ptr);
 					}
-					Desc.desc_charges(item_val.value());
+					Desc.describeCharges(item_val.value());
 				} else {
-					IO.msg_print("The wand has no charges left.");
-					if (!Desc.known2_p(i_ptr)) {
-						Misc4.add_inscribe(i_ptr, Constants.ID_EMPTY);
+					IO.printMessage("The wand has no charges left.");
+					if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
+						Misc4.addInscription(i_ptr, Constants.ID_EMPTY);
 					}
 				}
 			}

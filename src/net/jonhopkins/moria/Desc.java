@@ -38,9 +38,8 @@ public class Desc {
 	 * @param ch - Character being checked
 	 * @return True if ch is a vowel
 	 */
-	public static boolean is_a_vowel(char ch)  {
-		switch(ch)
-		{
+	public static boolean isVowel(char ch)  {
+		switch(ch) {
 		case 'a': case 'e': case 'i': case 'o': case 'u':
 		case 'A': case 'E': case 'I': case 'O': case 'U':
 			return true;
@@ -52,56 +51,56 @@ public class Desc {
 	/**
 	 * Initialize all Potions, wands, staves, scrolls, etc.
 	 */
-	public static void magic_init() {
+	public static void magicInit() {
 		int h, i, j, k;
 		String tmp;
 		StringBuilder string;
 		
-		Misc1.set_seed(Variable.randes_seed);
+		Misc1.setSeed(Variable.randes_seed);
 		
 		/* The first 3 entries for colors are fixed, (slime & apple juice, water) */
 		for (i = 3; i < Constants.MAX_COLORS; i++) {
-			j = Misc1.randint(Constants.MAX_COLORS - 3) + 2;
+			j = Misc1.randomInt(Constants.MAX_COLORS - 3) + 2;
 			tmp = Tables.colors[i];
 			Tables.colors[i] = Tables.colors[j];
 			Tables.colors[j] = tmp;
 		}
 		for (i = 0; i < Constants.MAX_WOODS; i++) {
-			j = Misc1.randint(Constants.MAX_WOODS) - 1;
+			j = Misc1.randomInt(Constants.MAX_WOODS) - 1;
 			tmp = Tables.woods[i];
 			Tables.woods[i] = Tables.woods[j];
 			Tables.woods[j] = tmp;
 		}
 		for (i = 0; i < Constants.MAX_METALS; i++) {
-			j = Misc1.randint(Constants.MAX_METALS) - 1;
+			j = Misc1.randomInt(Constants.MAX_METALS) - 1;
 			tmp = Tables.metals[i];
 			Tables.metals[i] = Tables.metals[j];
 			Tables.metals[j] = tmp;
 		}
 		for (i = 0; i < Constants.MAX_ROCKS; i++) {
-			j = Misc1.randint(Constants.MAX_ROCKS) - 1;
+			j = Misc1.randomInt(Constants.MAX_ROCKS) - 1;
 			tmp = Tables.rocks[i];
 			Tables.rocks[i] = Tables.rocks[j];
 			Tables.rocks[j] = tmp;
 		}
 		for (i = 0; i < Constants.MAX_AMULETS; i++) {
-			j = Misc1.randint(Constants.MAX_AMULETS) - 1;
+			j = Misc1.randomInt(Constants.MAX_AMULETS) - 1;
 			tmp = Tables.amulets[i];
 			Tables.amulets[i] = Tables.amulets[j];
 			Tables.amulets[j] = tmp;
 		}
 		for (i = 0; i < Constants.MAX_MUSH; i++) {
-			j = Misc1.randint(Constants.MAX_MUSH) - 1;
+			j = Misc1.randomInt(Constants.MAX_MUSH) - 1;
 			tmp = Tables.mushrooms[i];
 			Tables.mushrooms[i] = Tables.mushrooms[j];
 			Tables.mushrooms[j] = tmp;
 		}
 		for (h = 0; h < Constants.MAX_TITLES; h++) {
 			string = new StringBuilder(10);
-			k = Misc1.randint(2) + 1;
+			k = Misc1.randomInt(2) + 1;
 			for (i = 0; i < k; i++) {
-				for (j = Misc1.randint(2); j > 0; j--) {
-					string = string.append(Tables.syllables[Misc1.randint(Constants.MAX_SYLLABLES) - 1]);
+				for (j = Misc1.randomInt(2); j > 0; j--) {
+					string = string.append(Tables.syllables[Misc1.randomInt(Constants.MAX_SYLLABLES) - 1]);
 				}
 				if (i < k - 1) {
 					string = string.append(' ');
@@ -116,7 +115,7 @@ public class Desc {
 			}
 			titles[h] = string.toString();
 		}
-		Misc1.reset_seed();
+		Misc1.resetSeed();
 	}
 	
 	/**
@@ -125,23 +124,23 @@ public class Desc {
 	 * @param t_ptr - Item being checked
 	 * @return Item type
 	 */
-	public static int object_offset(InvenType t_ptr) {
-		switch (t_ptr.tval)
-		{
-		case Constants.TV_AMULET:	return 0;
-		case Constants.TV_RING: 	return 1;
-		case Constants.TV_STAFF:	return 2;
-		case Constants.TV_WAND: 	return 3;
+	public static int getObjectOffset(InvenType t_ptr) {
+		switch (t_ptr.tval) {
+		case Constants.TV_AMULET:  return 0;
+		case Constants.TV_RING:    return 1;
+		case Constants.TV_STAFF:   return 2;
+		case Constants.TV_WAND:    return 3;
 		case Constants.TV_SCROLL1:
-		case Constants.TV_SCROLL2:	return 4;
+		case Constants.TV_SCROLL2: return 4;
 		case Constants.TV_POTION1:
-		case Constants.TV_POTION2:	return 5;
+		case Constants.TV_POTION2: return 5;
 		case Constants.TV_FOOD:
 			if ((t_ptr.subval & (Constants.ITEM_SINGLE_STACK_MIN - 1)) < Constants.MAX_MUSH) {
 				return 6;
 			}
 			return -1;
-		default:  return -1;
+		default:
+			return -1;
 		}
 	}
 	
@@ -150,11 +149,11 @@ public class Desc {
 	 * 
 	 * @param i_ptr - Item being identified
 	 */
-	public static void known1(InvenType i_ptr) {
+	public static void identifyItem(InvenType i_ptr) {
 		int offset;
 		int indexx;
 		
-		offset = object_offset(i_ptr);
+		offset = getObjectOffset(i_ptr);
 		if (offset < 0) {
 			return;
 		}
@@ -171,17 +170,17 @@ public class Desc {
 	 * @param i_ptr - Item being checked
 	 * @return True if the item is known, otherwise false
 	 */
-	public static boolean known1_p(InvenType i_ptr) {
+	public static boolean isKnownByPlayer(InvenType i_ptr) {
 		int offset;
 		int indexx;
 		
 		/* Items which don't have a 'color' are always known1, so that they can
 		 * be carried in order in the inventory.  */
-		offset = object_offset(i_ptr);
+		offset = getObjectOffset(i_ptr);
 		if (offset < 0) {
 			return true;
 		}
-		if (store_bought_p(i_ptr)) {
+		if (isStoreBought(i_ptr)) {
 			return true;
 		}
 		offset <<= 6;
@@ -190,29 +189,29 @@ public class Desc {
 	}
 	
 	/* Remove "Secret" symbol for identity of plusses			*/
-	public static void known2(InvenType i_ptr) {
+	public static void identifyItemPlusses(InvenType i_ptr) {
 		unsample(i_ptr);
 		i_ptr.ident |= Constants.ID_KNOWN2;
 	}
 	
-	public static boolean known2_p(InvenType i_ptr) {
+	public static boolean arePlussesKnownByPlayer(InvenType i_ptr) {
 		return (i_ptr.ident & Constants.ID_KNOWN2) != 0;
 	}
 	
-	public static void clear_known2(InvenType i_ptr) {
+	public static void clearPlussesIdentity(InvenType i_ptr) {
 		i_ptr.ident &= ~Constants.ID_KNOWN2;
 	}
 	
-	public static void clear_empty(InvenType i_ptr) {
+	public static void clearEmpty(InvenType i_ptr) {
 		i_ptr.ident &= ~Constants.ID_EMPTY;
 	}
 	
-	public static void store_bought(InvenType i_ptr) {
+	public static void setStoreBought(InvenType i_ptr) {
 		i_ptr.ident |= Constants.ID_STOREBOUGHT;
-		known2(i_ptr);
+		identifyItemPlusses(i_ptr);
 	}
 	
-	public static boolean store_bought_p(InvenType i_ptr) {
+	public static boolean isStoreBought(InvenType i_ptr) {
 		return (i_ptr.ident & Constants.ID_STOREBOUGHT) != 0;
 	}
 	
@@ -223,7 +222,7 @@ public class Desc {
 		
 		/* used to clear Constants.ID_DAMD flag, but I think it should remain set */
 		i_ptr.ident &= ~(Constants.ID_MAGIK|Constants.ID_EMPTY);
-		offset = object_offset(i_ptr);
+		offset = getObjectOffset(i_ptr);
 		if (offset < 0) {
 			return;
 		}
@@ -239,7 +238,7 @@ public class Desc {
 		int offset;
 		int indexx;
 		
-		offset = object_offset(i_ptr);
+		offset = getObjectOffset(i_ptr);
 		if (offset < 0) {
 			return;
 		}
@@ -259,11 +258,11 @@ public class Desc {
 		i_ptr = Treasure.inventory[item.value()];
 		
 		if ((i_ptr.flags & Constants.TR_CURSED) != 0) {
-			Misc4.add_inscribe(i_ptr, Constants.ID_DAMD);
+			Misc4.addInscription(i_ptr, Constants.ID_DAMD);
 		}
 		
-		if (!known1_p(i_ptr)) {
-			known1(i_ptr);
+		if (!isKnownByPlayer(i_ptr)) {
+			identifyItem(i_ptr);
 			x1 = i_ptr.tval;
 			x2 = i_ptr.subval;
 			if (x2 >= Constants.ITEM_SINGLE_STACK_MIN && x2 < Constants.ITEM_GROUP_MIN) {
@@ -275,14 +274,14 @@ public class Desc {
 							j = item.value(); item.value(i);
 							i = j;
 						}
-						IO.msg_print("You combine similar objects from the shop and dungeon.");
+						IO.printMessage("You combine similar objects from the shop and dungeon.");
 						
 						Treasure.inventory[item.value()].number += Treasure.inventory[i].number;
 						Treasure.inven_ctr--;
 						for (j = i; j < Treasure.inven_ctr; j++) {
 							Treasure.inventory[j] = Treasure.inventory[j + 1];
 						}
-						invcopy(Treasure.inventory[j], Constants.OBJ_NOTHING);
+						copyIntoInventory(Treasure.inventory[j], Constants.OBJ_NOTHING);
 					}
 				}
 			}
@@ -292,7 +291,7 @@ public class Desc {
 	/* If an object has lost magical properties,
 	 * remove the appropriate portion of the name.	       -CJS-
 	 */
-	public static void unmagic_name(InvenType i_ptr) {
+	public static void unmagicName(InvenType i_ptr) {
 		i_ptr.name2 = Constants.SN_NULL;
 	}
 	
@@ -308,7 +307,7 @@ public class Desc {
 	/* pref indicates that there should be an article added (prefix) */
 	/* note that since out_val can easily exceed 80 characters, objdes must
 	 * always be called with a bigvtype as the first parameter */
-	public static String objdes(InvenType i_ptr, boolean pref) {
+	public static String describeObject(InvenType i_ptr, boolean pref) {
 		/* base name, modifier string*/
 		String basenm, modstr;
 		StringBuilder tmp_val = new StringBuilder();
@@ -322,7 +321,7 @@ public class Desc {
 		modstr = "";
 		damstr = "";
 		p1_use = IGNORED;
-		modify = !known1_p(i_ptr);
+		modify = !isKnownByPlayer(i_ptr);
 		append_name = false;
 		switch(i_ptr.tval)
 		{
@@ -507,13 +506,13 @@ public class Desc {
 				out_val.append(tmp_val);
 			}
 		} else {
-			if (i_ptr.name2 != Constants.SN_NULL && known2_p(i_ptr)) {
+			if (i_ptr.name2 != Constants.SN_NULL && arePlussesKnownByPlayer(i_ptr)) {
 				tmp_val.append(' ').append(Treasure.special_names[i_ptr.name2]);
 			}
 			if (!damstr.isEmpty()) {
 				tmp_val.append(damstr);
 			}
-			if (known2_p(i_ptr)) {
+			if (arePlussesKnownByPlayer(i_ptr)) {
 				/* originally used %+d, but several machines don't support it */
 				if ((i_ptr.ident & Constants.ID_SHOW_HITDAM) != 0) {
 					tmp_str = String.format(" (%c%d,%c%d)", (i_ptr.tohit < 0) ? '-' : '+', Math.abs(i_ptr.tohit), (i_ptr.todam < 0) ? '-' : '+', Math.abs(i_ptr.todam));
@@ -530,13 +529,13 @@ public class Desc {
 			if (i_ptr.ac != 0 || (i_ptr.tval == Constants.TV_HELM)) {
 				tmp_str = String.format(" [%d", i_ptr.ac);
 				tmp_val.append(tmp_str);
-				if (known2_p(i_ptr)) {
+				if (arePlussesKnownByPlayer(i_ptr)) {
 					/* originally used %+d, but several machines don't support it */
 					tmp_str = String.format(",%c%d", (i_ptr.toac < 0) ? '-' : '+', Math.abs(i_ptr.toac));
 					tmp_val.append(tmp_str);
 				}
 				tmp_val.append(']');
-			} else if ((i_ptr.toac != 0) && known2_p(i_ptr)) {
+			} else if ((i_ptr.toac != 0) && arePlussesKnownByPlayer(i_ptr)) {
 				/* originally used %+d, but several machines don't support it */
 				tmp_str = String.format(" [%c%d]", (i_ptr.toac < 0) ? '-' : '+', Math.abs(i_ptr.toac));
 				tmp_val.append(tmp_str);
@@ -551,7 +550,7 @@ public class Desc {
 			tmp_str = "";
 			if (p1_use == LIGHT) {
 				tmp_str = String.format(" with %d turns of light", i_ptr.p1);
-			} else if (p1_use != IGNORED && known2_p(i_ptr)) {
+			} else if (p1_use != IGNORED && arePlussesKnownByPlayer(i_ptr)) {
 				if (p1_use == Z_PLUSSES) {
 					/* originally used %+d, but several machines don't support it */
 					tmp_str = String.format(" (%c%d)", (i_ptr.p1 < 0) ? '-' : '+', Math.abs(i_ptr.p1));
@@ -578,7 +577,7 @@ public class Desc {
 					out_val.append(String.format("%d%s", i_ptr.number, tmp_val.substring(1)));
 				} else if (i_ptr.number < 1) {
 					out_val.append(String.format("%s%s", "no more", tmp_val.substring(1)));
-				} else if (is_a_vowel(tmp_val.charAt(2))) {
+				} else if (isVowel(tmp_val.charAt(2))) {
 					out_val.append(String.format("an%s", tmp_val.substring(1)));
 				} else {
 					out_val.append(String.format("a%s", tmp_val.substring(1)));
@@ -597,10 +596,10 @@ public class Desc {
 			}
 			
 			tmp_str = "";
-			if ((indexx = object_offset(i_ptr)) >= 0) {
+			if ((indexx = getObjectOffset(i_ptr)) >= 0) {
 				indexx = (indexx << 6) + (i_ptr.subval & (Constants.ITEM_SINGLE_STACK_MIN - 1));
 				/* don't print tried string for store bought items */
-				if ((Treasure.object_ident[indexx] & Constants.OD_TRIED) != 0 && !store_bought_p(i_ptr)) {
+				if ((Treasure.object_ident[indexx] & Constants.OD_TRIED) != 0 && !isStoreBought(i_ptr)) {
 					tmp_str = tmp_str.concat("tried ");
 				}
 			}
@@ -629,34 +628,34 @@ public class Desc {
 		return out_val.toString();
 	}
 	
-	public static void invcopy(InvenType to, int from_index) {
+	public static void copyIntoInventory(InvenType to, int from_index) {
 		Treasure.object_list[from_index].copyInto(to);
-		to.index	 = from_index;
+		to.index = from_index;
 	}
 	
 	/* Describe number of remaining charges.		-RAK-	*/
-	public static void desc_charges(int item_val) {
+	public static void describeCharges(int item_val) {
 		int rem_num;
 		String out_val;
 		
-		if (known2_p(Treasure.inventory[item_val])) {
+		if (arePlussesKnownByPlayer(Treasure.inventory[item_val])) {
 			rem_num = Treasure.inventory[item_val].p1;
 			out_val = String.format("You have %d charges remaining.", rem_num);
-			IO.msg_print(out_val);
+			IO.printMessage(out_val);
 		}
 	}
 	
 	/* Describe amount of item remaining.			-RAK-	*/
-	public static void desc_remain(int item_val) {
+	public static void describeRemaining(int item_val) {
 		String out_val, tmp_str;
 		InvenType i_ptr;
 		
 		i_ptr = Treasure.inventory[item_val];
 		i_ptr.number--;
-		tmp_str = objdes(i_ptr, true);
+		tmp_str = describeObject(i_ptr, true);
 		i_ptr.number++;
 		/* the string already has a dot at the end. */
 		out_val = String.format("You have %s", tmp_str);
-		IO.msg_print(out_val);
+		IO.printMessage(out_val);
 	}
 }

@@ -153,7 +153,7 @@ public class Recall {
 	private Recall() { }
 	
 	/* Do we know anything about this monster? */
-	public static boolean bool_roff_recall(int mon_num) {
+	public static boolean canRecallMonster(int mon_num) {
 		MonsterRecallType mp;
 		int i;
 		
@@ -173,7 +173,7 @@ public class Recall {
 	}
 	
 	/* Print out what we have discovered about this monster. */
-	public static char roff_recall(int mon_num) {
+	public static char recallMonster(int mon_num) {
 		String p, q;
 		int[] pu;
 		String temp;
@@ -636,7 +636,7 @@ public class Recall {
 			roff(" Killing one of these wins the game!");
 		}
 		roff("\n");
-		IO.prt("--pause--", roffpline, 0);
+		IO.print("--pause--", roffpline, 0);
 		if (Variable.wizard) {
 			mp.r_cmove = save_mem.r_cmove;
 			mp.r_spells = save_mem.r_spells;
@@ -665,7 +665,7 @@ public class Recall {
 				}
 				
 				p = p.substring(0, j);
-				IO.prt(roffbuf, roffpline, 0);
+				IO.print(roffbuf, roffpline, 0);
 				roffpline++;
 				roffbuf = roffbuf.substring(j);
 			}

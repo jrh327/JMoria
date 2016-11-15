@@ -35,7 +35,7 @@ public class Creature {
 	private Creature() { }
 	
 	/* Updates screen when monsters move about		-RAK-	*/
-	public static void update_mon(int monptr) {
+	public static void updateMonster(int monptr) {
 		boolean flag;
 		CaveType c_ptr;
 		MonsterType m_ptr;
@@ -43,13 +43,13 @@ public class Creature {
 		
 		m_ptr = Monsters.m_list[monptr];
 		flag = false;
-		if ((m_ptr.cdis <= Constants.MAX_SIGHT) && (Player.py.flags.status & Constants.PY_BLIND) == 0 && (Misc1.panel_contains(m_ptr.fy, m_ptr.fx))) {
+		if ((m_ptr.cdis <= Constants.MAX_SIGHT) && (Player.py.flags.status & Constants.PY_BLIND) == 0 && (Misc1.panelContains(m_ptr.fy, m_ptr.fx))) {
 			/* Wizard sight.	     */
 			if (Variable.wizard) {
 				flag = true;
 			
 			/* Normal sight.	     */
-			} else if (Misc1.los(Player.char_row, Player.char_col, m_ptr.fy, m_ptr.fx)) {
+			} else if (Misc1.isInLineOfSight(Player.char_row, Player.char_col, m_ptr.fy, m_ptr.fx)) {
 				c_ptr = Variable.cave[m_ptr.fy][m_ptr.fx];
 				r_ptr = Monsters.c_list[m_ptr.mptr];
 				if (c_ptr.pl || c_ptr.tl || (Variable.find_flag != 0 && m_ptr.cdis < 2 && Variable.player_light)) {
@@ -71,16 +71,16 @@ public class Creature {
 		/* Light it up.	 */
 		if (flag) {
 			if (!m_ptr.ml) {
-				Moria1.disturb(true, false);
+				Moria1.disturbPlayer(true, false);
 				m_ptr.ml = true;
-				Moria1.lite_spot(m_ptr.fy, m_ptr.fx);
+				Moria1.lightUpSpot(m_ptr.fy, m_ptr.fx);
 				Variable.screen_change = true; /* notify inven_command */
 			}
 		
 		/* Turn it off.	 */
 		} else if (m_ptr.ml) {
 			m_ptr.ml = false;
-			Moria1.lite_spot(m_ptr.fy, m_ptr.fx);
+			Moria1.lightUpSpot(m_ptr.fy, m_ptr.fx);
 			Variable.screen_change = true; /* notify inven_command */
 		}
 	}
@@ -88,7 +88,7 @@ public class Creature {
 	/* Given speed,	 returns number of moves this turn.	-RAK-	*/
 	/* NOTE: Player must always move at least once per iteration,	  */
 	/*	 a slowed player is handled by moving monsters faster	 */
-	public static int movement_rate(int speed) {
+	public static int getMovesPerTurn(int speed) {
 		if (speed > 0) {
 			if (Player.py.flags.rest != 0) {
 				return 1;
@@ -102,20 +102,20 @@ public class Creature {
 	}
 	
 	/* Makes sure a new creature gets lit up.			-CJS- */
-	public static boolean check_mon_lite(int y, int x) {
+	public static boolean checkMonsterLight(int y, int x) {
 		int monptr;
 		
 		monptr = Variable.cave[y][x].cptr;
 		if (monptr <= 1) {
 			return false;
 		} else {
-			update_mon(monptr);
+			updateMonster(monptr);
 			return Monsters.m_list[monptr].ml;
 		}
 	}
 	
 	/* Choose correct directions for monster movement	-RAK-	*/
-	public static void get_moves(int monptr, int[] mm) {
+	public static void getMoveDirections(int monptr, int[] mm) {
 		int y, ay, x, ax, move_val;
 		
 		y = Monsters.m_list[monptr].fy - Player.char_row;
@@ -259,7 +259,7 @@ public class Creature {
 	}
 	
 	/* Make an attack on the player (chuckle.)		-RAK-	*/
-	public static void make_attack(int monptr) {
+	public static void makeAttack(int monptr) {
 		int attype, adesc, adice, asides;
 		IntPointer i = new IntPointer(), j = new IntPointer();
 		int damage, attackn;
@@ -287,7 +287,7 @@ public class Creature {
 		/* For "DIED_FROM" string	   */
 		if ((Constants.CM_WIN & r_ptr.cmove) != 0) {
 			ddesc = String.format("The %s", r_ptr.name);
-		} else if (Desc.is_a_vowel(r_ptr.name.charAt(0))) {
+		} else if (Desc.isVowel(r_ptr.name.charAt(0))) {
 			ddesc = String.format("an %s", r_ptr.name);
 		} else {
 			ddesc = String.format("a %s", r_ptr.name);
@@ -315,97 +315,97 @@ public class Creature {
 			p_ptr = Player.py.misc;
 			switch (attype) {
 			case 1:	/*Normal attack  */
-				if (Moria1.test_hit(60, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(60, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 2:	/*Lose Strength*/
-				if (Moria1.test_hit(-3, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(-3, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 3:	/*Confusion attack*/
-				if (Moria1.test_hit(10, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(10, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 4:	/*Fear attack    */
-				if (Moria1.test_hit(10, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(10, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 5:	/*Fire attack    */
-				if (Moria1.test_hit(10, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(10, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 6:	/*Acid attack    */
-				if (Moria1.test_hit(0, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(0, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 7:	/*Cold attack    */
-				if (Moria1.test_hit(10, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(10, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 8:	/*Lightning attack*/
-				if (Moria1.test_hit(10, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(10, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 9:	/*Corrosion attack*/
-				if (Moria1.test_hit(0, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(0, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 10:	/*Blindness attack*/
-				if (Moria1.test_hit(2, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(2, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 11:	/*Paralysis attack*/
-				if (Moria1.test_hit(2, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(2, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 12:	/*Steal Money    */
-				if ((Moria1.test_hit(5, r_ptr.level, 0, Player.py.misc.lev, Constants.CLA_MISC_HIT)) && (Player.py.misc.au > 0)) {
+				if ((Moria1.testHit(5, r_ptr.level, 0, Player.py.misc.lev, Constants.CLA_MISC_HIT)) && (Player.py.misc.au > 0)) {
 					flag = true;
 				}
 				break;
 			case 13:	/*Steal Object   */
-				if ((Moria1.test_hit(2, r_ptr.level, 0, Player.py.misc.lev, Constants.CLA_MISC_HIT)) && (Treasure.inven_ctr > 0)) {
+				if ((Moria1.testHit(2, r_ptr.level, 0, Player.py.misc.lev, Constants.CLA_MISC_HIT)) && (Treasure.inven_ctr > 0)) {
 					flag = true;
 				}
 				break;
 			case 14:	/*Poison	       */
-				if (Moria1.test_hit(5, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(5, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 15:	/*Lose dexterity*/
-				if (Moria1.test_hit(0, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(0, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 16:	/*Lose constitution*/
-				if (Moria1.test_hit(0, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(0, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 17:	/*Lose intelligence*/
-				if (Moria1.test_hit(2, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(2, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 18:	/*Lose wisdom*/
-				if (Moria1.test_hit(2, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(2, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 19:	/*Lose experience*/
-				if (Moria1.test_hit(5, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(5, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
@@ -413,22 +413,22 @@ public class Creature {
 				flag = true;
 				break;
 			case 21:	/*Disenchant	  */
-				if (Moria1.test_hit(20, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(20, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 22:	/*Eat food	  */
-				if (Moria1.test_hit(5, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(5, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 23:      /*Eat light	  */
-				if (Moria1.test_hit(5, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
+				if (Moria1.testHit(5, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) {
 					flag = true;
 				}
 				break;
 			case 24:      /*Eat charges	  */
-				if ((Moria1.test_hit(15, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) && (Treasure.inven_ctr > 0)) {
+				if ((Moria1.testHit(15, r_ptr.level, 0, p_ptr.pac + p_ptr.ptoac, Constants.CLA_MISC_HIT)) && (Treasure.inven_ctr > 0)) {
 					/* check to make sure an object exists */
 					flag = true;
 				}
@@ -443,42 +443,42 @@ public class Creature {
 			if (flag) {
 				/* can not strcat to cdesc because the creature may have
 				 * multiple attacks */
-				Moria1.disturb(true, false);
+				Moria1.disturbPlayer(true, false);
 				tmp_str = cdesc;
 				switch (adesc) {
-				case 1: IO.msg_print(tmp_str.concat("hits you.")); break;
-				case 2: IO.msg_print(tmp_str.concat("bites you.")); break;
-				case 3: IO.msg_print(tmp_str.concat("claws you.")); break;
-				case 4: IO.msg_print(tmp_str.concat("stings you.")); break;
-				case 5: IO.msg_print(tmp_str.concat("touches you.")); break;
+				case 1: IO.printMessage(tmp_str.concat("hits you.")); break;
+				case 2: IO.printMessage(tmp_str.concat("bites you.")); break;
+				case 3: IO.printMessage(tmp_str.concat("claws you.")); break;
+				case 4: IO.printMessage(tmp_str.concat("stings you.")); break;
+				case 5: IO.printMessage(tmp_str.concat("touches you.")); break;
 				//case 6: msg_print(strcat(tmp_str, "kicks you.")); break;
-				case 7: IO.msg_print(tmp_str.concat("gazes at you.")); break;
-				case 8: IO.msg_print(tmp_str.concat("breathes on you.")); break;
-				case 9: IO.msg_print(tmp_str.concat("spits on you.")); break;
-				case 10: IO.msg_print(tmp_str.concat("makes a horrible wail."));break;
+				case 7: IO.printMessage(tmp_str.concat("gazes at you.")); break;
+				case 8: IO.printMessage(tmp_str.concat("breathes on you.")); break;
+				case 9: IO.printMessage(tmp_str.concat("spits on you.")); break;
+				case 10: IO.printMessage(tmp_str.concat("makes a horrible wail."));break;
 				//case 11: msg_print(strcat(tmp_str, "embraces you.")); break;
-				case 12: IO.msg_print(tmp_str.concat("crawls on you.")); break;
-				case 13: IO.msg_print(tmp_str.concat("releases a cloud of spores.")); break;
-				case 14: IO.msg_print(tmp_str.concat("begs you for money.")); break;
-				case 15: IO.msg_print("You've been slimed!"); break;
-				case 16: IO.msg_print(tmp_str.concat("crushes you.")); break;
-				case 17: IO.msg_print(tmp_str.concat("tramples you.")); break;
-				case 18: IO.msg_print(tmp_str.concat("drools on you.")); break;
+				case 12: IO.printMessage(tmp_str.concat("crawls on you.")); break;
+				case 13: IO.printMessage(tmp_str.concat("releases a cloud of spores.")); break;
+				case 14: IO.printMessage(tmp_str.concat("begs you for money.")); break;
+				case 15: IO.printMessage("You've been slimed!"); break;
+				case 16: IO.printMessage(tmp_str.concat("crushes you.")); break;
+				case 17: IO.printMessage(tmp_str.concat("tramples you.")); break;
+				case 18: IO.printMessage(tmp_str.concat("drools on you.")); break;
 				case 19:
-					switch(Misc1.randint(9)) {
-					case 1: IO.msg_print(tmp_str.concat("insults you!")); break;
-					case 2: IO.msg_print(tmp_str.concat("insults your mother!")); break;
-					case 3: IO.msg_print(tmp_str.concat("gives you the finger!")); break;
-					case 4: IO.msg_print(tmp_str.concat("humiliates you!")); break;
-					case 5: IO.msg_print(tmp_str.concat("wets on your leg!")); break;
-					case 6: IO.msg_print(tmp_str.concat("defiles you!")); break;
-					case 7: IO.msg_print(tmp_str.concat("dances around you!"));break;
-					case 8: IO.msg_print(tmp_str.concat("makes obscene gestures!")); break;
-					case 9: IO.msg_print(tmp_str.concat("moons you!!!")); break;
+					switch(Misc1.randomInt(9)) {
+					case 1: IO.printMessage(tmp_str.concat("insults you!")); break;
+					case 2: IO.printMessage(tmp_str.concat("insults your mother!")); break;
+					case 3: IO.printMessage(tmp_str.concat("gives you the finger!")); break;
+					case 4: IO.printMessage(tmp_str.concat("humiliates you!")); break;
+					case 5: IO.printMessage(tmp_str.concat("wets on your leg!")); break;
+					case 6: IO.printMessage(tmp_str.concat("defiles you!")); break;
+					case 7: IO.printMessage(tmp_str.concat("dances around you!"));break;
+					case 8: IO.printMessage(tmp_str.concat("makes obscene gestures!")); break;
+					case 9: IO.printMessage(tmp_str.concat("moons you!!!")); break;
 					default: break;
 					}
 					break;
-				case 99: IO.msg_print(tmp_str.concat("is repelled.")); break;
+				case 99: IO.printMessage(tmp_str.concat("is repelled.")); break;
 				default: break;
 				}
 				
@@ -493,31 +493,31 @@ public class Creature {
 					visible = true;
 				}
 				
-				damage = Misc1.damroll(adice, asides);
+				damage = Misc1.damageRoll(adice, asides);
 				switch (attype) {
 				case 1:	/*Normal attack	*/
 					/* round half-way case down */
 					damage -= ((p_ptr.pac + p_ptr.ptoac) * damage) / 200;
-					Moria1.take_hit(damage, ddesc);
+					Moria1.takeHit(damage, ddesc);
 					break;
 				case 2:	/*Lose Strength*/
-					Moria1.take_hit(damage, ddesc);
+					Moria1.takeHit(damage, ddesc);
 					if (Player.py.flags.sustain_str) {
-						IO.msg_print("You feel weaker for a moment, but it passes.");
-					} else if (Misc1.randint(2) == 1) {
-						IO.msg_print("You feel weaker.");
-						Misc3.dec_stat(Constants.A_STR);
+						IO.printMessage("You feel weaker for a moment, but it passes.");
+					} else if (Misc1.randomInt(2) == 1) {
+						IO.printMessage("You feel weaker.");
+						Misc3.decreaseStat(Constants.A_STR);
 					} else {
 						notice = false;
 					}
 					break;
 				case 3:	/*Confusion attack*/
 					f_ptr = Player.py.flags;
-					Moria1.take_hit(damage, ddesc);
-					if (Misc1.randint(2) == 1) {
+					Moria1.takeHit(damage, ddesc);
+					if (Misc1.randomInt(2) == 1) {
 						if (f_ptr.confused < 1) {
-							IO.msg_print("You feel confused.");
-							f_ptr.confused += Misc1.randint(r_ptr.level);
+							IO.printMessage("You feel confused.");
+							f_ptr.confused += Misc1.randomInt(r_ptr.level);
 						} else {
 							notice = false;
 						}
@@ -528,44 +528,44 @@ public class Creature {
 					break;
 				case 4:	/*Fear attack	*/
 					f_ptr = Player.py.flags;
-					Moria1.take_hit(damage, ddesc);
-					if (Misc3.player_saves()) {
-						IO.msg_print("You resist the effects!");
+					Moria1.takeHit(damage, ddesc);
+					if (Misc3.playerSavingThrow()) {
+						IO.printMessage("You resist the effects!");
 					} else if (f_ptr.afraid < 1) {
-						IO.msg_print("You are suddenly afraid!");
-						f_ptr.afraid += 3 + Misc1.randint(r_ptr.level);
+						IO.printMessage("You are suddenly afraid!");
+						f_ptr.afraid += 3 + Misc1.randomInt(r_ptr.level);
 					} else {
 						f_ptr.afraid += 3;
 						notice = false;
 					}
 					break;
 				case 5:	/*Fire attack	*/
-					IO.msg_print("You are enveloped in flames!");
-					Moria2.fire_dam(damage, ddesc);
+					IO.printMessage("You are enveloped in flames!");
+					Moria2.fireDamage(damage, ddesc);
 					break;
 				case 6:	/*Acid attack	*/
-					IO.msg_print("You are covered in acid!");
-					Moria2.acid_dam(damage, ddesc);
+					IO.printMessage("You are covered in acid!");
+					Moria2.acidDamage(damage, ddesc);
 					break;
 				case 7:	/*Cold attack	*/
-					IO.msg_print("You are covered with frost!");
-					Moria2.cold_dam(damage, ddesc);
+					IO.printMessage("You are covered with frost!");
+					Moria2.coldDamage(damage, ddesc);
 					break;
 				case 8:	/*Lightning attack*/
-					IO.msg_print("Lightning strikes you!");
-					Moria2.light_dam(damage, ddesc);
+					IO.printMessage("Lightning strikes you!");
+					Moria2.lightningDamage(damage, ddesc);
 					break;
 				case 9:	/*Corrosion attack*/
-					IO.msg_print("A stinging red gas swirls about you.");
-					Moria2.corrode_gas(ddesc);
-					Moria1.take_hit(damage, ddesc);
+					IO.printMessage("A stinging red gas swirls about you.");
+					Moria2.corrodeGas(ddesc);
+					Moria1.takeHit(damage, ddesc);
 					break;
 				case 10:	/*Blindness attack*/
 					f_ptr = Player.py.flags;
-					Moria1.take_hit(damage, ddesc);
+					Moria1.takeHit(damage, ddesc);
 					if (f_ptr.blind < 1) {
-						f_ptr.blind += 10 + Misc1.randint(r_ptr.level);
-						IO.msg_print("Your eyes begin to sting.");
+						f_ptr.blind += 10 + Misc1.randomInt(r_ptr.level);
+						IO.printMessage("Your eyes begin to sting.");
 					} else {
 						f_ptr.blind += 5;
 						notice = false;
@@ -573,107 +573,107 @@ public class Creature {
 					break;
 				case 11:	/*Paralysis attack*/
 					f_ptr = Player.py.flags;
-					Moria1.take_hit(damage, ddesc);
-					if (Misc3.player_saves()) {
-						IO.msg_print("You resist the effects!");
+					Moria1.takeHit(damage, ddesc);
+					if (Misc3.playerSavingThrow()) {
+						IO.printMessage("You resist the effects!");
 					} else if (f_ptr.paralysis < 1) {
 						if (f_ptr.free_act) {
-							IO.msg_print("You are unaffected.");
+							IO.printMessage("You are unaffected.");
 						} else {
-							f_ptr.paralysis = Misc1.randint(r_ptr.level) + 3;
-							IO.msg_print("You are paralyzed.");
+							f_ptr.paralysis = Misc1.randomInt(r_ptr.level) + 3;
+							IO.printMessage("You are paralyzed.");
 						}
 					} else {
 						notice = false;
 					}
 					break;
 				case 12:	/*Steal Money	  */
-					if ((Player.py.flags.paralysis < 1) && (Misc1.randint(124) < Player.py.stats.use_stat[Constants.A_DEX])) {
-						IO.msg_print("You quickly protect your money pouch!");
+					if ((Player.py.flags.paralysis < 1) && (Misc1.randomInt(124) < Player.py.stats.use_stat[Constants.A_DEX])) {
+						IO.printMessage("You quickly protect your money pouch!");
 					} else {
-						gold = (p_ptr.au / 10) + Misc1.randint(25);
+						gold = (p_ptr.au / 10) + Misc1.randomInt(25);
 						if (gold > p_ptr.au) {
 							p_ptr.au = 0;
 						} else {
 							p_ptr.au -= gold;
 						}
-						IO.msg_print("Your purse feels lighter.");
-						Misc3.prt_gold();
+						IO.printMessage("Your purse feels lighter.");
+						Misc3.printGold();
 					}
-					if (Misc1.randint(2) == 1) {
-						IO.msg_print("There is a puff of smoke!");
-						Spells.teleport_away(monptr, Constants.MAX_SIGHT);
+					if (Misc1.randomInt(2) == 1) {
+						IO.printMessage("There is a puff of smoke!");
+						Spells.teleportMonsterAway(monptr, Constants.MAX_SIGHT);
 					}
 					break;
 				case 13:	/*Steal Object	 */
-					if ((Player.py.flags.paralysis < 1) && (Misc1.randint(124) < Player.py.stats.use_stat[Constants.A_DEX])) {
-						IO.msg_print("You grab hold of your backpack!");
+					if ((Player.py.flags.paralysis < 1) && (Misc1.randomInt(124) < Player.py.stats.use_stat[Constants.A_DEX])) {
+						IO.printMessage("You grab hold of your backpack!");
 					} else {
-						i.value(Misc1.randint(Treasure.inven_ctr) - 1);
-						Misc3.inven_destroy(i.value());
-						IO.msg_print("Your backpack feels lighter.");
+						i.value(Misc1.randomInt(Treasure.inven_ctr) - 1);
+						Misc3.destroyInvenItem(i.value());
+						IO.printMessage("Your backpack feels lighter.");
 					}
-					if (Misc1.randint(2) == 1) {
-						IO.msg_print("There is a puff of smoke!");
-						Spells.teleport_away(monptr, Constants.MAX_SIGHT);
+					if (Misc1.randomInt(2) == 1) {
+						IO.printMessage("There is a puff of smoke!");
+						Spells.teleportMonsterAway(monptr, Constants.MAX_SIGHT);
 					}
 					break;
 				case 14:	/*Poison	 */
 					f_ptr = Player.py.flags;
-					Moria1.take_hit(damage, ddesc);
-					IO.msg_print("You feel very sick.");
-					f_ptr.poisoned += Misc1.randint(r_ptr.level) + 5;
+					Moria1.takeHit(damage, ddesc);
+					IO.printMessage("You feel very sick.");
+					f_ptr.poisoned += Misc1.randomInt(r_ptr.level) + 5;
 					break;
 				case 15:	/*Lose dexterity */
 					f_ptr = Player.py.flags;
-					Moria1.take_hit(damage, ddesc);
+					Moria1.takeHit(damage, ddesc);
 					if (f_ptr.sustain_dex) {
-						IO.msg_print("You feel clumsy for a moment, but it passes.");
+						IO.printMessage("You feel clumsy for a moment, but it passes.");
 					} else {
-						IO.msg_print("You feel more clumsy.");
-						Misc3.dec_stat(Constants.A_DEX);
+						IO.printMessage("You feel more clumsy.");
+						Misc3.decreaseStat(Constants.A_DEX);
 					}
 					break;
 				case 16:	/*Lose constitution */
 					f_ptr = Player.py.flags;
-					Moria1.take_hit(damage, ddesc);
+					Moria1.takeHit(damage, ddesc);
 					if (f_ptr.sustain_con) {
-						IO.msg_print("Your body resists the effects of the disease.");
+						IO.printMessage("Your body resists the effects of the disease.");
 					} else {
-						IO.msg_print("Your health is damaged!");
-						Misc3.dec_stat(Constants.A_CON);
+						IO.printMessage("Your health is damaged!");
+						Misc3.decreaseStat(Constants.A_CON);
 					}
 					break;
 				case 17:	/*Lose intelligence */
 					f_ptr = Player.py.flags;
-					Moria1.take_hit(damage, ddesc);
-					IO.msg_print("You have trouble thinking clearly.");
+					Moria1.takeHit(damage, ddesc);
+					IO.printMessage("You have trouble thinking clearly.");
 					if (f_ptr.sustain_int) {
-						IO.msg_print("But your mind quickly clears.");
+						IO.printMessage("But your mind quickly clears.");
 					} else {
-						Misc3.dec_stat(Constants.A_INT);
+						Misc3.decreaseStat(Constants.A_INT);
 					}
 					break;
 				case 18:	/*Lose wisdom	   */
 					f_ptr = Player.py.flags;
-					Moria1.take_hit(damage, ddesc);
+					Moria1.takeHit(damage, ddesc);
 					if (f_ptr.sustain_wis) {
-						IO.msg_print("Your wisdom is sustained.");
+						IO.printMessage("Your wisdom is sustained.");
 					} else {
-						IO.msg_print("Your wisdom is drained.");
-						Misc3.dec_stat(Constants.A_WIS);
+						IO.printMessage("Your wisdom is drained.");
+						Misc3.decreaseStat(Constants.A_WIS);
 					}
 					break;
 				case 19:	/*Lose experience  */
-					IO.msg_print("You feel your life draining away!");
-					Spells.lose_exp(damage + (Player.py.misc.exp / 100) * Constants.MON_DRAIN_LIFE);
+					IO.printMessage("You feel your life draining away!");
+					Spells.loseExperience(damage + (Player.py.misc.exp / 100) * Constants.MON_DRAIN_LIFE);
 					break;
 				case 20:	/*Aggravate monster*/
-					Spells.aggravate_monster(20);
+					Spells.aggravateMonster(20);
 					break;
 				case 21:	/*Disenchant	   */
 					flag = false;
-					switch (Misc1.randint(7)) {
+					switch (Misc1.randomInt(7)) {
 					case 1: i.value(Constants.INVEN_WIELD);	break;
 					case 2: i.value(Constants.INVEN_BODY);	break;
 					case 3: i.value(Constants.INVEN_ARM);	break;
@@ -685,7 +685,7 @@ public class Creature {
 					}
 					i_ptr = Treasure.inventory[i.value()];
 					if (i_ptr.tohit > 0) {
-						i_ptr.tohit -= Misc1.randint(2);
+						i_ptr.tohit -= Misc1.randomInt(2);
 						/* don't send it below zero */
 						if (i_ptr.tohit < 0) {
 							i_ptr.tohit = 0;
@@ -693,7 +693,7 @@ public class Creature {
 						flag = true;
 					}
 					if (i_ptr.todam > 0) {
-						i_ptr.todam -= Misc1.randint(2);
+						i_ptr.todam -= Misc1.randomInt(2);
 						/* don't send it below zero */
 						if (i_ptr.todam < 0) {
 							i_ptr.todam = 0;
@@ -701,7 +701,7 @@ public class Creature {
 						flag = true;
 					}
 					if (i_ptr.toac > 0) {
-						i_ptr.toac -= Misc1.randint(2);
+						i_ptr.toac -= Misc1.randomInt(2);
 						/* don't send it below zero */
 						if (i_ptr.toac < 0) {
 							i_ptr.toac = 0;
@@ -709,16 +709,16 @@ public class Creature {
 						flag = true;
 					}
 					if (flag) {
-						IO.msg_print("There is a static feeling in the air.");
-						Moria1.calc_bonuses();
+						IO.printMessage("There is a static feeling in the air.");
+						Moria1.calcBonuses();
 					} else {
 						notice = false;
 					}
 					break;
 				case 22:	/*Eat food	   */
-					if (Misc3.find_range(Constants.TV_FOOD, Constants.TV_NEVER, i, j)) {
-						Misc3.inven_destroy(i.value());
-						IO.msg_print("It got at your rations!");
+					if (Misc3.findRange(Constants.TV_FOOD, Constants.TV_NEVER, i, j)) {
+						Misc3.destroyInvenItem(i.value());
+						IO.printMessage("It got at your rations!");
 					} else {
 						notice = false;
 					}
@@ -726,10 +726,10 @@ public class Creature {
 				case 23:	/*Eat light	   */
 					i_ptr = Treasure.inventory[Constants.INVEN_LIGHT];
 					if (i_ptr.p1 > 0) {
-						i_ptr.p1 -= (250 + Misc1.randint(250));
+						i_ptr.p1 -= (250 + Misc1.randomInt(250));
 						if (i_ptr.p1 < 1)	i_ptr.p1 = 1;
 						if (Player.py.flags.blind < 1) {
-							IO.msg_print("Your light dims.");
+							IO.printMessage("Your light dims.");
 						} else {
 							notice = false;
 						}
@@ -738,16 +738,16 @@ public class Creature {
 					}
 					break;
 				case 24:	/*Eat charges	  */
-					i.value(Misc1.randint(Treasure.inven_ctr) - 1);
+					i.value(Misc1.randomInt(Treasure.inven_ctr) - 1);
 					j.value(r_ptr.level);
 					i_ptr = Treasure.inventory[i.value()];
 					if (((i_ptr.tval == Constants.TV_STAFF) || (i_ptr.tval == Constants.TV_WAND)) && (i_ptr.p1 > 0)) {
 						m_ptr.hp += j.value() * i_ptr.p1;
 						i_ptr.p1 = 0;
-						if (!Desc.known2_p(i_ptr)) {
-							Misc4.add_inscribe(i_ptr, Constants.ID_EMPTY);
+						if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
+							Misc4.addInscription(i_ptr, Constants.ID_EMPTY);
 						}
-						IO.msg_print("Energy drains from your pack!");
+						IO.printMessage("Energy drains from your pack!");
 					} else {
 						notice = false;
 					}
@@ -764,20 +764,20 @@ public class Creature {
 				 * actually hits.  A monster that has been repelled has not hit
 				 * the player, so it should not be confused.  */
 				if (Player.py.flags.confuse_monster && adesc != 99) {
-					IO.msg_print("Your hands stop glowing.");
+					IO.printMessage("Your hands stop glowing.");
 					Player.py.flags.confuse_monster = false;
-					if ((Misc1.randint(Constants.MAX_MONS_LEVEL) < r_ptr.level) || (Constants.CD_NO_SLEEP & r_ptr.cdefense) != 0) {
+					if ((Misc1.randomInt(Constants.MAX_MONS_LEVEL) < r_ptr.level) || (Constants.CD_NO_SLEEP & r_ptr.cdefense) != 0) {
 						tmp_str = String.format("%sis unaffected.", cdesc);
 					} else {
 						tmp_str = String.format("%sappears confused.", cdesc);
 						if (m_ptr.confused > 0) {
 							m_ptr.confused += 3;
 						} else {
-							m_ptr.confused = 2 + Misc1.randint(16);
+							m_ptr.confused = 2 + Misc1.randomInt(16);
 						}
 					}
-					IO.msg_print(tmp_str);
-					if (visible && !Variable.death && Misc1.randint(4) == 1) {
+					IO.printMessage(tmp_str);
+					if (visible && !Variable.death && Misc1.randomInt(4) == 1) {
 						Variable.c_recall[m_ptr.mptr].r_cdefense |= r_ptr.cdefense & Constants.CD_NO_SLEEP;
 					}
 				}
@@ -794,9 +794,9 @@ public class Creature {
 				}
 			} else {
 				if ((adesc >= 1 && adesc <= 3) || (adesc == 6)) {
-					Moria1.disturb(true, false);
+					Moria1.disturbPlayer(true, false);
 					tmp_str = cdesc;
-					IO.msg_print(tmp_str.concat("misses you."));
+					IO.printMessage(tmp_str.concat("misses you."));
 				}
 			}
 			if (attackn < Constants.MAX_MON_NATTACK - 1) {
@@ -808,7 +808,7 @@ public class Creature {
 	}
 	
 	/* Make the move if possible, five choices		-RAK-	*/
-	public static void make_move(int monptr, int[] mm, IntPointer rcmove) {
+	public static void makeMove(int monptr, int[] mm, IntPointer rcmove) {
 		int i;
 		IntPointer newy = new IntPointer(), newx = new IntPointer();
 		boolean do_turn, do_move, stuck_door;
@@ -826,7 +826,7 @@ public class Creature {
 			/* Get new position		*/
 			newy.value(m_ptr.fy);
 			newx.value(m_ptr.fx);
-			Misc3.mmove(mm[i], newy, newx);
+			Misc3.moveMonster(mm[i], newy, newx);
 			c_ptr = Variable.cave[newy.value()][newx.value()];
 			if (c_ptr.fval != Constants.BOUNDARY_WALL) {
 				/* Floor is open?		   */
@@ -848,13 +848,13 @@ public class Creature {
 							if (t_ptr.p1 == 0) {	/* Closed doors	 */
 								do_move = true;
 							} else if (t_ptr.p1 > 0) {	/* Locked doors	*/
-								if (Misc1.randint((m_ptr.hp + 1) * (50 + t_ptr.p1)) < 40 * (m_ptr.hp - 10 - t_ptr.p1)) {
+								if (Misc1.randomInt((m_ptr.hp + 1) * (50 + t_ptr.p1)) < 40 * (m_ptr.hp - 10 - t_ptr.p1)) {
 									t_ptr.p1 = 0;
 								}
 							} else if (t_ptr.p1 < 0) {	/* Stuck doors	*/
-								if (Misc1.randint((m_ptr.hp + 1) * (50 - t_ptr.p1)) < 40 * (m_ptr.hp - 10 + t_ptr.p1)) {
-									IO.msg_print("You hear a door burst open!");
-									Moria1.disturb(true, false);
+								if (Misc1.randomInt((m_ptr.hp + 1) * (50 - t_ptr.p1)) < 40 * (m_ptr.hp - 10 + t_ptr.p1)) {
+									IO.printMessage("You hear a door burst open!");
+									Moria1.disturbPlayer(true, false);
 									stuck_door = true;
 									do_move = true;
 								}
@@ -864,37 +864,37 @@ public class Creature {
 							do_move = true;
 						}
 						if (do_move) {
-							Desc.invcopy(t_ptr, Constants.OBJ_OPEN_DOOR);
+							Desc.copyIntoInventory(t_ptr, Constants.OBJ_OPEN_DOOR);
 							if (stuck_door) {	/* 50% chance of breaking door */
-								t_ptr.p1 = 1 - Misc1.randint(2);
+								t_ptr.p1 = 1 - Misc1.randomInt(2);
 							}
 							c_ptr.fval = Constants.CORR_FLOOR;
-							Moria1.lite_spot(newy.value(), newx.value());
+							Moria1.lightUpSpot(newy.value(), newx.value());
 							rcmove.value(rcmove.value() | Constants.CM_OPEN_DOOR);
 							do_move = false;
 						}
 					} else {	/* Creature can not open doors, must bash them   */
 						if (t_ptr.tval == Constants.TV_CLOSED_DOOR) {
 							do_turn = true;
-							if (Misc1.randint((m_ptr.hp + 1) * (80 + Math.abs(t_ptr.p1))) < 40 * (m_ptr.hp - 20 - Math.abs(t_ptr.p1))) {
-								Desc.invcopy(t_ptr, Constants.OBJ_OPEN_DOOR);
+							if (Misc1.randomInt((m_ptr.hp + 1) * (80 + Math.abs(t_ptr.p1))) < 40 * (m_ptr.hp - 20 - Math.abs(t_ptr.p1))) {
+								Desc.copyIntoInventory(t_ptr, Constants.OBJ_OPEN_DOOR);
 								/* 50% chance of breaking door */
-								t_ptr.p1 = 1 - Misc1.randint(2);
+								t_ptr.p1 = 1 - Misc1.randomInt(2);
 								c_ptr.fval = Constants.CORR_FLOOR;
-								Moria1.lite_spot(newy.value(), newx.value());
-								IO.msg_print("You hear a door burst open!");
-								Moria1.disturb(true, false);
+								Moria1.lightUpSpot(newy.value(), newx.value());
+								IO.printMessage("You hear a door burst open!");
+								Moria1.disturbPlayer(true, false);
 							}
 						}
 					}
 				}
 				/* Glyph of warding present?	   */
 				if (do_move && (c_ptr.tptr != 0) && (Treasure.t_list[c_ptr.tptr].tval == Constants.TV_VIS_TRAP) && (Treasure.t_list[c_ptr.tptr].subval == 99)) {
-					if (Misc1.randint(Constants.OBJ_RUNE_PROT) < Monsters.c_list[m_ptr.mptr].level) {
+					if (Misc1.randomInt(Constants.OBJ_RUNE_PROT) < Monsters.c_list[m_ptr.mptr].level) {
 						if ((newy.value() == Player.char_row) && (newx.value() == Player.char_col)) {
-							IO.msg_print("The rune of protection is broken!");
+							IO.printMessage("The rune of protection is broken!");
 						}
-						Moria3.delete_object(newy.value(), newx.value());
+						Moria3.deleteObject(newy.value(), newx.value());
 					} else {
 						do_move = false;
 						/* If the creature moves only to attack, */
@@ -912,9 +912,9 @@ public class Creature {
 						 * be faster than character, and hence could have just
 						 * moved next to character this same turn */
 						if (!m_ptr.ml) {
-							update_mon(monptr);
+							updateMonster(monptr);
 						}
-						make_attack(monptr);
+						makeAttack(monptr);
 						do_move = false;
 						do_turn = true;
 					
@@ -927,13 +927,13 @@ public class Creature {
 							}
 							/* It ate an already processed monster. Handle normally. */
 							if (monptr < c_ptr.cptr) {
-								Moria3.delete_monster(c_ptr.cptr);
+								Moria3.deleteMonster(c_ptr.cptr);
 							
 							/* If it eats this monster, an already processed monster
 							 * will take its place, causing all kinds of havoc.  Delay
 							 * the kill a bit. */
 							} else {
-								Moria3.fix1_delete_monster(c_ptr.cptr);
+								Moria3.deleteMonster1(c_ptr.cptr);
 							}
 						} else {
 							do_move = false;
@@ -949,14 +949,14 @@ public class Creature {
 						
 						if ((c_ptr.tptr != 0) && (Treasure.t_list[c_ptr.tptr].tval <= Constants.TV_MAX_OBJECT)) {
 							rcmove.value(rcmove.value() | Constants.CM_PICKS_UP);
-							Moria3.delete_object(newy.value(), newx.value());
+							Moria3.deleteObject(newy.value(), newx.value());
 						}
 					}
 					/* Move creature record		       */
-					Moria1.move_rec(m_ptr.fy, m_ptr.fx, newy.value(), newx.value());
+					Moria1.moveCreatureRecord(m_ptr.fy, m_ptr.fx, newy.value(), newx.value());
 					if (m_ptr.ml) {
 						m_ptr.ml = false;
-						Moria1.lite_spot(m_ptr.fy, m_ptr.fx);
+						Moria1.lightUpSpot(m_ptr.fy, m_ptr.fx);
 					}
 					m_ptr.fy = newy.value();
 					m_ptr.fx = newx.value();
@@ -972,7 +972,7 @@ public class Creature {
 	/* Creatures can cast spells too.  (Dragon Breath)	-RAK-	*/
 	/* cast_spell = true if creature changes position	*/
 	/* took_turn  = true if creature casts a spell		*/
-	public static boolean mon_cast_spell(int monptr) {
+	public static boolean monsterCastSpell(int monptr) {
 		IntPointer i;
 		IntPointer y, x;
 		int thrown_spell, r1;
@@ -992,18 +992,18 @@ public class Creature {
 		r_ptr = Monsters.c_list[m_ptr.mptr];
 		chance = (r_ptr.spells & Constants.CS_FREQ);
 		/* 1 in x chance of casting spell		   */
-		if (Misc1.randint(chance) != 1) {
+		if (Misc1.randomInt(chance) != 1) {
 			took_turn = false;
 		/* Must be within certain range		   */
 		} else if (m_ptr.cdis > Constants.MAX_SPELL_DIS) {
 			took_turn = false;
 		/* Must have unobstructed Line-Of-Sight	   */
-		} else if (!Misc1.los(Player.char_row, Player.char_col, m_ptr.fy, m_ptr.fx)) {
+		} else if (!Misc1.isInLineOfSight(Player.char_row, Player.char_col, m_ptr.fy, m_ptr.fx)) {
 			took_turn = false;
 		} else {	/* Creature is going to cast a spell	 */
 			took_turn = true;
 			/* Check to see if monster should be lit. */
-			update_mon (monptr);
+			updateMonster (monptr);
 			/* Describe the attack			       */
 			if (m_ptr.ml) {
 				cdesc = String.format("The %s ", r_ptr.name);
@@ -1013,7 +1013,7 @@ public class Creature {
 			/* For "DIED_FROM" string	 */
 			if ((Constants.CM_WIN & r_ptr.cmove) != 0) {
 				ddesc = String.format("The %s", r_ptr.name);
-			} else if (Desc.is_a_vowel(r_ptr.name.charAt(0))) {
+			} else if (Desc.isVowel(r_ptr.name.charAt(0))) {
 				ddesc = String.format("an %s", r_ptr.name);
 			} else {
 				ddesc = String.format("a %s", r_ptr.name);
@@ -1024,128 +1024,128 @@ public class Creature {
 			i = new IntPointer(r_ptr.spells & ~Constants.CS_FREQ);
 			k = 0;
 			while (i.value() != 0) {
-				spell_choice[k] = Misc1.bit_pos(i);
+				spell_choice[k] = Misc1.firstBitPos(i);
 				k++;
 			}
 			/* Choose a spell to cast			       */
-			thrown_spell = spell_choice[Misc1.randint(k) - 1];
+			thrown_spell = spell_choice[Misc1.randomInt(k) - 1];
 			thrown_spell++;
 			/* all except teleport_away() and drain mana spells always disturb */
 			if (thrown_spell > 6 && thrown_spell != 17) {
-				Moria1.disturb(true, false);
+				Moria1.disturbPlayer(true, false);
 			}
 			/* save some code/data space here, with a small time penalty */
 			if ((thrown_spell < 14 && thrown_spell > 6) || (thrown_spell == 16)) {
 				cdesc = cdesc.concat("casts a spell.");
-				IO.msg_print(cdesc);
+				IO.printMessage(cdesc);
 			}
 			/* Cast the spell.			     */
 			switch(thrown_spell)
 			{
 			case 5:	 /*Teleport Short*/
-				Spells.teleport_away(monptr, 5);
+				Spells.teleportMonsterAway(monptr, 5);
 				break;
 			case 6:	 /*Teleport Long */
-				Spells.teleport_away(monptr, Constants.MAX_SIGHT);
+				Spells.teleportMonsterAway(monptr, Constants.MAX_SIGHT);
 				break;
 			case 7:	 /*Teleport To	 */
-				Spells.teleport_to(m_ptr.fy, m_ptr.fx);
+				Spells.teleportPlayerTo(m_ptr.fy, m_ptr.fx);
 				break;
 			case 8:	 /*Light Wound	 */
-				if (Misc3.player_saves()) {
-					IO.msg_print("You resist the effects of the spell.");
+				if (Misc3.playerSavingThrow()) {
+					IO.printMessage("You resist the effects of the spell.");
 				} else {
-					Moria1.take_hit(Misc1.damroll(3, 8), ddesc);
+					Moria1.takeHit(Misc1.damageRoll(3, 8), ddesc);
 				}
 				break;
 			case 9:	 /*Serious Wound */
-				if (Misc3.player_saves()) {
-					IO.msg_print("You resist the effects of the spell.");
+				if (Misc3.playerSavingThrow()) {
+					IO.printMessage("You resist the effects of the spell.");
 				} else {
-					Moria1.take_hit(Misc1.damroll(8, 8), ddesc);
+					Moria1.takeHit(Misc1.damageRoll(8, 8), ddesc);
 				}
 				break;
 			case 10:  /*Hold Person	  */
 				if (Player.py.flags.free_act) {
-					IO.msg_print("You are unaffected.");
-				} else if (Misc3.player_saves()) {
-					IO.msg_print("You resist the effects of the spell.");
+					IO.printMessage("You are unaffected.");
+				} else if (Misc3.playerSavingThrow()) {
+					IO.printMessage("You resist the effects of the spell.");
 				} else if (Player.py.flags.paralysis > 0) {
 					Player.py.flags.paralysis += 2;
 				} else {
-					Player.py.flags.paralysis = Misc1.randint(5)+4;
+					Player.py.flags.paralysis = Misc1.randomInt(5)+4;
 				}
 				break;
 			case 11:  /*Cause Blindness*/
-				if (Misc3.player_saves()) {
-					IO.msg_print("You resist the effects of the spell.");
+				if (Misc3.playerSavingThrow()) {
+					IO.printMessage("You resist the effects of the spell.");
 				} else if (Player.py.flags.blind > 0) {
 					Player.py.flags.blind += 6;
 				} else {
-					Player.py.flags.blind += 12 + Misc1.randint(3);
+					Player.py.flags.blind += 12 + Misc1.randomInt(3);
 				}
 				break;
 			case 12:  /*Cause Confuse */
-				if (Misc3.player_saves()) {
-					IO.msg_print("You resist the effects of the spell.");
+				if (Misc3.playerSavingThrow()) {
+					IO.printMessage("You resist the effects of the spell.");
 				} else if (Player.py.flags.confused > 0) {
 					Player.py.flags.confused += 2;
 				} else {
-					Player.py.flags.confused = Misc1.randint(5) + 3;
+					Player.py.flags.confused = Misc1.randomInt(5) + 3;
 				}
 				break;
 			case 13:  /*Cause Fear	  */
-				if (Misc3.player_saves()) {
-					IO.msg_print("You resist the effects of the spell.");
+				if (Misc3.playerSavingThrow()) {
+					IO.printMessage("You resist the effects of the spell.");
 				} else if (Player.py.flags.afraid > 0) {
 					Player.py.flags.afraid += 2;
 				} else {
-					Player.py.flags.afraid = Misc1.randint(5) + 3;
+					Player.py.flags.afraid = Misc1.randomInt(5) + 3;
 				}
 				break;
 			case 14:  /*Summon Monster*/
 				cdesc = cdesc.concat("magically summons a monster!");
-				IO.msg_print(cdesc);
+				IO.printMessage(cdesc);
 				y = new IntPointer(Player.char_row);
 				x = new IntPointer(Player.char_col);
 				/* in case compact_monster() is called,it needs monptr */
 				Variable.hack_monptr = monptr;
-				Misc1.summon_monster(y, x, false);
+				Misc1.summonMonster(y, x, false);
 				Variable.hack_monptr = -1;
-				update_mon (Variable.cave[y.value()][x.value()].cptr);
+				updateMonster (Variable.cave[y.value()][x.value()].cptr);
 				break;
 			case 15:  /*Summon Undead*/
 				cdesc = cdesc.concat("magically summons an undead!");
-				IO.msg_print(cdesc);
+				IO.printMessage(cdesc);
 				y = new IntPointer(Player.char_row);
 				x = new IntPointer(Player.char_col);
 				/* in case compact_monster() is called,it needs monptr */
 				Variable.hack_monptr = monptr;
-				Misc1.summon_undead(y, x);
+				Misc1.summonUndead(y, x);
 				Variable.hack_monptr = -1;
-				update_mon(Variable.cave[y.value()][x.value()].cptr);
+				updateMonster(Variable.cave[y.value()][x.value()].cptr);
 				break;
 			case 16:  /*Slow Person	 */
 				if (Player.py.flags.free_act) {
-					IO.msg_print("You are unaffected.");
-				} else if (Misc3.player_saves()) {
-					IO.msg_print("You resist the effects of the spell.");
+					IO.printMessage("You are unaffected.");
+				} else if (Misc3.playerSavingThrow()) {
+					IO.printMessage("You resist the effects of the spell.");
 				} else if (Player.py.flags.slow > 0) {
 					Player.py.flags.slow += 2;
 				} else {
-					Player.py.flags.slow = Misc1.randint(5) + 3;
+					Player.py.flags.slow = Misc1.randomInt(5) + 3;
 				}
 				break;
 			case 17:  /*Drain Mana	 */
 				if (Player.py.misc.cmana > 0) {
-					Moria1.disturb(true, false);
+					Moria1.disturbPlayer(true, false);
 					outval = String.format("%sdraws psychic energy from you!", cdesc);
-					IO.msg_print(outval);
+					IO.printMessage(outval);
 					if (m_ptr.ml) {
 						outval = String.format("%sappears healthier.", cdesc);
-						IO.msg_print(outval);
+						IO.printMessage(outval);
 					}
-					r1 = (Misc1.randint(r_ptr.level) >> 1) + 1;
+					r1 = (Misc1.randomInt(r_ptr.level) >> 1) + 1;
 					if (r1 > Player.py.misc.cmana) {
 						r1 = Player.py.misc.cmana;
 						Player.py.misc.cmana = 0;
@@ -1153,38 +1153,38 @@ public class Creature {
 					} else {
 						Player.py.misc.cmana -= r1;
 					}
-					Misc3.prt_cmana();
+					Misc3.printCurrentMana();
 					m_ptr.hp += 6*(r1);
 				}
 				break;
 			case 20:  /*Breath Light */
 				cdesc = cdesc.concat("breathes lightning.");
-				IO.msg_print(cdesc);
+				IO.printMessage(cdesc);
 				Spells.breath(Constants.GF_LIGHTNING, Player.char_row, Player.char_col, (m_ptr.hp / 4), ddesc, monptr);
 				break;
 			case 21:  /*Breath Gas	 */
 				cdesc = cdesc.concat("breathes gas.");
-				IO.msg_print(cdesc);
+				IO.printMessage(cdesc);
 				Spells.breath(Constants.GF_POISON_GAS, Player.char_row, Player.char_col, (m_ptr.hp / 3), ddesc, monptr);
 				break;
 			case 22:  /*Breath Acid	 */
 				cdesc = cdesc.concat("breathes acid.");
-				IO.msg_print(cdesc);
+				IO.printMessage(cdesc);
 				Spells.breath(Constants.GF_ACID, Player.char_row, Player.char_col, (m_ptr.hp / 3), ddesc, monptr);
 				break;
 			case 23:  /*Breath Frost */
 				cdesc = cdesc.concat("breathes frost.");
-				IO.msg_print(cdesc);
+				IO.printMessage(cdesc);
 				Spells.breath(Constants.GF_FROST, Player.char_row, Player.char_col, (m_ptr.hp / 3), ddesc, monptr);
 				break;
 			case 24:  /*Breath Fire	 */
 				cdesc = cdesc.concat("breathes fire.");
-				IO.msg_print(cdesc);
+				IO.printMessage(cdesc);
 				Spells.breath(Constants.GF_FIRE, Player.char_row, Player.char_col, (m_ptr.hp / 3), ddesc, monptr);
 				break;
 			default:
 				cdesc = cdesc.concat("cast unknown spell.");
-				IO.msg_print(cdesc);
+				IO.printMessage(cdesc);
 			}
 			/* End of spells				       */
 			if (m_ptr.ml) {
@@ -1202,18 +1202,18 @@ public class Creature {
 	
 	/* Places creature adjacent to given location		-RAK-	*/
 	/* Rats and Flys are fun!					 */
-	public static boolean multiply_monster(int y, int x, int cr_index, int monptr) {
+	public static boolean multiplyMonster(int y, int x, int cr_index, int monptr) {
 		int i, j, k;
 		CaveType c_ptr;
 		boolean result;
 		
 		i = 0;
 		do {
-			j = y - 2 + Misc1.randint(3);
-			k = x - 2 + Misc1.randint(3);
+			j = y - 2 + Misc1.randomInt(3);
+			k = x - 2 + Misc1.randomInt(3);
 			/* don't create a new creature on top of the old one, that causes
 			 * invincible/invisible creatures to appear */
-			if (Misc1.in_bounds(j, k) && (j != y || k != x)) {
+			if (Misc1.isInBounds(j, k) && (j != y || k != x)) {
 				c_ptr = Variable.cave[j][k];
 				if ((c_ptr.fval <= Constants.MAX_OPEN_SPACE) && (c_ptr.tptr == 0) && (c_ptr.cptr != 1)) {
 					if (c_ptr.cptr > 1) {	/* Creature there already?	*/
@@ -1222,38 +1222,38 @@ public class Creature {
 							/* Check the experience level -CJS- */ 
 							/* It ate an already processed monster.Handle normally.*/
 							if (monptr < c_ptr.cptr) {
-								Moria3.delete_monster(c_ptr.cptr);
+								Moria3.deleteMonster(c_ptr.cptr);
 							
 							/* If it eats this monster, an already processed mosnter
 							 * will take its place, causing all kinds of havoc.
 							 * Delay the kill a bit. */
 							} else {
-								Moria3.fix1_delete_monster(c_ptr.cptr);
+								Moria3.deleteMonster1(c_ptr.cptr);
 							}
 							
 							/* in case compact_monster() is called,it needs monptr */
 							Variable.hack_monptr = monptr;
 							/* Place_monster() may fail if monster list full.  */
-							result = Misc1.place_monster(j, k, cr_index, false);
+							result = Misc1.placeMonster(j, k, cr_index, false);
 							Variable.hack_monptr = -1;
 							if (!result) {
 								return false;
 							}
 							Monsters.mon_tot_mult++;
-							return check_mon_lite(j, k);
+							return checkMonsterLight(j, k);
 						}
 					} else {
 						/* All clear,  place a monster	  */
 						/* in case compact_monster() is called,it needs monptr */
 						Variable.hack_monptr = monptr;
 						/* Place_monster() may fail if monster list full.  */
-						result = Misc1.place_monster(j, k, cr_index, false);
+						result = Misc1.placeMonster(j, k, cr_index, false);
 						Variable.hack_monptr = -1;
 						if (!result) {
 							return false;
 						}
 						Monsters.mon_tot_mult++;
-						return check_mon_lite(j, k);
+						return checkMonsterLight(j, k);
 					}
 				}
 			}
@@ -1263,7 +1263,7 @@ public class Creature {
 	}
 	
 	/* Move the critters about the dungeon			-RAK-	*/
-	public static void mon_move(int monptr, IntPointer rcmove) {
+	public static void monsterMove(int monptr, IntPointer rcmove) {
 		int i, j;
 		int k, dir;
 		boolean move_test;
@@ -1281,7 +1281,7 @@ public class Creature {
 			k = 0;
 			for (i = m_ptr.fy-1; i <= m_ptr.fy+1; i++) {
 				for (j = m_ptr.fx-1; j <= m_ptr.fx+1; j++) {
-					if (Misc1.in_bounds(i, j) && (Variable.cave[i][j].cptr > 1)) {
+					if (Misc1.isInBounds(i, j) && (Variable.cave[i][j].cptr > 1)) {
 						k++;
 					}
 				}
@@ -1291,8 +1291,8 @@ public class Creature {
 			if (k == 0) {
 				k++;
 			}
-			if ((k < 4) && (Misc1.randint(k * Constants.MON_MULT_ADJ) == 1)) {
-				if (multiply_monster(m_ptr.fy, m_ptr.fx, m_ptr.mptr, monptr)) {
+			if ((k < 4) && (Misc1.randomInt(k * Constants.MON_MULT_ADJ) == 1)) {
+				if (multiplyMonster(m_ptr.fy, m_ptr.fx, m_ptr.mptr, monptr)) {
 					rcmove.value(rcmove.value() | Constants.CM_MULTIPLY);
 				}
 			}
@@ -1325,11 +1325,11 @@ public class Creature {
 			}
 			if (k != 0) {
 				/* put a random direction first */
-				dir = Misc1.randint(k) - 1;
+				dir = Misc1.randomInt(k) - 1;
 				i = mm[0];
 				mm[0] = mm[dir];
 				mm[dir] = i;
-				make_move(monptr, mm, rcmove);
+				makeMove(monptr, mm, rcmove);
 				/* this can only fail if mm[0] has a rune of protection */
 			}
 			/* if still in a wall, let it dig itself out, but also apply some
@@ -1338,14 +1338,14 @@ public class Creature {
 				/* in case the monster dies, may need to call fix1_delete_monster()
 				 * instead of delete_monsters() */
 				Variable.hack_monptr = monptr;
-				i = Moria3.mon_take_hit(monptr, Misc1.damroll(8, 8));
+				i = Moria3.monsterTakeHit(monptr, Misc1.damageRoll(8, 8));
 				Variable.hack_monptr = -1;
 				if (i >= 0) {
-					IO.msg_print("You hear a scream muffled by rock!");
-					Misc3.prt_experience();
+					IO.printMessage("You hear a scream muffled by rock!");
+					Misc3.printExperience();
 				} else {
-					IO.msg_print ("A creature digs itself out from the rock!");
-					Moria3.twall(m_ptr.fy, m_ptr.fx, 1, 0);
+					IO.printMessage ("A creature digs itself out from the rock!");
+					Moria3.tunnelThroughWall(m_ptr.fy, m_ptr.fx, 1, 0);
 				}
 			}
 			return;  /* monster movement finished */
@@ -1354,80 +1354,80 @@ public class Creature {
 		} else if (m_ptr.confused > 0) {
 			/* Undead only get confused from turn undead, so they should flee */
 			if ((r_ptr.cdefense & Constants.CD_UNDEAD) != 0) {
-				get_moves(monptr,mm);
+				getMoveDirections(monptr,mm);
 				mm[0] = 10 - mm[0];
 				mm[1] = 10 - mm[1];
 				mm[2] = 10 - mm[2];
-				mm[3] = Misc1.randint(9); /* May attack only if cornered */
-				mm[4] = Misc1.randint(9);
+				mm[3] = Misc1.randomInt(9); /* May attack only if cornered */
+				mm[4] = Misc1.randomInt(9);
 			} else {
-				mm[0] = Misc1.randint(9);
-				mm[1] = Misc1.randint(9);
-				mm[2] = Misc1.randint(9);
-				mm[3] = Misc1.randint(9);
-				mm[4] = Misc1.randint(9);
+				mm[0] = Misc1.randomInt(9);
+				mm[1] = Misc1.randomInt(9);
+				mm[2] = Misc1.randomInt(9);
+				mm[3] = Misc1.randomInt(9);
+				mm[4] = Misc1.randomInt(9);
 			}
 			/* don't move him if he is not supposed to move! */
 			if ((r_ptr.cmove & Constants.CM_ATTACK_ONLY) == 0) {
-				make_move(monptr, mm, rcmove);
+				makeMove(monptr, mm, rcmove);
 			}
 			m_ptr.confused--;
 			move_test = true;
 		
 		/* Creature may cast a spell */
 		} else if ((r_ptr.spells & Constants.CS_FREQ) != 0) {
-			move_test = mon_cast_spell(monptr);
+			move_test = monsterCastSpell(monptr);
 		}
 		if (!move_test) {
 			/* 75% random movement */
-			if ((r_ptr.cmove & Constants.CM_75_RANDOM) != 0 && (Misc1.randint(100) < 75)) {
-				mm[0] = Misc1.randint(9);
-				mm[1] = Misc1.randint(9);
-				mm[2] = Misc1.randint(9);
-				mm[3] = Misc1.randint(9);
-				mm[4] = Misc1.randint(9);
+			if ((r_ptr.cmove & Constants.CM_75_RANDOM) != 0 && (Misc1.randomInt(100) < 75)) {
+				mm[0] = Misc1.randomInt(9);
+				mm[1] = Misc1.randomInt(9);
+				mm[2] = Misc1.randomInt(9);
+				mm[3] = Misc1.randomInt(9);
+				mm[4] = Misc1.randomInt(9);
 				rcmove.value(rcmove.value() | Constants.CM_75_RANDOM);
-				make_move(monptr, mm, rcmove);
+				makeMove(monptr, mm, rcmove);
 			
 			/* 40% random movement */
-			} else if ((r_ptr.cmove & Constants.CM_40_RANDOM) != 0 && (Misc1.randint(100) < 40)) {
-				mm[0] = Misc1.randint(9);
-				mm[1] = Misc1.randint(9);
-				mm[2] = Misc1.randint(9);
-				mm[3] = Misc1.randint(9);
-				mm[4] = Misc1.randint(9);
+			} else if ((r_ptr.cmove & Constants.CM_40_RANDOM) != 0 && (Misc1.randomInt(100) < 40)) {
+				mm[0] = Misc1.randomInt(9);
+				mm[1] = Misc1.randomInt(9);
+				mm[2] = Misc1.randomInt(9);
+				mm[3] = Misc1.randomInt(9);
+				mm[4] = Misc1.randomInt(9);
 				rcmove.value(rcmove.value() | Constants.CM_40_RANDOM);
-				make_move(monptr, mm, rcmove);
+				makeMove(monptr, mm, rcmove);
 			
 			/* 20% random movement */
-			} else if ((r_ptr.cmove & Constants.CM_20_RANDOM) != 0 && (Misc1.randint(100) < 20)) {
-				mm[0] = Misc1.randint(9);
-				mm[1] = Misc1.randint(9);
-				mm[2] = Misc1.randint(9);
-				mm[3] = Misc1.randint(9);
-				mm[4] = Misc1.randint(9);
+			} else if ((r_ptr.cmove & Constants.CM_20_RANDOM) != 0 && (Misc1.randomInt(100) < 20)) {
+				mm[0] = Misc1.randomInt(9);
+				mm[1] = Misc1.randomInt(9);
+				mm[2] = Misc1.randomInt(9);
+				mm[3] = Misc1.randomInt(9);
+				mm[4] = Misc1.randomInt(9);
 				rcmove.value(rcmove.value() | Constants.CM_20_RANDOM);
-				make_move(monptr, mm, rcmove);
+				makeMove(monptr, mm, rcmove);
 			
 			/* Normal movement */
 			} else if ((r_ptr.cmove & Constants.CM_MOVE_NORMAL) != 0) {
-				if (Misc1.randint(200) == 1) {
-					mm[0] = Misc1.randint(9);
-					mm[1] = Misc1.randint(9);
-					mm[2] = Misc1.randint(9);
-					mm[3] = Misc1.randint(9);
-					mm[4] = Misc1.randint(9);
+				if (Misc1.randomInt(200) == 1) {
+					mm[0] = Misc1.randomInt(9);
+					mm[1] = Misc1.randomInt(9);
+					mm[2] = Misc1.randomInt(9);
+					mm[3] = Misc1.randomInt(9);
+					mm[4] = Misc1.randomInt(9);
 				} else {
-					get_moves(monptr, mm);
+					getMoveDirections(monptr, mm);
 				}
 				rcmove.value(rcmove.value() | Constants.CM_MOVE_NORMAL);
-				make_move(monptr, mm, rcmove);
+				makeMove(monptr, mm, rcmove);
 			
 			/* Attack, but don't move */
 			} else if ((r_ptr.cmove & Constants.CM_ATTACK_ONLY) != 0) {
 				if (m_ptr.cdis < 2) {
-					get_moves(monptr, mm);
-					make_move(monptr, mm, rcmove);
+					getMoveDirections(monptr, mm);
+					makeMove(monptr, mm, rcmove);
 				} else {
 					/* Learn that the monster does not move when it should have
 					 * moved, but didn't.  */
@@ -1465,15 +1465,15 @@ public class Creature {
 			 * process this monster. This is necessary because we can't delete
 			 * monsters while scanning the m_list here. */
 			if (m_ptr.hp < 0) {
-				Moria3.fix2_delete_monster(i);
+				Moria3.deleteMonster2(i);
 				continue;
 			}
 			
 			m_ptr.cdis = Misc1.distance(Player.char_row, Player.char_col, m_ptr.fy, m_ptr.fx);
 			if (attack) {	/* Attack is argument passed to CREATURE*/
-				k = movement_rate(m_ptr.cspeed);
+				k = getMovesPerTurn(m_ptr.cspeed);
 				if (k <= 0) {
-					update_mon(i);
+					updateMonster(i);
 				} else {
 					while (k > 0) {
 						k--;
@@ -1488,8 +1488,8 @@ public class Creature {
 							if (m_ptr.csleep > 0) {
 								if (Player.py.flags.aggravate > 0) {
 									m_ptr.csleep = 0;
-								} else if ((Player.py.flags.rest == 0 && Player.py.flags.paralysis < 1) || (Misc1.randint(50) == 1)) {
-									notice = Misc1.randint(1024);
+								} else if ((Player.py.flags.rest == 0 && Player.py.flags.paralysis < 1) || (Misc1.randomInt(50) == 1)) {
+									notice = Misc1.randomInt(1024);
 									if (notice * notice * notice <= (1L << (29 - Player.py.misc.stl))) {
 										m_ptr.csleep -= (100 / m_ptr.cdis);
 										if (m_ptr.csleep > 0) {
@@ -1505,7 +1505,7 @@ public class Creature {
 							if (m_ptr.stunned != 0) {
 								/* NOTE: Balrog = 100*100 = 10000, it always
 								 * recovers instantly */
-								if (Misc1.randint(5000) < Monsters.c_list[m_ptr.mptr].level * Monsters.c_list[m_ptr.mptr].level) {
+								if (Misc1.randomInt(5000) < Monsters.c_list[m_ptr.mptr].level * Monsters.c_list[m_ptr.mptr].level) {
 									m_ptr.stunned = 0;
 								} else {
 									m_ptr.stunned--;
@@ -1513,16 +1513,16 @@ public class Creature {
 								if (m_ptr.stunned == 0) {
 									if (m_ptr.ml) {
 										cdesc = String.format("The %s ", Monsters.c_list[m_ptr.mptr].name);
-										IO.msg_print(cdesc.concat("recovers and glares at you."));
+										IO.printMessage(cdesc.concat("recovers and glares at you."));
 									}
 								}
 							}
 							if ((m_ptr.csleep == 0) && (m_ptr.stunned == 0)) {
-								mon_move(i, rcmove);
+								monsterMove(i, rcmove);
 							}
 						}
 						
-						update_mon(i);
+						updateMonster(i);
 						if (m_ptr.ml) {
 							r_ptr = Variable.c_recall[m_ptr.mptr];
 							if (wake) {
@@ -1539,14 +1539,14 @@ public class Creature {
 					}
 				}
 			} else {
-				update_mon(i);
+				updateMonster(i);
 			}
 			
 			/* Get rid of an eaten/breathed on monster.  This is necessary because
 			 * we can't delete monsters while scanning the m_list here.  This
 			 * monster may have been killed during mon_move(). */
 			if (m_ptr.hp < 0) {
-				Moria3.fix2_delete_monster(i);
+				Moria3.deleteMonster2(i);
 				continue;
 			}
 		}

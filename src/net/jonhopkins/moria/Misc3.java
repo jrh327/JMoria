@@ -46,12 +46,12 @@ public class Misc3 {
 	 * @param x - The horizontal position at which to place the trap
 	 * @param subval - The type of trap to place
 	 */
-	public static void place_trap(int y, int x, int subval) {
+	public static void placeTrap(int y, int x, int subval) {
 		int cur_pos;
 		
-		cur_pos = Misc1.popt();
+		cur_pos = Misc1.popTreasure();
 		Variable.cave[y][x].tptr = cur_pos;
-		Desc.invcopy(Treasure.t_list[cur_pos], Constants.OBJ_TRAP_LIST + subval);
+		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_TRAP_LIST + subval);
 	}
 	
 	/**
@@ -60,15 +60,15 @@ public class Misc3 {
 	 * @param y - The vertical position at which to place the rubble
 	 * @param x - The horizontal position at which to place the rubble
 	 */
-	public static void place_rubble(int y, int x) {
+	public static void placeRubble(int y, int x) {
 		int cur_pos;
 		CaveType cave_ptr;
 		
-		cur_pos = Misc1.popt();
+		cur_pos = Misc1.popTreasure();
 		cave_ptr = Variable.cave[y][x];
 		cave_ptr.tptr = cur_pos;
 		cave_ptr.fval = Constants.BLOCKED_FLOOR;
-		Desc.invcopy(Treasure.t_list[cur_pos], Constants.OBJ_RUBBLE);
+		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_RUBBLE);
 	}
 	
 	/**
@@ -77,37 +77,37 @@ public class Misc3 {
 	 * @param y - The vertical position at which to place the gold
 	 * @param x - The horizontal position at which to place the gold
 	 */
-	public static void place_gold(int y, int x) {
+	public static void placeGold(int y, int x) {
 		int i, cur_pos;
 		InvenType t_ptr;
 		
-		cur_pos = Misc1.popt();
-		i = ((Misc1.randint(Variable.dun_level + 2) + 2) / 2) - 1;
-		if (Misc1.randint(Constants.OBJ_GREAT) == 1) {
-			i += Misc1.randint(Variable.dun_level + 1);
+		cur_pos = Misc1.popTreasure();
+		i = ((Misc1.randomInt(Variable.dun_level + 2) + 2) / 2) - 1;
+		if (Misc1.randomInt(Constants.OBJ_GREAT) == 1) {
+			i += Misc1.randomInt(Variable.dun_level + 1);
 		}
 		if (i >= Constants.MAX_GOLD) {
 			i = Constants.MAX_GOLD - 1;
 		}
 		Variable.cave[y][x].tptr = cur_pos;
-		Desc.invcopy(Treasure.t_list[cur_pos], Constants.OBJ_GOLD_LIST + i);
+		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_GOLD_LIST + i);
 		t_ptr = Treasure.t_list[cur_pos];
-		t_ptr.cost += (8L * (long)Misc1.randint(t_ptr.cost)) + Misc1.randint(8);
+		t_ptr.cost += (8L * (long)Misc1.randomInt(t_ptr.cost)) + Misc1.randomInt(8);
 		if (Variable.cave[y][x].cptr == 1) {
-			IO.msg_print("You feel something roll beneath your feet.");
+			IO.printMessage("You feel something roll beneath your feet.");
 		}
 	}
 	
-	public static int get_obj_num(int level, boolean must_be_small) {
+	public static int getRandomObjectForLevel(int level, boolean must_be_small) {
 		int i, j;
 		
 		if (level == 0) {
-			i = Misc1.randint(Treasure.t_level[0]) - 1;
+			i = Misc1.randomInt(Treasure.t_level[0]) - 1;
 		} else {
 			if (level >= Constants.MAX_OBJ_LEVEL) {
 				level = Constants.MAX_OBJ_LEVEL;
-			} else if (Misc1.randint(Constants.OBJ_GREAT) == 1) {
-				level = level * Constants.MAX_OBJ_LEVEL / Misc1.randint(Constants.MAX_OBJ_LEVEL) + 1;
+			} else if (Misc1.randomInt(Constants.OBJ_GREAT) == 1) {
+				level = level * Constants.MAX_OBJ_LEVEL / Misc1.randomInt(Constants.MAX_OBJ_LEVEL) + 1;
 				if (level > Constants.MAX_OBJ_LEVEL) {
 					level = Constants.MAX_OBJ_LEVEL;
 				}
@@ -120,27 +120,27 @@ public class Misc3 {
 			 * and 1/2n are 0th level. */
 			
 			do {
-				if (Misc1.randint(2) == 1) {
-					i = Misc1.randint(Treasure.t_level[level]) - 1;
+				if (Misc1.randomInt(2) == 1) {
+					i = Misc1.randomInt(Treasure.t_level[level]) - 1;
 				} else { /* Choose three objects, pick the highest level. */
-					i = Misc1.randint(Treasure.t_level[level]) - 1;
-					j = Misc1.randint(Treasure.t_level[level]) - 1;
+					i = Misc1.randomInt(Treasure.t_level[level]) - 1;
+					j = Misc1.randomInt(Treasure.t_level[level]) - 1;
 					if (i < j) {
 						i = j;
 					}
-					j = Misc1.randint(Treasure.t_level[level]) - 1;
+					j = Misc1.randomInt(Treasure.t_level[level]) - 1;
 					if (i < j) {
 						i = j;
 					}
 					
 					j = Treasure.object_list[Treasure.sorted_objects[i]].level;
 					if (j == 0) {
-						i = Misc1.randint(Treasure.t_level[0]) - 1;
+						i = Misc1.randomInt(Treasure.t_level[0]) - 1;
 					} else {
-						i = Misc1.randint(Treasure.t_level[j] - Treasure.t_level[j - 1]) - 1 + Treasure.t_level[j - 1];
+						i = Misc1.randomInt(Treasure.t_level[j] - Treasure.t_level[j - 1]) - 1 + Treasure.t_level[j - 1];
 					}
 				}
-			} while (must_be_small && Sets.set_large(Treasure.object_list[Treasure.sorted_objects[i]]));
+			} while (must_be_small && Sets.isTooLargeForChest(Treasure.object_list[Treasure.sorted_objects[i]]));
 		}
 		return i;
 	}
@@ -152,17 +152,17 @@ public class Misc3 {
 	 * @param x - The horizontal position at which to place the object
 	 * @param must_be_small - ignore
 	 */
-	public static void place_object(int y, int x, boolean must_be_small) {
+	public static void placeObject(int y, int x, boolean must_be_small) {
 		int cur_pos, tmp;
 		
-		cur_pos = Misc1.popt();
+		cur_pos = Misc1.popTreasure();
 		Variable.cave[y][x].tptr = cur_pos;
 		/* split this line up to avoid a reported compiler bug */
-		tmp = get_obj_num(Variable.dun_level, must_be_small);
-		Desc.invcopy(Treasure.t_list[cur_pos], Treasure.sorted_objects[tmp]);
-		Misc2.magic_treasure(cur_pos, Variable.dun_level);
+		tmp = getRandomObjectForLevel(Variable.dun_level, must_be_small);
+		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Treasure.sorted_objects[tmp]);
+		Misc2.addMagicToTreasure(cur_pos, Variable.dun_level);
 		if (Variable.cave[y][x].cptr == 1) {
-			IO.msg_print("You feel something roll beneath your feet.");	/* -CJS- */
+			IO.printMessage("You feel something roll beneath your feet.");	/* -CJS- */
 		}
 	}
 	
@@ -173,44 +173,44 @@ public class Misc3 {
 	 * @param typ - Type of object to allocate
 	 * @param num - Number of objects to allocate
 	 */
-	public static void alloc_object(int alloc_set, int typ, int num) {
+	public static void spawnObject(int alloc_set, int typ, int num) {
 		int i, j, k;
 		
 		for (k = 0; k < num; k++) {
 			do {
-				i = Misc1.randint(Variable.cur_height) - 1;
-				j = Misc1.randint(Variable.cur_width) - 1;
+				i = Misc1.randomInt(Variable.cur_height) - 1;
+				j = Misc1.randomInt(Variable.cur_width) - 1;
 				
 				/* don't put an object beneath the player, this could cause problems
 				 * if player is standing under rubble, or on a trap */
-			} while ((!alloc_set(Variable.cave[i][j].fval, alloc_set))
+			} while ((!allocSet(Variable.cave[i][j].fval, alloc_set))
 					|| (Variable.cave[i][j].tptr != 0)
 					|| (i == Player.char_row && j == Player.char_col));
 			if (typ < 4) {	/* typ == 2 not used, used to be visible traps */
 				if (typ == 1) {
-					place_trap(i, j, Misc1.randint(Constants.MAX_TRAP) - 1); /* typ == 1 */
+					placeTrap(i, j, Misc1.randomInt(Constants.MAX_TRAP) - 1); /* typ == 1 */
 				} else {
-					place_rubble(i, j); /* typ == 3 */
+					placeRubble(i, j); /* typ == 3 */
 				}
 			} else {
 				if (typ == 4) {
-					place_gold(i, j); /* typ == 4 */
+					placeGold(i, j); /* typ == 4 */
 				} else {
-					place_object(i, j, false); /* typ == 5 */
+					placeObject(i, j, false); /* typ == 5 */
 				}
 			}
 		}
 	}
 	
-	private static boolean alloc_set(int val, int alloc_set) {
+	private static boolean allocSet(int val, int alloc_set) {
 		switch (alloc_set)
 		{
-		case Sets.set_corr:
-			return Sets.set_corr(val);
-		case Sets.set_floor:
-			return Sets.set_floor(val);
-		case Sets.set_room:
-			return Sets.set_room(val);
+		case Sets.SET_CORR:
+			return Sets.isCorridor(val);
+		case Sets.SET_FLOOR:
+			return Sets.isFloor(val);
+		case Sets.SET_ROOM:
+			return Sets.isRoom(val);
 		default:
 			return false;
 		}
@@ -223,22 +223,22 @@ public class Misc3 {
 	 * @param x - The horizontal position around which to place the object
 	 * @param num - Number of objects to allocate
 	 */
-	public static void random_object(int y, int x, int num) {
+	public static void spawnRandomObject(int y, int x, int num) {
 		int i, j, k;
 		CaveType cave_ptr;
 		
 		do {
 			i = 0;
 			do {
-				j = y - 3 + Misc1.randint(5);
-				k = x - 4 + Misc1.randint(7);
+				j = y - 3 + Misc1.randomInt(5);
+				k = x - 4 + Misc1.randomInt(7);
 				cave_ptr = Variable.cave[j][k];
-				if (Misc1.in_bounds(j, k) && (cave_ptr.fval <= Constants.MAX_CAVE_FLOOR)
+				if (Misc1.isInBounds(j, k) && (cave_ptr.fval <= Constants.MAX_CAVE_FLOOR)
 						&& (cave_ptr.tptr == 0)) {
-					if (Misc1.randint(100) < 75) {
-						place_object(j, k, false);
+					if (Misc1.randomInt(100) < 75) {
+						placeObject(j, k, false);
 					} else {
-						place_gold(j, k);
+						placeGold(j, k);
 					}
 					i = 9;
 				}
@@ -254,7 +254,7 @@ public class Misc3 {
 	 * @param stat - The stat to be converted
 	 * @return The stringified stat
 	 */
-	public static String cnv_stat(int stat) {
+	public static String convertStat(int stat) {
 		int part1, part2;
 		
 		if (stat > 18) {
@@ -275,12 +275,12 @@ public class Misc3 {
 	 * 
 	 * @param stat - The stat to print
 	 */
-	public static void prt_stat(int stat) {
+	public static void printStat(int stat) {
 		String out_val1;
 		
-		out_val1 = cnv_stat(Player.py.stats.use_stat[stat]);
-		IO.put_buffer(stat_names[stat], 6 + stat, Constants.STAT_COLUMN);
-		IO.put_buffer(out_val1, 6 + stat, Constants.STAT_COLUMN + 6);
+		out_val1 = convertStat(Player.py.stats.use_stat[stat]);
+		IO.putBuffer(stat_names[stat], 6 + stat, Constants.STAT_COLUMN);
+		IO.putBuffer(out_val1, 6 + stat, Constants.STAT_COLUMN + 6);
 	}
 	
 	/**
@@ -291,9 +291,9 @@ public class Misc3 {
 	 * @param row - The vertical position at which to print
 	 * @param column - The horizontal position at which to print
 	 */
-	public static void prt_field(String info, int row, int column) {
-		IO.put_buffer(blank_string.substring(BLANK_LENGTH - 13), row, column);
-		IO.put_buffer(info, row, column);
+	public static void printField(String info, int row, int column) {
+		IO.putBuffer(blank_string.substring(BLANK_LENGTH - 13), row, column);
+		IO.putBuffer(info, row, column);
 	}
 	
 	/**
@@ -304,11 +304,11 @@ public class Misc3 {
 	 * @param row - The vertical position at which to print
 	 * @param column - The horizontal position at which to print
 	 */
-	public static void prt_lnum(String header, int num, int row, int column) {
+	public static void printLongWithHeader(String header, int num, int row, int column) {
 		String out_val;
 		
 		out_val = String.format("%s: %6d", header, num);
-		IO.put_buffer(out_val, row, column);
+		IO.putBuffer(out_val, row, column);
 	}
 	
 	/**
@@ -319,11 +319,11 @@ public class Misc3 {
 	 * @param row - The vertical position at which to print
 	 * @param column - The horizonal position at which to print
 	 */
-	public static void prt_7lnum(String header, int num, int row, int column) {
+	public static void prtLong7WithHeader(String header, int num, int row, int column) {
 		String out_val;
 		
 		out_val = String.format("%s: %7d", header, num);
-		IO.put_buffer(out_val, row, column);
+		IO.putBuffer(out_val, row, column);
 	}
 	
 	/**
@@ -334,11 +334,11 @@ public class Misc3 {
 	 * @param row - The vertical position at which to print
 	 * @param column - The horizontal position at which to print
 	 */
-	public static void prt_num(String header, int num, int row, int column) {
+	public static void printNum(String header, int num, int row, int column) {
 		String out_val;
 		
 		out_val = String.format("%s: %6d", header, num);
-		IO.put_buffer(out_val, row, column);
+		IO.putBuffer(out_val, row, column);
 	}
 	
 	/**
@@ -348,11 +348,11 @@ public class Misc3 {
 	 * @param row - The vertical position at which to print
 	 * @param column - The horizontal position at which to print
 	 */
-	public static void prt_long(int num, int row, int column) {
+	public static void printLong(int num, int row, int column) {
 		String out_val;
 		
 		out_val = String.format("%6d", num);
-		IO.put_buffer(out_val, row, column);
+		IO.putBuffer(out_val, row, column);
 	}
 
 	/**
@@ -362,11 +362,11 @@ public class Misc3 {
 	 * @param row - The vertical position at which to print
 	 * @param column - The horizontal position at which to print
 	 */
-	public static void prt_int(int num, int row, int column) {
+	public static void printInt(int num, int row, int column) {
 		String out_val;
 		
 		out_val = String.format("%6d", num);
-		IO.put_buffer(out_val, row, column);
+		IO.putBuffer(out_val, row, column);
 	}
 	
 	/**
@@ -375,7 +375,7 @@ public class Misc3 {
 	 * @param stat - The stat to adjust
 	 * @return The adjusted value of the player's stat
 	 */
-	public static int stat_adj(int stat) {
+	public static int adjustStat(int stat) {
 		int value;
 		
 		value = Player.py.stats.use_stat[stat];
@@ -404,7 +404,7 @@ public class Misc3 {
 	 * 
 	 * @return The adjusted value of the player's charisma
 	 */
-	public static int chr_adj() {
+	public static int adjustCharisma() {
 		int charisma;
 		
 		charisma = Player.py.stats.use_stat[Constants.A_CHR];
@@ -447,7 +447,7 @@ public class Misc3 {
 	 * 
 	 * @return The adjusted value of the player's constitution
 	 */
-	public static int con_adj() {
+	public static int adjustConstitution() {
 		int con;
 		
 		con = Player.py.stats.use_stat[Constants.A_CON];
@@ -455,9 +455,9 @@ public class Misc3 {
 			return con - 7;
 		} else if (con < 17) {
 			return 0;
-		} else if (con ==  17) {
+		} else if (con == 17) {
 			return 1;
-		} else if (con <  94) {
+		} else if (con < 94) {
 			return 2;
 		} else if (con < 117) {
 			return 3;
@@ -466,7 +466,7 @@ public class Misc3 {
 		}
 	}
 	
-	public static String title_string() {
+	public static String getPlayerTitle() {
 		String p;
 		
 		if (Player.py.misc.lev < 1) {
@@ -484,56 +484,56 @@ public class Misc3 {
 	/**
 	 * Prints title of character -RAK-
 	 */
-	public static void prt_title() {
-		prt_field(title_string(), 4, Constants.STAT_COLUMN);
+	public static void printPlayerTitle() {
+		printField(getPlayerTitle(), 4, Constants.STAT_COLUMN);
 	}
 	
 	/**
 	 * Prints player's level -RAK-
 	 */
-	public static void prt_level() {
-		prt_int(Player.py.misc.lev, 13, Constants.STAT_COLUMN + 6);
+	public static void printLevel() {
+		printInt(Player.py.misc.lev, 13, Constants.STAT_COLUMN + 6);
 	}
 	
 	/**
 	 * Prints player's current mana points. -RAK-
 	 */
-	public static void prt_cmana() {
-		prt_int(Player.py.misc.cmana, 15, Constants.STAT_COLUMN + 6);
+	public static void printCurrentMana() {
+		printInt(Player.py.misc.cmana, 15, Constants.STAT_COLUMN + 6);
 	}
 	
 	/**
 	 * Prints Max hit points -RAK-
 	 */
-	public static void prt_mhp() {
-		prt_int(Player.py.misc.mhp, 16, Constants.STAT_COLUMN + 6);
+	public static void printMaxHitpoints() {
+		printInt(Player.py.misc.mhp, 16, Constants.STAT_COLUMN + 6);
 	}
 	
 	/**
 	 * Prints player's current hit points -RAK-
 	 */
-	public static void prt_chp() {
-		prt_int(Player.py.misc.chp, 17, Constants.STAT_COLUMN + 6);
+	public static void printCurrentHitpoints() {
+		printInt(Player.py.misc.chp, 17, Constants.STAT_COLUMN + 6);
 	}
 	
 	/**
 	 * Prints current AC -RAK-
 	 */
-	public static void prt_pac() {
-		prt_int(Player.py.misc.dis_ac, 19, Constants.STAT_COLUMN + 6);
+	public static void printCurrentAc() {
+		printInt(Player.py.misc.dis_ac, 19, Constants.STAT_COLUMN + 6);
 	}
 	
 	/**
 	 * Prints current gold -RAK-
 	 */
-	public static void prt_gold() {
-		prt_long(Player.py.misc.au, 20, Constants.STAT_COLUMN + 6);
+	public static void printGold() {
+		printLong(Player.py.misc.au, 20, Constants.STAT_COLUMN + 6);
 	}
 	
 	/**
 	 * Prints depth in stat area -RAK-
 	 */
-	public static void prt_depth() {
+	public static void printDepth() {
 		String depths;
 		int depth;
 		
@@ -543,74 +543,74 @@ public class Misc3 {
 		} else {
 			depths = String.format("%d feet", depth);
 		}
-		IO.prt(depths, 23, 65);
+		IO.print(depths, 23, 65);
 	}
 	
 	/**
 	 * Prints status of hunger -RAK-
 	 */
-	public static void prt_hunger() {
+	public static void printHunger() {
 		if ((Constants.PY_WEAK & Player.py.flags.status) != 0) {
-			IO.put_buffer("Weak  ", 23, 0);
+			IO.putBuffer("Weak  ", 23, 0);
 		} else if ((Constants.PY_HUNGRY & Player.py.flags.status) != 0) {
-			IO.put_buffer("Hungry", 23, 0);
+			IO.putBuffer("Hungry", 23, 0);
 		} else {
-			IO.put_buffer(blank_string.substring(BLANK_LENGTH - 6), 23, 0);
+			IO.putBuffer(blank_string.substring(BLANK_LENGTH - 6), 23, 0);
 		}
 	}
 	
 	/**
 	 * Prints Blind status -RAK-
 	 */
-	public static void prt_blind() {
+	public static void printBlindness() {
 		if ((Constants.PY_BLIND & Player.py.flags.status) != 0) {
-			IO.put_buffer("Blind", 23, 7);
+			IO.putBuffer("Blind", 23, 7);
 		} else {
-			IO.put_buffer(blank_string.substring(BLANK_LENGTH - 5), 23, 7);
+			IO.putBuffer(blank_string.substring(BLANK_LENGTH - 5), 23, 7);
 		}
 	}
 	
 	/**
 	 * Prints Confusion status -RAK-
 	 */
-	public static void prt_confused() {
+	public static void printConfusion() {
 		if ((Constants.PY_CONFUSED & Player.py.flags.status) != 0) {
-			IO.put_buffer("Confused", 23, 13);
+			IO.putBuffer("Confused", 23, 13);
 		} else {
-			IO.put_buffer(blank_string.substring(BLANK_LENGTH - 8), 23, 13);
+			IO.putBuffer(blank_string.substring(BLANK_LENGTH - 8), 23, 13);
 		}
 	}
 	
 	/**
 	 * Prints Fear status -RAK-
 	 */
-	public static void prt_afraid() {
+	public static void printFear() {
 		if ((Constants.PY_FEAR & Player.py.flags.status) != 0) {
-			IO.put_buffer("Afraid", 23, 22);
+			IO.putBuffer("Afraid", 23, 22);
 		} else {
-			IO.put_buffer(blank_string.substring(BLANK_LENGTH - 6), 23, 22);
+			IO.putBuffer(blank_string.substring(BLANK_LENGTH - 6), 23, 22);
 		}
 	}
 	
 	/**
 	 * Prints Poisoned status -RAK-
 	 */
-	public static void prt_poisoned() {
+	public static void printPoisoned() {
 		if ((Constants.PY_POISONED & Player.py.flags.status) != 0) {
-			IO.put_buffer("Poisoned", 23, 29);
+			IO.putBuffer("Poisoned", 23, 29);
 		} else {
-			IO.put_buffer(blank_string.substring(BLANK_LENGTH - 8), 23, 29);
+			IO.putBuffer(blank_string.substring(BLANK_LENGTH - 8), 23, 29);
 		}
 	}
 	
 	/**
 	 * Prints Searching, Resting, Paralysis, or 'count' status -RAK-
 	 */
-	public static void prt_state() {
+	public static void printState() {
 		String tmp;
 		Player.py.flags.status &= ~Constants.PY_REPEAT;
 		if (Player.py.flags.paralysis > 1) {
-			IO.put_buffer("Paralysed", 23, 38);
+			IO.putBuffer("Paralysed", 23, 38);
 		} else if ((Constants.PY_REST & Player.py.flags.status) != 0) {
 			if (Player.py.flags.rest < 0) {
 				tmp = "Rest *";
@@ -619,7 +619,7 @@ public class Misc3 {
 			} else {
 				tmp = "Rest";
 			}
-			IO.put_buffer(tmp, 23, 38);
+			IO.putBuffer(tmp, 23, 38);
 		} else if (Variable.command_count > 0) {
 			if (Variable.display_counts.value()) {
 				tmp = String.format("Repeat %-3d", Variable.command_count);
@@ -627,21 +627,21 @@ public class Misc3 {
 				tmp ="Repeat";
 			}
 			Player.py.flags.status |= Constants.PY_REPEAT;
-			IO.put_buffer(tmp, 23, 38);
+			IO.putBuffer(tmp, 23, 38);
 			if ((Constants.PY_SEARCH & Player.py.flags.status) != 0) {
-				IO.put_buffer("Search", 23, 38);
+				IO.putBuffer("Search", 23, 38);
 			}
 		} else if ((Constants.PY_SEARCH & Player.py.flags.status) != 0) {
-			IO.put_buffer("Searching", 23, 38);
+			IO.putBuffer("Searching", 23, 38);
 		} else {		/* "repeat 999" is 10 characters */
-			IO.put_buffer(blank_string.substring(BLANK_LENGTH - 10), 23, 38);
+			IO.putBuffer(blank_string.substring(BLANK_LENGTH - 10), 23, 38);
 		}
 	}
 	
 	/**
 	 * Prints the speed of a character. -CJS-
 	 */
-	public static void prt_speed () {
+	public static void printSpeed () {
 		int i;
 		
 		i = Player.py.flags.speed;
@@ -649,43 +649,43 @@ public class Misc3 {
 			i--;
 		}
 		if (i > 1) {
-			IO.put_buffer("Very Slow", 23, 49);
+			IO.putBuffer("Very Slow", 23, 49);
 		} else if (i == 1) {
-			IO.put_buffer("Slow     ", 23, 49);
+			IO.putBuffer("Slow     ", 23, 49);
 		} else if (i == 0) {
-			IO.put_buffer(blank_string.substring(BLANK_LENGTH - 9), 23, 49);
+			IO.putBuffer(blank_string.substring(BLANK_LENGTH - 9), 23, 49);
 		} else if (i == -1) {
-			IO.put_buffer("Fast     ", 23, 49);
+			IO.putBuffer("Fast     ", 23, 49);
 		} else {
-			IO.put_buffer("Very Fast", 23, 49);
+			IO.putBuffer("Very Fast", 23, 49);
 		}
 	}
 	
-	public static void prt_study() {
+	public static void printStudy() {
 		Player.py.flags.status &= ~Constants.PY_STUDY;
 		if (Player.py.flags.new_spells == 0) {
-			IO.put_buffer(blank_string.substring(BLANK_LENGTH - 5), 23, 59);
+			IO.putBuffer(blank_string.substring(BLANK_LENGTH - 5), 23, 59);
 		} else {
-			IO.put_buffer("Study", 23, 59);
+			IO.putBuffer("Study", 23, 59);
 		}
 	}
 	
 	/**
 	 * Prints winner status on display -RAK-
 	 */
-	public static void prt_winner() {
+	public static void printWinner() {
 		if ((Variable.noscore & 0x2) != 0) {
 			if (Variable.wizard) {
-				IO.put_buffer("Is wizard  ", 22, 0);
+				IO.putBuffer("Is wizard  ", 22, 0);
 			} else {
-				IO.put_buffer("Was wizard ", 22, 0);
+				IO.putBuffer("Was wizard ", 22, 0);
 			}
 		} else if ((Variable.noscore & 0x1) != 0) {
-			IO.put_buffer("Resurrected", 22, 0);
+			IO.putBuffer("Resurrected", 22, 0);
 		} else if ((Variable.noscore & 0x4) != 0) {
-			IO.put_buffer("Duplicate", 22, 0);
+			IO.putBuffer("Duplicate", 22, 0);
 		} else if (Variable.total_winner) {
-			IO.put_buffer("*Winner*   ", 22, 0);
+			IO.putBuffer("*Winner*   ", 22, 0);
 		}
 	}
 	
@@ -696,7 +696,7 @@ public class Misc3 {
 	 * @param amount - How much to change the stat by
 	 * @return Final value of the stat
 	 */
-	public static int modify_stat(int stat, int amount) {
+	public static int modifyStat(int stat, int amount) {
 		int loop, i;
 		int tmp_stat;
 		
@@ -729,22 +729,22 @@ public class Misc3 {
 	 * 
 	 * @param stat - Which stat to set
 	 */
-	public static void set_use_stat(int stat) {
-		Player.py.stats.use_stat[stat] = modify_stat(stat, Player.py.stats.mod_stat[stat]);
+	public static void setStatUseValue(int stat) {
+		Player.py.stats.use_stat[stat] = modifyStat(stat, Player.py.stats.mod_stat[stat]);
 		
 		if (stat == Constants.A_STR) {
 			Player.py.flags.status |= Constants.PY_STR_WGT;
-			Moria1.calc_bonuses();
+			Moria1.calcBonuses();
 		} else if (stat == Constants.A_DEX) {
-			Moria1.calc_bonuses();
+			Moria1.calcBonuses();
 		} else if (stat == Constants.A_INT && Player.Class[Player.py.misc.pclass].spell == Constants.MAGE) {
-			calc_spells(Constants.A_INT);
-			calc_mana(Constants.A_INT);
+			calcSpells(Constants.A_INT);
+			calcMana(Constants.A_INT);
 		} else if (stat == Constants.A_WIS && Player.Class[Player.py.misc.pclass].spell == Constants.PRIEST) {
-			calc_spells(Constants.A_WIS);
-			calc_mana(Constants.A_WIS);
+			calcSpells(Constants.A_WIS);
+			calcMana(Constants.A_WIS);
 		} else if (stat == Constants.A_CON) {
-			calc_hitpoints();
+			calcHitpoints();
 		}
 	}
 	
@@ -754,7 +754,7 @@ public class Misc3 {
 	 * @param stat - Which stat to increase
 	 * @return Whether the stat was increased
 	 */
-	public static boolean inc_stat(int stat) {
+	public static boolean increaseStat(int stat) {
 		int tmp_stat, gain;
 		
 		tmp_stat = Player.py.stats.cur_stat[stat];
@@ -764,7 +764,7 @@ public class Misc3 {
 			} else if (tmp_stat < 116) {
 				/* stat increases by 1/6 to 1/3 of difference from max */
 				gain = ((118 - tmp_stat) / 3 + 1) >> 1;
-				tmp_stat += Misc1.randint(gain) + gain;
+				tmp_stat += Misc1.randomInt(gain) + gain;
 			} else {
 				tmp_stat++;
 			}
@@ -773,8 +773,8 @@ public class Misc3 {
 			if (tmp_stat > Player.py.stats.max_stat[stat]) {
 				Player.py.stats.max_stat[stat] = tmp_stat;
 			}
-			set_use_stat(stat);
-			prt_stat(stat);
+			setStatUseValue(stat);
+			printStat(stat);
 			return true;
 		} else {
 			return false;
@@ -787,7 +787,7 @@ public class Misc3 {
 	 * @param stat - Which stat to decrease
 	 * @return Whether the stat was decreased
 	 */
-	public static boolean dec_stat(int stat) {
+	public static boolean decreaseStat(int stat) {
 		int tmp_stat, loss;
 		
 		tmp_stat = Player.py.stats.cur_stat[stat];
@@ -796,7 +796,7 @@ public class Misc3 {
 				tmp_stat--;
 			} else if (tmp_stat < 117) {
 				loss = (((118 - tmp_stat) >> 1) + 1) >> 1;
-				tmp_stat += -Misc1.randint(loss) - loss;
+				tmp_stat += -Misc1.randomInt(loss) - loss;
 				if (tmp_stat < 18) {
 					tmp_stat = 18;
 				}
@@ -805,8 +805,8 @@ public class Misc3 {
 			}
 			
 			Player.py.stats.cur_stat[stat] = tmp_stat;
-			set_use_stat(stat);
-			prt_stat(stat);
+			setStatUseValue(stat);
+			printStat(stat);
 			return true;
 		} else {
 			return false;
@@ -819,14 +819,14 @@ public class Misc3 {
 	 * @param stat - Which stat to restore
 	 * @return True if the stat actually needed to be restored, otherwise false
 	 */
-	public static boolean res_stat(int stat) {
+	public static boolean restoreStat(int stat) {
 		int i;
 		
 		i = Player.py.stats.max_stat[stat] - Player.py.stats.cur_stat[stat];
 		if (i != 0) {
 			Player.py.stats.cur_stat[stat] += i;
-			set_use_stat(stat);
-			prt_stat(stat);
+			setStatUseValue(stat);
+			printStat(stat);
 			return true;
 		}
 		return false;
@@ -839,10 +839,10 @@ public class Misc3 {
 	 * @param stat - Which stat to boost
 	 * @param amount - How much to boost the stat by
 	 */
-	public static void bst_stat(int stat, int amount) {
+	public static void boostStat(int stat, int amount) {
 		Player.py.stats.mod_stat[stat] += amount;
 		
-		set_use_stat(stat);
+		setStatUseValue(stat);
 		/* can not call prt_stat() here, may be in store, may be in inven_command */
 		Player.py.flags.status |= (Constants.PY_STR << stat);
 	}
@@ -850,7 +850,7 @@ public class Misc3 {
 	/**
 	 * Returns a character's adjustment to hit. -JWT-
 	 */
-	public static int tohit_adj() {
+	public static int adjustToHit() {
 		int total, stat;
 		
 		stat = Player.py.stats.use_stat[Constants.A_DEX];
@@ -899,7 +899,7 @@ public class Misc3 {
 	/**
 	 * Returns a character's adjustment to armor class -JWT-
 	 */
-	public static int toac_adj() {
+	public static int adjustToAc() {
 		int stat;
 		
 		stat = Player.py.stats.use_stat[Constants.A_DEX];
@@ -929,7 +929,7 @@ public class Misc3 {
 	/**
 	 * Returns a character's adjustment to disarm -RAK-
 	 */
-	public static int todis_adj() {
+	public static int adjustToDisarm() {
 		int stat;
 		
 		stat = Player.py.stats.use_stat[Constants.A_DEX];
@@ -963,7 +963,7 @@ public class Misc3 {
 	/**
 	 * Returns a character's adjustment to damage -JWT-
 	 */
-	public static int todam_adj() {
+	public static int adjustToDamage() {
 		int stat;
 		
 		stat = Player.py.stats.use_stat[Constants.A_STR];
@@ -991,105 +991,105 @@ public class Misc3 {
 	/**
 	 * Prints character-screen info -RAK-
 	 */
-	public static void prt_stat_block() {
+	public static void printStatBlock() {
 		long status;
 		PlayerMisc m_ptr;
 		int i;
 		
 		m_ptr = Player.py.misc;
-		prt_field(Player.race[Player.py.misc.prace].trace,		2, Constants.STAT_COLUMN);
-		prt_field(Player.Class[Player.py.misc.pclass].title,	3, Constants.STAT_COLUMN);
-		prt_field(title_string(),						4, Constants.STAT_COLUMN);
+		printField(Player.race[Player.py.misc.prace].trace,		2, Constants.STAT_COLUMN);
+		printField(Player.Class[Player.py.misc.pclass].title,	3, Constants.STAT_COLUMN);
+		printField(getPlayerTitle(),						4, Constants.STAT_COLUMN);
 		for (i = 0; i < 6; i++) {
-			prt_stat(i);
+			printStat(i);
 		}
-		prt_num ("LEV ", m_ptr.lev,		13, Constants.STAT_COLUMN);
-		prt_lnum("EXP ", m_ptr.exp,		14, Constants.STAT_COLUMN);
-		prt_num ("MANA", m_ptr.cmana,	15, Constants.STAT_COLUMN);
-		prt_num ("MHP ", m_ptr.mhp,		16, Constants.STAT_COLUMN);
-		prt_num ("CHP ", m_ptr.chp,		17, Constants.STAT_COLUMN);
-		prt_num ("AC  ", m_ptr.dis_ac,	19, Constants.STAT_COLUMN);
-		prt_lnum("GOLD", m_ptr.au,		20, Constants.STAT_COLUMN);
-		prt_winner();
+		printNum ("LEV ", m_ptr.lev,		13, Constants.STAT_COLUMN);
+		printLongWithHeader("EXP ", m_ptr.exp,		14, Constants.STAT_COLUMN);
+		printNum ("MANA", m_ptr.cmana,	15, Constants.STAT_COLUMN);
+		printNum ("MHP ", m_ptr.mhp,		16, Constants.STAT_COLUMN);
+		printNum ("CHP ", m_ptr.chp,		17, Constants.STAT_COLUMN);
+		printNum ("AC  ", m_ptr.dis_ac,	19, Constants.STAT_COLUMN);
+		printLongWithHeader("GOLD", m_ptr.au,		20, Constants.STAT_COLUMN);
+		printWinner();
 		status = Player.py.flags.status;
 		if (((Constants.PY_HUNGRY | Constants.PY_WEAK) & status) != 0) {
-			prt_hunger();
+			printHunger();
 		}
 		if ((Constants.PY_BLIND & status) != 0) {
-			prt_blind();
+			printBlindness();
 		}
 		if ((Constants.PY_CONFUSED & status) != 0) {
-			prt_confused();
+			printConfusion();
 		}
 		if ((Constants.PY_FEAR & status) != 0) {
-			prt_afraid();
+			printFear();
 		}
 		if ((Constants.PY_POISONED & status) != 0) {
-			prt_poisoned();
+			printPoisoned();
 		}
 		if (((Constants.PY_SEARCH | Constants.PY_REST) & status) != 0) {
-			prt_state ();
+			printState ();
 		}
 		/* if speed non zero, print it, modify speed if Searching */
 		if (Player.py.flags.speed - ((Constants.PY_SEARCH & status) >> 8) != 0) {
-			prt_speed ();
+			printSpeed ();
 		}
 		/* display the study field */
-		prt_study();
+		printStudy();
 	}
 	
 	/**
 	 * Draws entire screen -RAK-
 	 */
-	public static void draw_cave() {
-		IO.clear_screen ();
-		prt_stat_block();
-		Misc1.prt_map();
-		prt_depth();
+	public static void drawCave() {
+		IO.clearScreen ();
+		printStatBlock();
+		Misc1.printMap();
+		printDepth();
 	}
 	
 	/**
 	 * Prints the following information on the screen. -JWT-
 	 */
-	public static void put_character() {
+	public static void printCharacterInfo() {
 		PlayerMisc m_ptr;
 		
 		m_ptr = Player.py.misc;
-		IO.clear_screen();
-		IO.put_buffer("Name        :", 2, 1);
-		IO.put_buffer("Race        :", 3, 1);
-		IO.put_buffer("Sex         :", 4, 1);
-		IO.put_buffer("Class       :", 5, 1);
+		IO.clearScreen();
+		IO.putBuffer("Name        :", 2, 1);
+		IO.putBuffer("Race        :", 3, 1);
+		IO.putBuffer("Sex         :", 4, 1);
+		IO.putBuffer("Class       :", 5, 1);
 		if (Variable.character_generated) {
-			IO.put_buffer(m_ptr.name, 2, 15);
-			IO.put_buffer(Player.race[m_ptr.prace].trace, 3, 15);
-			IO.put_buffer(m_ptr.male ? "Male" : "Female", 4, 15);
-			IO.put_buffer(Player.Class[m_ptr.pclass].title, 5, 15);
+			IO.putBuffer(m_ptr.name, 2, 15);
+			IO.putBuffer(Player.race[m_ptr.prace].trace, 3, 15);
+			IO.putBuffer(m_ptr.male ? "Male" : "Female", 4, 15);
+			IO.putBuffer(Player.Class[m_ptr.pclass].title, 5, 15);
 		}
 	}
 	
 	/**
 	 * Prints stats and adjustments. -JWT-
 	 */
-	public static void put_stats() {
+	public static void printStats() {
 		PlayerMisc m_ptr;
 		int i;
 		String buf;
 		
 		m_ptr = Player.py.misc;
 		for (i = 0; i < 6; i++) {
-			buf = cnv_stat(Player.py.stats.use_stat[i]);
-			IO.put_buffer(stat_names[i], 2 + i, 61);
-			IO.put_buffer(buf, 2 + i, 66);
+			buf = convertStat(Player.py.stats.use_stat[i]);
+			IO.putBuffer(stat_names[i], 2 + i, 61);
+			IO.putBuffer(buf, 2 + i, 66);
 			if (Player.py.stats.max_stat[i] > Player.py.stats.cur_stat[i]) {
-				buf = cnv_stat(Player.py.stats.max_stat[i]);
-				IO.put_buffer(buf, 2 + i, 73);
+				buf = convertStat(Player.py.stats.max_stat[i]);
+				IO.putBuffer(buf, 2 + i, 73);
 			}
 		}
-		prt_num("+ To Hit    ", m_ptr.dis_th,  9, 1);
-		prt_num("+ To Damage ", m_ptr.dis_td, 10, 1);
-		prt_num("+ To AC     ", m_ptr.dis_tac, 11, 1);
-		prt_num("  Total AC  ", m_ptr.dis_ac, 12, 1);
+		printNum("+ To Hit    ", m_ptr.dis_th,  9, 1);
+		printNum("+ To Damage ", m_ptr.dis_td, 10, 1);
+		printNum("+ To AC     ", m_ptr.dis_tac, 11, 1);
+		printNum("  Total AC  ", m_ptr.dis_ac, 12, 1);
 	}
 	
 	/**
@@ -1099,7 +1099,7 @@ public class Misc3 {
 	 * @param y - Being compared to
 	 * @return - Rating of x
 	 */
-	public static String likert(int x, int y) {
+	public static String likeRating(int x, int y) {
 		switch((x / y))
 		{
 		case -3: case -2: case -1:	return "Very Bad";
@@ -1116,119 +1116,119 @@ public class Misc3 {
 	/**
 	 * Prints age, height, weight, and social class -JWT-
 	 */
-	public static void put_misc1() {
+	public static void printAhws() {
 		PlayerMisc m_ptr;
 		
 		m_ptr = Player.py.misc;
-		prt_num("Age          ", m_ptr.age, 2, 38);
-		prt_num("Height       ", m_ptr.ht, 3, 38);
-		prt_num("Weight       ", m_ptr.wt, 4, 38);
-		prt_num("Social Class ", m_ptr.sc, 5, 38);
+		printNum("Age          ", m_ptr.age, 2, 38);
+		printNum("Height       ", m_ptr.ht, 3, 38);
+		printNum("Weight       ", m_ptr.wt, 4, 38);
+		printNum("Social Class ", m_ptr.sc, 5, 38);
 	}
 	
 	/**
 	 * Prints player information. -JWT-
 	 */
-	public static void put_misc2() {
+	public static void printLevelStats() {
 		PlayerMisc m_ptr;
 		
 		m_ptr = Player.py.misc;
-		prt_7lnum ("Level      ", m_ptr.lev, 9, 28);
-		prt_7lnum("Experience ", m_ptr.exp, 10, 28);
-		prt_7lnum("Max Exp    ", m_ptr.max_exp, 11, 28);
+		prtLong7WithHeader ("Level      ", m_ptr.lev, 9, 28);
+		prtLong7WithHeader("Experience ", m_ptr.exp, 10, 28);
+		prtLong7WithHeader("Max Exp    ", m_ptr.max_exp, 11, 28);
 		if (m_ptr.lev == Constants.MAX_PLAYER_LEVEL) {
-			IO.prt("Exp to Adv.: *******", 12, 28);
+			IO.print("Exp to Adv.: *******", 12, 28);
 		} else {
-			prt_7lnum("Exp to Adv.", (Player.player_exp[m_ptr.lev - 1] * m_ptr.expfact / 100), 12, 28);
+			prtLong7WithHeader("Exp to Adv.", (Player.player_exp[m_ptr.lev - 1] * m_ptr.expfact / 100), 12, 28);
 		}
-		prt_7lnum("Gold       ", m_ptr.au, 13, 28);
-		prt_num("Max Hit Points ", m_ptr.mhp, 9, 52);
-		prt_num("Cur Hit Points ", m_ptr.chp, 10, 52);
-		prt_num("Max Mana       ", m_ptr.mana, 11, 52);
-		prt_num("Cur Mana       ", m_ptr.cmana, 12, 52);
+		prtLong7WithHeader("Gold       ", m_ptr.au, 13, 28);
+		printNum("Max Hit Points ", m_ptr.mhp, 9, 52);
+		printNum("Cur Hit Points ", m_ptr.chp, 10, 52);
+		printNum("Max Mana       ", m_ptr.mana, 11, 52);
+		printNum("Cur Mana       ", m_ptr.cmana, 12, 52);
 	}
 	
 	/**
 	 * Prints ratings on certain abilities -RAK-
 	 */
-	public static void put_misc3() {
+	public static void printAbilities() {
 		int xbth, xbthb, xfos, xsrh, xstl, xdis, xsave, xdev;
 		String xinfra;
 		PlayerMisc p_ptr;
 		
-		IO.clear_from(14);
-		p_ptr	= Player.py.misc;
-		xbth	= p_ptr.bth + p_ptr.ptohit * Constants.BTH_PLUS_ADJ
+		IO.clearFrom(14);
+		p_ptr = Player.py.misc;
+		xbth = p_ptr.bth + p_ptr.ptohit * Constants.BTH_PLUS_ADJ
 				+ (Player.class_level_adj[p_ptr.pclass][Constants.CLA_BTH] * p_ptr.lev);
 		xbthb = p_ptr.bthb + p_ptr.ptohit * Constants.BTH_PLUS_ADJ
 				+ (Player.class_level_adj[p_ptr.pclass][Constants.CLA_BTHB] * p_ptr.lev);
 		/* this results in a range from 0 to 29 */
-		xfos	= 40 - p_ptr.fos;
+		xfos = 40 - p_ptr.fos;
 		if (xfos < 0) xfos = 0;
-		xsrh	= p_ptr.srh;
+		xsrh = p_ptr.srh;
 		/* this results in a range from 0 to 9 */
-		xstl	= p_ptr.stl + 1;
-		xdis	= p_ptr.disarm + 2 * todis_adj() + stat_adj(Constants.A_INT)
+		xstl = p_ptr.stl + 1;
+		xdis = p_ptr.disarm + 2 * adjustToDisarm() + adjustStat(Constants.A_INT)
 				+ (Player.class_level_adj[p_ptr.pclass][Constants.CLA_DISARM] * p_ptr.lev / 3);
-		xsave	= p_ptr.save + stat_adj(Constants.A_WIS)
+		xsave = p_ptr.save + adjustStat(Constants.A_WIS)
 				+ (Player.class_level_adj[p_ptr.pclass][Constants.CLA_SAVE] * p_ptr.lev / 3);
-		xdev	= p_ptr.save + stat_adj(Constants.A_INT)
+		xdev = p_ptr.save + adjustStat(Constants.A_INT)
 				+ (Player.class_level_adj[p_ptr.pclass][Constants.CLA_DEVICE] * p_ptr.lev / 3);
 		
 		xinfra = String.format("%d feet", Player.py.flags.see_infra * 10);
 		
-		IO.put_buffer("(Miscellaneous Abilities)", 15, 25);
-		IO.put_buffer("Fighting    :", 16, 1);
-		IO.put_buffer(likert (xbth, 12), 16, 15);
-		IO.put_buffer("Bows/Throw  :", 17, 1);
-		IO.put_buffer(likert (xbthb, 12), 17, 15);
-		IO.put_buffer("Saving Throw:", 18, 1);
-		IO.put_buffer(likert (xsave, 6), 18, 15);
+		IO.putBuffer("(Miscellaneous Abilities)", 15, 25);
+		IO.putBuffer("Fighting    :", 16, 1);
+		IO.putBuffer(likeRating(xbth, 12), 16, 15);
+		IO.putBuffer("Bows/Throw  :", 17, 1);
+		IO.putBuffer(likeRating(xbthb, 12), 17, 15);
+		IO.putBuffer("Saving Throw:", 18, 1);
+		IO.putBuffer(likeRating(xsave, 6), 18, 15);
 		
-		IO.put_buffer("Stealth     :", 16, 28);
-		IO.put_buffer(likert (xstl, 1), 16, 42);
-		IO.put_buffer("Disarming   :", 17, 28);
-		IO.put_buffer(likert (xdis, 8), 17, 42);
-		IO.put_buffer("Magic Device:", 18, 28);
-		IO.put_buffer(likert (xdev, 6), 18, 42);
+		IO.putBuffer("Stealth     :", 16, 28);
+		IO.putBuffer(likeRating(xstl, 1), 16, 42);
+		IO.putBuffer("Disarming   :", 17, 28);
+		IO.putBuffer(likeRating(xdis, 8), 17, 42);
+		IO.putBuffer("Magic Device:", 18, 28);
+		IO.putBuffer(likeRating(xdev, 6), 18, 42);
 		
-		IO.put_buffer("Perception  :", 16, 55);
-		IO.put_buffer(likert (xfos, 3), 16, 69);
-		IO.put_buffer("Searching   :", 17, 55);
-		IO.put_buffer(likert (xsrh, 6), 17, 69);
-		IO.put_buffer("Infra-Vision:", 18, 55);
-		IO.put_buffer(xinfra, 18, 69);
+		IO.putBuffer("Perception  :", 16, 55);
+		IO.putBuffer(likeRating(xfos, 3), 16, 69);
+		IO.putBuffer("Searching   :", 17, 55);
+		IO.putBuffer(likeRating(xsrh, 6), 17, 69);
+		IO.putBuffer("Infra-Vision:", 18, 55);
+		IO.putBuffer(xinfra, 18, 69);
 	}
 	
 	/**
 	 * Prints out all character information. -RAK-
 	 */
-	public static void display_char() {
-		put_character();
-		put_misc1();
-		put_stats();
-		put_misc2();
-		put_misc3();
+	public static void displayCharacter() {
+		printCharacterInfo();
+		printAhws();
+		printStats();
+		printLevelStats();
+		printAbilities();
 	}
 	
 	/**
 	 * Gets a name for the character -JWT-
 	 */
-	public static void get_name() {
-		IO.prt("Enter your player's name  [press <RETURN> when finished]", 21, 2);
-		IO.put_buffer(blank_string.substring(BLANK_LENGTH - 23), 2, 15);
-		if ((Player.py.misc.name = IO.get_string(2, 15, 23)).isEmpty() || Player.py.misc.name.isEmpty()) {
-			Player.py.misc.name = user_name();
-			IO.put_buffer(Player.py.misc.name, 2, 15);
+	public static void chooseName() {
+		IO.print("Enter your player's name  [press <RETURN> when finished]", 21, 2);
+		IO.putBuffer(blank_string.substring(BLANK_LENGTH - 23), 2, 15);
+		if ((Player.py.misc.name = IO.getString(2, 15, 23)).isEmpty() || Player.py.misc.name.isEmpty()) {
+			Player.py.misc.name = userName();
+			IO.putBuffer(Player.py.misc.name, 2, 15);
 		}
-		IO.clear_from(20);
+		IO.clearFrom(20);
 	}
 	
-	private static String user_name() {
-		return getlogin();
+	private static String userName() {
+		return getLogin();
 	}
 	
-	private static String getlogin() {
+	private static String getLogin() {
 		String cp;
 		
 		if ((cp = System.getenv("USER")) == null) {
@@ -1240,26 +1240,26 @@ public class Misc3 {
 	/**
 	 * Changes the name of the character -JWT-
 	 */
-	public static void change_name() {
+	public static void changeName() {
 		char c;
 		boolean flag;
 		String temp;
 		
 		flag = false;
-		display_char();
+		displayCharacter();
 		do {
-			IO.prt("<f>ile character description. <c>hange character name.", 21, 2);
+			IO.print("<f>ile character description. <c>hange character name.", 21, 2);
 			c = IO.inkey();
 			switch(c)
 			{
 			case 'c':
-				get_name();
+				chooseName();
 				flag = true;
 				break;
 			case 'f':
-				IO.prt("File name:", 0, 0);
-				if ((temp = IO.get_string(0, 10, 60)).length() > 0 && temp.charAt(0) != '\0') {
-					if (Files.file_character(temp)) {
+				IO.print("File name:", 0, 0);
+				if ((temp = IO.getString(0, 10, 60)).length() > 0 && temp.charAt(0) != '\0') {
+					if (Files.fileCharacter(temp)) {
 						flag = true;
 					}
 				}
@@ -1280,7 +1280,7 @@ public class Misc3 {
 	 * 
 	 * @param item_val - Index in inventory array of item to destroy
 	 */
-	public static void inven_destroy(int item_val) {
+	public static void destroyInvenItem(int item_val) {
 		int j;
 		InvenType i_ptr;
 		
@@ -1293,7 +1293,7 @@ public class Misc3 {
 			for (j = item_val; j < Treasure.inven_ctr - 1; j++) {
 				Treasure.inventory[j + 1].copyInto(Treasure.inventory[j]);
 			}
-			Desc.invcopy(Treasure.inventory[Treasure.inven_ctr - 1], Constants.OBJ_NOTHING);
+			Desc.copyIntoInventory(Treasure.inventory[Treasure.inven_ctr - 1], Constants.OBJ_NOTHING);
 			Treasure.inven_ctr--;
 		}
 		Player.py.flags.status |= Constants.PY_STR_WGT;
@@ -1306,7 +1306,7 @@ public class Misc3 {
 	 * @param s_ptr - Item receiving information
 	 * @param i_ptr - Item being copied
 	 */
-	public static void take_one_item(InvenType s_ptr, InvenType i_ptr) {
+	public static void takeOneItem(InvenType s_ptr, InvenType i_ptr) {
 		i_ptr.copyInto(s_ptr);
 		if ((s_ptr.number > 1) && (s_ptr.subval >= Constants.ITEM_SINGLE_STACK_MIN)
 				&& (s_ptr.subval <= Constants.ITEM_SINGLE_STACK_MAX)) {
@@ -1320,22 +1320,22 @@ public class Misc3 {
 	 * @param item_val - Index in inventory array of item to drop
 	 * @param drop_all - Whether to drop all of that item
 	 */
-	public static void inven_drop(int item_val, boolean drop_all) {
+	public static void dropInvenItem(int item_val, boolean drop_all) {
 		int i;
 		InvenType i_ptr;
 		String prt1;
 		String prt2;
 		
 		if (Variable.cave[Player.char_row][Player.char_col].tptr != 0) {
-			Moria3.delete_object(Player.char_row, Player.char_col);
+			Moria3.deleteObject(Player.char_row, Player.char_col);
 		}
-		i = Misc1.popt();
+		i = Misc1.popTreasure();
 		i_ptr = Treasure.inventory[item_val];
 		i_ptr.copyInto(Treasure.t_list[i]);
 		Variable.cave[Player.char_row][Player.char_col].tptr = i;
 		
 		if (item_val >= Constants.INVEN_WIELD) {
-			Moria1.takeoff(item_val, -1);
+			Moria1.unequipItem(item_val, -1);
 		} else {
 			if (drop_all || i_ptr.number == 1) {
 				Treasure.inven_weight -= i_ptr.weight * i_ptr.number;
@@ -1344,38 +1344,37 @@ public class Misc3 {
 					Treasure.inventory[item_val + 1].copyInto(Treasure.inventory[item_val]);
 					item_val++;
 				}
-				Desc.invcopy(Treasure.inventory[Treasure.inven_ctr], Constants.OBJ_NOTHING);
+				Desc.copyIntoInventory(Treasure.inventory[Treasure.inven_ctr], Constants.OBJ_NOTHING);
 			} else {
 				Treasure.t_list[i].number = 1;
 				Treasure.inven_weight -= i_ptr.weight;
 				i_ptr.number--;
 			}
-			prt1 = Desc.objdes(Treasure.t_list[i], true);
+			prt1 = Desc.describeObject(Treasure.t_list[i], true);
 			prt2 = String.format("Dropped %s", prt1);
-			IO.msg_print(prt2);
+			IO.printMessage(prt2);
 		}
 		Player.py.flags.status |= Constants.PY_STR_WGT;
 	}
 	
-	private static boolean set_inven_damage(int typ, InvenType inv) {
-		switch(typ)
-		{
-		case Sets.set_corrodes:
-			return Sets.set_corrodes(inv);
-		case Sets.set_flammable:
-			return Sets.set_flammable(inv);
-		case Sets.set_frost_destroy:
-			return Sets.set_frost_destroy(inv);
-		case Sets.set_acid_affect:
-			return Sets.set_acid_affect(inv);
-		case Sets.set_lightning_destroy:
-			return Sets.set_lightning_destroy(inv);
-		case Sets.set_null:
-			return Sets.set_null(inv);
-		case Sets.set_acid_destroy:
-			return Sets.set_acid_destroy(inv);
-		case Sets.set_fire_destroy:
-			return Sets.set_fire_destroy(inv);
+	private static boolean isSetDamageType(int typ, InvenType inv) {
+		switch(typ) {
+		case Sets.SET_CORRODES:
+			return Sets.isCorrosive(inv);
+		case Sets.SET_FLAMMABLE:
+			return Sets.isFlammable(inv);
+		case Sets.SET_FROST_DESTROY:
+			return Sets.doesFrostDestroy(inv);
+		case Sets.SET_ACID_AFFECT:
+			return Sets.doesAcidAffect(inv);
+		case Sets.SET_LIGHTNING_DESTROY:
+			return Sets.doesLightningDestroy(inv);
+		case Sets.SET_NULL:
+			return Sets.isNull(inv);
+		case Sets.SET_ACID_DESTROY:
+			return Sets.doesAcidDestroy(inv);
+		case Sets.SET_FIRE_DESTROY:
+			return Sets.doesFireDestroy(inv);
 		default:
 			return false;
 		}
@@ -1388,13 +1387,13 @@ public class Misc3 {
 	 * @param perc - Percent chance of item being destroyed
 	 * @return Number of items in inventory destroyed
 	 */
-	public static int inven_damage(int typ, int perc) {
+	public static int damageInvenItem(int typ, int perc) {
 		int i, j;
 		
 		j = 0;
 		for (i = 0; i < Treasure.inven_ctr; i++) {
-			if (set_inven_damage(typ, Treasure.inventory[i]) && (Misc1.randint(100) < perc)) {
-				inven_destroy(i);
+			if (isSetDamageType(typ, Treasure.inventory[i]) && (Misc1.randomInt(100) < perc)) {
+				destroyInvenItem(i);
 				j++;
 			}
 		}
@@ -1406,7 +1405,7 @@ public class Misc3 {
 	 * 
 	 * @return The weight limit
 	 */
-	public static int weight_limit() {
+	public static int weightLimit() {
 		int weight_cap;
 		
 		weight_cap = Player.py.stats.use_stat[Constants.A_STR] * Constants.PLAYER_WEIGHT_CAP + Player.py.misc.wt;
@@ -1420,7 +1419,7 @@ public class Misc3 {
 	 * @param t_ptr - The object being picked up
 	 * @return Whether the object can fit in the player's inventory
 	 */
-	public static boolean inven_check_num(InvenType t_ptr) {
+	public static boolean canPickUpItem(InvenType t_ptr) {
 		/* this code must be identical to the inven_carry() code below */
 		int i;
 		
@@ -1429,13 +1428,13 @@ public class Misc3 {
 		} else if (t_ptr.subval >= Constants.ITEM_SINGLE_STACK_MIN) {
 			for (i = 0; i < Treasure.inven_ctr; i++) {
 				if (Treasure.inventory[i].tval == t_ptr.tval
-				&& Treasure.inventory[i].subval == t_ptr.subval
-				/* make sure the number field doesn't overflow */
-				&& (Treasure.inventory[i].number + t_ptr.number < 256)
-				/* they always stack (subval < 192), or else they have same p1 */
-				&& ((t_ptr.subval < Constants.ITEM_GROUP_MIN) || (Treasure.inventory[i].p1 == t_ptr.p1))
-				/* only stack if both or neither are identified */
-				&& (Desc.known1_p(Treasure.inventory[i]) == Desc.known1_p(t_ptr))) {
+						&& Treasure.inventory[i].subval == t_ptr.subval
+						/* make sure the number field doesn't overflow */
+						&& (Treasure.inventory[i].number + t_ptr.number < 256)
+						/* they always stack (subval < 192), or else they have same p1 */
+						&& ((t_ptr.subval < Constants.ITEM_GROUP_MIN) || (Treasure.inventory[i].p1 == t_ptr.p1))
+						/* only stack if both or neither are identified */
+						&& (Desc.isKnownByPlayer(Treasure.inventory[i]) == Desc.isKnownByPlayer(t_ptr))) {
 					return true;
 				}
 			}
@@ -1449,10 +1448,10 @@ public class Misc3 {
 	 * @param i_ptr - The object being picked up
 	 * @return Whether picking up the object would change the player's speed
 	 */
-	public static boolean inven_check_weight(InvenType i_ptr) {
+	public static boolean checkItemWeight(InvenType i_ptr) {
 		int i, new_inven_weight;
 		
-		i = weight_limit();
+		i = weightLimit();
 		new_inven_weight = i_ptr.number * i_ptr.weight + Treasure.inven_weight;
 		if (i < new_inven_weight) {
 			i = new_inven_weight / (i + 1);
@@ -1466,7 +1465,7 @@ public class Misc3 {
 	/**
 	 * Are we strong enough for the current pack and weapon? -CJS-
 	 */
-	public static void check_strength() {
+	public static void checkStrength() {
 		int i;
 		InvenType i_ptr;
 		
@@ -1474,18 +1473,18 @@ public class Misc3 {
 		if (i_ptr.tval != Constants.TV_NOTHING
 				&& (Player.py.stats.use_stat[Constants.A_STR] * 15 < i_ptr.weight)) {
 			if (!Variable.weapon_heavy) {
-				IO.msg_print("You have trouble wielding such a heavy weapon.");
+				IO.printMessage("You have trouble wielding such a heavy weapon.");
 				Variable.weapon_heavy = true;
-				Moria1.calc_bonuses();
+				Moria1.calcBonuses();
 			}
 		} else if (Variable.weapon_heavy) {
 			Variable.weapon_heavy = false;
 			if (i_ptr.tval != Constants.TV_NOTHING) {
-				IO.msg_print("You are strong enough to wield your weapon.");
+				IO.printMessage("You are strong enough to wield your weapon.");
 			}
-			Moria1.calc_bonuses();
+			Moria1.calcBonuses();
 		}
-		i = weight_limit();
+		i = weightLimit();
 		if (i < Treasure.inven_weight) {
 			i = Treasure.inven_weight / (i + 1);
 		} else {
@@ -1493,11 +1492,11 @@ public class Misc3 {
 		}
 		if (Variable.pack_heavy != i) {
 			if (Variable.pack_heavy < i) {
-				IO.msg_print("Your pack is so heavy that it slows you down.");
+				IO.printMessage("Your pack is so heavy that it slows you down.");
 			} else {
-				IO.msg_print("You move more easily under the weight of your pack.");
+				IO.printMessage("You move more easily under the weight of your pack.");
 			}
-			Moria1.change_speed(i - Variable.pack_heavy);
+			Moria1.changeSpeed(i - Variable.pack_heavy);
 			Variable.pack_heavy = i;
 		}
 		Player.py.flags.status &= ~Constants.PY_STR_WGT;
@@ -1510,7 +1509,7 @@ public class Misc3 {
 	 * @param i_ptr - The item being added to the player's inventory
 	 * @return The index in the inventory array where the item was placed
 	 */
-	public static int inven_carry(InvenType i_ptr) {
+	public static int pickUpItem(InvenType i_ptr) {
 		/* this code must be identical to the inven_check_num() code above */
 		int locn, i;
 		int typ, subt;
@@ -1519,8 +1518,8 @@ public class Misc3 {
 		
 		typ = i_ptr.tval;
 		subt = i_ptr.subval;
-		known1p = Desc.known1_p(i_ptr);
-		always_known1p = (Desc.object_offset(i_ptr) == -1);
+		known1p = Desc.isKnownByPlayer(i_ptr);
+		always_known1p = (Desc.getObjectOffset(i_ptr) == -1);
 		/* Now, check to see if player can carry object  */
 		for (locn = 0; ; locn++) {
 			t_ptr = Treasure.inventory[locn];
@@ -1529,7 +1528,7 @@ public class Misc3 {
 					&& (t_ptr.number + i_ptr.number < 256)
 					&& ((subt < Constants.ITEM_GROUP_MIN) || (t_ptr.p1 == i_ptr.p1))
 					/* only stack if both or neither are identified */
-					&& (known1p == Desc.known1_p(t_ptr))) {
+					&& (known1p == Desc.isKnownByPlayer(t_ptr))) {
 				t_ptr.number += i_ptr.number;
 				break;
 				
@@ -1556,7 +1555,7 @@ public class Misc3 {
 	 * @param spell - The spell being checked
 	 * @return The percent chance of spell failing
 	 */
-	public static int spell_chance(int spell) {
+	public static int spellFailChance(int spell) {
 		SpellType s_ptr;
 		int chance;
 		int stat;
@@ -1568,7 +1567,7 @@ public class Misc3 {
 		} else {
 			stat = Constants.A_WIS;
 		}
-		chance -= 3 * (stat_adj(stat) - 1);
+		chance -= 3 * (adjustStat(stat) - 1);
 		if (s_ptr.smana > Player.py.misc.cmana) {
 			chance += 5 * (s_ptr.smana - Player.py.misc.cmana);
 		}
@@ -1583,7 +1582,7 @@ public class Misc3 {
 	/* Print list of spells					-RAK-	*/
 	/* if nonconsec is -1: spells numbered consecutively from 'a' to 'a'+num
 	                  >=0: spells numbered by offset from nonconsec */
-	public static void print_spells(int[] spell, int num, boolean comment, int nonconsec) {
+	public static void printSpells(int[] spell, int num, boolean comment, int nonconsec) {
 		int i, j;
 		String out_val;
 		SpellType s_ptr;
@@ -1597,9 +1596,9 @@ public class Misc3 {
 			col = 31;
 		}
 		offset = ((Player.Class[Player.py.misc.pclass].spell == Constants.MAGE) ? Constants.SPELL_OFFSET : Constants.PRAYER_OFFSET);
-		IO.erase_line(1, col);
-		IO.put_buffer("Name", 1, col + 5);
-		IO.put_buffer("Lv Mana Fail", 1, col + 35);
+		IO.eraseLine(1, col);
+		IO.putBuffer("Name", 1, col + 5);
+		IO.putBuffer("Lv Mana Fail", 1, col + 35);
 		/* only show the first 22 choices */
 		if (num > 22) {
 			num = 22;
@@ -1626,13 +1625,13 @@ public class Misc3 {
 			} else {
 				spell_char = (char)('a' + j - nonconsec);
 			}
-			out_val = String.format("  %c) %-30s%2d %4d %3d%%%s", spell_char, Player.spell_names[j + offset], s_ptr.slevel, s_ptr.smana, spell_chance(j), p);
-			IO.prt(out_val, 2 + i, col);
+			out_val = String.format("  %c) %-30s%2d %4d %3d%%%s", spell_char, Player.spell_names[j + offset], s_ptr.slevel, s_ptr.smana, spellFailChance(j), p);
+			IO.print(out_val, 2 + i, col);
 		}
 	}
 	
 	/* Returns spell pointer				-RAK-	*/
-	public static boolean get_spell(int[] spell, int num, IntPointer sn, IntPointer sc, String prompt, int first_spell) {
+	public static boolean getSpell(int[] spell, int num, IntPointer sn, IntPointer sc, String prompt, int first_spell) {
 		SpellType s_ptr;
 		boolean flag, redraw;
 		int offset, i;
@@ -1645,7 +1644,7 @@ public class Misc3 {
 		redraw = false;
 		offset = ((Player.Class[Player.py.misc.pclass].spell == Constants.MAGE) ?
 				Constants.SPELL_OFFSET : Constants.PRAYER_OFFSET);
-		while (!flag && IO.get_com(out_str, choice)) {
+		while (!flag && IO.getCommand(out_str, choice)) {
 			if (Character.isUpperCase(choice.value())) {
 				sn.value(choice.value() - 'A' + first_spell);
 				/* verify that this is in spell[], at most 22 entries in spell[] */
@@ -1658,8 +1657,8 @@ public class Misc3 {
 					sn.value(-2);
 				} else {
 					s_ptr = Player.magic_spell[Player.py.misc.pclass - 1][sn.value()];
-					tmp_str = String.format("Cast %s (%d mana, %d%% fail)?", Player.spell_names[sn.value() + offset], s_ptr.smana, spell_chance(sn.value()));
-					if (IO.get_check(tmp_str)) {
+					tmp_str = String.format("Cast %s (%d mana, %d%% fail)?", Player.spell_names[sn.value() + offset], s_ptr.smana, spellFailChance(sn.value()));
+					if (IO.getCheck(tmp_str)) {
 						flag = true;
 					} else {
 						sn.value(-1);
@@ -1681,9 +1680,9 @@ public class Misc3 {
 			} else if (choice.value() == '*') {
 				/* only do this drawing once */
 				if (!redraw) {
-					IO.save_screen();
+					IO.saveScreen();
 					redraw = true;
-					print_spells (spell, num, false, first_spell);
+					printSpells (spell, num, false, first_spell);
 				}
 			} else if (Character.isLetter(choice.value())) {
 				sn.value(-2);
@@ -1693,16 +1692,16 @@ public class Misc3 {
 			}
 			if (sn.value() == -2) {
 				tmp_str = String.format("You don't know that %s.", ((offset == Constants.SPELL_OFFSET) ? "spell" : "prayer"));
-				IO.msg_print(tmp_str);
+				IO.printMessage(tmp_str);
 			}
 		}
 		if (redraw) {
-			IO.restore_screen ();
+			IO.restoreScreen ();
 		}
 		
-		IO.erase_line(Constants.MSG_LINE, 0);
+		IO.eraseLine(Constants.MSG_LINE, 0);
 		if (flag) {
-			sc.value(spell_chance(sn.value()));
+			sc.value(spellFailChance(sn.value()));
 		}
 		
 		return flag;
@@ -1715,7 +1714,7 @@ public class Misc3 {
 	 * 
 	 * @param stat - 
 	 */
-	public static void calc_spells(int stat) {
+	public static void calcSpells(int stat) {
 		int i;
 		int mask;
 		int spell_flag;
@@ -1743,7 +1742,7 @@ public class Misc3 {
 					Player.spell_learned &= ~mask;
 					Player.spell_forgotten |= mask;
 					tmp_str = String.format("You have forgotten the %s of %s.", p, Player.spell_names[i + offset]);
-					IO.msg_print(tmp_str);
+					IO.printMessage(tmp_str);
 				} else {
 					break;
 				}
@@ -1752,7 +1751,7 @@ public class Misc3 {
 		
 		/* calc number of spells allowed */
 		levels = p_ptr.lev - Player.Class[p_ptr.pclass].first_spell_lev + 1;
-		switch(stat_adj(stat)) {
+		switch(adjustStat(stat)) {
 		case 0:			num_allowed = 0; break;
 		case 1: case 2: case 3: num_allowed = 1 * levels; break;
 		case 4: case 5: num_allowed = 3 * levels / 2; break;
@@ -1788,7 +1787,7 @@ public class Misc3 {
 						Player.spell_forgotten &= ~mask;
 						Player.spell_learned |= mask;
 						tmp_str = String.format("You have remembered the %s of %s.", p, Player.spell_names[j + offset]);
-						IO.msg_print(tmp_str);
+						IO.printMessage(tmp_str);
 					} else {
 						num_allowed++;
 					}
@@ -1835,7 +1834,7 @@ public class Misc3 {
 					Player.spell_forgotten |= mask;
 					new_spells++;
 					tmp_str = String.format("You have forgotten the %s of %s.", p, Player.spell_names[j + offset]);
-					IO.msg_print(tmp_str);
+					IO.printMessage(tmp_str);
 				}
 			}
 			
@@ -1845,7 +1844,7 @@ public class Misc3 {
 		if (new_spells != Player.py.flags.new_spells) {
 			if (new_spells > 0 && Player.py.flags.new_spells == 0) {
 				tmp_str = String.format("You can learn some new %ss now.", p);
-				IO.msg_print(tmp_str);
+				IO.printMessage(tmp_str);
 			}
 			
 			Player.py.flags.new_spells = new_spells;
@@ -1856,7 +1855,7 @@ public class Misc3 {
 	/**
 	 * Gain spells when player wants to -JEW-
 	 */
-	public static void gain_spells() {
+	public static void gainSpells() {
 		CharPointer query = new CharPointer();
 		int stat, diff_spells, new_spells;
 		int[] spells = new int[31];
@@ -1871,7 +1870,7 @@ public class Misc3 {
 		 * so only fail when can't see if player has MAGE spells.  This check
 		 * is done below.  */
 		if (Player.py.flags.confused > 0) {
-			IO.msg_print("You are too confused.");
+			IO.printMessage("You are too confused.");
 			return;
 		}
 		
@@ -1885,10 +1884,10 @@ public class Misc3 {
 			
 			/* People with MAGE spells can't learn spells if they can't read their books.  */
 			if (Player.py.flags.blind > 0) {
-				IO.msg_print("You can't see to read your spell book!");
+				IO.printMessage("You can't see to read your spell book!");
 				return;
-			} else if (Moria1.no_light()) {
-				IO.msg_print("You have no light to read by.");
+			} else if (Moria1.playerHasNoLight()) {
+				IO.printMessage("You have no light to read by.");
 				return;
 			}
 		} else {
@@ -1904,7 +1903,7 @@ public class Misc3 {
 		
 		if (new_spells == 0) {
 			tmp_str = String.format("You can't learn any new %ss!", ((stat == Constants.A_INT) ? "spell" : "prayer"));
-			IO.msg_print(tmp_str);
+			IO.printMessage(tmp_str);
 			Variable.free_turn_flag = true;
 		} else {
 			/* determine which spells player can learn */
@@ -1936,15 +1935,15 @@ public class Misc3 {
 			}
 			
 			if (new_spells > i) {
-				IO.msg_print("You seem to be missing a book.");
+				IO.printMessage("You seem to be missing a book.");
 				diff_spells = new_spells - i;
 				new_spells = i;
 			}
 			if (new_spells != 0 && stat == Constants.A_INT) {
 				/* get to choose which mage spells will be learned */
-				IO.save_screen();
-				print_spells (spells, i, false, -1);
-				while (new_spells != 0 && IO.get_com("Learn which spell?", query)) {
+				IO.saveScreen();
+				printSpells (spells, i, false, -1);
+				while (new_spells != 0 && IO.getCommand("Learn which spell?", query)) {
 					j = query.value() - 'a';
 					/* test j < 23 in case i is greater than 22, only 22 spells
 					   are actually shown on the screen, so limit choice to those */
@@ -1956,21 +1955,21 @@ public class Misc3 {
 							spells[j] = spells[j + 1];
 						}
 						i--;
-						IO.erase_line (j + 1, 31);
-						print_spells (spells, i, false, -1);
+						IO.eraseLine (j + 1, 31);
+						printSpells (spells, i, false, -1);
 					} else {
 						IO.bell();
 					}
 				}
-				IO.restore_screen();
+				IO.restoreScreen();
 			} else {
 				/* pick a prayer at random */
 				while (new_spells != 0) {
-					j = Misc1.randint(i) - 1;
+					j = Misc1.randomInt(i) - 1;
 					Player.spell_learned |= 1L << spells[j];
 					Player.spell_order[last_known++] = spells[j];
 					tmp_str = String.format("You have learned the prayer of %s.", Player.spell_names[spells[j] + offset]);
-					IO.msg_print(tmp_str);
+					IO.printMessage(tmp_str);
 					for (; j <= i - 1; j++) {
 						spells[j] = spells[j + 1];
 					}
@@ -1985,7 +1984,7 @@ public class Misc3 {
 			/* set the mana for first level characters when they learn their
 			 * first spell */
 			if (Player.py.misc.mana == 0) {
-				calc_mana(stat);
+				calcMana(stat);
 			}
 		}
 	}
@@ -1995,7 +1994,7 @@ public class Misc3 {
 	 * 
 	 * @param stat - 
 	 */
-	public static void calc_mana(int stat) {
+	public static void calcMana(int stat) {
 		int new_mana, levels;
 		PlayerMisc p_ptr;
 		int value;
@@ -2003,7 +2002,7 @@ public class Misc3 {
 		p_ptr = Player.py.misc;
 		if (Player.spell_learned != 0) {
 			levels = p_ptr.lev - Player.Class[p_ptr.pclass].first_spell_lev + 1;
-			switch(stat_adj(stat))
+			switch(adjustStat(stat))
 			{
 			case 0: new_mana = 0; break;
 			case 1: case 2: new_mana = 1 * levels; break;
@@ -2046,7 +2045,7 @@ public class Misc3 {
 	/**
 	 * Increases hit points and level -RAK-
 	 */
-	public static void gain_level() {
+	public static void gainLevel() {
 		int dif_exp, need_exp;
 		String out_val;
 		PlayerMisc p_ptr;
@@ -2055,8 +2054,8 @@ public class Misc3 {
 		p_ptr = Player.py.misc;
 		p_ptr.lev++;
 		out_val = String.format("Welcome to level %d.", p_ptr.lev);
-		IO.msg_print(out_val);
-		calc_hitpoints();
+		IO.printMessage(out_val);
+		calcHitpoints();
 		
 		need_exp = Player.player_exp[p_ptr.lev - 1] * p_ptr.expfact / 100;
 		if (p_ptr.exp > need_exp) {
@@ -2064,22 +2063,22 @@ public class Misc3 {
 			dif_exp = p_ptr.exp - need_exp;
 			p_ptr.exp = need_exp + (dif_exp / 2);
 		}
-		prt_level();
-		prt_title();
+		printLevel();
+		printPlayerTitle();
 		c_ptr = Player.Class[p_ptr.pclass];
 		if (c_ptr.spell == Constants.MAGE) {
-			calc_spells(Constants.A_INT);
-			calc_mana(Constants.A_INT);
+			calcSpells(Constants.A_INT);
+			calcMana(Constants.A_INT);
 		} else if (c_ptr.spell == Constants.PRIEST) {
-	      calc_spells(Constants.A_WIS);
-	      calc_mana(Constants.A_WIS);
+	      calcSpells(Constants.A_WIS);
+	      calcMana(Constants.A_WIS);
 	    }
 	}
 
 	/**
 	 * Prints experience -RAK-
 	 */
-	public static void prt_experience() {
+	public static void printExperience() {
 		PlayerMisc p_ptr;
 		
 		p_ptr = Player.py.misc;
@@ -2088,24 +2087,24 @@ public class Misc3 {
 		}
 		while (p_ptr.lev < Constants.MAX_PLAYER_LEVEL
 				&& (Player.player_exp[p_ptr.lev - 1] * p_ptr.expfact / 100) <= p_ptr.exp) {
-			gain_level();
+			gainLevel();
 		}
 		if (p_ptr.exp > p_ptr.max_exp) {
 			p_ptr.max_exp = p_ptr.exp;
 		}
-		prt_long(p_ptr.exp, 14, Constants.STAT_COLUMN + 6);
+		printLong(p_ptr.exp, 14, Constants.STAT_COLUMN + 6);
 	}
 	
 	/**
 	 * Calculate the player's hit points
 	 */
-	public static void calc_hitpoints() {
+	public static void calcHitpoints() {
 		int hitpoints;
 		PlayerMisc p_ptr;
 		int value;
 		
 		p_ptr = Player.py.misc;
-		hitpoints = Player.player_hp[p_ptr.lev - 1] + (con_adj() * p_ptr.lev);
+		hitpoints = Player.player_hp[p_ptr.lev - 1] + (adjustConstitution() * p_ptr.lev);
 		/* always give at least one point per level + 1 */
 		if (hitpoints < (p_ptr.lev + 1)) {
 			hitpoints = p_ptr.lev + 1;
@@ -2140,7 +2139,7 @@ public class Misc3 {
 	 * @param insert - String to replace with
 	 * @return The final string
 	 */
-	public static String insert_str(String object_str, String mtc_str, String insert) {
+	public static String insertString(String object_str, String mtc_str, String insert) {
 		String out_val;
 		out_val = object_str.replaceAll(mtc_str, insert);
 		return out_val;
@@ -2182,7 +2181,7 @@ public class Misc3 {
 		*/
 	}
 	
-	public static String insert_lnum(String object_str, String mtc_str, int number, boolean show_sign) {
+	public static String insertLong(String object_str, String mtc_str, int number, boolean show_sign) {
 		String str1, str2;
 		String out_val;
 		if (object_str.indexOf(mtc_str) < 0) return object_str;
@@ -2232,12 +2231,12 @@ public class Misc3 {
 	/**
 	 * Lets anyone enter wizard mode after a disclaimer... - JEW-
 	 */
-	public static boolean enter_wiz_mode() {
+	public static boolean enterWizardMode() {
 		boolean answer = false;
 		
 		if (Variable.noscore == 0) {
-			IO.msg_print("Wizard mode is for debugging and experimenting.");
-			answer = IO.get_check("The game will not be scored if you enter wizard mode. Are you sure?");
+			IO.printMessage("Wizard mode is for debugging and experimenting.");
+			answer = IO.getCheck("The game will not be scored if you enter wizard mode. Are you sure?");
 		}
 		if (Variable.noscore != 0 || answer) {
 			Variable.noscore = 1;
@@ -2254,7 +2253,7 @@ public class Misc3 {
 	 * @param wtohit - Stores the weapon's tohit
 	 * @return The value of the attack blow
 	 */
-	public static int attack_blows(int weight, IntPointer wtohit) {
+	public static int attackBlows(int weight, IntPointer wtohit) {
 		int adj_weight;
 		int str_index, dex_index, s, d;
 		
@@ -2308,7 +2307,7 @@ public class Misc3 {
 	 * @param monster - Index in the creature list of the monster being attacked
 	 * @return Final damage of the attack
 	 */
-	public static int tot_dam(InvenType i_ptr, int tdam, int monster) {
+	public static int totalDamage(InvenType i_ptr, int tdam, int monster) {
 		CreatureType m_ptr;
 		MonsterRecallType r_ptr;
 		
@@ -2362,26 +2361,26 @@ public class Misc3 {
 	 * @param attack_type - 
 	 * @return 
 	 */
-	public static int critical_blow(int weight, int plus, int dam, int attack_type) {
+	public static int criticalBlow(int weight, int plus, int dam, int attack_type) {
 		int critical;
 		
 		critical = dam;
 		/* Weight of weapon, plusses to hit, and character level all	    */
 		/* contribute to the chance of a critical			   */
-		if (Misc1.randint(5000) <= (weight + 5 * plus + (Player.class_level_adj[Player.py.misc.pclass][attack_type] * Player.py.misc.lev))) {
-			weight += Misc1.randint(650);
+		if (Misc1.randomInt(5000) <= (weight + 5 * plus + (Player.class_level_adj[Player.py.misc.pclass][attack_type] * Player.py.misc.lev))) {
+			weight += Misc1.randomInt(650);
 			if (weight < 400) {
 				critical = 2 * dam + 5;
-				IO.msg_print("It was a good hit! (x2 damage)");
+				IO.printMessage("It was a good hit! (x2 damage)");
 			} else if (weight < 700) {
 				critical = 3 * dam + 10;
-				IO.msg_print("It was an excellent hit! (x3 damage)");
+				IO.printMessage("It was an excellent hit! (x3 damage)");
 			} else if (weight < 900) {
 				critical = 4 * dam + 15;
-				IO.msg_print("It was a superb hit! (x4 damage)");
+				IO.printMessage("It was a superb hit! (x4 damage)");
 			} else {
 				critical = 5 * dam + 20;
-				IO.msg_print("It was a *GREAT* hit! (x5 damage)");
+				IO.printMessage("It was a *GREAT* hit! (x5 damage)");
 			}
 		}
 		return critical;
@@ -2395,7 +2394,7 @@ public class Misc3 {
 	 * @param x - The horizontal position of the monster, stores the new horizontal position of the monster
 	 * @return Whether the monster could move in the given direction
 	 */
-	public static boolean mmove(int dir, IntPointer y, IntPointer x) {
+	public static boolean moveMonster(int dir, IntPointer y, IntPointer x) {
 		int new_row, new_col;
 		boolean bool;
 		
@@ -2456,11 +2455,11 @@ public class Misc3 {
 	 * 
 	 * @return 
 	 */
-	public static boolean player_saves() {
+	public static boolean playerSavingThrow() {
 		/* MPW C couldn't handle the expression, so split it into two parts */
 		short temp = Player.class_level_adj[Player.py.misc.pclass][Constants.CLA_SAVE];
 
-		return Misc1.randint(100) <= (Player.py.misc.save + stat_adj(Constants.A_WIS) + (temp * Player.py.misc.lev / 3));
+		return Misc1.randomInt(100) <= (Player.py.misc.save + adjustStat(Constants.A_WIS) + (temp * Player.py.misc.lev / 3));
 	}
 	
 	/**
@@ -2472,7 +2471,7 @@ public class Misc3 {
 	 * @param k - 
 	 * @return 
 	 */
-	public static boolean find_range(int item1, int item2, IntPointer j, IntPointer k) {
+	public static boolean findRange(int item1, int item2, IntPointer j, IntPointer k) {
 		int i;
 		InvenType i_ptr;
 		boolean flag;
@@ -2511,26 +2510,26 @@ public class Misc3 {
 		int y, x, i, j;
 		
 		do {
-			y = Misc1.randint(Variable.cur_height) - 1;
-			x = Misc1.randint(Variable.cur_width) - 1;
+			y = Misc1.randomInt(Variable.cur_height) - 1;
+			x = Misc1.randomInt(Variable.cur_width) - 1;
 			while (Misc1.distance(y, x, Player.char_row, Player.char_col) > dis) {
 				y += ((Player.char_row - y) / 2);
 				x += ((Player.char_col - x) / 2);
 			}
 		} while ((Variable.cave[y][x].fval >= Constants.MIN_CLOSED_SPACE) || (Variable.cave[y][x].cptr >= 2));
 		
-		Moria1.move_rec(Player.char_row, Player.char_col, y, x);
+		Moria1.moveCreatureRecord(Player.char_row, Player.char_col, y, x);
 		
 		for (i = Player.char_row - 1; i <= Player.char_row + 1; i++) {
 			for (j = Player.char_col - 1; j <= Player.char_col + 1; j++) {
 				Variable.cave[i][j].tl = false;
-				Moria1.lite_spot(i, j);
+				Moria1.lightUpSpot(i, j);
 			}
 		}
-		Moria1.lite_spot(Player.char_row, Player.char_col);
+		Moria1.lightUpSpot(Player.char_row, Player.char_col);
 		Player.char_row = y;
 		Player.char_col = x;
-		Misc4.check_view();
+		Misc4.checkView();
 		Creature.creatures(false);
 		Variable.teleport_flag = false;
 	}

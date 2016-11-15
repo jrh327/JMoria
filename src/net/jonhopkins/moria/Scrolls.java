@@ -30,7 +30,7 @@ public class Scrolls {
 	private Scrolls() { }
 	
 	/* Scrolls for the reading				-RAK-	*/
-	public static void read_scroll() {
+	public static void readScroll() {
 		IntPointer i = new IntPointer();
 		IntPointer j = new IntPointer(), k = new IntPointer(), item_val = new IntPointer(), y, x;
 		IntPointer ptr;
@@ -45,16 +45,16 @@ public class Scrolls {
 		
 		Variable.free_turn_flag = true;
 		if (Player.py.flags.blind > 0) {
-			IO.msg_print("You can't see to read the scroll.");
-		} else if (Moria1.no_light()) {
-			IO.msg_print("You have no light to read by.");
+			IO.printMessage("You can't see to read the scroll.");
+		} else if (Moria1.playerHasNoLight()) {
+			IO.printMessage("You have no light to read by.");
 		} else if (Player.py.flags.confused > 0) {
-			IO.msg_print("You are too confused to read a scroll.");
+			IO.printMessage("You are too confused to read a scroll.");
 		} else if (Treasure.inven_ctr == 0) {
-			IO.msg_print("You are not carrying anything!");
-		} else if (!Misc3.find_range(Constants.TV_SCROLL1, Constants.TV_SCROLL2, j, k)) {
-			IO.msg_print("You are not carrying any scrolls!");
-		} else if (Moria1.get_item(item_val, "Read which scroll?", j.value(), k.value(), "", "")) {
+			IO.printMessage("You are not carrying anything!");
+		} else if (!Misc3.findRange(Constants.TV_SCROLL1, Constants.TV_SCROLL2, j, k)) {
+			IO.printMessage("You are not carrying any scrolls!");
+		} else if (Moria1.getItemId(item_val, "Read which scroll?", j.value(), k.value(), "", "")) {
 			i_ptr = Treasure.inventory[item_val.value()];
 			Variable.free_turn_flag = false;
 			used_up = true;
@@ -62,7 +62,7 @@ public class Scrolls {
 			ident = false;
 			
 			while (i.value() != 0) {
-				j.value(Misc1.bit_pos(i) + 1);
+				j.value(Misc1.firstBitPos(i) + 1);
 				if (i_ptr.tval == Constants.TV_SCROLL2) {
 					j.value(j.value() + 32);
 				}
@@ -73,17 +73,17 @@ public class Scrolls {
 				case 1:
 					i_ptr = Treasure.inventory[Constants.INVEN_WIELD];
 					if (i_ptr.tval != Constants.TV_NOTHING) {
-						tmp_str = Desc.objdes(i_ptr, false);
+						tmp_str = Desc.describeObject(i_ptr, false);
 						out_val = String.format("Your %s glows faintly!", tmp_str);
-						IO.msg_print(out_val);
+						IO.printMessage(out_val);
 						ptr = new IntPointer(i_ptr.tohit);
 						enchant = Spells.enchant(ptr, 10);
 						i_ptr.tohit = ptr.value();
 						if (enchant) {
 							i_ptr.flags &= ~Constants.TR_CURSED;
-							Moria1.calc_bonuses();
+							Moria1.calcBonuses();
 						} else {
-							IO.msg_print("The enchantment fails.");
+							IO.printMessage("The enchantment fails.");
 						}
 						ident = true;
 					}
@@ -91,9 +91,9 @@ public class Scrolls {
 				case 2:
 					i_ptr = Treasure.inventory[Constants.INVEN_WIELD];
 					if (i_ptr.tval != Constants.TV_NOTHING) {
-						tmp_str = Desc.objdes(i_ptr, false);
+						tmp_str = Desc.describeObject(i_ptr, false);
 						out_val = String.format("Your %s glows faintly!", tmp_str);
-						IO.msg_print(out_val);
+						IO.printMessage(out_val);
 						if ((i_ptr.tval >= Constants.TV_HAFTED)&&(i_ptr.tval <= Constants.TV_DIGGING)) {
 							j.value(i_ptr.damage[0] * i_ptr.damage[1]);
 						} else {
@@ -106,9 +106,9 @@ public class Scrolls {
 						i_ptr.todam = ptr.value();
 						if (enchant) {
 							i_ptr.flags &= ~Constants.TR_CURSED;
-							Moria1.calc_bonuses ();
+							Moria1.calcBonuses ();
 						} else {
-							IO.msg_print("The enchantment fails.");
+							IO.printMessage("The enchantment fails.");
 						}
 						ident = true;
 					}
@@ -142,7 +142,7 @@ public class Scrolls {
 						k.value(k.value() + 1);
 					}
 					
-					if (k.value() > 0)	l = tmp[Misc1.randint(k.value()) - 1];
+					if (k.value() > 0)	l = tmp[Misc1.randomInt(k.value()) - 1];
 					if ((Constants.TR_CURSED & Treasure.inventory[Constants.INVEN_BODY].flags) != 0) {
 						l = Constants.INVEN_BODY;
 					} else if ((Constants.TR_CURSED & Treasure.inventory[Constants.INVEN_ARM].flags) != 0) {
@@ -159,25 +159,25 @@ public class Scrolls {
 					
 					if (l > 0) {
 						i_ptr = Treasure.inventory[l];
-						tmp_str = Desc.objdes(i_ptr, false);
+						tmp_str = Desc.describeObject(i_ptr, false);
 						out_val = String.format("Your %s glows faintly!", tmp_str);
-						IO.msg_print(out_val);
+						IO.printMessage(out_val);
 						ptr = new IntPointer(i_ptr.toac);
 						enchant = Spells.enchant(ptr, 10);
 						i_ptr.toac = ptr.value();
 						if (enchant) {
 							i_ptr.flags &= ~Constants.TR_CURSED;
-							Moria1.calc_bonuses ();
+							Moria1.calcBonuses ();
 						} else {
-							IO.msg_print("The enchantment fails.");
+							IO.printMessage("The enchantment fails.");
 						}
 						ident = true;
 					}
 					break;
 				case 4:
-					IO.msg_print("This is an identify scroll.");
+					IO.printMessage("This is an identify scroll.");
 					ident = true;
-					used_up = Spells.ident_spell();
+					used_up = Spells.identifyObject();
 					
 					/* The identify may merge objects, causing the identify scroll
 					 * to move to a different place.	Check for that here.  It can
@@ -189,19 +189,19 @@ public class Scrolls {
 					}
 					break;
 				case 5:
-					if (Spells.remove_curse()) {
-						IO.msg_print("You feel as if someone is watching over you.");
+					if (Spells.removeCurse()) {
+						IO.printMessage("You feel as if someone is watching over you.");
 						ident = true;
 					}
 					break;
 				case 6:
-					ident = Spells.light_area(Player.char_row, Player.char_col);
+					ident = Spells.lightArea(Player.char_row, Player.char_col);
 					break;
 				case 7:
-					for (k.value(0); k.value() < Misc1.randint(3); k.value(k.value() + 1)) {
+					for (k.value(0); k.value() < Misc1.randomInt(3); k.value(k.value() + 1)) {
 						y = new IntPointer(Player.char_row);
 						x = new IntPointer(Player.char_col);
-						ident |= Misc1.summon_monster(y, x, false);
+						ident |= Misc1.summonMonster(y, x, false);
 					}
 					break;
 				case 8:
@@ -213,7 +213,7 @@ public class Scrolls {
 					ident = true;
 					break;
 				case 10:
-					Variable.dun_level += (-3) + 2 * Misc1.randint(2);
+					Variable.dun_level += (-3) + 2 * Misc1.randomInt(2);
 					if (Variable.dun_level < 1) {
 						Variable.dun_level = 1;
 					}
@@ -222,88 +222,88 @@ public class Scrolls {
 					break;
 				case 11:
 					if (!Player.py.flags.confuse_monster) {
-						IO.msg_print("Your hands begin to glow.");
+						IO.printMessage("Your hands begin to glow.");
 						Player.py.flags.confuse_monster = true;
 						ident = true;
 					}
 					break;
 				case 12:
 					ident = true;
-					Spells.map_area();
+					Spells.mapArea();
 					break;
 				case 13:
-					ident = Spells.sleep_monsters1(Player.char_row, Player.char_col);
+					ident = Spells.sleepMonsters(Player.char_row, Player.char_col);
 					break;
 				case 14:
 					ident = true;
-					Spells.warding_glyph();
+					Spells.wardingGlyph();
 					break;
 				case 15:
-					ident = Spells.detect_treasure();
+					ident = Spells.detectTreasure();
 					break;
 				case 16:
-					ident = Spells.detect_object();
+					ident = Spells.detectObject();
 					break;
 				case 17:
-					ident = Spells.detect_trap();
+					ident = Spells.detectTrap();
 					break;
 				case 18:
-					ident = Spells.detect_sdoor();
+					ident = Spells.detectSecretDoors();
 					break;
 				case 19:
-					IO.msg_print("This is a mass genocide scroll.");
-					Spells.mass_genocide();
+					IO.printMessage("This is a mass genocide scroll.");
+					Spells.massGenocide();
 					ident = true;
 					break;
 				case 20:
-					ident = Spells.detect_invisible();
+					ident = Spells.detectInvisibleCreatures();
 					break;
 				case 21:
-					IO.msg_print("There is a high pitched humming noise.");
-					Spells.aggravate_monster(20);
+					IO.printMessage("There is a high pitched humming noise.");
+					Spells.aggravateMonster(20);
 					ident = true;
 					break;
 				case 22:
-					ident = Spells.trap_creation();
+					ident = Spells.createTraps();
 					break;
 				case 23:
-					ident = Spells.td_destroy();
+					ident = Spells.destroyTrapsAndDoors();
 					break;
 				case 24:
-					ident = Spells.door_creation();
+					ident = Spells.createDoors();
 					break;
 				case 25:
-					IO.msg_print("This is a Recharge-Item scroll.");
+					IO.printMessage("This is a Recharge-Item scroll.");
 					ident = true;
 					used_up = Spells.recharge(60);
 					break;
 				case 26:
-					IO.msg_print("This is a genocide scroll.");
+					IO.printMessage("This is a genocide scroll.");
 					Spells.genocide();
 					ident = true;
 					break;
 				case 27:
-					ident = Spells.unlight_area(Player.char_row, Player.char_col);
+					ident = Spells.unlightArea(Player.char_row, Player.char_col);
 					break;
 				case 28:
-					ident = Spells.protect_evil();
+					ident = Spells.protectFromEvil();
 					break;
 				case 29:
 					ident = true;
-					Spells.create_food();
+					Spells.createFood();
 					break;
 				case 30:
-					ident = Spells.dispel_creature(Constants.CD_UNDEAD, 60);
+					ident = Spells.dispelCreature(Constants.CD_UNDEAD, 60);
 					break;
 				case 33:
 					i_ptr = Treasure.inventory[Constants.INVEN_WIELD];
 					if (i_ptr.tval != Constants.TV_NOTHING) {
-						tmp_str = Desc.objdes(i_ptr, false);
+						tmp_str = Desc.describeObject(i_ptr, false);
 						out_val = String.format("Your %s glows brightly!", tmp_str);
-						IO.msg_print(out_val);
+						IO.printMessage(out_val);
 						flag = false;
 						ptr = new IntPointer();
-						for (k.value(0); k.value() < Misc1.randint(2); k.value(k.value() + 1)) {
+						for (k.value(0); k.value() < Misc1.randomInt(2); k.value(k.value() + 1)) {
 							ptr.value(i_ptr.tohit);
 							enchant = Spells.enchant(ptr, 10);
 							i_ptr.tohit = ptr.value();
@@ -319,7 +319,7 @@ public class Scrolls {
 							j.value(10);
 						}
 						ptr = new IntPointer();
-						for (k.value(0); k.value() < Misc1.randint(2); k.value(k.value() + 1)) {
+						for (k.value(0); k.value() < Misc1.randomInt(2); k.value(k.value() + 1)) {
 							ptr.value(i_ptr.todam);
 							enchant = Spells.enchant(ptr, j.value());
 							i_ptr.todam = ptr.value();
@@ -329,9 +329,9 @@ public class Scrolls {
 						}
 						if (flag) {
 							i_ptr.flags &= ~Constants.TR_CURSED;
-							Moria1.calc_bonuses ();
+							Moria1.calcBonuses ();
 						} else {
-							IO.msg_print("The enchantment fails.");
+							IO.printMessage("The enchantment fails.");
 						}
 						ident = true;
 					}
@@ -339,19 +339,19 @@ public class Scrolls {
 				case 34:
 					i_ptr = Treasure.inventory[Constants.INVEN_WIELD];
 					if (i_ptr.tval != Constants.TV_NOTHING) {
-						tmp_str = Desc.objdes(i_ptr, false);
+						tmp_str = Desc.describeObject(i_ptr, false);
 						out_val = String.format("Your %s glows black, fades.", tmp_str);
-						IO.msg_print(out_val);
-						Desc.unmagic_name(i_ptr);
-						i_ptr.tohit = -Misc1.randint(5) - Misc1.randint(5);
-						i_ptr.todam = -Misc1.randint(5) - Misc1.randint(5);
+						IO.printMessage(out_val);
+						Desc.unmagicName(i_ptr);
+						i_ptr.tohit = -Misc1.randomInt(5) - Misc1.randomInt(5);
+						i_ptr.todam = -Misc1.randomInt(5) - Misc1.randomInt(5);
 						i_ptr.toac = 0;
 						/* Must call py_bonuses() before set (clear) flags, and
 						 * must call calc_bonuses() after set (clear) flags, so that
 						 * all attributes will be properly turned off. */
-						Moria1.py_bonuses(i_ptr, -1);
+						Moria1.adjustPlayerBonuses(i_ptr, -1);
 						i_ptr.flags = Constants.TR_CURSED;
-						Moria1.calc_bonuses();
+						Moria1.calcBonuses();
 						ident = true;
 					}
 					break;
@@ -384,7 +384,7 @@ public class Scrolls {
 						k.value(k.value() + 1);
 					}
 					
-					if (k.value() > 0)	l = tmp[Misc1.randint(k.value())-1];
+					if (k.value() > 0)	l = tmp[Misc1.randomInt(k.value())-1];
 					if ((Constants.TR_CURSED & Treasure.inventory[Constants.INVEN_BODY].flags) != 0) {
 						l = Constants.INVEN_BODY;
 					} else if ((Constants.TR_CURSED & Treasure.inventory[Constants.INVEN_ARM].flags) != 0) {
@@ -401,12 +401,12 @@ public class Scrolls {
 					
 					if (l > 0) {
 						i_ptr = Treasure.inventory[l];
-						tmp_str = Desc.objdes(i_ptr, false);
+						tmp_str = Desc.describeObject(i_ptr, false);
 						out_val = String.format("Your %s glows brightly!", tmp_str);
-						IO.msg_print(out_val);
+						IO.printMessage(out_val);
 						flag = false;
 						ptr = new IntPointer();
-						for (k.value(0); k.value() < Misc1.randint(2) + 1; k.value(k.value() + 1)) {
+						for (k.value(0); k.value() < Misc1.randomInt(2) + 1; k.value(k.value() + 1)) {
 							ptr.value(i_ptr.toac);
 							enchant = Spells.enchant(ptr, 10);
 							i_ptr.toac = ptr.value();
@@ -416,25 +416,25 @@ public class Scrolls {
 						}
 						if (flag) {
 							i_ptr.flags &= ~Constants.TR_CURSED;
-							Moria1.calc_bonuses();
+							Moria1.calcBonuses();
 						} else {
-							IO.msg_print("The enchantment fails.");
+							IO.printMessage("The enchantment fails.");
 						}
 						ident = true;
 					}
 					break;
 				case 36:
-					if ((Treasure.inventory[Constants.INVEN_BODY].tval != Constants.TV_NOTHING) && (Misc1.randint(4) == 1)) {
+					if ((Treasure.inventory[Constants.INVEN_BODY].tval != Constants.TV_NOTHING) && (Misc1.randomInt(4) == 1)) {
 						k.value(Constants.INVEN_BODY);
-					} else if ((Treasure.inventory[Constants.INVEN_ARM].tval != Constants.TV_NOTHING) && (Misc1.randint(3) == 1)) {
+					} else if ((Treasure.inventory[Constants.INVEN_ARM].tval != Constants.TV_NOTHING) && (Misc1.randomInt(3) == 1)) {
 						k.value(Constants.INVEN_ARM);
-					} else if ((Treasure.inventory[Constants.INVEN_OUTER].tval != Constants.TV_NOTHING) && (Misc1.randint(3) == 1)) {
+					} else if ((Treasure.inventory[Constants.INVEN_OUTER].tval != Constants.TV_NOTHING) && (Misc1.randomInt(3) == 1)) {
 						k.value(Constants.INVEN_OUTER);
-					} else if ((Treasure.inventory[Constants.INVEN_HEAD].tval != Constants.TV_NOTHING) && (Misc1.randint(3) == 1)) {
+					} else if ((Treasure.inventory[Constants.INVEN_HEAD].tval != Constants.TV_NOTHING) && (Misc1.randomInt(3) == 1)) {
 						k.value(Constants.INVEN_HEAD);
-					} else if ((Treasure.inventory[Constants.INVEN_HANDS].tval != Constants.TV_NOTHING) && (Misc1.randint(3) == 1)) {
+					} else if ((Treasure.inventory[Constants.INVEN_HANDS].tval != Constants.TV_NOTHING) && (Misc1.randomInt(3) == 1)) {
 						k.value(Constants.INVEN_HANDS);
-					} else if ((Treasure.inventory[Constants.INVEN_FEET].tval != Constants.TV_NOTHING) && (Misc1.randint(3) == 1)) {
+					} else if ((Treasure.inventory[Constants.INVEN_FEET].tval != Constants.TV_NOTHING) && (Misc1.randomInt(3) == 1)) {
 						k.value(Constants.INVEN_FEET);
 					} else if (Treasure.inventory[Constants.INVEN_BODY].tval != Constants.TV_NOTHING) {
 						k.value(Constants.INVEN_BODY);
@@ -454,72 +454,72 @@ public class Scrolls {
 					
 					if (k.value() > 0) {
 						i_ptr = Treasure.inventory[k.value()];
-						tmp_str = Desc.objdes(i_ptr, false);
+						tmp_str = Desc.describeObject(i_ptr, false);
 						out_val = String.format("Your %s glows black, fades.", tmp_str);
-						IO.msg_print(out_val);
-						Desc.unmagic_name(i_ptr);
+						IO.printMessage(out_val);
+						Desc.unmagicName(i_ptr);
 						i_ptr.flags = Constants.TR_CURSED;
 						i_ptr.tohit = 0;
 						i_ptr.todam = 0;
-						i_ptr.toac = -Misc1.randint(5) - Misc1.randint(5);
-						Moria1.calc_bonuses();
+						i_ptr.toac = -Misc1.randomInt(5) - Misc1.randomInt(5);
+						Moria1.calcBonuses();
 						ident = true;
 					}
 					break;
 				case 37:
 					ident = false;
-					for (k.value(0); k.value() < Misc1.randint(3); k.value(k.value() + 1)) {
+					for (k.value(0); k.value() < Misc1.randomInt(3); k.value(k.value() + 1)) {
 						y = new IntPointer(Player.char_row);
 						x = new IntPointer(Player.char_col);
-						ident |= Misc1.summon_undead(y, x);
+						ident |= Misc1.summonUndead(y, x);
 					}
 					break;
 				case 38:
 					ident = true;
-					Spells.bless(Misc1.randint(12) + 6);
+					Spells.bless(Misc1.randomInt(12) + 6);
 					break;
 				case 39:
 					ident = true;
-					Spells.bless(Misc1.randint(24) + 12);
+					Spells.bless(Misc1.randomInt(24) + 12);
 					break;
 				case 40:
 					ident = true;
-					Spells.bless(Misc1.randint(48) + 24);
+					Spells.bless(Misc1.randomInt(48) + 24);
 					break;
 				case 41:
 					ident = true;
 					if (Player.py.flags.word_recall == 0) {
-						Player.py.flags.word_recall = 25 + Misc1.randint(30);
+						Player.py.flags.word_recall = 25 + Misc1.randomInt(30);
 					}
-					IO.msg_print("The air about you becomes charged.");
+					IO.printMessage("The air about you becomes charged.");
 					break;
 				case 42:
-					Spells.destroy_area(Player.char_row, Player.char_col);
+					Spells.destroyArea(Player.char_row, Player.char_col);
 					ident = true;
 					break;
 				default:
-					IO.msg_print("Internal error in scroll()");
+					IO.printMessage("Internal error in scroll()");
 					break;
 				}
 				/* End of Scrolls.			       */
 			}
 			i_ptr = Treasure.inventory[item_val.value()];
 			if (ident) {
-				if (!Desc.known1_p(i_ptr)) {
+				if (!Desc.isKnownByPlayer(i_ptr)) {
 					m_ptr = Player.py.misc;
 					/* round half-way case up */
 					m_ptr.exp += (i_ptr.level + (m_ptr.lev >> 1)) / m_ptr.lev;
-					Misc3.prt_experience();
+					Misc3.printExperience();
 					
 					Desc.identify(item_val);
 					i_ptr = Treasure.inventory[item_val.value()];
 				}
-			} else if (!Desc.known1_p(i_ptr)) {
+			} else if (!Desc.isKnownByPlayer(i_ptr)) {
 				Desc.sample(i_ptr);
 			}
 			if (used_up) {
-				Desc.desc_remain(item_val.value());
-				Misc3.inven_destroy(item_val.value());
+				Desc.describeRemaining(item_val.value());
+				Misc3.destroyInvenItem(item_val.value());
 			}
 		}
 	}

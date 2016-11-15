@@ -82,17 +82,17 @@ public class Rnd {
 	
 	private Rnd() { }
 	
-	public static long get_rnd_seed() {
+	public static long getRandomSeed() {
 		return rnd_seed;
 	}
 	
-	public static void set_rnd_seed(long seedval) {
+	public static void setRandomSeed(long seedval) {
 		/* set seed to value between 1 and m-1 */
 		rnd_seed = (seedval % (RNG_M - 1)) + 1;
 	}
 	
 	/* returns a pseudo-random number from set 1, 2, ..., RNG_M - 1 */
-	public static long rnd() {
+	public static long randomNumber() {
 		long low, high, test;
 		
 		high = rnd_seed / RNG_Q;
@@ -109,16 +109,16 @@ public class Rnd {
 	public static void test() {
 		long i, random;
 		
-		set_rnd_seed (0L);
+		setRandomSeed (0L);
 		
 		for (i = 1; i < 10000; i++) {
-			rnd ();
+			randomNumber ();
 		}
 		
-		random = rnd ();
+		random = randomNumber ();
 		System.out.printf("z[10001] = %d, should be 1043618065\n", random);
 		if (random == 1043618065L) {
-			System.out.println ("success!!!\n");
+			System.out.println("success!!!\n");
 		}
 	}
 }

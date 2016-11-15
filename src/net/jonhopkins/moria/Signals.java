@@ -92,7 +92,7 @@ public class SignalHandlerExample implements SignalHandler {
 	 */
 	
 	/*ARGSUSED*/
-	public static void signal_handler(int sig) {
+	public static void signalHandler(int sig) {
 	//	if(error_sig >= 0) {	/* Ignore all second signals. */
 	//		if (++signal_count > 10) {	/* Be safe. We will die if persistent enough. */
 	//			signal(sig, SIG_DFL);
@@ -154,7 +154,7 @@ public class SignalHandlerExample implements SignalHandler {
 	
 	private static int mask;
 	
-	public static void nosignals() {
+	public static void noSignals() {
 		/*
 		signal(SIGTSTP, SIG_IGN);
 		mask = sigsetmask(0);
@@ -174,7 +174,7 @@ public class SignalHandlerExample implements SignalHandler {
 		*/
 	}
 	
-	public static void init_signals() {
+	public static void initSignals() {
 		/*
 		signal(SIGINT, signal_handler);
 		signal(SIGFPE, signal_handler);
@@ -194,21 +194,21 @@ public class SignalHandlerExample implements SignalHandler {
 		*/
 	}
 	
-	public static void ignore_signals() {
+	public static void ignoreSignals() {
 		/*
 		signal(SIGINT, SIG_IGN);
 		signal(SIGQUIT, SIG_IGN);
 		*/
 	}
 	
-	public static void default_signals() {
+	public static void defaultSignals() {
 		/*
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
 		*/
 	}
 	
-	public static void restore_signals() {
+	public static void restoreSignals() {
 		/*
 		signal(SIGINT, signal_handler);
 		signal(SIGQUIT, signal_handler);

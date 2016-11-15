@@ -550,7 +550,7 @@ public class Monsters {
 	public static int[] m_level = new int[Constants.MAX_MONS_LEVEL + 1];
 	
 	/* Blank monster values	*/
-	public static MonsterType blank_monster() {
+	public static MonsterType getBlankMonster() {
 		return new MonsterType(0, 0, 0, 0, 0, 0, 0, false, 0, 0);
 	}
 	

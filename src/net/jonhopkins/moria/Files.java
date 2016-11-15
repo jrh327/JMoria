@@ -36,7 +36,7 @@ public class Files {
 	 *  so we don't have multiple people trying to write to it at the same time.
 	 *  Craig Norborg (doc)		Mon Aug 10 16:41:59 EST 1987
 	 */
-	public static void init_scorefile() {
+	public static void initScoreFile() {
 		Variable.highscore_fp = new File(Config.MORIA_TOP);
 		
 		if (Variable.highscore_fp == null) {
@@ -51,7 +51,7 @@ public class Files {
 	
 	/* Attempt to open the intro file			-RAK-	 */
 	/* This routine also checks the hours file vs. what time it is	-Doc */
-	public static void read_times() {
+	public static void readTimes() {
 		//String in_line;
 		//int i;
 		//File file1;
@@ -125,23 +125,23 @@ public class Files {
 		file = new File(filename);
 		if (!file.exists()) {
 			tmp_str = String.format("Can not find help file \"%s\".\n", filename);
-			IO.prt(tmp_str, 0, 0);
+			IO.print(tmp_str, 0, 0);
 			return;
 		}
 		
-		IO.save_screen();
+		IO.saveScreen();
 		
 		try{
 			FileInputStream fstream = new FileInputStream(filename);
 			DataInputStream in = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			while ((tmp_str = br.readLine()) != null) {
-				IO.clear_screen();
-				IO.put_buffer(tmp_str, 0, 0);
+				IO.clearScreen();
+				IO.putBuffer(tmp_str, 0, 0);
 				for (i = 1; i < 23 && (tmp_str = br.readLine()) != null; i++) {
-					IO.put_buffer(tmp_str, i, 0);
+					IO.putBuffer(tmp_str, i, 0);
 				}
-				IO.prt("[Press any key to continue.]", 23, 23);
+				IO.print("[Press any key to continue.]", 23, 23);
 				input = IO.inkey();
 				if (input == Constants.ESCAPE) {
 					break;
@@ -154,13 +154,13 @@ public class Files {
 			e.printStackTrace();
 		}
 		
-		IO.restore_screen();
+		IO.restoreScreen();
 	}
 	
 	/* Prints a list of random objects to a file.  Note that -RAK-	 */
 	/* the objects produced is a sampling of objects which		 */
 	/* be expected to appear on that level.				 */
-	public static void print_objects() {
+	public static void printObjects() {
 		int i;
 		int nobj, j = 0, level;
 		String filename1, tmp_str;
@@ -168,10 +168,10 @@ public class Files {
 		InvenType i_ptr;
 		boolean small;
 		
-		IO.prt("Produce objects on what level?: ", 0, 0);
+		IO.print("Produce objects on what level?: ", 0, 0);
 		level = 0;
 		
-		if ((tmp_str = IO.get_string(0, 32, 10)).length() == 0) {
+		if ((tmp_str = IO.getString(0, 32, 10)).length() == 0) {
 			return;
 		}
 		try {
@@ -180,11 +180,11 @@ public class Files {
 			e.printStackTrace();
 			level = 0;
 		}
-		IO.prt("Produce how many objects?: ", 0, 0);
+		IO.print("Produce how many objects?: ", 0, 0);
 		nobj = 0;
-		small = IO.get_check("Small objects only?");
+		small = IO.getCheck("Small objects only?");
 		
-		if ((tmp_str = IO.get_string(0, 27,10)).length() == 0) {
+		if ((tmp_str = IO.getString(0, 27,10)).length() == 0) {
 			return;
 		}
 		try {
@@ -197,17 +197,17 @@ public class Files {
 			if (nobj > 10000) {
 				nobj = 10000;
 			}
-			IO.prt("File name: ", 0, 0);
-			if ((filename1 = IO.get_string(0, 11, 64)).length() > 0) {
+			IO.print("File name: ", 0, 0);
+			if ((filename1 = IO.getString(0, 11, 64)).length() > 0) {
 				if ((file1 = new File(filename1)).exists()) {
 					tmp_str = String.format("%d", nobj);
-					IO.prt(tmp_str.concat(" random objects being produced..."), 0, 0);
-					IO.put_qio();
+					IO.print(tmp_str.concat(" random objects being produced..."), 0, 0);
+					IO.putQio();
 					Writer output;
 					try {
 						output = new BufferedWriter(new FileWriter(file1));
 					} catch (IOException e) {
-						IO.prt("Files.print_objects(): Failed to open file as BufferedWriter.", 0, 0);
+						IO.print("Files.print_objects(): Failed to open file as BufferedWriter.", 0, 0);
 						e.printStackTrace();
 						return;
 					}
@@ -217,39 +217,39 @@ public class Files {
 						output.write(String.format("*** For Level %d\n", level));
 						output.write("\n");
 						output.write("\n");
-						j = Misc1.popt();
+						j = Misc1.popTreasure();
 						for (i = 0; i < nobj; i++) {
-							Desc.invcopy(Treasure.t_list[j], Treasure.sorted_objects[Misc3.get_obj_num(level, small)]);
-							Misc2.magic_treasure(j, level);
+							Desc.copyIntoInventory(Treasure.t_list[j], Treasure.sorted_objects[Misc3.getRandomObjectForLevel(level, small)]);
+							Misc2.addMagicToTreasure(j, level);
 							i_ptr = Treasure.t_list[j];
-							Desc.store_bought(i_ptr);
+							Desc.setStoreBought(i_ptr);
 							if ((i_ptr.flags & Constants.TR_CURSED) != 0) {
-								Misc4.add_inscribe(i_ptr, Constants.ID_DAMD);
+								Misc4.addInscription(i_ptr, Constants.ID_DAMD);
 							}
-							tmp_str = Desc.objdes(i_ptr, true);
+							tmp_str = Desc.describeObject(i_ptr, true);
 							output.write(String.format("%d %s\n", i_ptr.level, tmp_str));
 						}
 						Misc1.pusht(j);
 						output.close();
-						IO.prt("Completed.", 0, 0);
+						IO.print("Completed.", 0, 0);
 					} catch (IOException e) {
-						IO.prt("Files.print_objects(): Failed to write to file.", 0, 0);
+						IO.print("Files.print_objects(): Failed to write to file.", 0, 0);
 						e.printStackTrace();
 						return;
 					}
 				} else {
-					IO.prt("File could not be opened.", 0, 0);
+					IO.print("File could not be opened.", 0, 0);
 				}
 			} else {
 				return;
 			}
 		} else {
-			IO.prt("Parameters no good.", 0, 0);
+			IO.print("Parameters no good.", 0, 0);
 		}
 	}
 	
 	/* Print the character to a file or device		-RAK-	 */
-	public static boolean file_character(String filename1) {
+	public static boolean fileCharacter(String filename1) {
 		int i;
 		int j, xbth, xbthb, xfos, xsrh, xstl, xdis, xsave, xdev;
 		String xinfra;
@@ -262,43 +262,43 @@ public class Files {
 		
 		file1 = new File(filename1);
 		if (!file1.isFile()) {
-			IO.prt("Files.file_character(): Should not be a directory: " + file1, 0, 0);
+			IO.print("Files.fileCharacter(): Should not be a directory: " + file1, 0, 0);
 			return false;
 		}
 		if (!file1.canWrite()) {
-			IO.prt("Files.file_character(): File cannot be written: " + file1, 0, 0);
+			IO.print("Files.fileCharacter(): File cannot be written: " + file1, 0, 0);
 			return false;
 		}
 		try {
 			Writer output = new BufferedWriter(new FileWriter(file1));
-			IO.prt("Writing character sheet...", 0, 0);
-			IO.put_qio();
+			IO.print("Writing character sheet...", 0, 0);
+			IO.putQio();
 			colon = ":";
 			blank = " ";
 			output.write(String.format("%c\n\n", (Constants.CTRL & 'L')));
 			output.write(String.format(" Name%9s %-23s", colon, Player.py.misc.name));
 			output.write(String.format(" Age%11s %6d", colon, Player.py.misc.age));
-			prt1 = Misc3.cnv_stat(Player.py.stats.use_stat[Constants.A_STR]);
+			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_STR]);
 			output.write(String.format("   STR : %s\n", prt1));
 			output.write(String.format(" Race%9s %-23s", colon, Player.race[Player.py.misc.prace].trace));
 			output.write(String.format(" Height%8s %6d", colon, Player.py.misc.ht));
-			prt1 = Misc3.cnv_stat(Player.py.stats.use_stat[Constants.A_INT]);
+			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_INT]);
 			output.write(String.format("   INT : %s\n", prt1));
 			output.write(String.format(" Sex%10s %-23s", colon, (Player.py.misc.male ? "Male" : "Female")));
 			output.write(String.format(" Weight%8s %6d", colon, Player.py.misc.wt));
-			prt1 = Misc3.cnv_stat(Player.py.stats.use_stat[Constants.A_WIS]);
+			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_WIS]);
 			output.write(String.format("   WIS : %s\n", prt1));
 			output.write(String.format(" Class%8s %-23s", colon, Player.Class[Player.py.misc.pclass].title));
 			output.write(String.format(" Social Class : %6d", Player.py.misc.sc));
-			prt1 = Misc3.cnv_stat(Player.py.stats.use_stat[Constants.A_DEX]);
+			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_DEX]);
 			output.write(String.format("   DEX : %s\n", prt1));
-			output.write(String.format(" Title%8s %-23s", colon, Misc3.title_string()));
+			output.write(String.format(" Title%8s %-23s", colon, Misc3.getPlayerTitle()));
 			output.write(String.format("%22s", blank));
-			prt1 = Misc3.cnv_stat(Player.py.stats.use_stat[Constants.A_CON]);
+			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_CON]);
 			output.write(String.format( "   CON : %s\n", prt1));
 			output.write(String.format("%34s", blank));
 			output.write(String.format("%26s", blank));
-			prt1 = Misc3.cnv_stat(Player.py.stats.use_stat[Constants.A_CHR]);
+			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_CHR]);
 			output.write(String.format("   CHR : %s\n\n", prt1));
 			
 			output.write(String.format(" + To Hit    : %6d", Player.py.misc.dis_th));
@@ -330,24 +330,24 @@ public class Files {
 			xsrh = p_ptr.srh;
 			/* this results in a range from 0 to 9 */
 			xstl = p_ptr.stl + 1;
-			xdis = p_ptr.disarm + 2 * Misc3.todis_adj() + Misc3.stat_adj(Constants.A_INT)
+			xdis = p_ptr.disarm + 2 * Misc3.adjustToDisarm() + Misc3.adjustStat(Constants.A_INT)
 					+ (Player.class_level_adj[p_ptr.pclass][Constants.CLA_DISARM] * p_ptr.lev / 3);
-			xsave = p_ptr.save + Misc3.stat_adj(Constants.A_WIS)
+			xsave = p_ptr.save + Misc3.adjustStat(Constants.A_WIS)
 					+ (Player.class_level_adj[p_ptr.pclass][Constants.CLA_SAVE] * p_ptr.lev / 3);
-			xdev = p_ptr.save + Misc3.stat_adj(Constants.A_INT)
+			xdev = p_ptr.save + Misc3.adjustStat(Constants.A_INT)
 					+ (Player.class_level_adj[p_ptr.pclass][Constants.CLA_DEVICE] * p_ptr.lev / 3);
 			
 			xinfra = String.format("%d feet", Player.py.flags.see_infra * 10);
 			
 			output.write("(Miscellaneous Abilities)\n\n");
-			output.write(String.format(" Fighting    : %-10s", Misc3.likert(xbth, 12)));
-			output.write(String.format("   Stealth     : %-10s", Misc3.likert(xstl, 1)));
-			output.write(String.format("   Perception  : %s\n", Misc3.likert(xfos, 3)));
-			output.write(String.format(" Bows/Throw  : %-10s", Misc3.likert(xbthb, 12)));
-			output.write(String.format("   Disarming   : %-10s", Misc3.likert(xdis, 8)));
-			output.write(String.format("   Searching   : %s\n", Misc3.likert(xsrh, 6)));
-			output.write(String.format(" Saving Throw: %-10s", Misc3.likert(xsave, 6)));
-			output.write(String.format("   Magic Device: %-10s", Misc3.likert(xdev, 6)));
+			output.write(String.format(" Fighting    : %-10s", Misc3.likeRating(xbth, 12)));
+			output.write(String.format("   Stealth     : %-10s", Misc3.likeRating(xstl, 1)));
+			output.write(String.format("   Perception  : %s\n", Misc3.likeRating(xfos, 3)));
+			output.write(String.format(" Bows/Throw  : %-10s", Misc3.likeRating(xbthb, 12)));
+			output.write(String.format("   Disarming   : %-10s", Misc3.likeRating(xdis, 8)));
+			output.write(String.format("   Searching   : %s\n", Misc3.likeRating(xsrh, 6)));
+			output.write(String.format(" Saving Throw: %-10s", Misc3.likeRating(xsave, 6)));
+			output.write(String.format("   Magic Device: %-10s", Misc3.likeRating(xdev, 6)));
 			output.write(String.format("   Infra-Vision: %s\n\n", xinfra));
 			/* Write out the character's history     */
 			output.write("Character Background\n");
@@ -379,7 +379,7 @@ public class Files {
 						case Constants.INVEN_AUX:	p = "Secondary weapon";	break;
 						default: p = "*Unknown value*";     break;
 						}
-						prt2 = Desc.objdes(Treasure.inventory[i], true);
+						prt2 = Desc.describeObject(Treasure.inventory[i], true);
 						output.write(String.format("  %c) %-19s: %s\n", j+'a', p, prt2));
 						j++;
 					}
@@ -393,17 +393,17 @@ public class Files {
 				output.write("  Character has no objects in inventory.\n");
 			} else {
 				for (i = 0; i < Treasure.inven_ctr; i++) {
-					prt2 = Desc.objdes(Treasure.inventory[i], true);
+					prt2 = Desc.describeObject(Treasure.inventory[i], true);
 					output.write(String.format("%c) %s\n", i + 'a', prt2));
 				}
 			}
 			output.write(String.format("%c", (Constants.CTRL & 'L')));
 			output.close();
-			IO.prt("Completed.", 0, 0);
+			IO.print("Completed.", 0, 0);
 			return true;
 		} catch (IOException e) {
 			out_val = String.format("Can't open file %s:", filename1);
-			IO.msg_print(out_val);
+			IO.printMessage(out_val);
 			e.printStackTrace();
 			return false;
 		}

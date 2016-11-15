@@ -44,74 +44,74 @@ public class Prayer {
 		
 		Variable.free_turn_flag = true;
 		if (Player.py.flags.blind > 0) {
-			IO.msg_print("You can't see to read your prayer!");
-		} else if (Moria1.no_light()) {
-			IO.msg_print("You have no light to read by.");
+			IO.printMessage("You can't see to read your prayer!");
+		} else if (Moria1.playerHasNoLight()) {
+			IO.printMessage("You have no light to read by.");
 		} else if (Player.py.flags.confused > 0) {
-			IO.msg_print("You are too confused.");
+			IO.printMessage("You are too confused.");
 		} else if (Player.Class[Player.py.misc.pclass].spell != Constants.PRIEST) {
-			IO.msg_print("Pray hard enough and your prayers may be answered.");
+			IO.printMessage("Pray hard enough and your prayers may be answered.");
 		} else if (Treasure.inven_ctr == 0) {
-			IO.msg_print("But you are not carrying anything!");
-		} else if (!Misc3.find_range(Constants.TV_PRAYER_BOOK, Constants.TV_NEVER, i, j)) {
-			IO.msg_print("You are not carrying any Holy Books!");
-		} else if (Moria1.get_item(item_val, "Use which Holy Book?", i.value(), j.value(), "", "")) {
-			result = Moria3.cast_spell("Recite which prayer?", item_val.value(), choice, chance);
+			IO.printMessage("But you are not carrying anything!");
+		} else if (!Misc3.findRange(Constants.TV_PRAYER_BOOK, Constants.TV_NEVER, i, j)) {
+			IO.printMessage("You are not carrying any Holy Books!");
+		} else if (Moria1.getItemId(item_val, "Use which Holy Book?", i.value(), j.value(), "", "")) {
+			result = Moria3.castSpell("Recite which prayer?", item_val.value(), choice, chance);
 			if (result < 0) {
-				IO.msg_print("You don't know any prayers in that book.");
+				IO.printMessage("You don't know any prayers in that book.");
 			} else if (result > 0) {
 				s_ptr = Player.magic_spell[Player.py.misc.pclass - 1][choice.value()];
 				Variable.free_turn_flag = false;
 				
-				if (Misc1.randint(100) < chance.value()) {
-					IO.msg_print("You lost your concentration!");
+				if (Misc1.randomInt(100) < chance.value()) {
+					IO.printMessage("You lost your concentration!");
 				} else {
 					/* Prayers.					*/
 					switch(choice.value() + 1)
 					{
 					case 1:
-						Spells.detect_evil();
+						Spells.detectEvil();
 						break;
 					case 2:
-						Spells.hp_player(Misc1.damroll(3, 3));
+						Spells.changePlayerHitpoints(Misc1.damageRoll(3, 3));
 						break;
 					case 3:
-						Spells.bless(Misc1.randint(12) + 12);
+						Spells.bless(Misc1.randomInt(12) + 12);
 						break;
 					case 4:
-						Spells.remove_fear();
+						Spells.removeFear();
 						break;
 					case 5:
-						Spells.light_area(Player.char_row, Player.char_col);
+						Spells.lightArea(Player.char_row, Player.char_col);
 						break;
 					case 6:
-						Spells.detect_trap();
+						Spells.detectTrap();
 						break;
 					case 7:
-						Spells.detect_sdoor();
+						Spells.detectSecretDoors();
 						break;
 					case 8:
-						Spells.slow_poison();
+						Spells.slowPoison();
 						break;
 					case 9:
-						if (Moria1.get_dir("", dir)) {
-							Spells.confuse_monster(dir.value(), Player.char_row, Player.char_col);
+						if (Moria1.getDirection("", dir)) {
+							Spells.confuseMonster(dir.value(), Player.char_row, Player.char_col);
 						}
 						break;
 					case 10:
 						Misc3.teleport((Player.py.misc.lev * 3));
 						break;
 					case 11:
-						Spells.hp_player(Misc1.damroll(4, 4));
+						Spells.changePlayerHitpoints(Misc1.damageRoll(4, 4));
 						break;
 					case 12:
-						Spells.bless(Misc1.randint(24) + 24);
+						Spells.bless(Misc1.randomInt(24) + 24);
 						break;
 					case 13:
-						Spells.sleep_monsters1(Player.char_row, Player.char_col);
+						Spells.sleepMonsters(Player.char_row, Player.char_col);
 						break;
 					case 14:
-						Spells.create_food();
+						Spells.createFood();
 						break;
 					case 15:
 						for (i.value(0); i.value() < Constants.INVEN_ARRAY_SIZE; i.value(i.value() + 1)) {
@@ -124,64 +124,64 @@ public class Prayer {
 						break;
 					case 16:
 						f_ptr = Player.py.flags;
-						f_ptr.resist_heat += Misc1.randint(10) + 10;
-						f_ptr.resist_cold += Misc1.randint(10) + 10;
+						f_ptr.resist_heat += Misc1.randomInt(10) + 10;
+						f_ptr.resist_cold += Misc1.randomInt(10) + 10;
 						break;
 					case 17:
-						Spells.cure_poison();
+						Spells.curePoison();
 						break;
 					case 18:
-						if (Moria1.get_dir("", dir)) {
-							Spells.fire_ball(Constants.GF_HOLY_ORB, dir.value(), Player.char_row, Player.char_col, (Misc1.damroll(3, 6) + Player.py.misc.lev), "Black Sphere");
+						if (Moria1.getDirection("", dir)) {
+							Spells.fireBall(Constants.GF_HOLY_ORB, dir.value(), Player.char_row, Player.char_col, (Misc1.damageRoll(3, 6) + Player.py.misc.lev), "Black Sphere");
 						}
 						break;
 					case 19:
-						Spells.hp_player(Misc1.damroll(8, 4));
+						Spells.changePlayerHitpoints(Misc1.damageRoll(8, 4));
 						break;
 					case 20:
-						Spells.detect_inv2(Misc1.randint(24) + 24);
+						Spells.detectInvisibleMonsters(Misc1.randomInt(24) + 24);
 						break;
 					case 21:
-						Spells.protect_evil();
+						Spells.protectFromEvil();
 						break;
 					case 22:
 						Spells.earthquake();
 						break;
 					case 23:
-						Spells.map_area();
+						Spells.mapArea();
 						break;
 					case 24:
-						Spells.hp_player(Misc1.damroll(16, 4));
+						Spells.changePlayerHitpoints(Misc1.damageRoll(16, 4));
 						break;
 					case 25:
-						Spells.turn_undead();
+						Spells.turnUndead();
 						break;
 					case 26:
-						Spells.bless(Misc1.randint(48) + 48);
+						Spells.bless(Misc1.randomInt(48) + 48);
 						break;
 					case 27:
-						Spells.dispel_creature(Constants.CD_UNDEAD, (3 * Player.py.misc.lev));
+						Spells.dispelCreature(Constants.CD_UNDEAD, (3 * Player.py.misc.lev));
 						break;
 					case 28:
-						Spells.hp_player(200);
+						Spells.changePlayerHitpoints(200);
 						break;
 					case 29:
-						Spells.dispel_creature(Constants.CD_EVIL, (3 * Player.py.misc.lev));
+						Spells.dispelCreature(Constants.CD_EVIL, (3 * Player.py.misc.lev));
 						break;
 					case 30:
-						Spells.warding_glyph();
+						Spells.wardingGlyph();
 						break;
 					case 31:
-						Spells.remove_fear();
-						Spells.cure_poison();
-						Spells.hp_player(1000);
+						Spells.removeFear();
+						Spells.curePoison();
+						Spells.changePlayerHitpoints(1000);
 						for (i.value(Constants.A_STR);
 								i.value() <= Constants.A_CHR;
 								i.value(i.value() + 1)) {
-							Misc3.res_stat(i.value());
+							Misc3.restoreStat(i.value());
 						}
-						Spells.dispel_creature(Constants.CD_EVIL, 4 * Player.py.misc.lev);
-						Spells.turn_undead();
+						Spells.dispelCreature(Constants.CD_EVIL, 4 * Player.py.misc.lev);
+						Spells.turnUndead();
 						if (Player.py.flags.invuln < 3) {
 							Player.py.flags.invuln = 3;
 						} else {
@@ -196,7 +196,7 @@ public class Prayer {
 						m_ptr = Player.py.misc;
 						if ((Player.spell_worked & (1L << choice.value())) == 0) {
 							m_ptr.exp += s_ptr.sexp << 2;
-							Misc3.prt_experience();
+							Misc3.printExperience();
 							Player.spell_worked |= (1L << choice.value());
 						}
 					}
@@ -204,18 +204,18 @@ public class Prayer {
 				m_ptr = Player.py.misc;
 				if (!Variable.free_turn_flag) {
 					if (s_ptr.smana > m_ptr.cmana) {
-						IO.msg_print("You faint from fatigue!");
-						Player.py.flags.paralysis = Misc1.randint((5 * (s_ptr.smana - m_ptr.cmana)));
+						IO.printMessage("You faint from fatigue!");
+						Player.py.flags.paralysis = Misc1.randomInt((5 * (s_ptr.smana - m_ptr.cmana)));
 						m_ptr.cmana = 0;
 						m_ptr.cmana_frac = 0;
-						if (Misc1.randint(3) == 1) {
-							IO.msg_print("You have damaged your health!");
-							Misc3.dec_stat(Constants.A_CON);
+						if (Misc1.randomInt(3) == 1) {
+							IO.printMessage("You have damaged your health!");
+							Misc3.decreaseStat(Constants.A_CON);
 						}
 					} else {
 						m_ptr.cmana -= s_ptr.smana;
 					}
-					Misc3.prt_cmana();
+					Misc3.printCurrentMana();
 				}
 			}
 		}

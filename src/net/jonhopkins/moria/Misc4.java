@@ -29,16 +29,16 @@ public class Misc4 {
 	private Misc4() { }
 	
 	/* Add a comment to an object description.		-CJS- */
-	public static void scribe_object() {
+	public static void enscribeObject() {
 		IntPointer item_val = new IntPointer();
 		int j;
 		String out_val, tmp_str;
 		
 		if (Treasure.inven_ctr > 0 || Treasure.equip_ctr > 0) {
-			if (Moria1.get_item(item_val, "Which one? ", 0, Constants.INVEN_ARRAY_SIZE, "", "")) {
-				tmp_str = Desc.objdes(Treasure.inventory[item_val.value()], true);
+			if (Moria1.getItemId(item_val, "Which one? ", 0, Constants.INVEN_ARRAY_SIZE, "", "")) {
+				tmp_str = Desc.describeObject(Treasure.inventory[item_val.value()], true);
 				out_val = String.format("Inscribing %s", tmp_str);
-				IO.msg_print(out_val);
+				IO.printMessage(out_val);
 				if (!Treasure.inventory[item_val.value()].inscrip.isEmpty()) {
 					out_val = String.format("Replace %s New inscription:", Treasure.inventory[item_val.value()].inscrip);
 				} else {
@@ -48,19 +48,19 @@ public class Misc4 {
 				if (j > 12) {
 					j = 12;
 				}
-				IO.prt(out_val, 0, 0);
-				out_val = IO.get_string(0, out_val.length(), j);
+				IO.print(out_val, 0, 0);
+				out_val = IO.getString(0, out_val.length(), j);
 				if (!out_val.isEmpty()) {
 					inscribe(Treasure.inventory[item_val.value()], out_val);
 				}
 			}
 		} else {
-			IO.msg_print("You are not carrying anything to inscribe.");
+			IO.printMessage("You are not carrying anything to inscribe.");
 		}
 	}
 	
 	/* Append an additional comment to an object description.	-CJS- */
-	public static void add_inscribe(InvenType i_ptr, int type) {
+	public static void addInscription(InvenType i_ptr, int type) {
 		i_ptr.ident |= type;
 	}
 
@@ -70,21 +70,21 @@ public class Misc4 {
 	}
 	
 	/* We need to reset the view of things.			-CJS- */
-	public static void check_view() {
+	public static void checkView() {
 		int i, j;
 		CaveType c_ptr, d_ptr;
 		
 		c_ptr = Variable.cave[Player.char_row][Player.char_col];
 		/* Check for new panel		   */
-		if (Misc1.get_panel(Player.char_row, Player.char_col, false)) {
-			Misc1.prt_map();
+		if (Misc1.getPanel(Player.char_row, Player.char_col, false)) {
+			Misc1.printMap();
 		}
 		/* Move the light source		   */
-		Moria1.move_light(Player.char_row, Player.char_col, Player.char_row, Player.char_col);
+		Moria1.moveLight(Player.char_row, Player.char_col, Player.char_row, Player.char_col);
 		/* A room of light should be lit.	 */
 		if (c_ptr.fval == Constants.LIGHT_FLOOR) {
 			if ((Player.py.flags.blind < 1) && !c_ptr.pl) {
-				Moria1.light_room(Player.char_row, Player.char_col);
+				Moria1.lightUpRoom(Player.char_row, Player.char_col);
 			}
 		/* In doorway of light-room?		   */
 		} else if (c_ptr.lr && (Player.py.flags.blind < 1)) {
@@ -92,7 +92,7 @@ public class Misc4 {
 				for (j = (Player.char_col - 1); j <= (Player.char_col + 1); j++) {
 					d_ptr = Variable.cave[i][j];
 					if ((d_ptr.fval == Constants.LIGHT_FLOOR) && !d_ptr.pl) {
-						Moria1.light_room(i, j);
+						Moria1.lightUpRoom(i, j);
 					}
 				}
 			}

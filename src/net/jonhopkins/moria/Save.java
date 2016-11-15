@@ -78,7 +78,7 @@ public class Save {
 	/* and completely rewritten again! for portability by -JEW- */
 	/* and completely rewritten yet again for java by -JRH- */
 	
-	private static boolean sv_write() {
+	private static boolean saveWrite() {
 		long l;
 		int i, j;
 		int count;
@@ -147,155 +147,155 @@ public class Save {
 					|| r_ptr.r_spells != 0 || r_ptr.r_deaths != 0 || r_ptr.r_attacks[0] != 0
 					|| r_ptr.r_attacks[1] != 0 || r_ptr.r_attacks[2] != 0 || r_ptr.r_attacks[3] != 0)
 			{
-				wr_int(i);
-				wr_long(r_ptr.r_cmove);
-				wr_long(r_ptr.r_spells);
-				wr_int(r_ptr.r_kills);
-				wr_int(r_ptr.r_deaths);
-				wr_int(r_ptr.r_cdefense);
-				wr_int(r_ptr.r_wake);
-				wr_int(r_ptr.r_ignore);
-				wr_ints(r_ptr.r_attacks, Constants.MAX_MON_NATTACK);
+				writeInt(i);
+				writeLong(r_ptr.r_cmove);
+				writeLong(r_ptr.r_spells);
+				writeInt(r_ptr.r_kills);
+				writeInt(r_ptr.r_deaths);
+				writeInt(r_ptr.r_cdefense);
+				writeInt(r_ptr.r_wake);
+				writeInt(r_ptr.r_ignore);
+				writeInts(r_ptr.r_attacks, Constants.MAX_MON_NATTACK);
 			}
 		}
-		wr_int(0xFFFF); /* sentinel to indicate no more monster info */
+		writeInt(0xFFFF); /* sentinel to indicate no more monster info */
 		
-		wr_long(l);
+		writeLong(l);
 		
 		m_ptr = Player.py.misc;
-		wr_string(m_ptr.name, Player.py.PLAYER_NAME_SIZE);
-		wr_byte((m_ptr.male ? (byte)1 : (byte)0));
-		wr_int(m_ptr.au);
-		wr_int(m_ptr.max_exp);
-		wr_int(m_ptr.exp);
-		wr_int(m_ptr.exp_frac);
-		wr_int(m_ptr.age);
-		wr_int(m_ptr.ht);
-		wr_int(m_ptr.wt);
-		wr_int(m_ptr.lev);
-		wr_int(m_ptr.max_dlv);
-		wr_int(m_ptr.srh);
-		wr_int(m_ptr.fos);
-		wr_int(m_ptr.bth);
-		wr_int(m_ptr.bthb);
-		wr_int(m_ptr.mana);
-		wr_int(m_ptr.mhp);
-		wr_int(m_ptr.ptohit);
-		wr_int(m_ptr.ptodam);
-		wr_int(m_ptr.pac);
-		wr_int(m_ptr.ptoac);
-		wr_int(m_ptr.dis_th);
-		wr_int(m_ptr.dis_td);
-		wr_int(m_ptr.dis_ac);
-		wr_int(m_ptr.dis_tac);
-		wr_int(m_ptr.disarm);
-		wr_int(m_ptr.save);
-		wr_int(m_ptr.sc);
-		wr_int(m_ptr.stl);
-		wr_int(m_ptr.pclass);
-		wr_int(m_ptr.prace);
-		wr_int(m_ptr.hitdie);
-		wr_int(m_ptr.expfact);
-		wr_int(m_ptr.cmana);
-		wr_int(m_ptr.cmana_frac);
-		wr_int(m_ptr.chp);
-		wr_int(m_ptr.chp_frac);
+		writeString(m_ptr.name, Player.py.PLAYER_NAME_SIZE);
+		writeByte((m_ptr.male ? (byte)1 : (byte)0));
+		writeInt(m_ptr.au);
+		writeInt(m_ptr.max_exp);
+		writeInt(m_ptr.exp);
+		writeInt(m_ptr.exp_frac);
+		writeInt(m_ptr.age);
+		writeInt(m_ptr.ht);
+		writeInt(m_ptr.wt);
+		writeInt(m_ptr.lev);
+		writeInt(m_ptr.max_dlv);
+		writeInt(m_ptr.srh);
+		writeInt(m_ptr.fos);
+		writeInt(m_ptr.bth);
+		writeInt(m_ptr.bthb);
+		writeInt(m_ptr.mana);
+		writeInt(m_ptr.mhp);
+		writeInt(m_ptr.ptohit);
+		writeInt(m_ptr.ptodam);
+		writeInt(m_ptr.pac);
+		writeInt(m_ptr.ptoac);
+		writeInt(m_ptr.dis_th);
+		writeInt(m_ptr.dis_td);
+		writeInt(m_ptr.dis_ac);
+		writeInt(m_ptr.dis_tac);
+		writeInt(m_ptr.disarm);
+		writeInt(m_ptr.save);
+		writeInt(m_ptr.sc);
+		writeInt(m_ptr.stl);
+		writeInt(m_ptr.pclass);
+		writeInt(m_ptr.prace);
+		writeInt(m_ptr.hitdie);
+		writeInt(m_ptr.expfact);
+		writeInt(m_ptr.cmana);
+		writeInt(m_ptr.cmana_frac);
+		writeInt(m_ptr.chp);
+		writeInt(m_ptr.chp_frac);
 		for (i = 0; i < 4; i++) {
-			wr_string(m_ptr.history[i], 60);
+			writeString(m_ptr.history[i], 60);
 		}
 		
 		s_ptr = Player.py.stats;
-		wr_ints(s_ptr.max_stat, 6);
-		wr_ints(s_ptr.cur_stat, 6);
-		wr_ints(s_ptr.mod_stat, 6);
-		wr_ints(s_ptr.use_stat, 6);
+		writeInts(s_ptr.max_stat, 6);
+		writeInts(s_ptr.cur_stat, 6);
+		writeInts(s_ptr.mod_stat, 6);
+		writeInts(s_ptr.use_stat, 6);
 		
 		f_ptr = Player.py.flags;
-		wr_long(f_ptr.status);
-		wr_int(f_ptr.rest);
-		wr_int(f_ptr.blind);
-		wr_int(f_ptr.paralysis);
-		wr_int(f_ptr.confused);
-		wr_int(f_ptr.food);
-		wr_int(f_ptr.food_digested);
-		wr_int(f_ptr.protection);
-		wr_int(f_ptr.speed);
-		wr_int(f_ptr.fast);
-		wr_int(f_ptr.slow);
-		wr_int(f_ptr.afraid);
-		wr_int(f_ptr.poisoned);
-		wr_int(f_ptr.image);
-		wr_int(f_ptr.protevil);
-		wr_int(f_ptr.invuln);
-		wr_int(f_ptr.hero);
-		wr_int(f_ptr.shero);
-		wr_int(f_ptr.blessed);
-		wr_int(f_ptr.resist_heat);
-		wr_int(f_ptr.resist_cold);
-		wr_int(f_ptr.detect_inv);
-		wr_int(f_ptr.word_recall);
-		wr_int(f_ptr.see_infra);
-		wr_int(f_ptr.tim_infra);
-		wr_byte((f_ptr.see_inv ? (byte)1 : (byte)0));
-		wr_byte((byte)f_ptr.teleport);
-		wr_byte((f_ptr.free_act ? (byte)1 : (byte)0));
-		wr_byte((f_ptr.slow_digest ? (byte)1 : (byte)0));
-		wr_byte((byte)f_ptr.aggravate);
-		wr_byte((byte)f_ptr.fire_resist);
-		wr_byte((byte)f_ptr.cold_resist);
-		wr_byte((byte)f_ptr.acid_resist);
-		wr_byte((f_ptr.regenerate ? (byte)1 : (byte)0));
-		wr_byte((byte)f_ptr.lght_resist);
-		wr_byte((byte)f_ptr.ffall);
-		wr_byte((f_ptr.sustain_str ? (byte)1 : (byte)0));
-		wr_byte((f_ptr.sustain_int ? (byte)1 : (byte)0));
-		wr_byte((f_ptr.sustain_wis ? (byte)1 : (byte)0));
-		wr_byte((f_ptr.sustain_con ? (byte)1 : (byte)0));
-		wr_byte((f_ptr.sustain_dex ? (byte)1 : (byte)0));
-		wr_byte((f_ptr.sustain_chr ? (byte)1 : (byte)0));
-		wr_byte((f_ptr.confuse_monster ? (byte)1 : (byte)0));
-		wr_int(f_ptr.new_spells);
+		writeLong(f_ptr.status);
+		writeInt(f_ptr.rest);
+		writeInt(f_ptr.blind);
+		writeInt(f_ptr.paralysis);
+		writeInt(f_ptr.confused);
+		writeInt(f_ptr.food);
+		writeInt(f_ptr.food_digested);
+		writeInt(f_ptr.protection);
+		writeInt(f_ptr.speed);
+		writeInt(f_ptr.fast);
+		writeInt(f_ptr.slow);
+		writeInt(f_ptr.afraid);
+		writeInt(f_ptr.poisoned);
+		writeInt(f_ptr.image);
+		writeInt(f_ptr.protevil);
+		writeInt(f_ptr.invuln);
+		writeInt(f_ptr.hero);
+		writeInt(f_ptr.shero);
+		writeInt(f_ptr.blessed);
+		writeInt(f_ptr.resist_heat);
+		writeInt(f_ptr.resist_cold);
+		writeInt(f_ptr.detect_inv);
+		writeInt(f_ptr.word_recall);
+		writeInt(f_ptr.see_infra);
+		writeInt(f_ptr.tim_infra);
+		writeByte((f_ptr.see_inv ? (byte)1 : (byte)0));
+		writeByte((byte)f_ptr.teleport);
+		writeByte((f_ptr.free_act ? (byte)1 : (byte)0));
+		writeByte((f_ptr.slow_digest ? (byte)1 : (byte)0));
+		writeByte((byte)f_ptr.aggravate);
+		writeByte((byte)f_ptr.fire_resist);
+		writeByte((byte)f_ptr.cold_resist);
+		writeByte((byte)f_ptr.acid_resist);
+		writeByte((f_ptr.regenerate ? (byte)1 : (byte)0));
+		writeByte((byte)f_ptr.lght_resist);
+		writeByte((byte)f_ptr.ffall);
+		writeByte((f_ptr.sustain_str ? (byte)1 : (byte)0));
+		writeByte((f_ptr.sustain_int ? (byte)1 : (byte)0));
+		writeByte((f_ptr.sustain_wis ? (byte)1 : (byte)0));
+		writeByte((f_ptr.sustain_con ? (byte)1 : (byte)0));
+		writeByte((f_ptr.sustain_dex ? (byte)1 : (byte)0));
+		writeByte((f_ptr.sustain_chr ? (byte)1 : (byte)0));
+		writeByte((f_ptr.confuse_monster ? (byte)1 : (byte)0));
+		writeInt(f_ptr.new_spells);
 		
-		wr_int(Variable.missile_ctr);
-		wr_int(Variable.turn);
-		wr_int(Treasure.inven_ctr);
+		writeInt(Variable.missile_ctr);
+		writeInt(Variable.turn);
+		writeInt(Treasure.inven_ctr);
 		for (i = 0; i < Treasure.inven_ctr; i++) {
-			wr_item(Treasure.inventory[i]);
+			writeItem(Treasure.inventory[i]);
 		}
 		for (i = Constants.INVEN_WIELD; i < Constants.INVEN_ARRAY_SIZE; i++) {
-			wr_item(Treasure.inventory[i]);
+			writeItem(Treasure.inventory[i]);
 		}
-		wr_int(Treasure.inven_weight);
-		wr_int(Treasure.equip_ctr);
-		wr_long(Player.spell_learned);
-		wr_long(Player.spell_worked);
-		wr_long(Player.spell_forgotten);
-		wr_ints(Player.spell_order, 32);
-		wr_ints(Treasure.object_ident, Constants.OBJECT_IDENT_SIZE);
-		wr_long(Variable.randes_seed);
-		wr_long(Variable.town_seed);
-		wr_int(Variable.last_msg);
+		writeInt(Treasure.inven_weight);
+		writeInt(Treasure.equip_ctr);
+		writeLong(Player.spell_learned);
+		writeLong(Player.spell_worked);
+		writeLong(Player.spell_forgotten);
+		writeInts(Player.spell_order, 32);
+		writeInts(Treasure.object_ident, Constants.OBJECT_IDENT_SIZE);
+		writeLong(Variable.randes_seed);
+		writeLong(Variable.town_seed);
+		writeInt(Variable.last_msg);
 		for (i = 0; i < Constants.MAX_SAVE_MSG; i++) {
-			wr_string(Variable.old_msg[i], Constants.VTYPESIZ);
+			writeString(Variable.old_msg[i], Constants.VTYPESIZ);
 		}
 		
 		/* this indicates 'cheating' if it is a one */
-		wr_int(Variable.panic_save);
-		wr_byte((Variable.total_winner ? (byte)1 : (byte)0));
-		wr_int(Variable.noscore);
-		wr_ints(Player.player_hp, Constants.MAX_PLAYER_LEVEL);
+		writeInt(Variable.panic_save);
+		writeByte((Variable.total_winner ? (byte)1 : (byte)0));
+		writeInt(Variable.noscore);
+		writeInts(Player.player_hp, Constants.MAX_PLAYER_LEVEL);
 		
 		for (i = 0; i < Constants.MAX_STORES; i++) {
 			st_ptr = Variable.store[i];
-			wr_long((long)st_ptr.store_open);
-			wr_int(st_ptr.insult_cur);
-			wr_byte((byte)st_ptr.owner);
-			wr_byte((byte)st_ptr.store_ctr);
-			wr_int(st_ptr.good_buy);
-			wr_int(st_ptr.bad_buy);
+			writeLong((long)st_ptr.store_open);
+			writeInt(st_ptr.insult_cur);
+			writeByte((byte)st_ptr.owner);
+			writeByte((byte)st_ptr.store_ctr);
+			writeInt(st_ptr.good_buy);
+			writeInt(st_ptr.bad_buy);
 			for (j = 0; j < st_ptr.store_ctr; j++) {
-				wr_long((long)st_ptr.store_inven[j].scost);
-				wr_item(st_ptr.store_inven[j].sitem);
+				writeLong((long)st_ptr.store_inven[j].scost);
+				writeItem(st_ptr.store_inven[j].sitem);
 			}
 		}
 		
@@ -306,17 +306,17 @@ public class Save {
 			 * playing for 1 day */
 			l = start_time + 86400L;
 		}
-		wr_long(l);
+		writeLong(l);
 		
 		/* starting with 5.2, put died_from string in savefile */
-		wr_string(Variable.died_from, 25);
+		writeString(Variable.died_from, 25);
 		
 		/* starting with 5.2.2, put the max_score in the savefile */
-		l = Death.total_points();
-		wr_long(l);
+		l = Death.getTotalPoints();
+		writeLong(l);
 		
 		/* starting with 5.2.2, put the birth_date in the savefile */
-		wr_long(Variable.birth_date);
+		writeLong(Variable.birth_date);
 		
 		/* only level specific info follows, this allows characters to be
 		 * resurrected, the dungeon level info is not needed for a resurrection */
@@ -327,37 +327,37 @@ public class Save {
 			return true;
 		}
 		
-		wr_int(Variable.dun_level);
-		wr_int(Player.char_row);
-		wr_int(Player.char_col);
-		wr_int(Monsters.mon_tot_mult);
-		wr_int(Variable.cur_height);
-		wr_int(Variable.cur_width);
-		wr_int(Variable.max_panel_rows);
-		wr_int(Variable.max_panel_cols);
+		writeInt(Variable.dun_level);
+		writeInt(Player.char_row);
+		writeInt(Player.char_col);
+		writeInt(Monsters.mon_tot_mult);
+		writeInt(Variable.cur_height);
+		writeInt(Variable.cur_width);
+		writeInt(Variable.max_panel_rows);
+		writeInt(Variable.max_panel_cols);
 		
 		for (i = 0; i < Constants.MAX_HEIGHT; i++) {
 			for (j = 0; j < Constants.MAX_WIDTH; j++) {
 				c_ptr = Variable.cave[i][j];
 				if (c_ptr.cptr != 0) {
-					wr_byte((byte)i);
-					wr_byte((byte)j);
-					wr_byte((byte)c_ptr.cptr);
+					writeByte((byte)i);
+					writeByte((byte)j);
+					writeByte((byte)c_ptr.cptr);
 				}
 			}
 		}
-		wr_byte((byte)0xFF); /* marks end of cptr info */
+		writeByte((byte)0xFF); /* marks end of cptr info */
 		for (i = 0; i < Constants.MAX_HEIGHT; i++) {
 			for (j = 0; j < Constants.MAX_WIDTH; j++) {
 				c_ptr = Variable.cave[i][j];
 				if (c_ptr.tptr != 0) {
-					wr_byte((byte)i);
-					wr_byte((byte)j);
-					wr_byte((byte)c_ptr.tptr);
+					writeByte((byte)i);
+					writeByte((byte)j);
+					writeByte((byte)c_ptr.tptr);
 				}
 			}
 		}
-		wr_byte((byte)0xFF); /* marks end of tptr info */
+		writeByte((byte)0xFF); /* marks end of tptr info */
 		/* must set counter to zero, note that code may write out two bytes
 		 * unnecessarily */
 		count = 0;
@@ -367,8 +367,8 @@ public class Save {
 				c_ptr = Variable.cave[i][j];
 				char_tmp = (short)(c_ptr.fval | ((c_ptr.lr ? 1 : 0) << 4) | ((c_ptr.fm ? 1 : 0) << 5) | ((c_ptr.pl ? 1 : 0) << 6) | ((c_ptr.tl ? 1 : 0) << 7));
 				if (char_tmp != prev_char || count == Constants.MAX_UCHAR) {
-					wr_byte((byte)count);
-					wr_byte((byte)prev_char);
+					writeByte((byte)count);
+					writeByte((byte)prev_char);
 					prev_char = char_tmp;
 					count = 1;
 				} else {
@@ -377,8 +377,8 @@ public class Save {
 			}
 		}
 		/* save last entry */
-		wr_byte((byte)count);
-		wr_byte((byte)prev_char);
+		writeByte((byte)count);
+		writeByte((byte)prev_char);
 		
 		/* must change graphics symbols for walls and floors back to default chars,
 		 * this is necessary so that if the user changes the graphics line, the
@@ -395,13 +395,13 @@ public class Save {
 				t_ptr.tchar = '#';
 			}
 		}
-		wr_int(Treasure.tcptr);
+		writeInt(Treasure.tcptr);
 		for (i = Constants.MIN_TRIX; i < Treasure.tcptr; i++) {
-			wr_item(Treasure.t_list[i]);
+			writeItem(Treasure.t_list[i]);
 		}
-		wr_int(Monsters.mfptr);
+		writeInt(Monsters.mfptr);
 		for (i = Constants.MIN_MONIX; i < Monsters.mfptr; i++) {
-			wr_monster(Monsters.m_list[i]);
+			writeMonster(Monsters.m_list[i]);
 		}
 		
 		/*if (ferror(fileptr) || (fflush(fileptr) == EOF)) {
@@ -426,13 +426,13 @@ public class Save {
 		return true;
 	}
 	
-	public static boolean save_char() {
+	public static boolean saveCharacter() {
 		int i;
 		String temp;
 		
-		while (!_save_char(Variable.savefile)) {
+		while (!saveCharacter(Variable.savefile)) {
 			temp = String.format("Savefile '%s' fails.", Variable.savefile);
-			IO.msg_print(temp);
+			IO.printMessage(temp);
 			i = 0;
 /*			if (access(var.savefile, 0) < 0 || !io.get_check("File exists. Delete old savefile?") || (i = unlink(var.savefile)) < 0) {
 				if (i < 0) {
@@ -450,12 +450,12 @@ public class Save {
 			}
 */
 			temp = String.format("Saving with %s...", Variable.savefile);
-			IO.prt(temp, 0, 0);
+			IO.print(temp, 0, 0);
 		}
 		return true;
 	}
 	
-	private static boolean _save_char(String fnam) {
+	private static boolean saveCharacter(String fnam) {
 		String temp;
 		boolean ok;
 		int fd = 0;
@@ -465,27 +465,27 @@ public class Save {
 			return true;	/* Nothing to save. */
 		}
 		
-		sigs.nosignals();
-		IO.put_qio();
-		Moria1.disturb(true, false);	/* Turn off resting and searching. */
-		Moria1.change_speed(-Variable.pack_heavy);	/* Fix the speed */
+		sigs.noSignals();
+		IO.putQio();
+		Moria1.disturbPlayer(true, false);	/* Turn off resting and searching. */
+		Moria1.changeSpeed(-Variable.pack_heavy);	/* Fix the speed */
 		Variable.pack_heavy = 0;
 		ok = false;
 //		fileptr = fopen(var.savefile, "w");
 		
 		if (fileptr != null) {
 			xor_byte = 0;
-			wr_int(Constants.CUR_VERSION_MAJ);
+			writeInt(Constants.CUR_VERSION_MAJ);
 			xor_byte = 0;
-			wr_int(Constants.CUR_VERSION_MIN);
+			writeInt(Constants.CUR_VERSION_MIN);
 			xor_byte = 0;
-			wr_int(Constants.PATCH_LEVEL);
+			writeInt(Constants.PATCH_LEVEL);
 			xor_byte = 0;
-			char_tmp = (short)(Misc1.randint(256) - 1);
-			wr_byte((byte)char_tmp);
+			char_tmp = (short)(Misc1.randomInt(256) - 1);
+			writeByte((byte)char_tmp);
 			/* Note that xor_byte is now equal to char_tmp */
 			
-			ok = sv_write();
+			ok = saveWrite();
 			
 //			if (fclose(fileptr) == EOF) {
 //				ok = false;
@@ -502,7 +502,7 @@ public class Save {
 			} else {
 				temp = String.format("Can't create new file %s", fnam);
 			}
-			IO.msg_print(temp);
+			IO.printMessage(temp);
 			return false;
 		} else {
 			Variable.character_saved = 1;
@@ -516,7 +516,7 @@ public class Save {
 	
 	/* Certain checks are omitted for the wizard. -CJS- */
 	
-	public static boolean get_char(BooleanPointer generate) {
+	public static boolean getCharacter(BooleanPointer generate) {
 		int i, j;
 		int fd, c, total_count;
 		boolean ok;
@@ -533,7 +533,7 @@ public class Save {
 		int version_maj = 0, version_min = 0, patch_level = 0;
 		InvenType t_ptr;
 		
-		sigs.nosignals();
+		sigs.noSignals();
 		generate.value(true);
 		fd = -1;
 		
@@ -559,13 +559,13 @@ public class Save {
 //			return false;	/* Don't bother with messages here. File absent. */
 //		}
 		
-		IO.clear_screen();
+		IO.clearScreen();
 		
 		temp = String.format("Savefile %s present. Attempting restore.", Variable.savefile);
-		IO.put_buffer(temp, 23, 0);
+		IO.putBuffer(temp, 23, 0);
 		
 		if (Variable.turn >= 0) {
-			IO.msg_print("IMPOSSIBLE! Attempt to restore while still alive!");
+			IO.printMessage("IMPOSSIBLE! Attempt to restore while still alive!");
 		
 		/* Allow restoring a file belonging to someone else, if we can delete it. */
 		/* Hence first try to read without doing a chmod. */
@@ -579,50 +579,50 @@ public class Save {
 //			close(fd);
 //			fileptr = fopen(var.savefile, "r");
 			if (fileptr == null) {
-				return _error(ok, fd, time_saved, version_maj, version_min);
+				return error(ok, fd, time_saved, version_maj, version_min);
 			}
 			
-			IO.prt("Restoring Memory...", 0, 0);
-			IO.put_qio();
+			IO.print("Restoring Memory...", 0, 0);
+			IO.putQio();
 			
 			xor_byte = 0;
-			version_maj = rd_byte();
+			version_maj = readByte();
 			xor_byte = 0;
-			version_min = rd_byte();
+			version_min = readByte();
 			xor_byte = 0;
-			patch_level = rd_byte();
+			patch_level = readByte();
 			xor_byte = 0;
-			xor_byte = rd_byte();
+			xor_byte = readByte();
 			
 			/* COMPAT support savefiles from 5.0.14 to 5.0.17 */
 			/* support savefiles from 5.1.0 to present */
 			if ((version_maj != Constants.CUR_VERSION_MAJ) || (version_min == 0 && patch_level < 14)) {
-				IO.prt("Sorry. This savefile is from a different version of umoria.", 2, 0);
-				return _error(ok, fd, time_saved, version_maj, version_min);
+				IO.print("Sorry. This savefile is from a different version of umoria.", 2, 0);
+				return error(ok, fd, time_saved, version_maj, version_min);
 			}
 			
-			int_tmp = rd_int();
+			int_tmp = readInt();
 			while (int_tmp != 0xFFFF) {
 				if (int_tmp >= Constants.MAX_CREATURES) {
-					return _error(ok, fd, time_saved, version_maj, version_min);
+					return error(ok, fd, time_saved, version_maj, version_min);
 				}
 				r_ptr = Variable.c_recall[int_tmp];
-				r_ptr.r_cmove = rd_int();
-				r_ptr.r_spells = rd_int();
-				r_ptr.r_kills = rd_int();
-				r_ptr.r_deaths = rd_int();
-				r_ptr.r_cdefense = rd_int();
-				r_ptr.r_wake = rd_byte();
-				r_ptr.r_ignore = rd_byte();
-				rd_ints(r_ptr.r_attacks, Constants.MAX_MON_NATTACK);
-				int_tmp = rd_int();
+				r_ptr.r_cmove = readInt();
+				r_ptr.r_spells = readInt();
+				r_ptr.r_kills = readInt();
+				r_ptr.r_deaths = readInt();
+				r_ptr.r_cdefense = readInt();
+				r_ptr.r_wake = readByte();
+				r_ptr.r_ignore = readByte();
+				readInts(r_ptr.r_attacks, Constants.MAX_MON_NATTACK);
+				int_tmp = readInt();
 			}
 			
 			/* for save files before 5.2.2, read and ignore log_index (sic) */
 			if ((version_min < 2) || (version_min == 2 && patch_level < 2)) {
-				int_tmp = rd_int();
+				int_tmp = readInt();
 			}
-			l = rd_long();
+			l = readLong();
 			
 			Variable.find_cut.value((l & 0x1) != 0);
 			Variable.find_examine.value((l & 0x2) != 0);
@@ -651,172 +651,172 @@ public class Save {
 			/* Don't allow resurrection of total_winner characters.  It causes
 			 * problems because the character level is out of the allowed range.  */
 			if (Variable.to_be_wizard && (l & 0x40000000L) != 0) {
-				IO.msg_print("Sorry, this character is retired from moria.");
-				IO.msg_print("You can not resurrect a retired character.");
-			} else if (Variable.to_be_wizard && (l & 0x80000000L) != 0 && IO.get_check("Resurrect a dead character?")) {
+				IO.printMessage("Sorry, this character is retired from moria.");
+				IO.printMessage("You can not resurrect a retired character.");
+			} else if (Variable.to_be_wizard && (l & 0x80000000L) != 0 && IO.getCheck("Resurrect a dead character?")) {
 				l &= ~0x80000000L;
 			}
 			if ((l & 0x80000000L) == 0) {
 				m_ptr = Player.py.misc;
-				m_ptr.name = rd_string(Player.py.PLAYER_NAME_SIZE);
-				m_ptr.male = (rd_byte() == 1);
-				m_ptr.au = rd_int();
-				m_ptr.max_exp = rd_int();
-				m_ptr.exp = rd_int();
-				m_ptr.exp_frac = rd_int();
-				m_ptr.age = rd_int();
-				m_ptr.ht = rd_int();
-				m_ptr.wt = rd_int();
-				m_ptr.lev = rd_int();
-				m_ptr.max_dlv = rd_int();
-				m_ptr.srh = rd_int();
-				m_ptr.fos = rd_int();
-				m_ptr.bth = rd_int();
-				m_ptr.bthb = rd_int();
-				m_ptr.mana = rd_int();
-				m_ptr.mhp = rd_int();
-				m_ptr.ptohit = rd_int();
-				m_ptr.ptodam = rd_int();
-				m_ptr.pac = rd_int();
-				m_ptr.ptoac = rd_int();
-				m_ptr.dis_th = rd_int();
-				m_ptr.dis_td = rd_int();
-				m_ptr.dis_ac = rd_int();
-				m_ptr.dis_tac = rd_int();
-				m_ptr.disarm = rd_int();
-				m_ptr.save = rd_int();
-				m_ptr.sc = rd_int();
-				m_ptr.stl = rd_int();
-				m_ptr.pclass = rd_byte();
-				m_ptr.prace = rd_byte();
-				m_ptr.hitdie = rd_byte();
-				m_ptr.expfact = rd_byte();
-				m_ptr.cmana = rd_int();
-				m_ptr.cmana_frac = rd_int();
-				m_ptr.chp = rd_int();
-				m_ptr.chp_frac = rd_int();
+				m_ptr.name = readString(Player.py.PLAYER_NAME_SIZE);
+				m_ptr.male = (readByte() == 1);
+				m_ptr.au = readInt();
+				m_ptr.max_exp = readInt();
+				m_ptr.exp = readInt();
+				m_ptr.exp_frac = readInt();
+				m_ptr.age = readInt();
+				m_ptr.ht = readInt();
+				m_ptr.wt = readInt();
+				m_ptr.lev = readInt();
+				m_ptr.max_dlv = readInt();
+				m_ptr.srh = readInt();
+				m_ptr.fos = readInt();
+				m_ptr.bth = readInt();
+				m_ptr.bthb = readInt();
+				m_ptr.mana = readInt();
+				m_ptr.mhp = readInt();
+				m_ptr.ptohit = readInt();
+				m_ptr.ptodam = readInt();
+				m_ptr.pac = readInt();
+				m_ptr.ptoac = readInt();
+				m_ptr.dis_th = readInt();
+				m_ptr.dis_td = readInt();
+				m_ptr.dis_ac = readInt();
+				m_ptr.dis_tac = readInt();
+				m_ptr.disarm = readInt();
+				m_ptr.save = readInt();
+				m_ptr.sc = readInt();
+				m_ptr.stl = readInt();
+				m_ptr.pclass = readByte();
+				m_ptr.prace = readByte();
+				m_ptr.hitdie = readByte();
+				m_ptr.expfact = readByte();
+				m_ptr.cmana = readInt();
+				m_ptr.cmana_frac = readInt();
+				m_ptr.chp = readInt();
+				m_ptr.chp_frac = readInt();
 				for (i = 0; i < 4; i++) {
-					m_ptr.history[i] = rd_string(60);
+					m_ptr.history[i] = readString(60);
 				}
 				
 				s_ptr = Player.py.stats;
-				rd_ints(s_ptr.max_stat, 6);
-				rd_ints(s_ptr.cur_stat, 6);
-				rd_ints(s_ptr.mod_stat, 6);
-				rd_ints(s_ptr.use_stat, 6);
+				readInts(s_ptr.max_stat, 6);
+				readInts(s_ptr.cur_stat, 6);
+				readInts(s_ptr.mod_stat, 6);
+				readInts(s_ptr.use_stat, 6);
 				
 				f_ptr = Player.py.flags;
-				f_ptr.status = rd_long();
-				f_ptr.rest = rd_int();
-				f_ptr.blind = rd_int();
-				f_ptr.paralysis = rd_int();
-				f_ptr.confused = rd_int();
-				f_ptr.food = rd_int();
-				f_ptr.food_digested = rd_int();
-				f_ptr.protection = rd_int();
-				f_ptr.speed = rd_int();
-				f_ptr.fast = rd_int();
-				f_ptr.slow = rd_int();
-				f_ptr.afraid = rd_int();
-				f_ptr.poisoned = rd_int();
-				f_ptr.image = rd_int();
-				f_ptr.protevil = rd_int();
-				f_ptr.invuln = rd_int();
-				f_ptr.hero = rd_int();
-				f_ptr.shero = rd_int();
-				f_ptr.blessed = rd_int();
-				f_ptr.resist_heat = rd_int();
-				f_ptr.resist_cold = rd_int();
-				f_ptr.detect_inv = rd_int();
-				f_ptr.word_recall = rd_int();
-				f_ptr.see_infra = rd_int();
-				f_ptr.tim_infra = rd_int();
-				f_ptr.see_inv = (rd_byte() == 1);
-				f_ptr.teleport = rd_byte();
-				f_ptr.free_act = (rd_byte() == 1);
-				f_ptr.slow_digest = (rd_byte() == 1);
-				f_ptr.aggravate = rd_byte();
-				f_ptr.fire_resist = rd_byte();
-				f_ptr.cold_resist = rd_byte();
-				f_ptr.acid_resist = rd_byte();
-				f_ptr.regenerate = (rd_byte() == 1);
-				f_ptr.lght_resist = rd_byte();
-				f_ptr.ffall = rd_byte();
-				f_ptr.sustain_str = (rd_byte() == 1);
-				f_ptr.sustain_int = (rd_byte() == 1);
-				f_ptr.sustain_wis = (rd_byte() == 1);
-				f_ptr.sustain_con = (rd_byte() == 1);
-				f_ptr.sustain_dex = (rd_byte() == 1);
-				f_ptr.sustain_chr = (rd_byte() == 1);
-				f_ptr.confuse_monster = (rd_byte() == 1);
-				f_ptr.new_spells = rd_byte();
+				f_ptr.status = readLong();
+				f_ptr.rest = readInt();
+				f_ptr.blind = readInt();
+				f_ptr.paralysis = readInt();
+				f_ptr.confused = readInt();
+				f_ptr.food = readInt();
+				f_ptr.food_digested = readInt();
+				f_ptr.protection = readInt();
+				f_ptr.speed = readInt();
+				f_ptr.fast = readInt();
+				f_ptr.slow = readInt();
+				f_ptr.afraid = readInt();
+				f_ptr.poisoned = readInt();
+				f_ptr.image = readInt();
+				f_ptr.protevil = readInt();
+				f_ptr.invuln = readInt();
+				f_ptr.hero = readInt();
+				f_ptr.shero = readInt();
+				f_ptr.blessed = readInt();
+				f_ptr.resist_heat = readInt();
+				f_ptr.resist_cold = readInt();
+				f_ptr.detect_inv = readInt();
+				f_ptr.word_recall = readInt();
+				f_ptr.see_infra = readInt();
+				f_ptr.tim_infra = readInt();
+				f_ptr.see_inv = (readByte() == 1);
+				f_ptr.teleport = readByte();
+				f_ptr.free_act = (readByte() == 1);
+				f_ptr.slow_digest = (readByte() == 1);
+				f_ptr.aggravate = readByte();
+				f_ptr.fire_resist = readByte();
+				f_ptr.cold_resist = readByte();
+				f_ptr.acid_resist = readByte();
+				f_ptr.regenerate = (readByte() == 1);
+				f_ptr.lght_resist = readByte();
+				f_ptr.ffall = readByte();
+				f_ptr.sustain_str = (readByte() == 1);
+				f_ptr.sustain_int = (readByte() == 1);
+				f_ptr.sustain_wis = (readByte() == 1);
+				f_ptr.sustain_con = (readByte() == 1);
+				f_ptr.sustain_dex = (readByte() == 1);
+				f_ptr.sustain_chr = (readByte() == 1);
+				f_ptr.confuse_monster = (readByte() == 1);
+				f_ptr.new_spells = readByte();
 				
-				Variable.missile_ctr = rd_int();
-				Variable.turn = rd_int();
-				Treasure.inven_ctr = rd_int();
+				Variable.missile_ctr = readInt();
+				Variable.turn = readInt();
+				Treasure.inven_ctr = readInt();
 				if (Treasure.inven_ctr > Constants.INVEN_WIELD) {
-					return _error(ok, fd, time_saved, version_maj, version_min);
+					return error(ok, fd, time_saved, version_maj, version_min);
 				}
 				for (i = 0; i < Treasure.inven_ctr; i++) {
-					rd_item(Treasure.inventory[i]);
+					readItem(Treasure.inventory[i]);
 				}
 				for (i = Constants.INVEN_WIELD; i < Constants.INVEN_ARRAY_SIZE; i++) {
-					rd_item(Treasure.inventory[i]);
+					readItem(Treasure.inventory[i]);
 				}
-				Treasure.inven_weight = rd_int();
-				Treasure.equip_ctr = rd_int();
-				Player.spell_learned = rd_int();
-				Player.spell_worked = rd_int();
-				Player.spell_forgotten = rd_int();
-				rd_ints(Player.spell_order, 32);
-				rd_ints(Treasure.object_ident, Constants.OBJECT_IDENT_SIZE);
-				Variable.randes_seed = rd_long();
-				Variable.town_seed = rd_long();
-				Variable.last_msg = rd_int();
+				Treasure.inven_weight = readInt();
+				Treasure.equip_ctr = readInt();
+				Player.spell_learned = readInt();
+				Player.spell_worked = readInt();
+				Player.spell_forgotten = readInt();
+				readInts(Player.spell_order, 32);
+				readInts(Treasure.object_ident, Constants.OBJECT_IDENT_SIZE);
+				Variable.randes_seed = readLong();
+				Variable.town_seed = readLong();
+				Variable.last_msg = readInt();
 				for (i = 0; i < Constants.MAX_SAVE_MSG; i++) {
-					Variable.old_msg[i] = rd_string(Constants.VTYPESIZ);
+					Variable.old_msg[i] = readString(Constants.VTYPESIZ);
 				}
 				
-				Variable.panic_save = rd_int();
-				Variable.total_winner = (rd_int() == 1);
-				Variable.noscore = rd_int();
-				rd_ints(Player.player_hp, Constants.MAX_PLAYER_LEVEL);
+				Variable.panic_save = readInt();
+				Variable.total_winner = (readInt() == 1);
+				Variable.noscore = readInt();
+				readInts(Player.player_hp, Constants.MAX_PLAYER_LEVEL);
 				
 				if ((version_min >= 2) || (version_min == 1 && patch_level >= 3)) {
 					for (i = 0; i < Constants.MAX_STORES; i++) {
 						st_ptr = Variable.store[i];
-						st_ptr.store_open = rd_int();
-						st_ptr.insult_cur = rd_int();
-						st_ptr.owner = rd_byte();
-						st_ptr.store_ctr = rd_byte();
-						st_ptr.good_buy = rd_int();
-						st_ptr.bad_buy = rd_int();
+						st_ptr.store_open = readInt();
+						st_ptr.insult_cur = readInt();
+						st_ptr.owner = readByte();
+						st_ptr.store_ctr = readByte();
+						st_ptr.good_buy = readInt();
+						st_ptr.bad_buy = readInt();
 						if (st_ptr.store_ctr > Constants.STORE_INVEN_MAX) {
-							return _error(ok, fd, time_saved, version_maj, version_min);
+							return error(ok, fd, time_saved, version_maj, version_min);
 						}
 						for (j = 0; j < st_ptr.store_ctr; j++) {
-							st_ptr.store_inven[j].scost = rd_int();
-							rd_item(st_ptr.store_inven[j].sitem);
+							st_ptr.store_inven[j].scost = readInt();
+							readItem(st_ptr.store_inven[j].sitem);
 						}
 					}
 				}
 				
 				if ((version_min >= 2) || (version_min == 1 && patch_level >= 3)) {
-					time_saved = rd_long();
+					time_saved = readLong();
 				}
 				
 				if (version_min >= 2) {
-					Variable.died_from = rd_string(25);
+					Variable.died_from = readString(25);
 				}
 				
 				if ((version_min >= 3) || (version_min == 2 && patch_level >= 2)) {
-					Variable.max_score = rd_int();
+					Variable.max_score = readInt();
 				} else {
 					Variable.max_score = 0;
 				}
 				
 				if ((version_min >= 3) || (version_min == 2 && patch_level >= 2)) {
-					Variable.birth_date = rd_long();
+					Variable.birth_date = readLong();
 				} else {
 					Variable.birth_date = java.util.Calendar.getInstance().getTimeInMillis();
 				}
@@ -824,9 +824,9 @@ public class Save {
 			if (/*(c = getc(fileptr)) == EOF ||*/ (l & 0x80000000L) != 0) {
 				if ((l & 0x80000000L) == 0) {
 					if (!Variable.to_be_wizard || Variable.turn < 0) {
-						return _error(ok, fd, time_saved, version_maj, version_min);
+						return error(ok, fd, time_saved, version_maj, version_min);
 					}
-					IO.prt("Attempting a resurrection!", 0, 0);
+					IO.print("Attempting a resurrection!", 0, 0);
 					if (Player.py.misc.chp < 0) {
 						Player.py.misc.chp =	 0;
 						Player.py.misc.chp_frac = 0;
@@ -848,61 +848,61 @@ public class Save {
 				} else {
 					/* Make sure that this message is seen, since it is a bit
 					 * more interesting than the other messages.  */
-					IO.msg_print("Restoring Memory of a departed spirit...");
+					IO.printMessage("Restoring Memory of a departed spirit...");
 					Variable.turn = -1;
 				}
-				IO.put_qio();
-				return closefiles(ok, fd, time_saved, version_maj, version_min);
+				IO.putQio();
+				return closeFiles(ok, fd, time_saved, version_maj, version_min);
 			}
 //			if (ungetc(c, fileptr) == EOF) {
 //				return _error(ok, fd, time_saved, version_maj, version_min);
 //			}
 			
-			IO.prt("Restoring Character...", 0, 0);
-			IO.put_qio();
+			IO.print("Restoring Character...", 0, 0);
+			IO.putQio();
 			
 			/* only level specific info should follow, not present for dead
 			 * characters */
 			
-			Variable.dun_level = rd_int();
-			Player.char_row = rd_int();
-			Player.char_col = rd_int();
-			Monsters.mon_tot_mult = rd_int();
-			Variable.cur_height = rd_int();
-			Variable.cur_width = rd_int();
-			Variable.max_panel_rows = rd_int();
-			Variable.max_panel_cols = rd_int();
+			Variable.dun_level = readInt();
+			Player.char_row = readInt();
+			Player.char_col = readInt();
+			Monsters.mon_tot_mult = readInt();
+			Variable.cur_height = readInt();
+			Variable.cur_width = readInt();
+			Variable.max_panel_rows = readInt();
+			Variable.max_panel_cols = readInt();
 			
 			/* read in the creature ptr info */
-			char_tmp = rd_byte() & 0xFF;
+			char_tmp = readByte() & 0xFF;
 			while (char_tmp != 0xFF) {
 				ychar = char_tmp;
-				xchar = rd_byte() & 0xFF;
-				char_tmp = rd_byte() & 0xFF;
+				xchar = readByte() & 0xFF;
+				char_tmp = readByte() & 0xFF;
 				if (xchar > Constants.MAX_WIDTH || ychar > Constants.MAX_HEIGHT) {
-					return _error(ok, fd, time_saved, version_maj, version_min);
+					return error(ok, fd, time_saved, version_maj, version_min);
 				}
 				Variable.cave[ychar][xchar].cptr = char_tmp;
-				char_tmp = rd_byte();
+				char_tmp = readByte();
 			}
 			/* read in the treasure ptr info */
-			char_tmp = rd_byte() & 0xFF;
+			char_tmp = readByte() & 0xFF;
 			while (char_tmp != 0xFF) {
 				ychar = char_tmp;
-				xchar = rd_byte() & 0xFF;
-				char_tmp = rd_byte() & 0xFF;
+				xchar = readByte() & 0xFF;
+				char_tmp = readByte() & 0xFF;
 				if (xchar > Constants.MAX_WIDTH || ychar > Constants.MAX_HEIGHT) {
-					return _error(ok, fd, time_saved, version_maj, version_min);
+					return error(ok, fd, time_saved, version_maj, version_min);
 				}
 				Variable.cave[ychar][xchar].tptr = char_tmp;
-				char_tmp = rd_byte() & 0xFF;
+				char_tmp = readByte() & 0xFF;
 			}
 			/* read in the rest of the cave info */
 			c_ptr = Variable.cave[0][0];
 			total_count = 0;
 			while (total_count != Constants.MAX_HEIGHT * Constants.MAX_WIDTH) {
-				count = rd_byte();
-				char_tmp = rd_byte();
+				count = readByte();
+				char_tmp = readByte();
 //				for (i = count; i > 0; i--) {
 //					if (c_ptr >= var.cave[Constants.MAX_HEIGHT][0]) {
 //						return _error(ok, fd, time_saved, version_maj, version_min);
@@ -917,19 +917,19 @@ public class Save {
 				total_count += count;
 			}
 			
-			Treasure.tcptr = rd_int();
+			Treasure.tcptr = readInt();
 			if (Treasure.tcptr > Constants.MAX_TALLOC) {
-				return _error(ok, fd, time_saved, version_maj, version_min);
+				return error(ok, fd, time_saved, version_maj, version_min);
 			}
 			for (i = Constants.MIN_TRIX; i < Treasure.tcptr; i++) {
-				rd_item(Treasure.t_list[i]);
+				readItem(Treasure.t_list[i]);
 			}
-			Monsters.mfptr = rd_int();
+			Monsters.mfptr = readInt();
 			if (Monsters.mfptr > Constants.MAX_MALLOC) {
-				return _error(ok, fd, time_saved, version_maj, version_min);
+				return error(ok, fd, time_saved, version_maj, version_min);
 			}
 			for (i = Constants.MIN_MONIX; i < Monsters.mfptr; i++) {
-				rd_monster(Monsters.m_list[i]);
+				readMonster(Monsters.m_list[i]);
 			}
 			
 			/* change walls and floors to graphic symbols */
@@ -945,18 +945,18 @@ public class Save {
 			if ((version_min == 1 && patch_level < 3) || (version_min == 0)) {
 				for (i = 0; i < Constants.MAX_STORES; i++) {
 					st_ptr = Variable.store[i];
-					st_ptr.store_open = rd_int();
-					st_ptr.insult_cur = rd_int();
-					st_ptr.owner = rd_byte();
-					st_ptr.store_ctr = rd_byte();
-					st_ptr.good_buy = rd_int();
-					st_ptr.bad_buy = rd_int();
+					st_ptr.store_open = readInt();
+					st_ptr.insult_cur = readInt();
+					st_ptr.owner = readByte();
+					st_ptr.store_ctr = readByte();
+					st_ptr.good_buy = readInt();
+					st_ptr.bad_buy = readInt();
 					if (st_ptr.store_ctr > Constants.STORE_INVEN_MAX) {
-						return _error(ok, fd, time_saved, version_maj, version_min);
+						return error(ok, fd, time_saved, version_maj, version_min);
 					}
 					for (j = 0; j < st_ptr.store_ctr; j++) {
-						st_ptr.store_inven[j].scost = rd_int();
-						rd_item(st_ptr.store_inven[j].sitem);
+						st_ptr.store_inven[j].scost = readInt();
+						readItem(st_ptr.store_inven[j].sitem);
 					}
 				}
 			}
@@ -965,7 +965,7 @@ public class Save {
 			if (version_min == 0 && patch_level < 16) {
 				time_saved = 0; /* no time in file, clear to zero */
 			} else if (version_min == 1 && patch_level < 3) {
-				time_saved = rd_long();
+				time_saved = readLong();
 			}
 			
 //			if (ferror(fileptr)) {
@@ -973,7 +973,7 @@ public class Save {
 //			}
 			
 			if (Variable.turn < 0) {
-				return _error(ok, fd, time_saved, version_maj, version_min);	/* Assume bad data. */
+				return error(ok, fd, time_saved, version_maj, version_min);	/* Assume bad data. */
 			} else {
 				/* don't overwrite the killed by string if character is dead */
 				if (Player.py.misc.chp >= 0) {
@@ -982,23 +982,23 @@ public class Save {
 				Variable.character_generated = true;
 			}
 			
-			closefiles(ok, fd, time_saved, version_maj, version_min);
+			closeFiles(ok, fd, time_saved, version_maj, version_min);
 		}
 		
 		Variable.turn = -1;
-		IO.prt("Please try again without that savefile.", 1, 0);
+		IO.print("Please try again without that savefile.", 1, 0);
 		sigs.signals();
-		Death.exit_game();
+		Death.exitGame();
 		
 		return false;	/* not reached, unless on mac */
 	}
 	
-	private static boolean _error(boolean ok, int fd, long time_saved, int version_maj, int version_min) {
+	private static boolean error(boolean ok, int fd, long time_saved, int version_maj, int version_min) {
 //		return closefiles(ok, fd, time_saved, version_maj, version_min);
 		return false;
 	}
 	
-	private static boolean closefiles(boolean ok, int fd, long time_saved, int version_maj, int version_min) {
+	private static boolean closeFiles(boolean ok, int fd, long time_saved, int version_maj, int version_min) {
 		long age;
 		String temp;
 		
@@ -1012,7 +1012,7 @@ public class Save {
 //		}
 		
 		if (!ok) {
-			IO.msg_print("Error during reading of file.");
+			IO.printMessage("Error during reading of file.");
 		} else {
 			/* let the user overwrite the old savefile when save/quit */
 			from_savefile = 1;
@@ -1021,10 +1021,10 @@ public class Save {
 			
 			if (Variable.panic_save == 1) {
 				temp = String.format("This game is from a panic save.  Score will not be added to scoreboard.");
-				IO.msg_print(temp);
-			} else if ((Variable.noscore & 0x04) == 0 && Death.duplicate_character()) {
+				IO.printMessage(temp);
+			} else if ((Variable.noscore & 0x04) == 0 && Death.isDuplicateCharacter()) {
 				temp = String.format("This character is already on the scoreboard; it will not be scored again.");
-				IO.msg_print(temp);
+				IO.printMessage(temp);
 				Variable.noscore |= 0x4;
 			}
 			
@@ -1032,7 +1032,7 @@ public class Save {
 				/* Only if a full restoration. */
 				Variable.weapon_heavy = false;
 				Variable.pack_heavy = 0;
-				Misc3.check_strength();
+				Misc3.checkStrength();
 				
 				/* rotate store inventory, depending on how old the save file */
 				/* is foreach day old (rounded up), call store_maint */
@@ -1048,12 +1048,12 @@ public class Save {
 				age = (age + 43200L) / 86400L;  /* age in days */
 				if (age > 10) age = 10; /* in case savefile is very old */
 				for (int i = 0; i < age; i++) {
-					store1.store_maint();
+					store1.storeInventoryInit();
 				}
 			}
 			
 			if (Variable.noscore == 0) {
-				IO.msg_print("This save file cannot be used to get on the score board.");
+				IO.printMessage("This save file cannot be used to get on the score board.");
 			}
 			
 			if (version_maj != Constants.CUR_VERSION_MAJ || version_min != Constants.CUR_VERSION_MIN) {
@@ -1062,7 +1062,7 @@ public class Save {
 						version_maj, version_min,
 						(version_min <= Constants.CUR_VERSION_MIN) ? "accepted" : "risky" ,
 						Constants.CUR_VERSION_MAJ, Constants.CUR_VERSION_MIN);
-				IO.msg_print(temp);
+				IO.printMessage(temp);
 			}
 			
 			return Variable.turn >= 0;
@@ -1071,7 +1071,7 @@ public class Save {
 		return false;
 	}
 	
-	private static void wr_byte(byte c) {
+	private static void writeByte(byte c) {
 		if (b_ptr >= bytes.length) {
 			bytes = Arrays.copyOf(bytes, bytes.length * 2);
 		}
@@ -1080,31 +1080,31 @@ public class Save {
 		b_ptr++;
 	}
 	
-	private static void wr_char(char c) {
+	private static void writeChar(char c) {
 		for (int i = 0; i < SIZEOF_CHAR; i++) {
-			wr_byte((byte)(c >> (8 * i)));
+			writeByte((byte)(c >> (8 * i)));
 		}
 	}
 	
-	private static void wr_int(int s) {
+	private static void writeInt(int s) {
 		for (int i = 0; i < SIZEOF_INT; i++) {
-			wr_byte((byte)(s >> (8 * i)));
+			writeByte((byte)(s >> (8 * i)));
 		}
 	}
 	
-	private static void wr_long(long l) {
+	private static void writeLong(long l) {
 		for (int i = 0; i < SIZEOF_LONG; i++) {
-			wr_byte((byte)(l >> (8 * i)));
+			writeByte((byte)(l >> (8 * i)));
 		}
 	}
 	
-	private static void wr_bytes(byte[] c, int count) {
+	private static void writeBytes(byte[] c, int count) {
 		for (int i = 0; i < count; i++) {
-			wr_byte(c[i]);
+			writeByte(c[i]);
 		}
 	}
 	
-	private static void wr_string(String str, int len) {
+	private static void writeString(String str, int len) {
 		char[] c = str.toCharArray();
 		int i;
 		
@@ -1112,59 +1112,59 @@ public class Save {
 			if (i == len) {
 				break;
 			}
-			wr_char(c[i]);
+			writeChar(c[i]);
 		}
 		for (; i < len; i++) {
-			wr_char('\0');
+			writeChar('\0');
 		}
 	}
 	
-	private static void wr_ints(int[] s, int count) {
+	private static void writeInts(int[] s, int count) {
 		int i;
 		
 		for (i = 0; i < s.length; i++) {
 			if (i == count) {
 				break;
 			}
-			wr_int(s[i]);
+			writeInt(s[i]);
 		}
 		for (; i < count; i++) {
-			wr_int(0);
+			writeInt(0);
 		}
 	}
 	
-	private static void wr_item(InvenType item) {
-		wr_int(item.index);
-		wr_int(item.name2);
-		wr_string(item.inscrip, item.INSCRIP_SIZE);
-		wr_int(item.flags);
-		wr_int(item.tval);
-		wr_int(item.tchar);
-		wr_int(item.p1);
-		wr_int(item.cost);
-		wr_int(item.subval);
-		wr_int(item.number);
-		wr_int(item.weight);
-		wr_int(item.tohit);
-		wr_int(item.todam);
-		wr_int(item.ac);
-		wr_int(item.toac);
-		wr_ints(item.damage, 2);
-		wr_int(item.level);
-		wr_int(item.ident);
+	private static void writeItem(InvenType item) {
+		writeInt(item.index);
+		writeInt(item.name2);
+		writeString(item.inscrip, item.INSCRIP_SIZE);
+		writeInt(item.flags);
+		writeInt(item.tval);
+		writeInt(item.tchar);
+		writeInt(item.p1);
+		writeInt(item.cost);
+		writeInt(item.subval);
+		writeInt(item.number);
+		writeInt(item.weight);
+		writeInt(item.tohit);
+		writeInt(item.todam);
+		writeInt(item.ac);
+		writeInt(item.toac);
+		writeInts(item.damage, 2);
+		writeInt(item.level);
+		writeInt(item.ident);
 	}
 	
-	private static void wr_monster(MonsterType mon) {
-		wr_int(mon.hp);
-		wr_int(mon.csleep);
-		wr_int(mon.cspeed);
-		wr_int(mon.mptr);
-		wr_int(mon.fy);
-		wr_int(mon.fx);
-		wr_int(mon.cdis);
-		wr_byte((byte)(mon.ml ? 0x1 : 0x0));
-		wr_int(mon.stunned);
-		wr_byte((byte)((mon.confused > 0) ? 0x1 : 0x0));
+	private static void writeMonster(MonsterType mon) {
+		writeInt(mon.hp);
+		writeInt(mon.csleep);
+		writeInt(mon.cspeed);
+		writeInt(mon.mptr);
+		writeInt(mon.fy);
+		writeInt(mon.fx);
+		writeInt(mon.cdis);
+		writeByte((byte)(mon.ml ? 0x1 : 0x0));
+		writeInt(mon.stunned);
+		writeByte((byte)((mon.confused > 0) ? 0x1 : 0x0));
 	}
 	
 	private static byte getNextByte() {
@@ -1176,7 +1176,7 @@ public class Save {
 		return b;
 	}
 	
-	private static byte rd_byte() {
+	private static byte readByte() {
 		byte c, ptr;
 		
 		c = getNextByte();
@@ -1186,56 +1186,56 @@ public class Save {
 		return ptr;
 	}
 	
-	private static char rd_char() {
+	private static char readChar() {
 		char c = 0;
 		
 		for (int i = 0; i < SIZEOF_CHAR; i++) {
-			c |= (rd_byte() & 0xFF) << (8 * i);
+			c |= (readByte() & 0xFF) << (8 * i);
 		}
 		
 		return c;
 	}
 	
-	private static int rd_int() {
+	private static int readInt() {
 		int s;
 		s = 0;
 		
 		for (int i = 0; i < SIZEOF_INT; i++) {
-			s |= (rd_byte() & 0xFF) << (8 * i);
+			s |= (readByte() & 0xFF) << (8 * i);
 		}
 		
 		return s;
 	}
 	
-	private static long rd_long() {
+	private static long readLong() {
 		long l = 0;
 		
 		for (int i = 0; i < SIZEOF_LONG; i++) {
-			l |= (rd_byte() & 0xFF) << (8 * i);
+			l |= (readByte() & 0xFF) << (8 * i);
 		}
 		
 		return l;
 	}
 	
-	private static void rd_bytes(byte[] ch_ptr, int count) {
+	private static void readBytes(byte[] ch_ptr, int count) {
 		int i;
 		if (count > ch_ptr.length) {
 			count = ch_ptr.length;
 		}
 		for (i = 0; i < ch_ptr.length; i++) {
-			ch_ptr[i] = rd_byte();
+			ch_ptr[i] = readByte();
 		}
 		for (; i < count; i++) {
-			rd_byte();
+			readByte();
 		}
 	}
 	
-	private static String rd_string(int len) {
+	private static String readString(int len) {
 		char[] str = new char[len];
 		int i;
 		
 		for (i = 0; i < len; i++) {
-			char c = rd_char();
+			char c = readChar();
 			if (c == '\0') {
 				break;
 			}
@@ -1246,102 +1246,102 @@ public class Save {
 			str = Arrays.copyOf(str, i);
 		}
 		for (; i < len; i++) {
-			rd_char();
+			readChar();
 		}
 		
 		return new String(str);
 	}
 	
-	private static void rd_ints(int[] ptr, int count) {
+	private static void readInts(int[] ptr, int count) {
 		int i;
 		
 		for (i = 0; i < ptr.length; i++) {
 			if (i == count) {
 				break;
 			}
-			ptr[i] = rd_int();
+			ptr[i] = readInt();
 		}
 		for (; i < count; i++) {
-			rd_int();
+			readInt();
 		}
 	}
 	
-	private static void rd_item(InvenType item) {
-		item.index = rd_int();
-		item.name2 = rd_byte();
-		item.inscrip = rd_string(item.INSCRIP_SIZE);
-		item.flags = rd_int();
-		item.tval = rd_byte();
-		item.tchar = (char)rd_byte();
-		item.p1 = rd_int();
-		item.cost = rd_int();
-		item.subval = rd_byte();
-		item.number = rd_byte();
-		item.weight = rd_int();
-		item.tohit = rd_int();
-		item.todam = rd_int();
-		item.ac = rd_int();
-		item.toac = rd_int();
-		rd_ints(item.damage, 2);
-		item.level = rd_byte();
-		item.ident = rd_byte();
+	private static void readItem(InvenType item) {
+		item.index = readInt();
+		item.name2 = readByte();
+		item.inscrip = readString(item.INSCRIP_SIZE);
+		item.flags = readInt();
+		item.tval = readByte();
+		item.tchar = (char)readByte();
+		item.p1 = readInt();
+		item.cost = readInt();
+		item.subval = readByte();
+		item.number = readByte();
+		item.weight = readInt();
+		item.tohit = readInt();
+		item.todam = readInt();
+		item.ac = readInt();
+		item.toac = readInt();
+		readInts(item.damage, 2);
+		item.level = readByte();
+		item.ident = readByte();
 	}
 	
-	private static void rd_monster(MonsterType mon) {
-		mon.hp = rd_int();
-		mon.csleep = rd_int();
-		mon.cspeed = rd_int();
-		mon.mptr = rd_int();
-		mon.fy = rd_byte();
-		mon.fx = rd_byte();
-		mon.cdis = rd_byte();
-		mon.ml = (rd_byte() == 1);
-		mon.stunned = rd_byte();
-		mon.confused = rd_byte();
+	private static void readMonster(MonsterType mon) {
+		mon.hp = readInt();
+		mon.csleep = readInt();
+		mon.cspeed = readInt();
+		mon.mptr = readInt();
+		mon.fy = readByte();
+		mon.fx = readByte();
+		mon.cdis = readByte();
+		mon.ml = (readByte() == 1);
+		mon.stunned = readByte();
+		mon.confused = readByte();
 	}
 	
 	/* functions called from death.c to implement the score file */
 	
 	/* set the local fileptr to the scorefile fileptr */
-	public static void set_fileptr(java.io.File file) {
+	public static void setFilePointer(java.io.File file) {
 		fileptr = file;
 	}
 	
-	public static void wr_highscore(HighScoreType score) {
+	public static void writeHighScore(HighScoreType score) {
 		/* Save the encryption byte for robustness.  */
-		wr_byte(xor_byte);
+		writeByte(xor_byte);
 		
-		wr_int(score.points);
-		wr_long(score.birth_date);
-		wr_int(score.uid);
-		wr_int(score.mhp);
-		wr_int(score.chp);
-		wr_int(score.dun_level);
-		wr_int(score.lev);
-		wr_int(score.max_dlv);
-		wr_int(score.sex);
-		wr_int(score.race);
-		wr_int(score.Class);
-		wr_string(score.name, Player.py.PLAYER_NAME_SIZE);
-		wr_string(score.died_from, 25);
+		writeInt(score.points);
+		writeLong(score.birth_date);
+		writeInt(score.uid);
+		writeInt(score.mhp);
+		writeInt(score.chp);
+		writeInt(score.dun_level);
+		writeInt(score.lev);
+		writeInt(score.max_dlv);
+		writeInt(score.sex);
+		writeInt(score.race);
+		writeInt(score.Class);
+		writeString(score.name, Player.py.PLAYER_NAME_SIZE);
+		writeString(score.died_from, 25);
 	}
 	
-	public static void rd_highscore(HighScoreType score) {
+	public static void readHighScore(HighScoreType score) {
 		/* Read the encryption byte.  */
-		xor_byte = rd_byte();
+		xor_byte = readByte();
 		
-		score.points = rd_int();
-		score.birth_date = rd_long();
-		score.uid = rd_int();
-		score.mhp = rd_int();
-		score.chp = rd_int();
-		score.dun_level = rd_int();
-		score.lev = rd_int();
-		score.max_dlv = rd_int();
-		score.sex = rd_int();
-		score.race = rd_int();
-		score.Class = rd_int();
-		score.name = rd_string(Player.py.PLAYER_NAME_SIZE);
-		score.died_from = rd_string(25);
+		score.points = readInt();
+		score.birth_date = readLong();
+		score.uid = readInt();
+		score.mhp = readInt();
+		score.chp = readInt();
+		score.dun_level = readInt();
+		score.lev = readInt();
+		score.max_dlv = readInt();
+		score.sex = readInt();
+		score.race = readInt();
+		score.Class = readInt();
+		score.name = readString(Player.py.PLAYER_NAME_SIZE);
+		score.died_from = readString(25);
 	}
 }

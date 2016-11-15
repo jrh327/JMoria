@@ -135,14 +135,14 @@ public class Main extends Applet {
 		
 		/* call this routine to grab a file pointer to the highscore file */
 		/* and prepare things to relinquish setuid privileges */
-		Files.init_scorefile();
+		Files.initScoreFile();
 		
 		/* use curses */
-		IO.init_curses();
+		IO.initCurses();
 		
 		/* catch those nasty signals */
 		/* must come after init_curses as some of the signal handlers use curses */
-		Signals.init_signals();
+		Signals.initSignals();
 		
 		seed = 0; /* let wizard specify rng seed */
 		/* check for user interface option */
@@ -167,12 +167,12 @@ public class Main extends Applet {
 				force_keys_to = true;
 				break;
 			case 'S':
-				Death.display_scores(true);
-				Death.exit_game();
+				Death.displayScores(true);
+				Death.exitGame();
 				break;
 			case 's':
-				Death.display_scores(true);
-				Death.exit_game();
+				Death.displayScores(true);
+				Death.exitGame();
 				break;
 			case 'W':
 			case 'w':
@@ -189,24 +189,24 @@ public class Main extends Applet {
 				break;
 			default:
 				System.out.println("Usage: moria [-norsw] [savefile]\n");
-				Death.exit_game();
+				Death.exitGame();
 			}
 		}
 		
 		/* Some necessary initializations		*/
 		/* all made into constants or initialized in variables.c */
 		
-		if (Constants.COST_ADJ != 100) price_adjust();
+		if (Constants.COST_ADJ != 100) adjustPrices();
 		
 		/* Grab a random seed from the clock		*/
-		Misc1.init_seeds(seed);
+		Misc1.initSeeds(seed);
 		
 		/* Init monster and treasure levels for allocate */
-		init_m_level();
-		init_t_level();
+		initMonsterLevels();
+		initTreasureLevels();
 		
 		/* Init the store inventories			*/
-		Store1.store_init();
+		Store1.storeInit();
 		
 		/* Auto-restart of saved file */
 		if (argv[0] != Constants.CNIL) {
@@ -226,20 +226,20 @@ public class Main extends Applet {
 		
 		result = false;
 		
-		if ((!new_game) && !(new File(Variable.savefile)).canRead() && Save.get_char(generate)) {
+		if ((!new_game) && !(new File(Variable.savefile)).canRead() && Save.getCharacter(generate)) {
 			result = true;
 		}
 		
 		/* enter wizard mode before showing the character display, but must wait
 		 * until after get_char in case it was just a resurrection */
 		if (Variable.to_be_wizard) {
-			if (!Misc3.enter_wiz_mode()) {
-				Death.exit_game();
+			if (!Misc3.enterWizardMode()) {
+				Death.exitGame();
 			}
 		}
 		
 		if (result) {
-			Misc3.change_name();
+			Misc3.changeName();
 			
 			/* could be restoring a dead character after a signal or HANGUP */
 			if (Player.py.misc.chp < 0) {
@@ -247,22 +247,22 @@ public class Main extends Applet {
 			}
 		} else {
 			/* Create character	   */
-			Create.create_character();
+			Create.createCharacter();
 			Variable.birth_date = java.util.Calendar.getInstance().getTimeInMillis();
-			char_inven_init();
+			initCharacterInventory();
 			Player.py.flags.food = 7500;
 			Player.py.flags.food_digested = 2;
 			
 			if (Player.Class[Player.py.misc.pclass].spell == Constants.MAGE) {
 				/* Magic realm   */
-				IO.clear_screen(); /* makes spell list easier to read */
-				Misc3.calc_spells(Constants.A_INT);
-				Misc3.calc_mana(Constants.A_INT);
+				IO.clearScreen(); /* makes spell list easier to read */
+				Misc3.calcSpells(Constants.A_INT);
+				Misc3.calcMana(Constants.A_INT);
 			} else if (Player.Class[Player.py.misc.pclass].spell == Constants.PRIEST) {
 				/* Clerical realm*/
-				Misc3.calc_spells(Constants.A_WIS);
-				IO.clear_screen(); /* force out the 'learn prayer' message */
-				Misc3.calc_mana(Constants.A_WIS);
+				Misc3.calcSpells(Constants.A_WIS);
+				IO.clearScreen(); /* force out the 'learn prayer' message */
+				Misc3.calcMana(Constants.A_WIS);
 			}
 			/* prevent ^c quit from entering score into scoreboard,
 			 * and prevent signal from creating panic save until this point,
@@ -275,14 +275,14 @@ public class Main extends Applet {
 			Variable.rogue_like_commands.value(force_keys_to);
 		}
 		
-		Desc.magic_init();
+		Desc.magicInit();
 		
 		/* Begin the game				*/
-		IO.clear_screen();
-		Misc3.prt_stat_block();
+		IO.clearScreen();
+		Misc3.printStatBlock();
 		
 		if (generate.value()) {
-			Generate.generate_cave();
+			Generate.generateLevel();
 		}
 		
 		/* Loop till dead, or exit			*/
@@ -293,43 +293,43 @@ public class Main extends Applet {
 			if (Variable.eof_flag == Constants.TRUE) {
 				Variable.died_from = "(end of input: saved)";
 				
-				if (!Save.save_char()) {
+				if (!Save.saveCharacter()) {
 					Variable.died_from = "unexpected eof";
 				}
 				/* should not reach here, by if we do, this guarantees exit */
 				Variable.death = true;
 			}
 			
-			if (!Variable.death) Generate.generate_cave();	/* New level	*/
+			if (!Variable.death) Generate.generateLevel();	/* New level	*/
 	    }
 		
-		Death.exit_game();	/* Character gets buried. */
+		Death.exitGame();	/* Character gets buried. */
 		/* should never reach here, but just in case */
 		return 0;
 	}
 	
 	/* Init players with some belongings			-RAK-	*/
-	public void char_inven_init() {
+	public void initCharacterInventory() {
 		int i, j;
 		InvenType inven_init;
 		
 		/* this is needed for bash to work right, it can't hurt anyway */
 		for (i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
-			Desc.invcopy(Treasure.inventory[i], Constants.OBJ_NOTHING);
+			Desc.copyIntoInventory(Treasure.inventory[i], Constants.OBJ_NOTHING);
 		}
 		
 		for (i = 0; i < 5; i++) {
 			inven_init = new InvenType();
 			j = Player.player_init[Player.py.misc.pclass][i];
-			Desc.invcopy(inven_init, j);
+			Desc.copyIntoInventory(inven_init, j);
 			/* this makes it known2 and known1 */
-			Desc.store_bought(inven_init);
+			Desc.setStoreBought(inven_init);
 			/* must set this bit to display tohit/todam for stiletto */
 			if (inven_init.tval == Constants.TV_SWORD) {
 				inven_init.ident |= Constants.ID_SHOW_HITDAM;
 			}
 			
-			Misc3.inven_carry(inven_init);
+			Misc3.pickUpItem(inven_init);
 	    }
 		
 		/* wierd place for it, but why not? */
@@ -339,7 +339,7 @@ public class Main extends Applet {
 	}
 	
 	/* Initializes M_LEVEL array for use with PLACE_MONSTER	-RAK-	*/
-	private void init_m_level() {
+	private void initMonsterLevels() {
 		int i, k;
 		
 		for (i = 0; i <= Constants.MAX_MONS_LEVEL; i++) {
@@ -358,7 +358,7 @@ public class Main extends Applet {
 	}
 	
 	/* Initializes T_LEVEL array for use with PLACE_OBJECT	-RAK-	*/
-	private void init_t_level() {
+	private void initTreasureLevels() {
 		int i, l;
 		int[] tmp = new int[Constants.MAX_OBJ_LEVEL + 1];
 		
@@ -389,7 +389,7 @@ public class Main extends Applet {
 	}
 	
 	/* Adjust prices of objects				-RAK-	*/
-	private void price_adjust() {
+	private void adjustPrices() {
 		int i;
 		
 		/* round half-way cases up */
