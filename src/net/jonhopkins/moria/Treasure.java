@@ -81,7 +81,7 @@ public class Treasure {
 	/* Object list (All objects must be defined here)		 */
 	
 	//treasure_type object_list[MAX_OBJECTS]
-	public static TreasureType[] object_list = {
+	public static TreasureType[] objectList = {
 	/* Dungeon items from 0 to MAX_DUNGEON_OBJ */
 	new TreasureType("Poison"			,0x00000001,	Constants.TV_FOOD, ',',	/*  0*/
 	  500,	   0,	64,   1,   1,	0,   0,	 0,   0, new int[] {0,0}	,  7),
@@ -951,7 +951,7 @@ public class Treasure {
 	};
 	
 	//char *special_names[SN_ARRAY_SIZE]
-	public static String[] special_names = {
+	public static String[] specialNames = {
 		"",						"(R)",				"(RA)",
 		"(RF)",					"(RC)",				"(RL)",
 		"(HA)",					"(DF)",				"(SA)",
@@ -974,27 +974,25 @@ public class Treasure {
 	};
 	
 	/* Pairing things down for THINK C.  */
-	public static int[] sorted_objects = new int[Constants.MAX_DUNGEON_OBJ];
+	public static int[] sortedObjects = new int[Constants.MAX_DUNGEON_OBJ];
 	
 	/* Identified objects flags					*/
-	public static int[] object_ident = new int[Constants.OBJECT_IDENT_SIZE];
-	public static int[] t_level = new int[Constants.MAX_OBJ_LEVEL + 1];
-	public static InvenType[] t_list = new InvenType[Constants.MAX_TALLOC];
+	public static int[] objectIdent = new int[Constants.OBJECT_IDENT_SIZE];
+	public static int[] treasureLevel = new int[Constants.MAX_OBJ_LEVEL + 1];
+	public static InvenType[] treasureList = new InvenType[Constants.MAX_TALLOC];
 	public static InvenType[] inventory = new InvenType[Constants.INVEN_ARRAY_SIZE];
 	
 	/* Treasure related values					*/
-	public static int inven_ctr = 0;		/* Total different obj's	*/
-	public static int inven_weight = 0;	/* Cur carried weight	*/
-	public static int equip_ctr = 0;		/* Cur equipment ctr	*/
-	public static int tcptr;				/* Cur treasure heap ptr	*/
+	public static int invenCounter = 0;  /* Total different obj's	*/
+	public static int invenWeight = 0;   /* Cur carried weight	*/
+	public static int equipCounter = 0;  /* Cur equipment ctr	*/
+	public static int currTreasureIndex; /* Cur treasure heap ptr	*/
 	
 	static {
-		int i;
-		
-		for (i = 0; i < Constants.MAX_TALLOC; i++) {
-			t_list[i] = new InvenType();
+		for (int i = 0; i < Constants.MAX_TALLOC; i++) {
+			treasureList[i] = new InvenType();
 		}
-		for (i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
+		for (int i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
 			inventory[i] = new InvenType();
 		}
 	}

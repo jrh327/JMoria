@@ -22,21 +22,21 @@
 package net.jonhopkins.moria.types;
 
 public final class StoreOwnerType {
-	public StoreOwnerType(String n, int c, int max_inf, int min_inf, int h, int r, int max_ins) {
-		owner_name = n;
-		max_cost = c;
-		max_inflate = max_inf;
-		min_inflate = min_inf;
-		haggle_per = h;
-		owner_race = r;
-		insult_max = max_ins;
+	public StoreOwnerType(String n, int c, int maxInf, int minInf, int h, int r, int maxInsult) {
+		this.ownerName = n;
+		this.maxCost = c;
+		this.maxInflate = maxInf;
+		this.minInflate = minInf;
+		this.hagglePercent = h;
+		this.ownerRace = r;
+		this.insultMax = maxInsult;
 	}
 	
-	public String owner_name;
-	public int max_cost;
-	public int max_inflate;
-	public int min_inflate;
-	public int haggle_per;
-	public int owner_race;
-	public int insult_max;
+	public String ownerName;
+	public int maxCost;
+	public int maxInflate;
+	public int minInflate;
+	public int hagglePercent;
+	public int ownerRace;
+	public int insultMax;
 }

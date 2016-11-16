@@ -25,64 +25,64 @@ public final class MonsterType {
 	/**
 	 * Hitpoints
 	 */
-	public int hp;
+	public int hitpoints;
 	
 	/**
 	 * Inactive counter
 	 */
-	public int csleep;
+	public int sleep;
 	
 	/**
 	 * Movement speed
 	 */
-	public int cspeed;
+	public int speed;
 	
 	/**
 	 * Pointer into creature
 	 */
-	public int mptr;
+	public int index;
 	
 	/**
 	 * Y-coordinate on map
 	 */
-	public int fy;
+	public int y;
 	
 	/**
 	 * X-coordinate on map
 	 */
-	public int fx;
+	public int x;
 	
 	/**
 	 * Current distance from player
 	 */
-	public int cdis;
-	public boolean ml;
+	public int currDistance;
+	public boolean monsterLight;
 	public int stunned;
 	public int confused;
 	
 	public MonsterType(int hp, int csleep, int cspeed, int mptr, int fy, 
 			int fx, int cdis, boolean ml, int stunned, int confused) {
-		this.hp = hp;
-		this.csleep = csleep;
-		this.cspeed = cspeed;
-		this.mptr = mptr;
-		this.fy = fy;
-		this.fx = fx;
-		this.cdis = cdis;
-		this.ml = ml;
+		this.hitpoints = hp;
+		this.sleep = csleep;
+		this.speed = cspeed;
+		this.index = mptr;
+		this.y = fy;
+		this.x = fx;
+		this.currDistance = cdis;
+		this.monsterLight = ml;
 		this.stunned = stunned;
 		this.confused = confused;
 	}
 	
 	public void copyInto(MonsterType monster) {
-		monster.hp = this.hp;
-		monster.csleep = this.csleep;
-		monster.cspeed = this.cspeed;
-		monster.mptr = this.mptr;
-		monster.fy = this.fy;
-		monster.fx = this.fx;
-		monster.cdis = this.cdis;
-		monster.ml = this.ml;
+		monster.hitpoints = this.hitpoints;
+		monster.sleep = this.sleep;
+		monster.speed = this.speed;
+		monster.index = this.index;
+		monster.y = this.y;
+		monster.x = this.x;
+		monster.currDistance = this.currDistance;
+		monster.monsterLight = this.monsterLight;
 		monster.stunned = this.stunned;
 		monster.confused = this.confused;
 	}

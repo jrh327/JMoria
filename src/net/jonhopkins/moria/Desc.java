@@ -39,7 +39,7 @@ public class Desc {
 	 * @return True if ch is a vowel
 	 */
 	public static boolean isVowel(char ch)  {
-		switch(ch) {
+		switch (ch) {
 		case 'a': case 'e': case 'i': case 'o': case 'u':
 		case 'A': case 'E': case 'I': case 'O': case 'U':
 			return true;
@@ -56,7 +56,7 @@ public class Desc {
 		String tmp;
 		StringBuilder string;
 		
-		Misc1.setSeed(Variable.randes_seed);
+		Misc1.setSeed(Variable.randesSeed);
 		
 		/* The first 3 entries for colors are fixed, (slime & apple juice, water) */
 		for (i = 3; i < Constants.MAX_COLORS; i++) {
@@ -125,7 +125,7 @@ public class Desc {
 	 * @return Item type
 	 */
 	public static int getObjectOffset(InvenType t_ptr) {
-		switch (t_ptr.tval) {
+		switch (t_ptr.category) {
 		case Constants.TV_AMULET:  return 0;
 		case Constants.TV_RING:    return 1;
 		case Constants.TV_STAFF:   return 2;
@@ -135,7 +135,7 @@ public class Desc {
 		case Constants.TV_POTION1:
 		case Constants.TV_POTION2: return 5;
 		case Constants.TV_FOOD:
-			if ((t_ptr.subval & (Constants.ITEM_SINGLE_STACK_MIN - 1)) < Constants.MAX_MUSH) {
+			if ((t_ptr.subCategory & (Constants.ITEM_SINGLE_STACK_MIN - 1)) < Constants.MAX_MUSH) {
 				return 6;
 			}
 			return -1;
@@ -158,10 +158,10 @@ public class Desc {
 			return;
 		}
 		offset <<= 6;
-		indexx = i_ptr.subval & (Constants.ITEM_SINGLE_STACK_MIN - 1);
-		Treasure.object_ident[offset + indexx] |= Constants.OD_KNOWN1;
+		indexx = i_ptr.subCategory & (Constants.ITEM_SINGLE_STACK_MIN - 1);
+		Treasure.objectIdent[offset + indexx] |= Constants.OD_KNOWN1;
 		/* clear the tried flag, since it is now known */
-		Treasure.object_ident[offset + indexx] &= ~Constants.OD_TRIED;
+		Treasure.objectIdent[offset + indexx] &= ~Constants.OD_TRIED;
 	}
 	
 	/**
@@ -184,35 +184,35 @@ public class Desc {
 			return true;
 		}
 		offset <<= 6;
-		indexx = i_ptr.subval & (Constants.ITEM_SINGLE_STACK_MIN - 1);
-		return Treasure.object_ident[offset + indexx] != 0;
+		indexx = i_ptr.subCategory & (Constants.ITEM_SINGLE_STACK_MIN - 1);
+		return Treasure.objectIdent[offset + indexx] != 0;
 	}
 	
 	/* Remove "Secret" symbol for identity of plusses			*/
 	public static void identifyItemPlusses(InvenType i_ptr) {
 		unsample(i_ptr);
-		i_ptr.ident |= Constants.ID_KNOWN2;
+		i_ptr.identify |= Constants.ID_KNOWN2;
 	}
 	
 	public static boolean arePlussesKnownByPlayer(InvenType i_ptr) {
-		return (i_ptr.ident & Constants.ID_KNOWN2) != 0;
+		return (i_ptr.identify & Constants.ID_KNOWN2) != 0;
 	}
 	
 	public static void clearPlussesIdentity(InvenType i_ptr) {
-		i_ptr.ident &= ~Constants.ID_KNOWN2;
+		i_ptr.identify &= ~Constants.ID_KNOWN2;
 	}
 	
 	public static void clearEmpty(InvenType i_ptr) {
-		i_ptr.ident &= ~Constants.ID_EMPTY;
+		i_ptr.identify &= ~Constants.ID_EMPTY;
 	}
 	
 	public static void setStoreBought(InvenType i_ptr) {
-		i_ptr.ident |= Constants.ID_STOREBOUGHT;
+		i_ptr.identify |= Constants.ID_STOREBOUGHT;
 		identifyItemPlusses(i_ptr);
 	}
 	
 	public static boolean isStoreBought(InvenType i_ptr) {
-		return (i_ptr.ident & Constants.ID_STOREBOUGHT) != 0;
+		return (i_ptr.identify & Constants.ID_STOREBOUGHT) != 0;
 	}
 	
 	/*	Remove an automatically generated inscription.	-CJS- */
@@ -221,14 +221,14 @@ public class Desc {
 		int indexx;
 		
 		/* used to clear Constants.ID_DAMD flag, but I think it should remain set */
-		i_ptr.ident &= ~(Constants.ID_MAGIK|Constants.ID_EMPTY);
+		i_ptr.identify &= ~(Constants.ID_MAGIK|Constants.ID_EMPTY);
 		offset = getObjectOffset(i_ptr);
 		if (offset < 0) {
 			return;
 		}
 		offset <<= 6;
-		indexx = i_ptr.subval & (Constants.ITEM_SINGLE_STACK_MIN - 1);
-		Treasure.object_ident[offset + indexx] &= ~Constants.OD_TRIED;
+		indexx = i_ptr.subCategory & (Constants.ITEM_SINGLE_STACK_MIN - 1);
+		Treasure.objectIdent[offset + indexx] &= ~Constants.OD_TRIED;
 	}
 	
 	/* unquote() is no longer needed */
@@ -243,8 +243,8 @@ public class Desc {
 			return;
 		}
 		offset <<= 6;
-		indexx = i_ptr.subval & (Constants.ITEM_SINGLE_STACK_MIN - 1);
-		Treasure.object_ident[offset + indexx] |= Constants.OD_TRIED;
+		indexx = i_ptr.subCategory & (Constants.ITEM_SINGLE_STACK_MIN - 1);
+		Treasure.objectIdent[offset + indexx] |= Constants.OD_TRIED;
 	}
 	
 	/* Somethings been identified					*/
@@ -263,12 +263,12 @@ public class Desc {
 		
 		if (!isKnownByPlayer(i_ptr)) {
 			identifyItem(i_ptr);
-			x1 = i_ptr.tval;
-			x2 = i_ptr.subval;
+			x1 = i_ptr.category;
+			x2 = i_ptr.subCategory;
 			if (x2 >= Constants.ITEM_SINGLE_STACK_MIN && x2 < Constants.ITEM_GROUP_MIN) {
-				for (i = 0; i < Treasure.inven_ctr; i++) {
+				for (i = 0; i < Treasure.invenCounter; i++) {
 					t_ptr = Treasure.inventory[i];
-					if (t_ptr.tval == x1 && t_ptr.subval == x2 && i != item.value() && (t_ptr.number + i_ptr.number < 256)) {
+					if (t_ptr.category == x1 && t_ptr.subCategory == x2 && i != item.value() && (t_ptr.number + i_ptr.number < 256)) {
 						/* make *item the smaller number */
 						if (item.value() > i) {
 							j = item.value(); item.value(i);
@@ -277,8 +277,8 @@ public class Desc {
 						IO.printMessage("You combine similar objects from the shop and dungeon.");
 						
 						Treasure.inventory[item.value()].number += Treasure.inventory[i].number;
-						Treasure.inven_ctr--;
-						for (j = i; j < Treasure.inven_ctr; j++) {
+						Treasure.invenCounter--;
+						for (j = i; j < Treasure.invenCounter; j++) {
 							Treasure.inventory[j] = Treasure.inventory[j + 1];
 						}
 						copyIntoInventory(Treasure.inventory[j], Constants.OBJ_NOTHING);
@@ -292,7 +292,7 @@ public class Desc {
 	 * remove the appropriate portion of the name.	       -CJS-
 	 */
 	public static void unmagicName(InvenType i_ptr) {
-		i_ptr.name2 = Constants.SN_NULL;
+		i_ptr.specialName = Constants.SN_NULL;
 	}
 	
 	/* defines for p1_use, determine how the p1 field is printed */
@@ -316,14 +316,14 @@ public class Desc {
 		int indexx, p1_use, tmp;
 		boolean modify, append_name;
 		
-		indexx = i_ptr.subval & (Constants.ITEM_SINGLE_STACK_MIN - 1);
-		basenm = Treasure.object_list[i_ptr.index].name;
+		indexx = i_ptr.subCategory & (Constants.ITEM_SINGLE_STACK_MIN - 1);
+		basenm = Treasure.objectList[i_ptr.index].name;
 		modstr = "";
 		damstr = "";
 		p1_use = IGNORED;
 		modify = !isKnownByPlayer(i_ptr);
 		append_name = false;
-		switch(i_ptr.tval)
+		switch(i_ptr.category)
 		{
 		case Constants.TV_MISC:
 		case Constants.TV_CHEST:
@@ -339,11 +339,11 @@ public class Desc {
 		case Constants.TV_SPIKE:
 			break;
 		case Constants.TV_BOW:
-			if (i_ptr.p1 == 1 || i_ptr.p1 == 2) {
+			if (i_ptr.misc == 1 || i_ptr.misc == 2) {
 				tmp = 2;
-			} else if (i_ptr.p1 == 3 || i_ptr.p1 == 5) {
+			} else if (i_ptr.misc == 3 || i_ptr.misc == 5) {
 				tmp = 3;
-			} else if (i_ptr.p1 == 4 || i_ptr.p1 == 6) {
+			} else if (i_ptr.misc == 4 || i_ptr.misc == 6) {
 				tmp = 4;
 			} else {
 				tmp = -1;
@@ -470,10 +470,10 @@ public class Desc {
 		case Constants.TV_VIS_TRAP:
 		case Constants.TV_UP_STAIR:
 		case Constants.TV_DOWN_STAIR:
-			out_val.append(Treasure.object_list[i_ptr.index].name).append('.');
+			out_val.append(Treasure.objectList[i_ptr.index].name).append('.');
 			return out_val.toString();
 		case Constants.TV_STORE_DOOR:
-			out_val.append(String.format("the entrance to the %s.", Treasure.object_list[i_ptr.index].name));
+			out_val.append(String.format("the entrance to the %s.", Treasure.objectList[i_ptr.index].name));
 			return out_val.toString();
 		default:
 			out_val.append("Error in objdes()");
@@ -485,7 +485,7 @@ public class Desc {
 			tmp_val.append(basenm);
 		}
 		if (append_name) {
-			tmp_val.append(" of ").append(Treasure.object_list[i_ptr.index].name);
+			tmp_val.append(" of ").append(Treasure.objectList[i_ptr.index].name);
 		}
 		if (i_ptr.number != 1) {
 			int start = tmp_val.indexOf("ch~");
@@ -506,64 +506,64 @@ public class Desc {
 				out_val.append(tmp_val);
 			}
 		} else {
-			if (i_ptr.name2 != Constants.SN_NULL && arePlussesKnownByPlayer(i_ptr)) {
-				tmp_val.append(' ').append(Treasure.special_names[i_ptr.name2]);
+			if (i_ptr.specialName != Constants.SN_NULL && arePlussesKnownByPlayer(i_ptr)) {
+				tmp_val.append(' ').append(Treasure.specialNames[i_ptr.specialName]);
 			}
 			if (!damstr.isEmpty()) {
 				tmp_val.append(damstr);
 			}
 			if (arePlussesKnownByPlayer(i_ptr)) {
 				/* originally used %+d, but several machines don't support it */
-				if ((i_ptr.ident & Constants.ID_SHOW_HITDAM) != 0) {
-					tmp_str = String.format(" (%c%d,%c%d)", (i_ptr.tohit < 0) ? '-' : '+', Math.abs(i_ptr.tohit), (i_ptr.todam < 0) ? '-' : '+', Math.abs(i_ptr.todam));
+				if ((i_ptr.identify & Constants.ID_SHOW_HITDAM) != 0) {
+					tmp_str = String.format(" (%c%d,%c%d)", (i_ptr.tohit < 0) ? '-' : '+', Math.abs(i_ptr.tohit), (i_ptr.plusToDam < 0) ? '-' : '+', Math.abs(i_ptr.plusToDam));
 				} else if (i_ptr.tohit != 0) {
 					tmp_str = String.format(" (%c%d)", (i_ptr.tohit < 0) ? '-' : '+', Math.abs(i_ptr.tohit));
-				} else if (i_ptr.todam != 0) {
-					tmp_str = String.format(" (%c%d)", (i_ptr.todam < 0) ? '-' : '+', Math.abs(i_ptr.todam));
+				} else if (i_ptr.plusToDam != 0) {
+					tmp_str = String.format(" (%c%d)", (i_ptr.plusToDam < 0) ? '-' : '+', Math.abs(i_ptr.plusToDam));
 				} else {
 					tmp_str = "";
 				}
 				tmp_val.append(tmp_str);
 			}
 			/* Crowns have a zero base AC, so make a special test for them. */
-			if (i_ptr.ac != 0 || (i_ptr.tval == Constants.TV_HELM)) {
-				tmp_str = String.format(" [%d", i_ptr.ac);
+			if (i_ptr.armorClass != 0 || (i_ptr.category == Constants.TV_HELM)) {
+				tmp_str = String.format(" [%d", i_ptr.armorClass);
 				tmp_val.append(tmp_str);
 				if (arePlussesKnownByPlayer(i_ptr)) {
 					/* originally used %+d, but several machines don't support it */
-					tmp_str = String.format(",%c%d", (i_ptr.toac < 0) ? '-' : '+', Math.abs(i_ptr.toac));
+					tmp_str = String.format(",%c%d", (i_ptr.plusToArmorClass < 0) ? '-' : '+', Math.abs(i_ptr.plusToArmorClass));
 					tmp_val.append(tmp_str);
 				}
 				tmp_val.append(']');
-			} else if ((i_ptr.toac != 0) && arePlussesKnownByPlayer(i_ptr)) {
+			} else if ((i_ptr.plusToArmorClass != 0) && arePlussesKnownByPlayer(i_ptr)) {
 				/* originally used %+d, but several machines don't support it */
-				tmp_str = String.format(" [%c%d]", (i_ptr.toac < 0) ? '-' : '+', Math.abs(i_ptr.toac));
+				tmp_str = String.format(" [%c%d]", (i_ptr.plusToArmorClass < 0) ? '-' : '+', Math.abs(i_ptr.plusToArmorClass));
 				tmp_val.append(tmp_str);
 			}
 			
 			/* override defaults, check for p1 flags in the ident field */
-			if ((i_ptr.ident & Constants.ID_NOSHOW_P1) != 0) {
+			if ((i_ptr.identify & Constants.ID_NOSHOW_P1) != 0) {
 				p1_use = IGNORED;
-			} else if ((i_ptr.ident & Constants.ID_SHOW_P1) != 0) {
+			} else if ((i_ptr.identify & Constants.ID_SHOW_P1) != 0) {
 				p1_use = Z_PLUSSES;
 			}
 			tmp_str = "";
 			if (p1_use == LIGHT) {
-				tmp_str = String.format(" with %d turns of light", i_ptr.p1);
+				tmp_str = String.format(" with %d turns of light", i_ptr.misc);
 			} else if (p1_use != IGNORED && arePlussesKnownByPlayer(i_ptr)) {
 				if (p1_use == Z_PLUSSES) {
 					/* originally used %+d, but several machines don't support it */
-					tmp_str = String.format(" (%c%d)", (i_ptr.p1 < 0) ? '-' : '+', Math.abs(i_ptr.p1));
+					tmp_str = String.format(" (%c%d)", (i_ptr.misc < 0) ? '-' : '+', Math.abs(i_ptr.misc));
 				} else if (p1_use == CHARGES) {
-					tmp_str = String.format(" (%d charges)", i_ptr.p1);
-				} else if (i_ptr.p1 != 0) {
+					tmp_str = String.format(" (%d charges)", i_ptr.misc);
+				} else if (i_ptr.misc != 0) {
 					if (p1_use == PLUSSES) {
-						tmp_str = String.format(" (%c%d)", (i_ptr.p1 < 0) ? '-' : '+', Math.abs(i_ptr.p1));
+						tmp_str = String.format(" (%c%d)", (i_ptr.misc < 0) ? '-' : '+', Math.abs(i_ptr.misc));
 					} else if (p1_use == FLAGS) {
 						if ((i_ptr.flags & Constants.TR_STR) != 0) {
-							tmp_str = String.format(" (%c%d to STR)", (i_ptr.p1 < 0) ? '-' : '+', Math.abs(i_ptr.p1));
+							tmp_str = String.format(" (%c%d to STR)", (i_ptr.misc < 0) ? '-' : '+', Math.abs(i_ptr.misc));
 						} else if ((i_ptr.flags & Constants.TR_STEALTH) != 0) {
-							tmp_str = String.format(" (%c%d to stealth)", (i_ptr.p1 < 0) ? '-' : '+', Math.abs(i_ptr.p1));
+							tmp_str = String.format(" (%c%d to stealth)", (i_ptr.misc < 0) ? '-' : '+', Math.abs(i_ptr.misc));
 						}
 					}
 				}
@@ -597,25 +597,25 @@ public class Desc {
 			
 			tmp_str = "";
 			if ((indexx = getObjectOffset(i_ptr)) >= 0) {
-				indexx = (indexx << 6) + (i_ptr.subval & (Constants.ITEM_SINGLE_STACK_MIN - 1));
+				indexx = (indexx << 6) + (i_ptr.subCategory & (Constants.ITEM_SINGLE_STACK_MIN - 1));
 				/* don't print tried string for store bought items */
-				if ((Treasure.object_ident[indexx] & Constants.OD_TRIED) != 0 && !isStoreBought(i_ptr)) {
+				if ((Treasure.objectIdent[indexx] & Constants.OD_TRIED) != 0 && !isStoreBought(i_ptr)) {
 					tmp_str = tmp_str.concat("tried ");
 				}
 			}
-			if ((i_ptr.ident & (Constants.ID_MAGIK|Constants.ID_EMPTY|Constants.ID_DAMD)) != 0) {
-				if ((i_ptr.ident & Constants.ID_MAGIK) != 0) {
+			if ((i_ptr.identify & (Constants.ID_MAGIK|Constants.ID_EMPTY|Constants.ID_DAMD)) != 0) {
+				if ((i_ptr.identify & Constants.ID_MAGIK) != 0) {
 					tmp_str = tmp_str.concat("magik ");
 				}
-				if ((i_ptr.ident & Constants.ID_EMPTY) != 0) {
+				if ((i_ptr.identify & Constants.ID_EMPTY) != 0) {
 					tmp_str = tmp_str.concat("empty ");
 				}
-				if ((i_ptr.ident & Constants.ID_DAMD) != 0) {
+				if ((i_ptr.identify & Constants.ID_DAMD) != 0) {
 					tmp_str = tmp_str.concat("damned ");
 				}
 			}
-			if (!i_ptr.inscrip.equals("")) {
-				tmp_str = tmp_str.concat(i_ptr.inscrip);
+			if (!i_ptr.inscription.equals("")) {
+				tmp_str = tmp_str.concat(i_ptr.inscription);
 			} else if ((indexx = tmp_str.length()) > 0) {
 				/* remove the extra blank at the end */
 				tmp_str = tmp_str.substring(0, indexx - 1);
@@ -629,7 +629,7 @@ public class Desc {
 	}
 	
 	public static void copyIntoInventory(InvenType to, int from_index) {
-		Treasure.object_list[from_index].copyInto(to);
+		Treasure.objectList[from_index].copyInto(to);
 		to.index = from_index;
 	}
 	
@@ -639,7 +639,7 @@ public class Desc {
 		String out_val;
 		
 		if (arePlussesKnownByPlayer(Treasure.inventory[item_val])) {
-			rem_num = Treasure.inventory[item_val].p1;
+			rem_num = Treasure.inventory[item_val].misc;
 			out_val = String.format("You have %d charges remaining.", rem_num);
 			IO.printMessage(out_val);
 		}

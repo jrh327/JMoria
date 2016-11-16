@@ -25,14 +25,14 @@ package net.jonhopkins.moria.types;
 
 public final class SpellType {
 	public SpellType(int level, int mana, int fail, int exp) {
-		slevel = level;
-		smana = mana;
-		sfail = fail;
-		sexp = exp;
+		this.level = level;
+		this.manaCost = mana;
+		this.failChance = fail;
+		this.expGained = exp;
 	}
 	
-	public int slevel;
-	public int smana;
-	public int sfail;
-	public int sexp;	/* 1/4 of exp gained for learning spell */
+	public int level;
+	public int manaCost;
+	public int failChance;
+	public int expGained;	/* 1/4 of exp gained for learning spell */
 }

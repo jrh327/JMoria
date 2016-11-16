@@ -39,90 +39,96 @@ public class Variable {
 	};
 	
 	/* Save the store's last increment value.  */
-	public static int last_store_inc;
+	public static int lastStoreInc;
 	
 	/* a horrible hack: needed because compact_monster() can be called from
 	 * creatures() via summon_monster() and place_monster() */
-	public static int hack_monptr = -1;
+	public static int hackMonsterIndex = -1;
 	
-	public static boolean weapon_heavy = false;
-	public static int pack_heavy = Constants.FALSE;
+	public static boolean isWeaponHeavy = false;
+	public static int isPackHeavy = Constants.FALSE;
 	//vtype died_from;
 	//public char[] died_from = new char[Constants.VTYPESIZ];
-	public static String died_from;
-	public static long birth_date;
+	public static String diedFrom;
+	public static long birthDate;
 	
 	//vtype savefile;			/* The savefile to use. */
 	//public char[] savefile = new char[Constants.VTYPESIZ];
 	public static String savefile;
 	
-	public static boolean total_winner = false;
-	public static int max_score = 0;
-	public static boolean character_generated = false;	/* don't save score until char gen finished */
-	public static int character_saved = 0;				/* prevents save on kill after save_char() */
-	public static java.io.File highscore_fp;			/* File pointer to high score file */
-	public static long randes_seed;						/* for restarting randes_state */
-	public static long town_seed;						/* for restarting town_seed */
-	public static int cur_height, cur_width;			/* Cur dungeon size    */
-	public static int dun_level = 0;					/* Cur dungeon level   */
-	public static int missile_ctr = 0;					/* Counter for missiles */
-	public static int msg_flag;							/* Set with first msg  */
-	//vtype old_msg[Constants.MAX_SAVE_MSG];			/* Last message	      */
-	public static String[] old_msg = new String[Constants.MAX_SAVE_MSG];
-	public static int last_msg = 0;						/* Where last is held */
-	public static boolean death = false;			/* True if died	      */
-	public static int find_flag;					/* Used in MORIA for .(dir) */
-	public static boolean free_turn_flag;					/* Used in MORIA, do not move creatures  */
-	public static int command_count;					/* Gives repetition of commands. -CJS- */
-	public static int default_dir = Constants.FALSE;	/* Use last direction for repeated command */
-	public static int turn = -1;						/* Cur turn of game    */
-	public static boolean wizard = false;				/* Wizard flag	      */
-	public static boolean to_be_wizard = false;	/* used during startup, when -w option used */
-	public static int panic_save = Constants.FALSE;		/* this is true if playing from a panic save */
-	public static int noscore = 0;		/* Don't log the game. -CJS- */
+	public static boolean isTotalWinner = false;
+	public static int maxScore = 0;
+	public static boolean isCharacterGenerated = false; /* don't save score until char gen finished */
+	public static int characterSaved = 0;               /* prevents save on kill after save_char() */
+	public static java.io.File highscoreFile;           /* File pointer to high score file */
+	public static long randesSeed;                      /* for restarting randes_state */
+	public static long townSeed;                        /* for restarting town_seed */
+	public static int currHeight;                       /* Cur dungeon size    */
+	public static int currWidth;
+	public static int dungeonLevel = 0;                 /* Cur dungeon level   */
+	public static int missileCounter = 0;               /* Counter for missiles */
+	public static int msgFlag;                          /* Set with first msg  */
+	//vtype old_msg[Constants.MAX_SAVE_MSG];            /* Last message	      */
+	public static String[] oldMsg = new String[Constants.MAX_SAVE_MSG];
+	public static int lastMsg = 0;                  /* Where last is held */
+	public static boolean death = false;            /* True if died	      */
+	public static int findFlag;                     /* Used in MORIA for .(dir) */
+	public static boolean freeTurnFlag;             /* Used in MORIA, do not move creatures  */
+	public static int commandCount;                 /* Gives repetition of commands. -CJS- */
+	public static int defaultDir = Constants.FALSE; /* Use last direction for repeated command */
+	public static int turn = -1;                    /* Cur turn of game    */
+	public static boolean isWizard = false;         /* Wizard flag	      */
+	public static boolean toBeWizard = false;       /* used during startup, when -w option used */
+	public static int panicSave = Constants.FALSE;  /* this is true if playing from a panic save */
+	public static int noScore = 0;                  /* Don't log the game. -CJS- */
 	
-	public static BooleanPointer rogue_like_commands = new BooleanPointer();	/* set in config.h/main.c */
+	public static BooleanPointer rogueLikeCommands = new BooleanPointer(); /* set in config.h/main.c */
 	
 	/* options set via the '=' command */
-	public static BooleanPointer find_cut = new BooleanPointer(true);
-	public static BooleanPointer find_examine = new BooleanPointer(true);
-	public static BooleanPointer find_bound = new BooleanPointer(false);
-	public static BooleanPointer find_prself = new BooleanPointer(false);
-	public static BooleanPointer prompt_carry_flag = new BooleanPointer(false);
-	public static BooleanPointer show_weight_flag = new BooleanPointer(false);
-	public static BooleanPointer highlight_seams = new BooleanPointer(false);
-	public static BooleanPointer find_ignore_doors = new BooleanPointer(false);
-	public static BooleanPointer sound_beep_flag = new BooleanPointer(true);
-	public static BooleanPointer display_counts = new BooleanPointer(true);
+	public static BooleanPointer findCut = new BooleanPointer(true);
+	public static BooleanPointer findExamine = new BooleanPointer(true);
+	public static BooleanPointer findBound = new BooleanPointer(false);
+	public static BooleanPointer findPrself = new BooleanPointer(false);
+	public static BooleanPointer promptCarryFlag = new BooleanPointer(false);
+	public static BooleanPointer showWeightFlag = new BooleanPointer(false);
+	public static BooleanPointer highlightSeams = new BooleanPointer(false);
+	public static BooleanPointer findIgnoreDoors = new BooleanPointer(false);
+	public static BooleanPointer soundBeepFlag = new BooleanPointer(true);
+	public static BooleanPointer displayCounts = new BooleanPointer(true);
 	
-	public static char doing_inven = '\0';	/* Track inventory commands. -CJS- */
-	public static boolean screen_change = false;	/* Track screen updates for inven_commands. */
-	public static char last_command = ' ';  			/* Memory of previous command. */
+	public static char doingInven = '\0'; /* Track inventory commands. -CJS- */
+	public static boolean didScreenChange = false; /* Track screen updates for inven_commands. */
+	public static char lastCommand = ' '; /* Memory of previous command. */
 	
 	/* these used to be in dungeon.c */
-	public static boolean new_level_flag;					/* Next level when true	 */
-	public static boolean teleport_flag;					/* Handle teleport traps  */
-	public static boolean player_light;						/* Player carrying light */
-	public static int eof_flag = 0;		/* Used to signal EOF/HANGUP condition */
-	public static boolean light_flag = false;		/* Track if temporary light about player.  */
+	public static boolean newLevelFlag;      /* Next level when true	 */
+	public static boolean teleportFlag;      /* Handle teleport traps  */
+	public static boolean playerLight;       /* Player carrying light */
+	public static int eofFlag = 0;           /* Used to signal EOF/HANGUP condition */
+	public static boolean lightFlag = false; /* Track if temporary light about player.  */
 	
-	public static int wait_for_more = Constants.FALSE;	/* used when ^C hit during -more- prompt */
-	public static int closing_flag = Constants.FALSE;	/* Used for closing   */
+	public static int waitForMore = Constants.FALSE; /* used when ^C hit during -more- prompt */
+	public static int closingFlag = Constants.FALSE; /* Used for closing   */
 	
 	/*  Following are calculated from max dungeon sizes		*/
-	public static int max_panel_rows, max_panel_cols;
-	public static int panel_row, panel_col;
-	public static int panel_row_min, panel_row_max;
-	public static int panel_col_min, panel_col_max;
-	public static int panel_col_prt, panel_row_prt;
+	public static int maxPanelRows;
+	public static int maxPanelCols;
+	public static int panelRow;
+	public static int panelCol;
+	public static int panelRowMin;
+	public static int panelRowMax;
+	public static int panelColMin;
+	public static int panelColMax;
+	public static int panelColPrt;
+	public static int panelRowPrt;
 	
-	public static char floorsym = '.';
-	public static char wallsym = '#';	//(char)240
+	public static char floorSymbol = '.';
+	public static char wallSymbol = '#'; //(char)240
 
 	public static StoreType[] store = new StoreType[Constants.MAX_STORES];
 	
 	public static CaveType[][] cave = new CaveType[Constants.MAX_HEIGHT][Constants.MAX_WIDTH];
-	public static MonsterRecallType[] c_recall = new MonsterRecallType[Constants.MAX_CREATURES]; /* Monster memories */
+	public static MonsterRecallType[] creatureRecall = new MonsterRecallType[Constants.MAX_CREATURES]; /* Monster memories */
 	
 	static {
 		int i, j;
@@ -138,7 +144,7 @@ public class Variable {
 		}
 		
 		for (i = 0; i < Constants.MAX_CREATURES; i++) {
-			c_recall[i] = new MonsterRecallType();
+			creatureRecall[i] = new MonsterRecallType();
 		}
 	}
 }

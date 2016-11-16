@@ -23,16 +23,16 @@ package net.jonhopkins.moria.types;
 
 public final class HighScoreType {
 	public int points;
-	public long birth_date;
+	public long birthDate;
 	public int uid;
-	public int mhp;
-	public int chp;
-	public int dun_level;
-	public int lev;
-	public int max_dlv;
+	public int maxHitpoints;
+	public int currHitpoints;
+	public int dungeonLevel;
+	public int level;
+	public int maxDungeonLevel;
 	public int sex;
 	public int race;
-	public int Class;
+	public int playerClass;
 	public String name;
-	public String died_from;
+	public String diedFrom;
 }

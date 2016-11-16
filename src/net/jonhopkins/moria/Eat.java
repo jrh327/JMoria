@@ -39,14 +39,14 @@ public class Eat {
 		PlayerMisc m_ptr;
 		InvenType i_ptr;
 		
-		Variable.free_turn_flag = true;
-		if (Treasure.inven_ctr == 0) {
+		Variable.freeTurnFlag = true;
+		if (Treasure.invenCounter == 0) {
 			IO.printMessage("But you are not carrying anything.");
 		} else if (!Misc3.findRange(Constants.TV_FOOD, Constants.TV_NEVER, j, k)) {
 			IO.printMessage("You are not carrying any food.");
 		} else if (Moria1.getItemId(item_val, "Eat what?", j.value(), k.value(), "", "")) {
 			i_ptr = Treasure.inventory[item_val.value()];
-			Variable.free_turn_flag = false;
+			Variable.freeTurnFlag = false;
 			i.value(i_ptr.flags);
 			ident = false;
 			while (i.value() != 0) {
@@ -79,7 +79,7 @@ public class Eat {
 						break;
 					case 5:
 						f_ptr = Player.py.flags;
-						f_ptr.image += Misc1.randomInt(200) + 25 * i_ptr.level + 200;
+						f_ptr.imagine += Misc1.randomInt(200) + 25 * i_ptr.level + 200;
 						IO.printMessage("You feel drugged.");
 						ident = true;
 						break;
@@ -170,7 +170,7 @@ public class Eat {
 					/* use identified it, gain experience */
 					m_ptr = Player.py.misc;
 					/* round half-way case up */
-					m_ptr.exp += (i_ptr.level + (m_ptr.lev >> 1)) / m_ptr.lev;
+					m_ptr.currExp += (i_ptr.level + (m_ptr.level >> 1)) / m_ptr.level;
 					Misc3.printExperience();
 					
 					Desc.identify(item_val);
@@ -179,7 +179,7 @@ public class Eat {
 			} else if (!Desc.isKnownByPlayer(i_ptr)) {
 				Desc.sample(i_ptr);
 			}
-			Misc1.addFood(i_ptr.p1);
+			Misc1.addFood(i_ptr.misc);
 			Player.py.flags.status &= ~(Constants.PY_WEAK | Constants.PY_HUNGRY);
 			Misc3.printHunger();
 			Desc.describeRemaining(item_val.value());

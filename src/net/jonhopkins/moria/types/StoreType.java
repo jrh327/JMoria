@@ -25,17 +25,17 @@ import net.jonhopkins.moria.Constants;
 
 public final class StoreType {
 	public StoreType() {
-		store_inven = new InvenRecord[Constants.STORE_INVEN_MAX];
+		storeInven = new InvenRecord[Constants.STORE_INVEN_MAX];
 		for (int i = 0; i < Constants.STORE_INVEN_MAX; i++) {
-			store_inven[i] = new InvenRecord();
+			storeInven[i] = new InvenRecord();
 		}
 	}
 	
-	public int store_open;
-	public int insult_cur;
+	public int storeOpen;
+	public int currInsult;
 	public int owner;
-	public int store_ctr;
-	public int good_buy;
-	public int bad_buy;
-	public InvenRecord[] store_inven;
+	public int storeCounter;
+	public int goodBuy;
+	public int badBuy;
+	public InvenRecord[] storeInven;
 }

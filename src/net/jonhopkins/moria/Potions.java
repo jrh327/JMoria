@@ -41,22 +41,22 @@ public class Potions {
 		PlayerMisc m_ptr;
 		PlayerFlags f_ptr;
 		
-		Variable.free_turn_flag = true;
-		if (Treasure.inven_ctr == 0) {
+		Variable.freeTurnFlag = true;
+		if (Treasure.invenCounter == 0) {
 			IO.printMessage("But you are not carrying anything.");
 		} else if (!Misc3.findRange(Constants.TV_POTION1, Constants.TV_POTION2, j, k)) {
 			IO.printMessage("You are not carrying any potions.");
 		} else if (Moria1.getItemId(item_val, "Quaff which potion?", j.value(), k.value(), "", "")) {
 			i_ptr = Treasure.inventory[item_val.value()];
 			i.value(i_ptr.flags);
-			Variable.free_turn_flag = false;
+			Variable.freeTurnFlag = false;
 			ident = false;
 			if (i.value() == 0) {
 				IO.printMessage ("You feel less thirsty.");
 				ident = true;
 			} else while (i.value() != 0) {
 				j.value(Misc1.firstBitPos(i) + 1);
-				if (i_ptr.tval == Constants.TV_POTION2) {
+				if (i_ptr.category == Constants.TV_POTION2) {
 					j.value(j.value() + 32);
 				}
 				/* Potions						*/
@@ -146,10 +146,10 @@ public class Potions {
 					break;
 				case 18:
 					m_ptr = Player.py.misc;
-					if (m_ptr.exp < Constants.MAX_EXP) {
-						l = (m_ptr.exp / 2) + 10;
+					if (m_ptr.currExp < Constants.MAX_EXP) {
+						l = (m_ptr.currExp / 2) + 10;
 						if (l > 100000L)  l = 100000L;
-						m_ptr.exp += l;
+						m_ptr.currExp += l;
 						IO.printMessage("You feel more experienced.");
 						Misc3.printExperience();
 						ident = true;
@@ -157,7 +157,7 @@ public class Potions {
 					break;
 				case 19:
 					f_ptr = Player.py.flags;
-					if (!f_ptr.free_act) {
+					if (!f_ptr.freeAct) {
 						/* paralysis must == 0, otherwise could not drink potion */
 						IO.printMessage("You fall asleep.");
 						f_ptr.paralysis += Misc1.randomInt(4) + 4;
@@ -228,16 +228,16 @@ public class Potions {
 					ident = Spells.curePoison();
 					break;
 				case 34:
-					if (Player.py.misc.exp > 0) {
+					if (Player.py.misc.currExp > 0) {
 						int m, scale;
 						IO.printMessage("You feel your memories fade.");
 						/* Lose between 1/5 and 2/5 of your experience */
-						m = Player.py.misc.exp / 5;
-						if (Player.py.misc.exp > Constants.MAX_SHORT) {
-							scale = (int)(Constants.MAX_LONG / Player.py.misc.exp);
-							m += (Misc1.randomInt(scale) * Player.py.misc.exp) / (scale * 5);
+						m = Player.py.misc.currExp / 5;
+						if (Player.py.misc.currExp > Constants.MAX_SHORT) {
+							scale = (int)(Constants.MAX_LONG / Player.py.misc.currExp);
+							m += (Misc1.randomInt(scale) * Player.py.misc.currExp) / (scale * 5);
 						} else {
-							m += Misc1.randomInt(Player.py.misc.exp) / 5;
+							m += Misc1.randomInt(Player.py.misc.currExp) / 5;
 						}
 						Spells.loseExperience(m);
 						ident = true;
@@ -252,10 +252,10 @@ public class Potions {
 					ident = true;
 					break;
 				case 36:
-					if (Player.py.flags.invuln == 0) {
+					if (Player.py.flags.invulnerability == 0) {
 						ident = true;
 					}
-					Player.py.flags.invuln += Misc1.randomInt(10) + 10;
+					Player.py.flags.invulnerability += Misc1.randomInt(10) + 10;
 					break;
 				case 37:
 					if (Player.py.flags.hero == 0) {
@@ -264,10 +264,10 @@ public class Potions {
 					Player.py.flags.hero += Misc1.randomInt(25) + 25;
 					break;
 				case 38:
-					if (Player.py.flags.shero == 0) {
+					if (Player.py.flags.superHero == 0) {
 						ident = true;
 					}
-					Player.py.flags.shero += Misc1.randomInt(25) + 25;
+					Player.py.flags.superHero += Misc1.randomInt(25) + 25;
 					break;
 				case 39:
 					ident = Spells.removeFear();
@@ -277,20 +277,20 @@ public class Potions {
 					break;
 				case 41:
 					f_ptr = Player.py.flags;
-					if (f_ptr.resist_heat == 0) {
+					if (f_ptr.resistHeat == 0) {
 						ident = true;
 					}
-					f_ptr.resist_heat += Misc1.randomInt(10) + 10;
+					f_ptr.resistHeat += Misc1.randomInt(10) + 10;
 					break;
 				case 42:
 					f_ptr = Player.py.flags;
-					if (f_ptr.resist_cold == 0) {
+					if (f_ptr.resistCold == 0) {
 						ident = true;
 					}
-					f_ptr.resist_cold += Misc1.randomInt(10) + 10;
+					f_ptr.resistCold += Misc1.randomInt(10) + 10;
 					break;
 				case 43:
-					if (Player.py.flags.detect_inv == 0) {
+					if (Player.py.flags.detectInvisible == 0) {
 						ident = true;
 					}
 					Spells.detectInvisibleMonsters(Misc1.randomInt(12) + 12);
@@ -303,8 +303,8 @@ public class Potions {
 					break;
 				case 46:
 					m_ptr = Player.py.misc;
-					if (m_ptr.cmana < m_ptr.mana) {
-						m_ptr.cmana = m_ptr.mana;
+					if (m_ptr.currMana < m_ptr.maxMana) {
+						m_ptr.currMana = m_ptr.maxMana;
 						ident = true;
 						IO.printMessage("Your feel your head clear.");
 						Misc3.printCurrentMana();
@@ -312,11 +312,11 @@ public class Potions {
 					break;
 				case 47:
 					f_ptr = Player.py.flags;
-					if (f_ptr.tim_infra == 0) {
+					if (f_ptr.timedSeeInfrared == 0) {
 						IO.printMessage("Your eyes begin to tingle.");
 						ident = true;
 					}
-					f_ptr.tim_infra += 100 + Misc1.randomInt(100);
+					f_ptr.timedSeeInfrared += 100 + Misc1.randomInt(100);
 					break;
 				default:
 					IO.printMessage("Internal error in potion()");
@@ -328,7 +328,7 @@ public class Potions {
 				if (!Desc.isKnownByPlayer(i_ptr)) {
 					m_ptr = Player.py.misc;
 					/* round half-way case up */
-					m_ptr.exp += (i_ptr.level + (m_ptr.lev >> 1)) / m_ptr.lev;
+					m_ptr.currExp += (i_ptr.level + (m_ptr.level >> 1)) / m_ptr.level;
 					Misc3.printExperience();
 					
 					Desc.identify(item_val);
@@ -338,7 +338,7 @@ public class Potions {
 				Desc.sample(i_ptr);
 			}
 			
-			Misc1.addFood(i_ptr.p1);
+			Misc1.addFood(i_ptr.misc);
 			Desc.describeRemaining(item_val.value());
 			Misc3.destroyInvenItem(item_val.value());
 		}

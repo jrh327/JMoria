@@ -24,9 +24,12 @@ package net.jonhopkins.moria;
 import net.jonhopkins.moria.types.StoreOwnerType;
 
 public class Tables {
-	/* Store owners have different characteristics for pricing and haggling*/
-	/* Note: Store owners should be added in groups, one for each store    */
-	//Owner_type[MAX_OWNERS]
+	
+	/**
+	 * Store owners have different characteristics for pricing and haggling
+	 * <p>
+	 * Note: Store owners should be added in groups, one for each store
+	 */
 	public static final StoreOwnerType[] owners = {
 		new StoreOwnerType("Erick the Honest       (Human)      General Store", 250, 175, 108, 4, 0, 12),
 		new StoreOwnerType("Mauglin the Grumpy     (Dwarf)      Armory", 32000, 200, 112, 4, 5, 5),
@@ -47,10 +50,11 @@ public class Tables {
 		new StoreOwnerType("Wizzle the Chaotic     (Halfling)   Alchemist", 10000, 190, 110, 6, 3, 8),
 		new StoreOwnerType("Inglorian the Mage     (Human?)     Magic Shop", 32000, 200, 110, 7, 0, 10)
 	};
-	/* Buying and selling adjustments for character race VS store	*/
-	/* owner race							 */
-	//short[MAX_RACES][MAX_RACES]
-	public static final short[][] rgold_adj = {
+	
+	/**
+	 * Buying and selling adjustments for character race VS store owner race
+	 */
+	public static final short[][] raceGoldAdjust = {
 				     /* Hum, HfE, Elf, Hal, Gno, Dwa, HfO, HfT */
 	/*Human		 */	  { 100, 105, 105, 110, 113, 115, 120, 125 },
 	/*Half-Elf	 */	  { 110, 100, 100, 105, 110, 120, 125, 130 },
@@ -60,10 +64,12 @@ public class Tables {
 	/*Dwarf		 */	  { 115, 120, 120, 110, 110,  95, 125, 135 },
 	/*Half-Orc	 */	  { 115, 120, 125, 115, 115, 130, 110, 115 },
 	/*Half-Troll */	  { 110, 115, 115, 110, 110, 130, 110, 110 }
-				};
-	/* object_list[] index of objects that may appear in the store */
-	//short[MAX_STORES][STORE_CHOICES]
-	public static final short[][] store_choice = {
+	};
+	
+	/**
+	 * objectList[] index of objects that may appear in the store
+	 */
+	public static final short[][] storeChoice = {
 		/* General Store */
 		{366, 365, 364, 84, 84, 365, 123, 366, 365, 350, 349, 348, 347,
 		346, 346, 345, 345, 345, 344, 344, 344, 344, 344, 344, 344, 344},
@@ -89,7 +95,6 @@ public class Tables {
 	 //      general_store, armory, weaponsmith, temple, alchemist, magic_shop};
 	
 	/* Following are arrays for descriptive pieces			*/
-	//String[MAX_COLORS]
 	public static final String[] colors = {
 	/* Do not move the first three */
 		"Icky Green", "Light Brown", "Clear",
@@ -103,14 +108,12 @@ public class Tables {
 		"Violet", "Vermilion", "White", "Yellow"
 	};
 	
-	//String[MAX_MUSH]
 	public static final String[] mushrooms = {
 		"Blue", "Black", "Black Spotted", "Brown", "Dark Blue", "Dark Green", "Dark Red",
 		"Ecru", "Furry", "Green", "Grey", "Light Blue", "Light Green", "Plaid", "Red",
 		"Slimy", "Tan", "White", "White Spotted", "Wooden", "Wrinkled", "Yellow"
 	};
 	
-	//String[MAX_WOODS]
 	public static final String[] woods = {
 		"Aspen", "Balsa", "Banyan", "Birch", "Cedar", "Cottonwood", "Cypress", "Dogwood",
 		"Elm", "Eucalyptus", "Hemlock", "Hickory", "Ironwood", "Locust", "Mahogany",
@@ -118,7 +121,6 @@ public class Tables {
 		"Teak", "Walnut"
 	};
 	
-	//String[MAX_METALS]
 	public static final String[] metals = {
 		"Aluminum", "Cast Iron", "Chromium", "Copper", "Gold", "Iron", "Magnesium",
 		"Molybdenum", "Nickel", "Rusty", "Silver", "Steel", "Tin", "Titanium", "Tungsten",
@@ -126,7 +128,6 @@ public class Tables {
 		"Nickel-Plated", "Silver-Plated", "Steel-Plated", "Tin-Plated", "Zinc-Plated"
 	};
 	
-	//String[MAX_ROCKS]
 	public static final String[] rocks = {
 		"Alexandrite", "Amethyst", "Aquamarine", "Azurite", "Beryl", "Bloodstone",
 		"Calcite", "Carnelian", "Corundum", "Diamond", "Emerald", "Fluorite", "Garnet",
@@ -135,13 +136,11 @@ public class Tables {
 		"Tiger Eye", "Topaz", "Turquoise", "Zircon"
 	};
 	
-	//String[MAX_AMULETS]
 	public static final String[] amulets = {
 		"Amber", "Driftwood", "Coral", "Agate", "Ivory", "Obsidian",
 		"Bone", "Brass", "Bronze", "Pewter", "Tortoise Shell"
 	};
 	
-	//String[MAX_SYLLABLES]
 	public static final String[] syllables = {
 		"a",	"ab",	"ag",	"aks",	"ala",	"an",	"ankh",	"app",
 		"arg",	"arze",	"ash",	"aus",	"ban",	"bar",	"bat",	"bek",
@@ -165,8 +164,10 @@ public class Tables {
 		"zun"
 	};
 	
-	/* used to calculate the number of blows the player gets in combat */
-	public static final short[][] blows_table = {
+	/**
+	 * Used to calculate the number of blows the player gets in combat
+	 */
+	public static final short[][] blowsTable = {
 	/* STR/W:	   9  18  67 107 117 118   : DEX */
 	/* <2 */	{  1,  1,  1,  1,  1,  1 },
 	/* <3 */	{  1,  1,  1,  1,  2,  2 },
@@ -177,11 +178,13 @@ public class Tables {
 	/* >9 */	{  2,  2,  3,  3,  4,  4 }
 	};
 	
-	/* this table is used to generate a psuedo-normal distribution.	 See the
-	 * function randnor() in misc1.c, this is much faster than calling
-	 * transcendental function to calculate a true normal distribution */
-	//short[NORMAL_TABLE_SIZE]
-	public static final short[] normal_table = {
+	/**
+	 * This table is used to generate a psuedo-normal distribution.
+	 * <p>
+	 * See the function randnor() in misc1.c, this is much faster than calling
+	 * transcendental function to calculate a true normal distribution
+	 */
+	public static final short[] normalTable = {
 		  206,     613,    1022,    1430,	1838,	 2245,	  2652,	   3058,
 		 3463,    3867,    4271,    4673,	5075,	 5475,	  5874,	   6271,
 		 6667,    7061,    7454,    7845,	8234,	 8621,	  9006,	   9389,

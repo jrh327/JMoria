@@ -41,7 +41,7 @@ public final class TreasureType {
 	/**
 	 * Category number
 	 */
-	public int tval;
+	public int category;
 	
 	/**
 	 * Character representation
@@ -51,7 +51,7 @@ public final class TreasureType {
 	/**
 	 * Misc. use variable
 	 */
-	public int p1;
+	public int misc;
 	
 	/**
 	 * Cost of item
@@ -61,7 +61,7 @@ public final class TreasureType {
 	/**
 	 * Sub-category number
 	 */
-	public int subval;
+	public int subCategory;
 	
 	/**
 	 * Number of items in stack
@@ -76,22 +76,22 @@ public final class TreasureType {
 	/**
 	 * Pluses to hit
 	 */
-	public int tohit;
+	public int plusToHit;
 	
 	/**
 	 * Pluses to damage
 	 */
-	public int todam;
+	public int plusToDamage;
 	
 	/**
 	 * Normal AC
 	 */
-	public int ac;
+	public int armorClass;
 	
 	/**
 	 * Pluses to AC
 	 */
-	public int toac;
+	public int plusToArmorClass;
 	
 	/**
 	 * Damage when hits
@@ -108,39 +108,39 @@ public final class TreasureType {
 			int todam, int ac, int toac, int[] damage, int level) {
 		this.name = name;
 		this.flags = flags;
-		this.tval = tval;
+		this.category = tval;
 		this.tchar = tchar;
-		this.p1 = p1;
+		this.misc = p1;
 		this.cost = cost;
-		this.subval = subval;
+		this.subCategory = subval;
 		this.number = number;
 		this.weight = weight;
-		this.tohit = tohit;
-		this.todam = todam;
-		this.ac = ac;
-		this.toac = toac;
+		this.plusToHit = tohit;
+		this.plusToDamage = todam;
+		this.armorClass = ac;
+		this.plusToArmorClass = toac;
 		this.damage = damage;
 		this.level = level;
 	}
 	
 	public void copyInto(InvenType item) {
-		item.name2 = Constants.SN_NULL;
-		item.inscrip = "";
+		item.specialName = Constants.SN_NULL;
+		item.inscription = "";
 		item.flags = this.flags;
-		item.tval = this.tval;
+		item.category = this.category;
 		item.tchar = this.tchar;
-		item.p1 = this.p1;
+		item.misc = this.misc;
 		item.cost = this.cost;
-		item.subval = this.subval;
+		item.subCategory = this.subCategory;
 		item.number = this.number;
 		item.weight = this.weight;
-		item.tohit = this.tohit;
-		item.todam = this.todam;
-		item.ac = this.ac;
-		item.toac = this.toac;
+		item.tohit = this.plusToHit;
+		item.plusToDam = this.plusToDamage;
+		item.armorClass = this.armorClass;
+		item.plusToArmorClass = this.plusToArmorClass;
 		item.damage[0] = this.damage[0];
 		item.damage[1] = this.damage[1];
 		item.level = this.level;
-		item.ident = 0;
+		item.identify = 0;
 	}
 }

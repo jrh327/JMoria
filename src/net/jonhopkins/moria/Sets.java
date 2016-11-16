@@ -43,7 +43,7 @@ public class Sets {
 	
 	public static final int SET_CORRODES = 4;
 	public static boolean isCorrosive(InvenType item) {
-		switch (item.tval) {
+		switch (item.category) {
 		case Constants.TV_SWORD:
 		case Constants.TV_HELM:
 		case Constants.TV_SHIELD:
@@ -57,7 +57,7 @@ public class Sets {
 	
 	public static final int SET_FLAMMABLE = 5;
 	public static boolean isFlammable(InvenType item) {
-		switch (item.tval) {
+		switch (item.category) {
 		case Constants.TV_ARROW:
 		case Constants.TV_BOW:
 		case Constants.TV_HAFTED:
@@ -79,14 +79,14 @@ public class Sets {
 	
 	public static final int SET_FROST_DESTROY = 6;
 	public static boolean doesFrostDestroy(InvenType item) {
-		return item.tval == Constants.TV_POTION1
-				|| item.tval == Constants.TV_POTION2
-				|| item.tval == Constants.TV_FLASK;
+		return item.category == Constants.TV_POTION1
+				|| item.category == Constants.TV_POTION2
+				|| item.category == Constants.TV_FLASK;
 	}
 	
 	public static final int SET_ACID_AFFECT = 7;
 	public static boolean doesAcidAffect(InvenType item) {
-		switch (item.tval) {
+		switch (item.category) {
 		case Constants.TV_MISC:
 		case Constants.TV_CHEST:
 			return true;
@@ -107,9 +107,9 @@ public class Sets {
 	
 	public static final int SET_LIGHTNING_DESTROY = 8;
 	public static boolean doesLightningDestroy(InvenType item) {
-		return item.tval == Constants.TV_RING
-				|| item.tval == Constants.TV_WAND
-				|| item.tval == Constants.TV_SPIKE;
+		return item.category == Constants.TV_RING
+				|| item.category == Constants.TV_WAND
+				|| item.category == Constants.TV_SPIKE;
 	}
 	
 	public static final int SET_NULL = 9;
@@ -119,7 +119,7 @@ public class Sets {
 	
 	public static final int SET_ACID_DESTROY = 10;
 	public static boolean doesAcidDestroy(InvenType item) {
-		switch (item.tval) {
+		switch (item.category) {
 		case Constants.TV_ARROW:
 		case Constants.TV_BOW:
 		case Constants.TV_HAFTED:
@@ -146,7 +146,7 @@ public class Sets {
 	
 	public static final int SET_FIRE_DESTROY = 11;
 	public static boolean doesFireDestroy(InvenType item) {
-		switch (item.tval) {
+		switch (item.category) {
 		case Constants.TV_ARROW:
 		case Constants.TV_BOW:
 		case Constants.TV_HAFTED:
@@ -174,7 +174,7 @@ public class Sets {
 	/* Items too large to fit in chests 	-DJG- */
 	public static boolean isTooLargeForChest(TreasureType item) {
 		/* Use treasure_type since item not yet created */
-		switch (item.tval) {
+		switch (item.category) {
 		case Constants.TV_CHEST:
 		case Constants.TV_BOW:
 		case Constants.TV_POLEARM:

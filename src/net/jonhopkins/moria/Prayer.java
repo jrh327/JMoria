@@ -42,16 +42,16 @@ public class Prayer {
 		PlayerFlags f_ptr;
 		InvenType i_ptr;
 		
-		Variable.free_turn_flag = true;
+		Variable.freeTurnFlag = true;
 		if (Player.py.flags.blind > 0) {
 			IO.printMessage("You can't see to read your prayer!");
 		} else if (Moria1.playerHasNoLight()) {
 			IO.printMessage("You have no light to read by.");
 		} else if (Player.py.flags.confused > 0) {
 			IO.printMessage("You are too confused.");
-		} else if (Player.Class[Player.py.misc.pclass].spell != Constants.PRIEST) {
+		} else if (Player.Class[Player.py.misc.playerClass].spell != Constants.PRIEST) {
 			IO.printMessage("Pray hard enough and your prayers may be answered.");
-		} else if (Treasure.inven_ctr == 0) {
+		} else if (Treasure.invenCounter == 0) {
 			IO.printMessage("But you are not carrying anything!");
 		} else if (!Misc3.findRange(Constants.TV_PRAYER_BOOK, Constants.TV_NEVER, i, j)) {
 			IO.printMessage("You are not carrying any Holy Books!");
@@ -60,8 +60,8 @@ public class Prayer {
 			if (result < 0) {
 				IO.printMessage("You don't know any prayers in that book.");
 			} else if (result > 0) {
-				s_ptr = Player.magic_spell[Player.py.misc.pclass - 1][choice.value()];
-				Variable.free_turn_flag = false;
+				s_ptr = Player.magicSpell[Player.py.misc.playerClass - 1][choice.value()];
+				Variable.freeTurnFlag = false;
 				
 				if (Misc1.randomInt(100) < chance.value()) {
 					IO.printMessage("You lost your concentration!");
@@ -82,7 +82,7 @@ public class Prayer {
 						Spells.removeFear();
 						break;
 					case 5:
-						Spells.lightArea(Player.char_row, Player.char_col);
+						Spells.lightArea(Player.y, Player.x);
 						break;
 					case 6:
 						Spells.detectTrap();
@@ -95,11 +95,11 @@ public class Prayer {
 						break;
 					case 9:
 						if (Moria1.getDirection("", dir)) {
-							Spells.confuseMonster(dir.value(), Player.char_row, Player.char_col);
+							Spells.confuseMonster(dir.value(), Player.y, Player.x);
 						}
 						break;
 					case 10:
-						Misc3.teleport((Player.py.misc.lev * 3));
+						Misc3.teleport((Player.py.misc.level * 3));
 						break;
 					case 11:
 						Spells.changePlayerHitpoints(Misc1.damageRoll(4, 4));
@@ -108,7 +108,7 @@ public class Prayer {
 						Spells.bless(Misc1.randomInt(24) + 24);
 						break;
 					case 13:
-						Spells.sleepMonsters(Player.char_row, Player.char_col);
+						Spells.sleepMonsters(Player.y, Player.x);
 						break;
 					case 14:
 						Spells.createFood();
@@ -117,22 +117,22 @@ public class Prayer {
 						for (i.value(0); i.value() < Constants.INVEN_ARRAY_SIZE; i.value(i.value() + 1)) {
 							i_ptr = Treasure.inventory[i.value()];
 							/* only clear flag for items that are wielded or worn */
-							if (i_ptr.tval >= Constants.TV_MIN_WEAR && i_ptr.tval <= Constants.TV_MAX_WEAR) {
+							if (i_ptr.category >= Constants.TV_MIN_WEAR && i_ptr.category <= Constants.TV_MAX_WEAR) {
 								i_ptr.flags &= ~Constants.TR_CURSED;
 							}
 						}
 						break;
 					case 16:
 						f_ptr = Player.py.flags;
-						f_ptr.resist_heat += Misc1.randomInt(10) + 10;
-						f_ptr.resist_cold += Misc1.randomInt(10) + 10;
+						f_ptr.resistHeat += Misc1.randomInt(10) + 10;
+						f_ptr.resistCold += Misc1.randomInt(10) + 10;
 						break;
 					case 17:
 						Spells.curePoison();
 						break;
 					case 18:
 						if (Moria1.getDirection("", dir)) {
-							Spells.fireBall(Constants.GF_HOLY_ORB, dir.value(), Player.char_row, Player.char_col, (Misc1.damageRoll(3, 6) + Player.py.misc.lev), "Black Sphere");
+							Spells.fireBall(Constants.GF_HOLY_ORB, dir.value(), Player.y, Player.x, (Misc1.damageRoll(3, 6) + Player.py.misc.level), "Black Sphere");
 						}
 						break;
 					case 19:
@@ -160,13 +160,13 @@ public class Prayer {
 						Spells.bless(Misc1.randomInt(48) + 48);
 						break;
 					case 27:
-						Spells.dispelCreature(Constants.CD_UNDEAD, (3 * Player.py.misc.lev));
+						Spells.dispelCreature(Constants.CD_UNDEAD, (3 * Player.py.misc.level));
 						break;
 					case 28:
 						Spells.changePlayerHitpoints(200);
 						break;
 					case 29:
-						Spells.dispelCreature(Constants.CD_EVIL, (3 * Player.py.misc.lev));
+						Spells.dispelCreature(Constants.CD_EVIL, (3 * Player.py.misc.level));
 						break;
 					case 30:
 						Spells.wardingGlyph();
@@ -180,40 +180,40 @@ public class Prayer {
 								i.value(i.value() + 1)) {
 							Misc3.restoreStat(i.value());
 						}
-						Spells.dispelCreature(Constants.CD_EVIL, 4 * Player.py.misc.lev);
+						Spells.dispelCreature(Constants.CD_EVIL, 4 * Player.py.misc.level);
 						Spells.turnUndead();
-						if (Player.py.flags.invuln < 3) {
-							Player.py.flags.invuln = 3;
+						if (Player.py.flags.invulnerability < 3) {
+							Player.py.flags.invulnerability = 3;
 						} else {
-							Player.py.flags.invuln++;
+							Player.py.flags.invulnerability++;
 						}
 						break;
 					default:
 						break;
 					}
 					/* End of prayers.				*/
-					if (!Variable.free_turn_flag) {
+					if (!Variable.freeTurnFlag) {
 						m_ptr = Player.py.misc;
-						if ((Player.spell_worked & (1L << choice.value())) == 0) {
-							m_ptr.exp += s_ptr.sexp << 2;
+						if ((Player.spellWorked & (1L << choice.value())) == 0) {
+							m_ptr.currExp += s_ptr.expGained << 2;
 							Misc3.printExperience();
-							Player.spell_worked |= (1L << choice.value());
+							Player.spellWorked |= (1L << choice.value());
 						}
 					}
 				}
 				m_ptr = Player.py.misc;
-				if (!Variable.free_turn_flag) {
-					if (s_ptr.smana > m_ptr.cmana) {
+				if (!Variable.freeTurnFlag) {
+					if (s_ptr.manaCost > m_ptr.currMana) {
 						IO.printMessage("You faint from fatigue!");
-						Player.py.flags.paralysis = Misc1.randomInt((5 * (s_ptr.smana - m_ptr.cmana)));
-						m_ptr.cmana = 0;
-						m_ptr.cmana_frac = 0;
+						Player.py.flags.paralysis = Misc1.randomInt((5 * (s_ptr.manaCost - m_ptr.currMana)));
+						m_ptr.currMana = 0;
+						m_ptr.currManaFraction = 0;
 						if (Misc1.randomInt(3) == 1) {
 							IO.printMessage("You have damaged your health!");
 							Misc3.decreaseStat(Constants.A_CON);
 						}
 					} else {
-						m_ptr.cmana -= s_ptr.smana;
+						m_ptr.currMana -= s_ptr.manaCost;
 					}
 					Misc3.printCurrentMana();
 				}

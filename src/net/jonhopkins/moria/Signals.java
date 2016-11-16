@@ -24,9 +24,8 @@ package net.jonhopkins.moria;
 public class Signals {
 	/* This signal package was brought to you by		-JEW-  */
 	/* Completely rewritten by				-CJS- */
-	/* Modified for Java by					-JRH- */
-	private static int error_sig = -1;
-	private static int signal_count = 0;
+	private static int errorSignal = -1;
+	private static int signalCount = 0;
 	
 	private Signals() { }
 	

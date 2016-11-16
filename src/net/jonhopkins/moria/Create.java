@@ -45,7 +45,7 @@ public class Create {
 		} while (tot <= 42 || tot >= 54);
 		
 		for (i = 0; i < 6; i++) {
-			Player.py.stats.max_stat[i] = 5 + dice[3 * i] + dice[3 * i + 1] + dice[3 * i + 2];
+			Player.py.stats.maxStat[i] = 5 + dice[3 * i] + dice[3 * i + 1] + dice[3 * i + 2];
 		}
 	}
 	
@@ -54,7 +54,7 @@ public class Create {
 		int i;
 		int tmp_stat;
 		
-		tmp_stat = Player.py.stats.max_stat[stat];
+		tmp_stat = Player.py.stats.maxStat[stat];
 		if (amount < 0) {
 			for (i = 0; i > amount; i--) {
 				if (tmp_stat > 108) {
@@ -83,7 +83,7 @@ public class Create {
 				}
 			}
 		}
-		Player.py.stats.max_stat[stat] = tmp_stat;
+		Player.py.stats.maxStat[stat] = tmp_stat;
 	}
 	
 	/* generate all stats and modify for race. needed in a separate module so
@@ -94,33 +94,33 @@ public class Create {
 		int j;
 		
 		p_ptr = Player.py;
-		r_ptr = Player.race[p_ptr.misc.prace];
+		r_ptr = Player.race[p_ptr.misc.playerRace];
 		generateStats();
-		changeStat(Constants.A_STR, r_ptr.str_adj);
-		changeStat(Constants.A_INT, r_ptr.int_adj);
-		changeStat(Constants.A_WIS, r_ptr.wis_adj);
-		changeStat(Constants.A_DEX, r_ptr.dex_adj);
-		changeStat(Constants.A_CON, r_ptr.con_adj);
-		changeStat(Constants.A_CHR, r_ptr.chr_adj);
-		p_ptr.misc.lev = 1;
+		changeStat(Constants.A_STR, r_ptr.strAdjust);
+		changeStat(Constants.A_INT, r_ptr.intAdjust);
+		changeStat(Constants.A_WIS, r_ptr.wisAdjust);
+		changeStat(Constants.A_DEX, r_ptr.dexAdjust);
+		changeStat(Constants.A_CON, r_ptr.conAdjust);
+		changeStat(Constants.A_CHR, r_ptr.chrAdjust);
+		p_ptr.misc.level = 1;
 		for (j = 0; j < 6; j++) {
-			Player.py.stats.cur_stat[j] = Player.py.stats.max_stat[j];
+			Player.py.stats.curStat[j] = Player.py.stats.maxStat[j];
 			Misc3.setStatUseValue(j);
 		}
 		
-		p_ptr.misc.srh    = r_ptr.srh;
-		p_ptr.misc.bth    = r_ptr.bth;
-		p_ptr.misc.bthb   = r_ptr.bthb;
-		p_ptr.misc.fos    = r_ptr.fos;
-		p_ptr.misc.stl    = r_ptr.stl;
-		p_ptr.misc.save   = r_ptr.bsav;
-		p_ptr.misc.hitdie = r_ptr.bhitdie;
-		p_ptr.misc.ptodam = Misc3.adjustToDamage();
-		p_ptr.misc.ptohit = Misc3.adjustToHit();
-		p_ptr.misc.ptoac  = 0;
-		p_ptr.misc.pac    = Misc3.adjustToAc();
-		p_ptr.misc.expfact = r_ptr.b_exp;
-		p_ptr.flags.see_infra = r_ptr.infra;
+		p_ptr.misc.searchChance    = r_ptr.baseSearchChance;
+		p_ptr.misc.baseToHit    = r_ptr.baseToHit;
+		p_ptr.misc.baseToHitBow   = r_ptr.baseToHitBow;
+		p_ptr.misc.freqOfSearch    = r_ptr.freqOfSearch;
+		p_ptr.misc.stealth    = r_ptr.stealth;
+		p_ptr.misc.savingThrow   = r_ptr.baseSavingThrow;
+		p_ptr.misc.hitDie = r_ptr.baseHitDie;
+		p_ptr.misc.plusToDamage = Misc3.adjustToDamage();
+		p_ptr.misc.plusToHit = Misc3.adjustToHit();
+		p_ptr.misc.magicArmorClass  = 0;
+		p_ptr.misc.totalArmorClass    = Misc3.adjustToAc();
+		p_ptr.misc.expFactor = r_ptr.baseExpFactor;
+		p_ptr.flags.seeInfrared = r_ptr.seeInfrared;
 	}
 	
 	/* Allows player to select a race			-JWT-	*/
@@ -141,7 +141,7 @@ public class Create {
 		IO.putBuffer("Choose a race (? for Help):", 20, 2);
 		
 		do {
-			tmp_str = String.format("%c) %s", k + 'a', Player.race[j].trace);
+			tmp_str = String.format("%c) %s", k + 'a', Player.race[j].raceType);
 			IO.putBuffer(tmp_str, m, l);
 			
 			k++;
@@ -171,8 +171,8 @@ public class Create {
 		
 		p_ptr = Player.py;
 		r_ptr = Player.race[j];
-		p_ptr.misc.prace = j;
-		IO.putBuffer(r_ptr.trace, 3, 15);
+		p_ptr.misc.playerRace = j;
+		IO.putBuffer(r_ptr.raceType, 3, 15);
 	}
 	
 	/* Will print the history of a character			-JWT-	*/
@@ -196,7 +196,7 @@ public class Create {
 		BackgroundType b_ptr;
 		
 		/* Get a block of history text				*/
-		hist_ptr = Player.py.misc.prace * 3 + 1;
+		hist_ptr = Player.py.misc.playerRace * 3 + 1;
 		history_block = new StringBuilder();
 		social_class = Misc1.randomInt(4);
 		cur_ptr = 0;
@@ -264,7 +264,7 @@ public class Create {
 		} else if (social_class < 1) {
 			social_class = 1;
 		}
-		Player.py.misc.sc = social_class;
+		Player.py.misc.socialClass = social_class;
 	}
 	
 	/* Gets the character's sex				-JWT-	*/
@@ -281,11 +281,11 @@ public class Create {
 			/* speed not important here */
 			c = IO.inkey();
 			if (c == 'f' || c == 'F') {
-				Player.py.misc.male = false;
+				Player.py.misc.isMale = false;
 				IO.putBuffer("Female", 4, 15);
 				exit_flag = true;
 			} else if (c == 'm' || c == 'M') {
-				Player.py.misc.male = true;
+				Player.py.misc.isMale = true;
 				IO.putBuffer("Male", 4, 15);
 				exit_flag = true;
 			} else if (c == '?') {
@@ -298,16 +298,16 @@ public class Create {
 	
 	/* Computes character's age, height, and weight		-JWT-	*/
 	public static void generateAhw() {
-		int i = Player.py.misc.prace;
-		Player.py.misc.age = Player.race[i].b_age + Misc1.randomInt(Player.race[i].m_age);
-		if (Player.py.misc.male) {
-			Player.py.misc.ht = Misc1.randomIntNormalized(Player.race[i].m_b_ht, Player.race[i].m_m_ht);
-			Player.py.misc.wt = Misc1.randomIntNormalized(Player.race[i].m_b_wt, Player.race[i].m_m_wt);
+		int i = Player.py.misc.playerRace;
+		Player.py.misc.age = Player.race[i].baseAge + Misc1.randomInt(Player.race[i].maxAge);
+		if (Player.py.misc.isMale) {
+			Player.py.misc.height = Misc1.randomIntNormalized(Player.race[i].baseHeightMale, Player.race[i].modHeightMale);
+			Player.py.misc.weight = Misc1.randomIntNormalized(Player.race[i].baseWeightMale, Player.race[i].modWeightMale);
 		} else {
-			Player.py.misc.ht = Misc1.randomIntNormalized(Player.race[i].f_b_ht, Player.race[i].f_m_ht);
-			Player.py.misc.wt = Misc1.randomIntNormalized(Player.race[i].f_b_wt, Player.race[i].f_m_wt);
+			Player.py.misc.height = Misc1.randomIntNormalized(Player.race[i].baseHeightFemale, Player.race[i].modHeightFemale);
+			Player.py.misc.weight = Misc1.randomIntNormalized(Player.race[i].baseWeightFemale, Player.race[i].modWeightFemale);
 		}
-		Player.py.misc.disarm = Player.race[i].b_dis + Misc3.adjustToDisarm();
+		Player.py.misc.disarmChance = Player.race[i].baseDisarmChance + Misc3.adjustToDisarm();
 	}
 	
 	/* Gets a character class				-JWT-	*/
@@ -326,7 +326,7 @@ public class Create {
 		for (j = 0; j < Constants.MAX_CLASS; j++) {
 			cl[j] = 0;
 		}
-		i = Player.py.misc.prace;
+		i = Player.py.misc.playerRace;
 		j = 0;
 		k = 0;
 		l = 2;
@@ -350,7 +350,7 @@ public class Create {
 			mask <<= 1;
 		} while (j < Constants.MAX_CLASS);
 		
-		Player.py.misc.pclass = 0;
+		Player.py.misc.playerClass = 0;
 		exit_flag = false;
 		
 		do {
@@ -358,63 +358,63 @@ public class Create {
 			s = IO.inkey();
 			j = s - 'a';
 			if ((j < k) && (j >= 0)) {
-				Player.py.misc.pclass = cl[j];
-				c_ptr = Player.Class[Player.py.misc.pclass];
+				Player.py.misc.playerClass = cl[j];
+				c_ptr = Player.Class[Player.py.misc.playerClass];
 				exit_flag = true;
 				IO.clearFrom(20);
 				IO.putBuffer(c_ptr.title, 5, 15);
 				
 				/* Adjust the stats for the class adjustment		-RAK-	*/
 				p_ptr = Player.py;
-				changeStat(Constants.A_STR, c_ptr.madj_str);
-				changeStat(Constants.A_INT, c_ptr.madj_int);
-				changeStat(Constants.A_WIS, c_ptr.madj_wis);
-				changeStat(Constants.A_DEX, c_ptr.madj_dex);
-				changeStat(Constants.A_CON, c_ptr.madj_con);
-				changeStat(Constants.A_CHR, c_ptr.madj_chr);
+				changeStat(Constants.A_STR, c_ptr.modStrAdjust);
+				changeStat(Constants.A_INT, c_ptr.modIntAdjust);
+				changeStat(Constants.A_WIS, c_ptr.modWisAdjust);
+				changeStat(Constants.A_DEX, c_ptr.modDexAdjust);
+				changeStat(Constants.A_CON, c_ptr.modConAdjust);
+				changeStat(Constants.A_CHR, c_ptr.modChrAdjust);
 				for(i = 0; i < 6; i++) {
-					p_ptr.stats.cur_stat[i] = p_ptr.stats.max_stat[i];
+					p_ptr.stats.curStat[i] = p_ptr.stats.maxStat[i];
 					Misc3.setStatUseValue(i);
 				}
 				
-				p_ptr.misc.ptodam = Misc3.adjustToDamage();	/* Real values		*/
-				p_ptr.misc.ptohit = Misc3.adjustToHit();
-				p_ptr.misc.ptoac  = Misc3.adjustToAc();
-				p_ptr.misc.pac    = 0;
-				p_ptr.misc.dis_td = p_ptr.misc.ptodam; /* Displayed values	*/
-				p_ptr.misc.dis_th = p_ptr.misc.ptohit;
-				p_ptr.misc.dis_tac= p_ptr.misc.ptoac;
-				p_ptr.misc.dis_ac = p_ptr.misc.pac + p_ptr.misc.dis_tac;
+				p_ptr.misc.plusToDamage = Misc3.adjustToDamage();	/* Real values		*/
+				p_ptr.misc.plusToHit = Misc3.adjustToHit();
+				p_ptr.misc.magicArmorClass  = Misc3.adjustToAc();
+				p_ptr.misc.totalArmorClass    = 0;
+				p_ptr.misc.displayPlusToDamage = p_ptr.misc.plusToDamage; /* Displayed values	*/
+				p_ptr.misc.displayPlusToHit = p_ptr.misc.plusToHit;
+				p_ptr.misc.displayPlusTotalArmorClass= p_ptr.misc.magicArmorClass;
+				p_ptr.misc.displayPlusToArmorClass = p_ptr.misc.totalArmorClass + p_ptr.misc.displayPlusTotalArmorClass;
 				
 				/* now set misc stats, do this after setting stats because
 				 * of con_adj() for hitpoints */
 				m_ptr = Player.py.misc;
-				m_ptr.hitdie += c_ptr.adj_hd;
-				m_ptr.mhp = Misc3.adjustConstitution() + m_ptr.hitdie;
-				m_ptr.chp = m_ptr.mhp;
-				m_ptr.chp_frac = 0;
+				m_ptr.hitDie += c_ptr.adjHitpoints;
+				m_ptr.maxHitpoints = Misc3.adjustConstitution() + m_ptr.hitDie;
+				m_ptr.currHitpoints = m_ptr.maxHitpoints;
+				m_ptr.currHitpointsFraction = 0;
 				
 				/* initialize hit_points array */
 				/* put bounds on total possible hp, only succeed if it is within
 				 * 1/8 of average value */
-				min_value = (Constants.MAX_PLAYER_LEVEL * 3 / 8 * (m_ptr.hitdie - 1)) + Constants.MAX_PLAYER_LEVEL;
-				max_value = (Constants.MAX_PLAYER_LEVEL * 5 / 8 * (m_ptr.hitdie - 1)) + Constants.MAX_PLAYER_LEVEL;
-				Player.player_hp[0] = m_ptr.hitdie;
+				min_value = (Constants.MAX_PLAYER_LEVEL * 3 / 8 * (m_ptr.hitDie - 1)) + Constants.MAX_PLAYER_LEVEL;
+				max_value = (Constants.MAX_PLAYER_LEVEL * 5 / 8 * (m_ptr.hitDie - 1)) + Constants.MAX_PLAYER_LEVEL;
+				Player.hitpoints[0] = m_ptr.hitDie;
 				do {
 					for (i = 1; i < Constants.MAX_PLAYER_LEVEL; i++) {
-						Player.player_hp[i] = Misc1.randomInt(m_ptr.hitdie);
-						Player.player_hp[i] += Player.player_hp[i - 1];
+						Player.hitpoints[i] = Misc1.randomInt(m_ptr.hitDie);
+						Player.hitpoints[i] += Player.hitpoints[i - 1];
 					}
-				} while ((Player.player_hp[Constants.MAX_PLAYER_LEVEL - 1] < min_value) || (Player.player_hp[Constants.MAX_PLAYER_LEVEL - 1] > max_value));
+				} while ((Player.hitpoints[Constants.MAX_PLAYER_LEVEL - 1] < min_value) || (Player.hitpoints[Constants.MAX_PLAYER_LEVEL - 1] > max_value));
 				
-				m_ptr.bth += c_ptr.mbth;
-				m_ptr.bthb += c_ptr.mbthb;	/*RAK*/
-				m_ptr.srh += c_ptr.msrh;
-				m_ptr.disarm += c_ptr.mdis;
-				m_ptr.fos += c_ptr.mfos;
-				m_ptr.stl += c_ptr.mstl;
-				m_ptr.save += c_ptr.msav;
-				m_ptr.expfact += c_ptr.m_exp;
+				m_ptr.baseToHit += c_ptr.modBaseToHit;
+				m_ptr.baseToHitBow += c_ptr.modBaseToHitBow;	/*RAK*/
+				m_ptr.searchChance += c_ptr.modSearch;
+				m_ptr.disarmChance += c_ptr.modDisarm;
+				m_ptr.freqOfSearch += c_ptr.modFreqOfSearch;
+				m_ptr.stealth += c_ptr.modStealth;
+				m_ptr.savingThrow += c_ptr.modSavingThrow;
+				m_ptr.expFactor += c_ptr.modExpFactor;
 			} else if (s == '?') {
 				Files.helpfile(Config.MORIA_WELCOME);
 			} else {
@@ -433,23 +433,23 @@ public class Create {
 		int tmp, gold;
 		int[] a_ptr;
 		
-		a_ptr = Player.py.stats.max_stat;
+		a_ptr = Player.py.stats.maxStat;
 		tmp = monetaryValue(a_ptr[Constants.A_STR])
 				+ monetaryValue(a_ptr[Constants.A_INT])
 				+ monetaryValue(a_ptr[Constants.A_WIS])
 				+ monetaryValue(a_ptr[Constants.A_CON])
 				+ monetaryValue(a_ptr[Constants.A_DEX]);
 		
-		gold = Player.py.misc.sc * 6 + Misc1.randomInt(25) + 325;	/* Social Class adj */
+		gold = Player.py.misc.socialClass * 6 + Misc1.randomInt(25) + 325;	/* Social Class adj */
 		gold -= tmp;										/* Stat adj */
 		gold += monetaryValue(a_ptr[Constants.A_CHR]);				/* Charisma adj	*/
-		if (!Player.py.misc.male) {
+		if (!Player.py.misc.isMale) {
 			gold += 50;	/* She charmed the banker into it! -CJS- */
 		}
 		if (gold < 80) {
 			gold = 80;	/* Minimum */
 		}
-		Player.py.misc.au = gold;
+		Player.py.misc.gold = gold;
 	}
 	
 	/* ---------- M A I N  for Character Creation Routine ---------- */

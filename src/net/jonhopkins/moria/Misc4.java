@@ -34,13 +34,13 @@ public class Misc4 {
 		int j;
 		String out_val, tmp_str;
 		
-		if (Treasure.inven_ctr > 0 || Treasure.equip_ctr > 0) {
+		if (Treasure.invenCounter > 0 || Treasure.equipCounter > 0) {
 			if (Moria1.getItemId(item_val, "Which one? ", 0, Constants.INVEN_ARRAY_SIZE, "", "")) {
 				tmp_str = Desc.describeObject(Treasure.inventory[item_val.value()], true);
 				out_val = String.format("Inscribing %s", tmp_str);
 				IO.printMessage(out_val);
-				if (!Treasure.inventory[item_val.value()].inscrip.isEmpty()) {
-					out_val = String.format("Replace %s New inscription:", Treasure.inventory[item_val.value()].inscrip);
+				if (!Treasure.inventory[item_val.value()].inscription.isEmpty()) {
+					out_val = String.format("Replace %s New inscription:", Treasure.inventory[item_val.value()].inscription);
 				} else {
 					out_val = "Inscription: ";
 				}
@@ -61,12 +61,12 @@ public class Misc4 {
 	
 	/* Append an additional comment to an object description.	-CJS- */
 	public static void addInscription(InvenType i_ptr, int type) {
-		i_ptr.ident |= type;
+		i_ptr.identify |= type;
 	}
 
 	/* Replace any existing comment in an object description with a new one. CJS*/
 	public static void inscribe(InvenType i_ptr, String str) {
-		i_ptr.inscrip = str;
+		i_ptr.inscription = str;
 	}
 	
 	/* We need to reset the view of things.			-CJS- */
@@ -74,24 +74,24 @@ public class Misc4 {
 		int i, j;
 		CaveType c_ptr, d_ptr;
 		
-		c_ptr = Variable.cave[Player.char_row][Player.char_col];
+		c_ptr = Variable.cave[Player.y][Player.x];
 		/* Check for new panel		   */
-		if (Misc1.getPanel(Player.char_row, Player.char_col, false)) {
+		if (Misc1.getPanel(Player.y, Player.x, false)) {
 			Misc1.printMap();
 		}
 		/* Move the light source		   */
-		Moria1.moveLight(Player.char_row, Player.char_col, Player.char_row, Player.char_col);
+		Moria1.moveLight(Player.y, Player.x, Player.y, Player.x);
 		/* A room of light should be lit.	 */
 		if (c_ptr.fval == Constants.LIGHT_FLOOR) {
-			if ((Player.py.flags.blind < 1) && !c_ptr.pl) {
-				Moria1.lightUpRoom(Player.char_row, Player.char_col);
+			if ((Player.py.flags.blind < 1) && !c_ptr.permLight) {
+				Moria1.lightUpRoom(Player.y, Player.x);
 			}
 		/* In doorway of light-room?		   */
-		} else if (c_ptr.lr && (Player.py.flags.blind < 1)) {
-			for (i = (Player.char_row - 1); i <= (Player.char_row + 1); i++) {
-				for (j = (Player.char_col - 1); j <= (Player.char_col + 1); j++) {
+		} else if (c_ptr.litRoom && (Player.py.flags.blind < 1)) {
+			for (i = (Player.y - 1); i <= (Player.y + 1); i++) {
+				for (j = (Player.x - 1); j <= (Player.x + 1); j++) {
 					d_ptr = Variable.cave[i][j];
-					if ((d_ptr.fval == Constants.LIGHT_FLOOR) && !d_ptr.pl) {
+					if ((d_ptr.fval == Constants.LIGHT_FLOOR) && !d_ptr.permLight) {
 						Moria1.lightUpRoom(i, j);
 					}
 				}

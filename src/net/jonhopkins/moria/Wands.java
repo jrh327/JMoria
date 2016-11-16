@@ -40,14 +40,14 @@ public class Wands {
 		InvenType i_ptr;
 		PlayerMisc m_ptr;
 		
-		Variable.free_turn_flag = true;
-		if (Treasure.inven_ctr == 0) {
+		Variable.freeTurnFlag = true;
+		if (Treasure.invenCounter == 0) {
 			IO.printMessage("But you are not carrying anything.");
 		} else if (!Misc3.findRange(Constants.TV_WAND, Constants.TV_NEVER, j, k)) {
 			IO.printMessage("You are not carrying any wands.");
 		} else if (Moria1.getItemId(item_val, "Aim which wand?", j.value(), k.value(), "", "")) {
 			i_ptr = Treasure.inventory[item_val.value()];
-			Variable.free_turn_flag = false;
+			Variable.freeTurnFlag = false;
 			if (Moria1.getDirection("", dir)) {
 				if (Player.py.flags.confused > 0) {
 					IO.printMessage("You are confused.");
@@ -57,7 +57,7 @@ public class Wands {
 				}
 				ident = false;
 				m_ptr = Player.py.misc;
-				chance = m_ptr.save + Misc3.adjustStat(Constants.A_INT) - i_ptr.level + (Player.class_level_adj[m_ptr.pclass][Constants.CLA_DEVICE] * m_ptr.lev / 3);
+				chance = m_ptr.savingThrow + Misc3.adjustStat(Constants.A_INT) - i_ptr.level + (Player.classLevelAdjust[m_ptr.playerClass][Constants.CLA_DEVICE] * m_ptr.level / 3);
 				if (Player.py.flags.confused > 0) {
 					chance = chance / 2;
 				}
@@ -67,31 +67,31 @@ public class Wands {
 				if (chance <= 0)	chance = 1;
 				if (Misc1.randomInt(chance) < Constants.USE_DEVICE) {
 					IO.printMessage("You failed to use the wand properly.");
-				} else if (i_ptr.p1 > 0) {
+				} else if (i_ptr.misc > 0) {
 					i.value(i_ptr.flags);
-					i_ptr.p1--;
+					i_ptr.misc--;
 					while (i.value() != 0) {
 						j.value(Misc1.firstBitPos(i) + 1);
-						k.value(Player.char_row);
-						l = Player.char_col;
+						k.value(Player.y);
+						l = Player.x;
 						/* Wands			 */
 						switch(j.value())
 						{
 						case 1:
 							IO.printMessage("A line of blue shimmering light appears.");
-							Spells.lightLine(dir.value(), Player.char_row, Player.char_col);
+							Spells.lightLine(dir.value(), Player.y, Player.x);
 							ident = true;
 							break;
 						case 2:
-							Spells.fireBolt(Constants.GF_LIGHTNING, dir.value(), k.value(), l, Misc1.damageRoll(4, 8), Player.spell_names[8]);
+							Spells.fireBolt(Constants.GF_LIGHTNING, dir.value(), k.value(), l, Misc1.damageRoll(4, 8), Player.spellNames[8]);
 							ident = true;
 							break;
 						case 3:
-							Spells.fireBolt(Constants.GF_FROST, dir.value(), k.value(), l, Misc1.damageRoll(6, 8), Player.spell_names[14]);
+							Spells.fireBolt(Constants.GF_FROST, dir.value(), k.value(), l, Misc1.damageRoll(6, 8), Player.spellNames[14]);
 							ident = true;
 							break;
 						case 4:
-							Spells.fireBolt(Constants.GF_FIRE, dir.value(), k.value(), l, Misc1.damageRoll(9, 8), Player.spell_names[22]);
+							Spells.fireBolt(Constants.GF_FIRE, dir.value(), k.value(), l, Misc1.damageRoll(9, 8), Player.spellNames[22]);
 							ident = true;
 							break;
 						case 5:
@@ -122,7 +122,7 @@ public class Wands {
 							ident = Spells.destroyTrapsAndDoors(dir.value(), k.value(), l);
 							break;
 						case 14:
-							Spells.fireBolt(Constants.GF_MAGIC_MISSILE, dir.value(), k.value(), l, Misc1.damageRoll(2, 6), Player.spell_names[0]);
+							Spells.fireBolt(Constants.GF_MAGIC_MISSILE, dir.value(), k.value(), l, Misc1.damageRoll(2, 6), Player.spellNames[0]);
 							ident = true;
 							break;
 						case 15:
@@ -146,11 +146,11 @@ public class Wands {
 							ident = true;
 							break;
 						case 21:
-							Spells.fireBall(Constants.GF_FIRE, dir.value(), k.value(), l, 72, Player.spell_names[28]);
+							Spells.fireBall(Constants.GF_FIRE, dir.value(), k.value(), l, 72, Player.spellNames[28]);
 							ident = true;
 							break;
 						case 22:
-							Spells.fireBall(Constants.GF_POISON_GAS, dir.value(), k.value(), l, 12, Player.spell_names[6]);
+							Spells.fireBall(Constants.GF_POISON_GAS, dir.value(), k.value(), l, 12, Player.spellNames[6]);
 							ident = true;
 							break;
 						case 23:
@@ -170,7 +170,7 @@ public class Wands {
 						if (!Desc.isKnownByPlayer(i_ptr)) {
 							m_ptr = Player.py.misc;
 							/* round half-way case up */
-							m_ptr.exp += (i_ptr.level + (m_ptr.lev >> 1)) / m_ptr.lev;
+							m_ptr.currExp += (i_ptr.level + (m_ptr.level >> 1)) / m_ptr.level;
 							Misc3.printExperience();
 							
 							Desc.identify(item_val);

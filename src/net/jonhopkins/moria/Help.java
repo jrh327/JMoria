@@ -42,7 +42,7 @@ public class Help {
 			case '#': IO.print("# - A stone wall.", 0, 0); break;
 			case '$': IO.print("$ - Treasure.", 0, 0); break;
 			case '%':
-				if (Variable.highlight_seams.value()) {
+				if (Variable.highlightSeams.value()) {
 					IO.print("% - A magma or quartz vein.", 0, 0);
 				} else {
 					IO.print("% - Not used.", 0, 0);
@@ -143,7 +143,7 @@ public class Help {
 		/* Allow access to monster memory. -CJS- */
 		n = 0;
 		for (i = Constants.MAX_CREATURES - 1; i >= 0; i--) {
-			if ((Monsters.c_list[i].cchar == command.value()) && Recall.canRecallMonster(i)) {
+			if ((Monsters.creatureList[i].cchar == command.value()) && Recall.canRecallMonster(i)) {
 				if (n == 0) {
 					IO.putBuffer("You recall those details? [y/n]", 0, 40);
 					query = IO.inkey();

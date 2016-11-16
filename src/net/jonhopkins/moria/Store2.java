@@ -113,7 +113,7 @@ public class Store2 {
 			"Sorry, what was that again?"
 	};
 	
-	public static int last_store_inc;
+	public static int lastStoreInc;
 	
 	private Store2() { }
 	
@@ -232,18 +232,18 @@ public class Store2 {
 		s_ptr = Variable.store[store_num];
 		i = (start % 12);
 		stop = ((start / 12) + 1) * 12;
-		if (stop > s_ptr.store_ctr)	stop = s_ptr.store_ctr;
+		if (stop > s_ptr.storeCounter)	stop = s_ptr.storeCounter;
 		while (start < stop) {
-			i_ptr = s_ptr.store_inven[start].sitem;
+			i_ptr = s_ptr.storeInven[start].item;
 			x = i_ptr.number;
-			if ((i_ptr.subval >= Constants.ITEM_SINGLE_STACK_MIN) && (i_ptr.subval <= Constants.ITEM_SINGLE_STACK_MAX)) {
+			if ((i_ptr.subCategory >= Constants.ITEM_SINGLE_STACK_MIN) && (i_ptr.subCategory <= Constants.ITEM_SINGLE_STACK_MAX)) {
 				i_ptr.number = 1;
 			}
 			out_val1 = Desc.describeObject(i_ptr, true);
 			i_ptr.number = x;
 			out_val2 = String.format("%c) %s", 'a' + i, out_val1);
 			IO.print(out_val2, i + 5, 0);
-			x = s_ptr.store_inven[start].scost;
+			x = s_ptr.storeInven[start].cost;
 			if (x <= 0) {
 				int value = -x;
 				value = value * Misc3.adjustCharisma() / 100;
@@ -263,7 +263,7 @@ public class Store2 {
 				IO.eraseLine(j + i + 5, 0); /* clear remaining lines */
 			}
 		}
-		if (s_ptr.store_ctr > 12) {
+		if (s_ptr.storeCounter > 12) {
 			IO.putBuffer("- cont. -", 17, 60);
 		} else {
 			IO.eraseLine(17, 60);
@@ -284,12 +284,12 @@ public class Store2 {
 		
 		s_ptr = Variable.store[store_num];
 		i = (pos % 12);
-		if (s_ptr.store_inven[pos].scost < 0) {
-			j = - s_ptr.store_inven[pos].scost;
+		if (s_ptr.storeInven[pos].cost < 0) {
+			j = - s_ptr.storeInven[pos].cost;
 			j = j * Misc3.adjustCharisma() / 100;
 			out_val = String.format("%d", j);
 		} else {
-			out_val = String.format("%9d [Fixed]", s_ptr.store_inven[pos].scost);
+			out_val = String.format("%9d [Fixed]", s_ptr.storeInven[pos].cost);
 		}
 		IO.print(out_val, i+5, 59);
 	}
@@ -300,7 +300,7 @@ public class Store2 {
 	public static void storePrintGold() {
 		String out_val;
 		
-		out_val = String.format("Gold Remaining : %d", Player.py.misc.au);
+		out_val = String.format("Gold Remaining : %d", Player.py.misc.gold);
 		IO.print(out_val, 18, 17);
 	}
 	
@@ -315,7 +315,7 @@ public class Store2 {
 		
 		s_ptr = Variable.store[store_num];
 		IO.clearScreen();
-		IO.putBuffer(Tables.owners[s_ptr.owner].owner_name, 3, 9);
+		IO.putBuffer(Tables.owners[s_ptr.owner].ownerName, 3, 9);
 		IO.putBuffer("Item", 4, 3);
 		IO.putBuffer("Asking Price", 4, 60);
 		storePrintGold();
@@ -365,12 +365,12 @@ public class Store2 {
 		
 		increase = false;
 		s_ptr = Variable.store[store_num];
-		s_ptr.insult_cur++;
-		if (s_ptr.insult_cur > Tables.owners[s_ptr.owner].insult_max) {
+		s_ptr.currInsult++;
+		if (s_ptr.currInsult > Tables.owners[s_ptr.owner].insultMax) {
 			printComment4();
-			s_ptr.insult_cur = 0;
-			s_ptr.bad_buy++;
-			s_ptr.store_open = Variable.turn + 2500 + Misc1.randomInt(2500);
+			s_ptr.currInsult = 0;
+			s_ptr.badBuy++;
+			s_ptr.storeOpen = Variable.turn + 2500 + Misc1.randomInt(2500);
 			increase = true;
 		}
 		return increase;
@@ -385,8 +385,8 @@ public class Store2 {
 		StoreType s_ptr;
 		
 		s_ptr = Variable.store[store_num];
-		if (s_ptr.insult_cur != 0) {
-			s_ptr.insult_cur--;
+		if (s_ptr.currInsult != 0) {
+			s_ptr.currInsult--;
 		}
 	}
 	
@@ -431,13 +431,13 @@ public class Store2 {
 		clen = comment.length();
 		orig_clen = clen;
 		if (!num_offer) {
-			last_store_inc = 0;
+			lastStoreInc = 0;
 		}
 		i = 0;
 		do {
 			IO.print(comment, 0, 0);
-			if (num_offer && last_store_inc != 0) {
-				default_offer = String.format("[%c%d] ", (last_store_inc < 0) ? '-' : '+', Math.abs(last_store_inc));
+			if (num_offer && lastStoreInc != 0) {
+				default_offer = String.format("[%c%d] ", (lastStoreInc < 0) ? '-' : '+', Math.abs(lastStoreInc));
 				IO.print(default_offer, 0, orig_clen);
 				clen = orig_clen + default_offer.length();
 			}
@@ -467,10 +467,10 @@ public class Store2 {
 				if (i == 0) {
 					increment = false;
 				} else {
-					last_store_inc = i;
+					lastStoreInc = i;
 				}
 			} else if (num_offer && out_val.equals("")) {
-				i = last_store_inc;
+				i = lastStoreInc;
 				increment = true;
 			} else {
 				try {
@@ -578,9 +578,9 @@ public class Store2 {
 		min_sell.value(min_sell.value() * Misc3.adjustCharisma() / 100);
 		if (min_sell.value() <= 0)	min_sell.value(1);
 		/* cast max_inflate to signed so that subtraction works correctly */
-		max_buy = cost * (200 - o_ptr.max_inflate) / 100;
+		max_buy = cost * (200 - o_ptr.maxInflate) / 100;
 		if (max_buy <= 0) max_buy = 1;
-		min_per  = o_ptr.haggle_per;
+		min_per  = o_ptr.hagglePercent;
 		max_per  = min_per * 3;
 		haggleCommands(1);
 		cur_ask   = max_sell.value();
@@ -600,7 +600,7 @@ public class Store2 {
 			
 			/* Set up automatic increment, so that a return will accept the
 			 * final price.  */
-			last_store_inc = min_sell.value();
+			lastStoreInc = min_sell.value();
 			num_offer = true;
 		}
 		
@@ -621,8 +621,8 @@ public class Store2 {
 						/* If the automatic increment is large enough to overflow,
 						 * then the player must have made a mistake.  Clear it
 						 * because it is useless.  */
-						if (last_offer + last_store_inc > cur_ask) {
-							last_store_inc = 0;
+						if (last_offer + lastStoreInc > cur_ask) {
+							lastStoreInc = 0;
 						}
 					} else if (new_offer.value() == cur_ask) {
 						flag = true;
@@ -654,7 +654,7 @@ public class Store2 {
 					comment = "Final Offer";
 					/* Set the automatic haggle increment so that RET will give
 					 * a new_offer equal to the final_ask price.  */
-					last_store_inc = final_ask - new_offer.value();
+					lastStoreInc = final_ask - new_offer.value();
 					final_flag++;
 					if (final_flag > 3) {
 						if (increaseInsults(store_num)) {
@@ -678,8 +678,8 @@ public class Store2 {
 					
 					/* If the current increment would take you over the store's
 					 * price, then decrease it to an exact match.  */
-					if (cur_ask - last_offer < last_store_inc) {
-						last_store_inc = cur_ask - last_offer;
+					if (cur_ask - last_offer < lastStoreInc) {
+						lastStoreInc = cur_ask - last_offer;
 					}
 				}
 			}
@@ -731,18 +731,18 @@ public class Store2 {
 		} else {
 			o_ptr = Tables.owners[s_ptr.owner];
 			cost = cost * (200 - Misc3.adjustCharisma()) / 100;
-			cost = cost * (200 - Tables.rgold_adj[o_ptr.owner_race][Player.py.misc.prace]) / 100;
+			cost = cost * (200 - Tables.raceGoldAdjust[o_ptr.ownerRace][Player.py.misc.playerRace]) / 100;
 			if (cost < 1)  cost = 1;
-			max_sell = cost * o_ptr.max_inflate / 100;
+			max_sell = cost * o_ptr.maxInflate / 100;
 			/* cast max_inflate to signed so that subtraction works correctly */
-			max_buy  = cost * (200 - o_ptr.max_inflate) / 100;
-			min_buy  = cost * (200 - o_ptr.min_inflate) / 100;
+			max_buy  = cost * (200 - o_ptr.maxInflate) / 100;
+			min_buy  = cost * (200 - o_ptr.minInflate) / 100;
 			if (min_buy < 1) min_buy = 1;
 			if (max_buy < 1) max_buy = 1;
 			if (min_buy < max_buy)  min_buy = max_buy;
-			min_per  = o_ptr.haggle_per;
+			min_per  = o_ptr.hagglePercent;
 			max_per  = min_per * 3;
-			max_gold = o_ptr.max_cost;
+			max_gold = o_ptr.maxCost;
 		}
 		if (!flag) {
 			haggleCommands(-1);
@@ -751,7 +751,7 @@ public class Store2 {
 				final_flag= 1;
 				comment = "Final Offer";
 				/* Disable the automatic haggle increment on RET.  */
-				last_store_inc = 0;
+				lastStoreInc = 0;
 				cur_ask   = max_gold;
 				final_ask = max_gold;
 				IO.printMessage("I am sorry, but I have not the money to afford such a fine item.");
@@ -773,7 +773,7 @@ public class Store2 {
 					
 					/* Set up automatic increment, so that a return will accept the
 					 * final price.  */
-					last_store_inc = final_ask;
+					lastStoreInc = final_ask;
 					num_offer = true;
 				}
 			}
@@ -798,8 +798,8 @@ public class Store2 {
 							/* If the automatic increment is large enough to
 							 * overflow, then the player must have made a mistake.
 							 * Clear it because it is useless.  */
-							if (last_offer + last_store_inc < cur_ask) {
-								last_store_inc = 0;
+							if (last_offer + lastStoreInc < cur_ask) {
+								lastStoreInc = 0;
 							}
 						} else if (new_offer.value() == cur_ask) {
 							flag = true;
@@ -831,7 +831,7 @@ public class Store2 {
 						comment = "Final Offer";
 						/* Set the automatic haggle increment so that RET will give
 						 * a new_offer equal to the final_ask price.  */
-						last_store_inc = final_ask - new_offer.value();
+						lastStoreInc = final_ask - new_offer.value();
 						final_flag++;
 						if (final_flag > 3) {
 							if (increaseInsults(store_num)) {
@@ -855,8 +855,8 @@ public class Store2 {
 						
 						/* If the current decrement would take you under the store's
 						 * price, then increase it to an exact match.  */
-						if (cur_ask - last_offer > last_store_inc) {
-							last_store_inc = cur_ask - last_offer;
+						if (cur_ask - last_offer > lastStoreInc) {
+							lastStoreInc = cur_ask - last_offer;
 						}
 					}
 				}
@@ -893,46 +893,46 @@ public class Store2 {
 		s_ptr = Variable.store[store_num];
 		/* i == number of objects shown on screen	*/
 		if (cur_top.value() == 12) {
-			i = s_ptr.store_ctr - 1 - 12;
-		} else if (s_ptr.store_ctr > 11) {
+			i = s_ptr.storeCounter - 1 - 12;
+		} else if (s_ptr.storeCounter > 11) {
 			i = 11;
 		} else {
-			i = s_ptr.store_ctr - 1;
+			i = s_ptr.storeCounter - 1;
 		}
-		if (s_ptr.store_ctr < 1) {
+		if (s_ptr.storeCounter < 1) {
 			IO.printMessage("I am currently out of stock.");
 		
 		/* Get the item number to be bought		*/
 		} else if (getStoreItem(item_val, "Which item are you interested in? ", 0, i)) {
 			item_val.value(item_val.value() + cur_top.value());	/* true item_val	*/
-			Misc3.takeOneItem(sell_obj, s_ptr.store_inven[item_val.value()].sitem);
+			Misc3.takeOneItem(sell_obj, s_ptr.storeInven[item_val.value()].item);
 			if (Misc3.canPickUpItem(sell_obj)) {
-				if (s_ptr.store_inven[item_val.value()].scost > 0) {
-					price.value(s_ptr.store_inven[item_val.value()].scost);
+				if (s_ptr.storeInven[item_val.value()].cost > 0) {
+					price.value(s_ptr.storeInven[item_val.value()].cost);
 					choice = 0;
 				} else {
 					choice = purchaseHaggle(store_num, price, sell_obj);
 				}
 				if (choice == 0) {
-					if (Player.py.misc.au >= price.value()) {
+					if (Player.py.misc.gold >= price.value()) {
 						printComment1();
 						decreaseInsults(store_num);
-						Player.py.misc.au -= price.value();
+						Player.py.misc.gold -= price.value();
 						item_new = Misc3.pickUpItem(sell_obj);
-						i = s_ptr.store_ctr;
+						i = s_ptr.storeCounter;
 						Store1.storeDestroy(store_num, item_val.value(), true);
 						tmp_str = Desc.describeObject(Treasure.inventory[item_new], true);
 						out_val = String.format("You have %s (%c)", tmp_str, item_new + 'a');
 						IO.print(out_val, 0, 0);
 						Misc3.checkStrength();
-						if (cur_top.value() >= s_ptr.store_ctr) {
+						if (cur_top.value() >= s_ptr.storeCounter) {
 							cur_top.value(0);
 							displayInventory(store_num, cur_top.value());
 						} else {
-							r_ptr = s_ptr.store_inven[item_val.value()];
-							if (i == s_ptr.store_ctr) {
-								if (r_ptr.scost < 0) {
-									r_ptr.scost = price.value();
+							r_ptr = s_ptr.storeInven[item_val.value()];
+							if (i == s_ptr.storeCounter) {
+								if (r_ptr.cost < 0) {
+									r_ptr.cost = price.value();
 									displayCost(store_num, item_val.value());
 								}
 							} else {
@@ -1007,10 +1007,10 @@ public class Store2 {
 		char[] mask = new char[Constants.INVEN_WIELD];
 		int counter, first_item, last_item;
 		sell = false;
-		first_item = Treasure.inven_ctr;
+		first_item = Treasure.invenCounter;
 		last_item = -1;
-		for (counter = 0; counter < Treasure.inven_ctr; counter++) {
-			flag = storeBuy(store_num, Treasure.inventory[counter].tval);
+		for (counter = 0; counter < Treasure.invenCounter; counter++) {
+			flag = storeBuy(store_num, Treasure.inventory[counter].category);
 			mask[counter] = (flag ? (char)1 : (char)0);
 			if (flag) {
 				if (counter < first_item) {
@@ -1033,7 +1033,7 @@ public class Store2 {
 				if (choice == 0) {
 					printComment1();
 					decreaseInsults(store_num);
-					Player.py.misc.au += price.value();
+					Player.py.misc.gold += price.value();
 					/* identify object in inventory to set object_ident */
 					Desc.identify(item_val);
 					/* retake sold_obj so that it will be identified */
@@ -1093,20 +1093,20 @@ public class Store2 {
 		
 		s_ptr = Variable.store[store_num];
 		
-		if (s_ptr.store_open < Variable.turn) {
+		if (s_ptr.storeOpen < Variable.turn) {
 			exit_flag = false;
 			cur_top.value(0);
 			displayStore(store_num, cur_top.value());
 			do {
 				IO.moveCursor(20, 9);
 				/* clear the msg flag just like we do in dungeon.java */
-				Variable.msg_flag = 0;
+				Variable.msgFlag = 0;
 				if (IO.getCommand("", command)) {
 					switch(command.value())
 					{
 					case 'b':
 						if (cur_top.value() == 0) {
-							if (s_ptr.store_ctr > 12) {
+							if (s_ptr.storeCounter > 12) {
 								cur_top.value(12);
 								displayInventory(store_num, cur_top.value());
 							} else {
@@ -1122,16 +1122,16 @@ public class Store2 {
 					case 'T': case 't':	 /* Take off		*/
 					case 'W': case 'w':	/* Wear			*/
 					case 'X': case 'x':	/* Switch weapon		*/
-						tmp_chr = Player.py.stats.use_stat[Constants.A_CHR];
+						tmp_chr = Player.py.stats.useStat[Constants.A_CHR];
 						do {
 							Moria1.doInvenCommand(command.value());
-							command.value(Variable.doing_inven);
+							command.value(Variable.doingInven);
 						} while (command.value() != '\0');
 						/* redisplay store prices if charisma changes */
-						if (tmp_chr != Player.py.stats.use_stat[Constants.A_CHR]) {
+						if (tmp_chr != Player.py.stats.useStat[Constants.A_CHR]) {
 							displayInventory(store_num, cur_top.value());
 						}
-						Variable.free_turn_flag = false;	/* No free moves here. -CJS- */
+						Variable.freeTurnFlag = false;	/* No free moves here. -CJS- */
 						break;
 					case 'p':
 						exit_flag = storePurchase(store_num, cur_top);

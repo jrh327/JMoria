@@ -1,5 +1,5 @@
 /*
- * Stats.java: player stats
+ * PlayerStats.java: player stats
  * 
  * Copyright (C) 1989-2008 James E. Wilson, Robert A. Koeneke, 
  *                         David J. Grabiner
@@ -22,25 +22,25 @@
 package net.jonhopkins.moria.types;
 
 /* Stats now kept in arrays, for more efficient access. -CJS- */
-public final class Stats {
+public final class PlayerStats {
 	
 	/**
 	 *  What is restored
 	 */
-	public int[] max_stat = new int[6];
+	public int[] maxStat = new int[6];
 	
 	/**
 	 * What is natural
 	 */
-	public int[] cur_stat = new int[6];
+	public int[] curStat = new int[6];
 	
 	/**
 	 * What is modified, may be +/-
 	 */
-	public int[] mod_stat = new int[6];
+	public int[] modStat = new int[6];
 	
 	/**
 	 * What is used
 	 */
-	public int[] use_stat = new int[6];
+	public int[] useStat = new int[6];
 }

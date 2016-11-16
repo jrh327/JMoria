@@ -131,7 +131,7 @@ public class Main extends Applet {
 		boolean force_keys_to = false;
 		
 		/* default command set defined in config.h file */
-		Variable.rogue_like_commands.value(Config.ROGUE_LIKE);
+		Variable.rogueLikeCommands.value(Config.ROGUE_LIKE);
 		
 		/* call this routine to grab a file pointer to the highscore file */
 		/* and prepare things to relinquish setuid privileges */
@@ -176,7 +176,7 @@ public class Main extends Applet {
 				break;
 			case 'W':
 			case 'w':
-				Variable.to_be_wizard = true;
+				Variable.toBeWizard = true;
 				
 				if (Character.isDigit(argv[i + 2])) {
 					try {
@@ -232,7 +232,7 @@ public class Main extends Applet {
 		
 		/* enter wizard mode before showing the character display, but must wait
 		 * until after get_char in case it was just a resurrection */
-		if (Variable.to_be_wizard) {
+		if (Variable.toBeWizard) {
 			if (!Misc3.enterWizardMode()) {
 				Death.exitGame();
 			}
@@ -242,23 +242,23 @@ public class Main extends Applet {
 			Misc3.changeName();
 			
 			/* could be restoring a dead character after a signal or HANGUP */
-			if (Player.py.misc.chp < 0) {
+			if (Player.py.misc.currHitpoints < 0) {
 				Variable.death = true;
 			}
 		} else {
 			/* Create character	   */
 			Create.createCharacter();
-			Variable.birth_date = java.util.Calendar.getInstance().getTimeInMillis();
+			Variable.birthDate = java.util.Calendar.getInstance().getTimeInMillis();
 			initCharacterInventory();
 			Player.py.flags.food = 7500;
-			Player.py.flags.food_digested = 2;
+			Player.py.flags.foodDigested = 2;
 			
-			if (Player.Class[Player.py.misc.pclass].spell == Constants.MAGE) {
+			if (Player.Class[Player.py.misc.playerClass].spell == Constants.MAGE) {
 				/* Magic realm   */
 				IO.clearScreen(); /* makes spell list easier to read */
 				Misc3.calcSpells(Constants.A_INT);
 				Misc3.calcMana(Constants.A_INT);
-			} else if (Player.Class[Player.py.misc.pclass].spell == Constants.PRIEST) {
+			} else if (Player.Class[Player.py.misc.playerClass].spell == Constants.PRIEST) {
 				/* Clerical realm*/
 				Misc3.calcSpells(Constants.A_WIS);
 				IO.clearScreen(); /* force out the 'learn prayer' message */
@@ -267,12 +267,12 @@ public class Main extends Applet {
 			/* prevent ^c quit from entering score into scoreboard,
 			 * and prevent signal from creating panic save until this point,
 			 * all info needed for save file is now valid */
-			Variable.character_generated = true;
+			Variable.isCharacterGenerated = true;
 			generate.value(true);
 	    }
 		
 		if (force_rogue_like) {
-			Variable.rogue_like_commands.value(force_keys_to);
+			Variable.rogueLikeCommands.value(force_keys_to);
 		}
 		
 		Desc.magicInit();
@@ -290,11 +290,11 @@ public class Main extends Applet {
 			Dungeon.dungeon();	/* Dungeon logic */
 			/* check for eof here, see inkey() in io.c */
 			/* eof can occur if the process gets a HANGUP signal */
-			if (Variable.eof_flag == Constants.TRUE) {
-				Variable.died_from = "(end of input: saved)";
+			if (Variable.eofFlag == Constants.TRUE) {
+				Variable.diedFrom = "(end of input: saved)";
 				
 				if (!Save.saveCharacter()) {
-					Variable.died_from = "unexpected eof";
+					Variable.diedFrom = "unexpected eof";
 				}
 				/* should not reach here, by if we do, this guarantees exit */
 				Variable.death = true;
@@ -320,13 +320,13 @@ public class Main extends Applet {
 		
 		for (i = 0; i < 5; i++) {
 			inven_init = new InvenType();
-			j = Player.player_init[Player.py.misc.pclass][i];
+			j = Player.playerInit[Player.py.misc.playerClass][i];
 			Desc.copyIntoInventory(inven_init, j);
 			/* this makes it known2 and known1 */
 			Desc.setStoreBought(inven_init);
 			/* must set this bit to display tohit/todam for stiletto */
-			if (inven_init.tval == Constants.TV_SWORD) {
-				inven_init.ident |= Constants.ID_SHOW_HITDAM;
+			if (inven_init.category == Constants.TV_SWORD) {
+				inven_init.identify |= Constants.ID_SHOW_HITDAM;
 			}
 			
 			Misc3.pickUpItem(inven_init);
@@ -334,7 +334,7 @@ public class Main extends Applet {
 		
 		/* wierd place for it, but why not? */
 		for (i = 0; i < 32; i++) {
-			Player.spell_order[i] = 99;
+			Player.spellOrder[i] = 99;
 		}
 	}
 	
@@ -343,17 +343,17 @@ public class Main extends Applet {
 		int i, k;
 		
 		for (i = 0; i <= Constants.MAX_MONS_LEVEL; i++) {
-			Monsters.m_level[i] = 0;
+			Monsters.monsterLevel[i] = 0;
 		}
 		
 		k = Constants.MAX_CREATURES - Constants.WIN_MON_TOT;
 		
 		for (i = 0; i < k; i++) {
-			Monsters.m_level[Monsters.c_list[i].level]++;
+			Monsters.monsterLevel[Monsters.creatureList[i].level]++;
 		}
 		
 		for (i = 1; i <= Constants.MAX_MONS_LEVEL; i++) {
-			Monsters.m_level[i] += Monsters.m_level[i - 1];
+			Monsters.monsterLevel[i] += Monsters.monsterLevel[i - 1];
 		}
 	}
 	
@@ -363,15 +363,15 @@ public class Main extends Applet {
 		int[] tmp = new int[Constants.MAX_OBJ_LEVEL + 1];
 		
 		for (i = 0; i <= Constants.MAX_OBJ_LEVEL; i++) {
-			Treasure.t_level[i] = 0;
+			Treasure.treasureLevel[i] = 0;
 		}
 		
 		for (i = 0; i < Constants.MAX_DUNGEON_OBJ; i++) {
-			Treasure.t_level[Treasure.object_list[i].level]++;
+			Treasure.treasureLevel[Treasure.objectList[i].level]++;
 		}
 		
 		for (i = 1; i <= Constants.MAX_OBJ_LEVEL; i++) {
-			Treasure.t_level[i] += Treasure.t_level[i - 1];
+			Treasure.treasureLevel[i] += Treasure.treasureLevel[i - 1];
 		}
 		
 		/* now produce an array with object indexes sorted by level, by using
@@ -382,8 +382,8 @@ public class Main extends Applet {
 		}
 		
 		for (i = 0; i < Constants.MAX_DUNGEON_OBJ; i++) {
-			l = Treasure.object_list[i].level;
-			Treasure.sorted_objects[Treasure.t_level[l] - tmp[l]] = i;
+			l = Treasure.objectList[i].level;
+			Treasure.sortedObjects[Treasure.treasureLevel[l] - tmp[l]] = i;
 			tmp[l]++;
 		}
 	}
@@ -394,7 +394,7 @@ public class Main extends Applet {
 		
 		/* round half-way cases up */
 		for (i = 0; i < Constants.MAX_OBJECTS; i++) {
-			Treasure.object_list[i].cost = ((Treasure.object_list[i].cost * Constants.COST_ADJ) + 50) / 100;
+			Treasure.objectList[i].cost = ((Treasure.objectList[i].cost * Constants.COST_ADJ) + 50) / 100;
 		}
 	}
 	

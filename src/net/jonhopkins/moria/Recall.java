@@ -26,7 +26,7 @@ import net.jonhopkins.moria.types.MonsterRecallType;
 
 public class Recall {
 	
-	private static String[] desc_atype = {
+	private static String[] descAttackType = {
 			"do something undefined",
 			"attack",
 			"weaken",
@@ -53,7 +53,7 @@ public class Recall {
 			"absorb light",
 			"absorb charges"
 	};
-	private static String[] desc_amethod = {
+	private static String[] descAttackMethod = {
 			"make an undefined advance",
 			"hit",
 			"bite",
@@ -75,7 +75,7 @@ public class Recall {
 			"drool",
 			"insult"
 	};
-	private static String[] desc_howmuch = {
+	private static String[] descHowMuch = {
 			" not at all",
 			" a bit",
 			"",
@@ -85,7 +85,7 @@ public class Recall {
 			" highly",
 			" extremely"
 	};
-	private static String[] desc_move = {
+	private static String[] descMove = {
 			"move invisibly",
 			"open doors",
 			"pass through walls",
@@ -93,7 +93,7 @@ public class Recall {
 			"pick up objects",
 			"breed explosively"
 	};
-	private static String[] desc_spell = {
+	private static String[] descSpell = {
 			"teleport short distances",
 			"teleport long distances",
 			"teleport its prey",
@@ -110,14 +110,14 @@ public class Recall {
 			"unknown 1",
 			"unknown 2"
 	};
-	private static String[] desc_breath = {
+	private static String[] descBreath = {
 			"lightning",
 			"poison gases",
 			"acid",
 			"frost",
 			"fire"
 	};
-	private static String[] desc_weakness = {
+	private static String[] descWeakness = {
 			"frost",
 			"fire",
 			"poison",
@@ -157,15 +157,15 @@ public class Recall {
 		MonsterRecallType mp;
 		int i;
 		
-		if (Variable.wizard) {
+		if (Variable.isWizard) {
 			return true;
 		}
-		mp = Variable.c_recall[mon_num];
-		if (mp.r_cmove != 0 || mp.r_cdefense != 0 || mp.r_kills != 0 || mp.r_spells != 0 || mp.r_deaths != 0) {
+		mp = Variable.creatureRecall[mon_num];
+		if (mp.cmove != 0 || mp.cdefense != 0 || mp.kills != 0 || mp.spells != 0 || mp.deaths != 0) {
 			return true;
 		}
 		for (i = 0; i < 4; i++) {
-			if (mp.r_attacks[i] != 0) {
+			if (mp.attacks[i] != 0) {
 				return true;
 			}
 		}
@@ -187,69 +187,69 @@ public class Recall {
 		int rcdefense;
 		MonsterRecallType save_mem = new MonsterRecallType();
 		
-		mp = Variable.c_recall[mon_num];
-		cp = Monsters.c_list[mon_num];
-		if (Variable.wizard) {
+		mp = Variable.creatureRecall[mon_num];
+		cp = Monsters.creatureList[mon_num];
+		if (Variable.isWizard) {
 			save_mem = new MonsterRecallType();
-			save_mem.r_cmove = mp.r_cmove;
-			save_mem.r_spells = mp.r_spells;
-			save_mem.r_kills = mp.r_kills;
-			save_mem.r_deaths = mp.r_deaths;
-			save_mem.r_cdefense = mp.r_cdefense;
-			save_mem.r_wake = mp.r_wake;
-			save_mem.r_ignore = mp.r_ignore;
-			System.arraycopy(mp.r_attacks, 0, save_mem.r_attacks, 0, mp.r_attacks.length);
+			save_mem.cmove = mp.cmove;
+			save_mem.spells = mp.spells;
+			save_mem.kills = mp.kills;
+			save_mem.deaths = mp.deaths;
+			save_mem.cdefense = mp.cdefense;
+			save_mem.wake = mp.wake;
+			save_mem.ignore = mp.ignore;
+			System.arraycopy(mp.attacks, 0, save_mem.attacks, 0, mp.attacks.length);
 			
-			mp.r_kills = Constants.MAX_SHORT;
-			mp.r_wake = Constants.MAX_UCHAR;
-			mp.r_ignore = Constants.MAX_UCHAR;
+			mp.kills = Constants.MAX_SHORT;
+			mp.wake = Constants.MAX_UCHAR;
+			mp.ignore = Constants.MAX_UCHAR;
 			j = ((cp.cmove & Constants.CM_4D2_OBJ) * 8)
 					+ ((cp.cmove & Constants.CM_2D2_OBJ) * 4)
 					+ ((cp.cmove & Constants.CM_1D2_OBJ) * 2)
 					+ (cp.cmove & Constants.CM_90_RANDOM)
 					+ (cp.cmove & Constants.CM_60_RANDOM);
-			mp.r_cmove = (cp.cmove & ~Constants.CM_TREASURE) | (j << Constants.CM_TR_SHIFT);
-			mp.r_cdefense = cp.cdefense;
-			mp.r_spells = cp.spells | Constants.CS_FREQ;
+			mp.cmove = (cp.cmove & ~Constants.CM_TREASURE) | (j << Constants.CM_TR_SHIFT);
+			mp.cdefense = cp.cdefense;
+			mp.spells = cp.spells | Constants.CS_FREQ;
 			if ((cp.spells & Constants.CS_FREQ) != 0) {
-				mp.r_spells = cp.spells | Constants.CS_FREQ;
+				mp.spells = cp.spells | Constants.CS_FREQ;
 			} else {
-				mp.r_spells = cp.spells;
+				mp.spells = cp.spells;
 			}
 			j = 0;
 			pu = cp.damage;
 			
 			while (pu[j] != 0 && j < 4) {
 				/* Turbo C needs a 16 bit int for the array index.  */
-				mp.r_attacks[j] = Constants.MAX_UCHAR;
+				mp.attacks[j] = Constants.MAX_UCHAR;
 				j++;
 			}
 			/* A little hack to enable the display of info for Quylthulgs.  */
-			if ((mp.r_cmove & Constants.CM_ONLY_MAGIC) != 0) {
-				mp.r_attacks[0] = Constants.MAX_UCHAR;
+			if ((mp.cmove & Constants.CM_ONLY_MAGIC) != 0) {
+				mp.attacks[0] = Constants.MAX_UCHAR;
 			}
 		}
 		roffpline = 0;
 		roffp = roffbuf;
-		rspells = mp.r_spells & cp.spells & ~Constants.CS_FREQ;
+		rspells = mp.spells & cp.spells & ~Constants.CS_FREQ;
 		/* the Constants.CM_WIN property is always known, set it if a win monster */
-		rcmove = mp.r_cmove | (Constants.CM_WIN & cp.cmove);
-		rcdefense = mp.r_cdefense & cp.cdefense;
+		rcmove = mp.cmove | (Constants.CM_WIN & cp.cmove);
+		rcdefense = mp.cdefense & cp.cdefense;
 		temp = String.format("The %s:\n", cp.name);
 		roff(temp);
 		/* Conflict history. */
-		if (mp.r_deaths > 0) {
-			temp = String.format("%d of the contributors to your monster memory %s", mp.r_deaths, plural(mp.r_deaths, "has", "have") );
+		if (mp.deaths > 0) {
+			temp = String.format("%d of the contributors to your monster memory %s", mp.deaths, plural(mp.deaths, "has", "have") );
 			roff(temp);
 			roff(" been killed by this creature, and ");
-			if (mp.r_kills == 0) {
+			if (mp.kills == 0) {
 				roff("it is not ever known to have been defeated.");
 			} else {
-				temp = String.format("at least %d of the beasts %s been exterminated.", mp.r_kills, plural(mp.r_kills, "has", "have") );
+				temp = String.format("at least %d of the beasts %s been exterminated.", mp.kills, plural(mp.kills, "has", "have") );
 				roff(temp);
 			}
-		} else if (mp.r_kills > 0) {
-			temp = String.format("At least %d of these creatures %s", mp.r_kills, plural(mp.r_kills, "has", "have") );
+		} else if (mp.kills > 0) {
+			temp = String.format("At least %d of these creatures %s", mp.kills, plural(mp.kills, "has", "have") );
 			roff(temp);
 			roff(" been killed by contributors to your monster memory.");
 		} else {
@@ -260,7 +260,7 @@ public class Recall {
 		if (cp.level == 0) {
 			roff(" It lives in the town");
 			k = 1;
-		} else if (mp.r_kills > 0) {
+		} else if (mp.kills > 0) {
 			/* The Balrog is a level 100 monster, but appears at 50 feet.  */
 			i = cp.level;
 			if (i > Constants.WIN_MON_APPEAR) {
@@ -282,7 +282,7 @@ public class Recall {
 			roff(" moves");
 			if ((rcmove & Constants.CM_RANDOM_MOVE) != 0) {
 				/* Turbo C needs a 16 bit int for the array index.  */
-				roff(desc_howmuch[(rcmove & Constants.CM_RANDOM_MOVE) >> 3]);
+				roff(descHowMuch[(rcmove & Constants.CM_RANDOM_MOVE) >> 3]);
 				roff(" erratically");
 			}
 			if (mspeed == 1) {
@@ -331,7 +331,7 @@ public class Recall {
 		}
 		/* Kill it once to know experience, and quality (evil, undead, monsterous).
 		 * The quality of being a dragon is obvious. */
-		if (mp.r_kills > 0) {
+		if (mp.kills > 0) {
 			roff(" A kill of this");
 			if ((cp.cdefense & Constants.CD_ANIMAL) != 0) {
 				roff(" natural");
@@ -345,19 +345,19 @@ public class Recall {
 			
 			/* calculate the integer exp part, can be larger than 64K when first
 			 * level character looks at Balrog info, so must store in long */
-			templong = cp.mexp * cp.level / Player.py.misc.lev;
+			templong = cp.mexp * cp.level / Player.py.misc.level;
 			/* calculate the fractional exp part scaled by 100,
 			 * must use long arithmetic to avoid overflow */
-			j = ((cp.mexp * cp.level % Player.py.misc.lev) * 1000 / Player.py.misc.lev + 5) / 10;
+			j = ((cp.mexp * cp.level % Player.py.misc.level) * 1000 / Player.py.misc.level + 5) / 10;
 			
 			temp = String.format(" creature is worth %d.%02d point%s",
 					templong, j, ((templong == 1 && j == 0) ? "" : "s"));
 			roff(temp);
 			
-			if (Player.py.misc.lev / 10 == 1) {
+			if (Player.py.misc.level / 10 == 1) {
 				p = "th";
 			} else {
-				i = Player.py.misc.lev % 10;
+				i = Player.py.misc.level % 10;
 				if (i == 1) {
 					p = "st";
 				} else if (i == 2) {
@@ -368,7 +368,7 @@ public class Recall {
 					p = "th";
 				}
 			}
-			i = Player.py.misc.lev;
+			i = Player.py.misc.level;
 			if (i == 8 || i == 11 || i == 18) {
 				q = "n";
 			} else {
@@ -386,7 +386,7 @@ public class Recall {
 			if ((j & (Constants.CS_BR_LIGHT << i)) != 0) {
 				j &= ~(Constants.CS_BR_LIGHT << i);
 				if (k > 0) {
-					if ((mp.r_spells & Constants.CS_FREQ) != 0) {
+					if ((mp.spells & Constants.CS_FREQ) != 0) {
 						roff(" It can breathe ");
 					} else {
 						roff(" It is resistant to ");
@@ -397,7 +397,7 @@ public class Recall {
 				} else {
 					roff(" and ");
 				}
-				roff(desc_breath[i]);
+				roff(descBreath[i]);
 			}
 		}
 		k = 1;
@@ -417,11 +417,11 @@ public class Recall {
 				} else {
 					roff(" or ");
 				}
-				roff(desc_spell[i]);
+				roff(descSpell[i]);
 			}
 		}
 		if ((rspells & (Constants.CS_BREATHE|Constants.CS_SPELLS)) != 0) {
-			if ((mp.r_spells & Constants.CS_FREQ) > 5) {
+			if ((mp.spells & Constants.CS_FREQ) > 5) {
 				/* Could offset by level */
 				temp = String.format("; 1 time in %d", cp.spells & Constants.CS_FREQ);
 				roff(temp);
@@ -429,12 +429,12 @@ public class Recall {
 			roff(".");
 		}
 		/* Do we know how hard they are to kill? Armor class, hit die. */
-		if (knowarmor(cp.level, mp.r_kills)) {
-			temp = String.format(" It has an armor rating of %d", cp.ac);
+		if (knowarmor(cp.level, mp.kills)) {
+			temp = String.format(" It has an armor rating of %d", cp.armorClass);
 			roff(temp);
 			temp = String.format(" and a%s life rating of %dd%d.",
 					(((cp.cdefense & Constants.CD_MAX_HP) != 0) ? " maximized" : ""),
-					cp.hd[0], cp.hd[1]);
+					cp.hitDie[0], cp.hitDie[1]);
 			roff(temp);
 		}
 		/* Do we know how clever they are? Special abilities. */
@@ -451,7 +451,7 @@ public class Recall {
 				} else {
 					roff(" and ");
 				}
-				roff(desc_move[i]);
+				roff(descMove[i]);
 			}
 		}
 		if (k == 0) {
@@ -471,7 +471,7 @@ public class Recall {
 				} else {
 					roff(" and ");
 				}
-				roff(desc_weakness[i]);
+				roff(descWeakness[i]);
 			}
 		}
 		if (k == 0) {
@@ -492,7 +492,7 @@ public class Recall {
 			roff(".");
 		}
 		/* Do we know how aware it is? */
-		if (((mp.r_wake * mp.r_wake) > cp.sleep) || mp.r_ignore == Constants.MAX_UCHAR || (cp.sleep == 0 && mp.r_kills >= 10)) {
+		if (((mp.wake * mp.wake) > cp.sleep) || mp.ignore == Constants.MAX_UCHAR || (cp.sleep == 0 && mp.kills >= 10)) {
 			roff(" It ");
 			if(cp.sleep > 200) {
 				roff("prefers to ignore");
@@ -517,7 +517,7 @@ public class Recall {
 			} else {
 				roff("is ever vigilant for");
 			}
-			temp = String.format(" intruders, which it may notice from %d feet.", 10 * cp.aaf);
+			temp = String.format(" intruders, which it may notice from %d feet.", 10 * cp.aoeRadius);
 			roff(temp);
 		}
 		/* Do we know what it might carry? */
@@ -572,7 +572,7 @@ public class Recall {
 		k = 0;
 		for (j = 0; j < 4; j++) {
 			/* Turbo C needs a 16 bit int for the array index.  */
-			if (mp.r_attacks[j] != 0) {
+			if (mp.attacks[j] != 0) {
 				k++;
 			}
 		}
@@ -583,14 +583,14 @@ public class Recall {
 			int att_type, att_how, d1, d2;
 			
 			/* don't print out unknown attacks */
-			if (mp.r_attacks[i] == 0) {
+			if (mp.attacks[i] == 0) {
 				continue;
 			}
 			
-			att_type = Monsters.monster_attacks[pu[i]].attack_type;
-			att_how = Monsters.monster_attacks[pu[i]].attack_desc;
-			d1 = Monsters.monster_attacks[pu[i]].attack_dice;
-			d2 = Monsters.monster_attacks[pu[i]].attack_sides;
+			att_type = Monsters.monsterAttacks[pu[i]].attackType;
+			att_how = Monsters.monsterAttacks[pu[i]].attackDesc;
+			d1 = Monsters.monsterAttacks[pu[i]].attackDice;
+			d2 = Monsters.monsterAttacks[pu[i]].attackSides;
 			
 			j++;
 			if (j == 1) {
@@ -604,15 +604,15 @@ public class Recall {
 			if (att_how > 19) {
 				att_how = 0;
 			}
-			roff(desc_amethod[att_how]);
+			roff(descAttackMethod[att_how]);
 			if (att_type != 1 || d1 > 0 && d2 > 0) {
 				roff(" to ");
 				if (att_type > 24) {
 					att_type = 0;
 				}
-				roff(desc_atype[att_type]);
+				roff(descAttackType[att_type]);
 				if (d1 != 0 && d2 != 0) {
-					if (knowdamage(cp.level, mp.r_attacks[i], d1 * d2)) {
+					if (knowdamage(cp.level, mp.attacks[i], d1 * d2)) {
 						if (att_type == 19) {	/* Loss of experience */
 							roff(" by");
 						} else {
@@ -626,7 +626,7 @@ public class Recall {
 		}
 		if (j != 0) {
 			roff(".");
-		} else if (k > 0 && mp.r_attacks[0] >= 10) {
+		} else if (k > 0 && mp.attacks[0] >= 10) {
 			roff(" It has no physical attacks.");
 		} else {
 			roff(" Nothing is known about its attack.");
@@ -637,15 +637,15 @@ public class Recall {
 		}
 		roff("\n");
 		IO.print("--pause--", roffpline, 0);
-		if (Variable.wizard) {
-			mp.r_cmove = save_mem.r_cmove;
-			mp.r_spells = save_mem.r_spells;
-			mp.r_kills = save_mem.r_kills;
-			mp.r_deaths = save_mem.r_deaths;
-			mp.r_cdefense = save_mem.r_cdefense;
-			mp.r_wake = save_mem.r_wake;
-			mp.r_ignore = save_mem.r_ignore;
-			System.arraycopy(save_mem.r_attacks, 0, mp.r_attacks, 0, mp.r_attacks.length);
+		if (Variable.isWizard) {
+			mp.cmove = save_mem.cmove;
+			mp.spells = save_mem.spells;
+			mp.kills = save_mem.kills;
+			mp.deaths = save_mem.deaths;
+			mp.cdefense = save_mem.cdefense;
+			mp.wake = save_mem.wake;
+			mp.ignore = save_mem.ignore;
+			System.arraycopy(save_mem.attacks, 0, mp.attacks, 0, mp.attacks.length);
 		}
 		return IO.inkey();
 	}

@@ -56,7 +56,7 @@ public final class PlayerFlags {
 	/**
 	 * Food per round
 	 */
-	public int food_digested;
+	public int foodDigested;
 	
 	/**
 	 * Protection from evil
@@ -91,17 +91,17 @@ public final class PlayerFlags {
 	/**
 	 * Hallucinate
 	 */
-	public int image;
+	public int imagine;
 	
 	/**
 	 * Protect against evil
 	 */
-	public int protevil;
+	public int protectFromEvil;
 	
 	/**
 	 * Increases AC
 	 */
-	public int invuln;
+	public int invulnerability;
 	
 	/**
 	 * Heroism
@@ -111,7 +111,7 @@ public final class PlayerFlags {
 	/**
 	 * Super Heroism
 	 */
-	public int shero;
+	public int superHero;
 	
 	/**
 	 * Blessed
@@ -121,37 +121,37 @@ public final class PlayerFlags {
 	/**
 	 * Timed heat resist
 	 */
-	public int resist_heat;
+	public int resistHeat;
 	
 	/**
 	 * Timed cold resist
 	 */
-	public int resist_cold;
+	public int resistCold;
 	
 	/**
 	 * Timed see invisible
 	 */
-	public int detect_inv;
+	public int detectInvisible;
 	
 	/**
 	 * Timed teleport level
 	 */
-	public int word_recall;
+	public int wordRecall;
 	
 	/**
 	 * See warm creatures
 	 */
-	public int see_infra;
+	public int seeInfrared;
 	
 	/**
 	 * Timed infra vision
 	 */
-	public int tim_infra;
+	public int timedSeeInfrared;
 	
 	/**
 	 * Can see invisible
 	 */
-	public boolean see_inv;
+	public boolean seeInvisible;
 	
 	/**
 	 * Random teleportation
@@ -161,12 +161,12 @@ public final class PlayerFlags {
 	/**
 	 * Never paralyzed
 	 */
-	public boolean free_act;
+	public boolean freeAct;
 	
 	/**
 	 * Lower food needs
 	 */
-	public boolean slow_digest;
+	public boolean slowDigestion;
 	
 	/**
 	 * Aggravate monsters
@@ -176,17 +176,17 @@ public final class PlayerFlags {
 	/**
 	 * Resistance to fire
 	 */
-	public int fire_resist;
+	public int fireResistance;
 	
 	/**
 	 * Resistance to cold
 	 */
-	public int cold_resist;
+	public int coldResistance;
 	
 	/**
 	 * Resistance to acid
 	 */
-	public int acid_resist;
+	public int acidResistance;
 	
 	/**
 	 * Regenerate hit points
@@ -196,50 +196,50 @@ public final class PlayerFlags {
 	/**
 	 * Resistance to light
 	 */
-	public int lght_resist;
+	public int lightningResistance;
 	
 	/**
 	 * No falling damage
 	 */
-	public int ffall;
+	public int freeFall;
 	
 	/**
 	 * Keep strength
 	 */
-	public boolean sustain_str;
+	public boolean sustainStr;
 	
 	/**
 	 * Keep intelligence
 	 */
-	public boolean sustain_int;
+	public boolean sustainInt;
 	
 	/**
 	 * Keep wisdom
 	 */
-	public boolean sustain_wis;
+	public boolean sustainWis;
 	
 	/**
 	 * Keep constitution
 	 */
-	public boolean sustain_con;
+	public boolean sustainCon;
 	
 	/**
 	 * Keep dexterity
 	 */
-	public boolean sustain_dex;
+	public boolean sustainDex;
 	
 	/**
 	 * Keep charisma
 	 */
-	public boolean sustain_chr;
+	public boolean sustainChr;
 	
 	/**
 	 * Glowing hands.
 	 */
-	public boolean confuse_monster;
+	public boolean confuseMonster;
 	
 	/**
 	 * Number of spells can learn.
 	 */
-	public int new_spells;
+	public int newSpells;
 }

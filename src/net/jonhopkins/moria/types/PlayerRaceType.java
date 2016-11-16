@@ -22,176 +22,177 @@
 package net.jonhopkins.moria.types;
 
 public final class PlayerRaceType {
-	public PlayerRaceType(String race, int adj_str, int adj_int, int adj_wis,
-			int adj_dex, int adj_con, int adj_chr, int base_age, int max_age,
-			int mbase_ht, int mmax_ht, int mbase_wt, int mmax_wt,
-			int fbase_ht, int fmax_ht, int fbase_wt, int fmax_wt, int dis,
-			int srh, int stl, int fos, int bth, int bthb, int sav, int hitdie,
-			int inf, int exp, int classtype) {
-		this.trace = race;
-		this.str_adj = adj_str;
-		this.int_adj = adj_int;
-		this.wis_adj = adj_wis;
-		this.dex_adj = adj_dex;
-		this.con_adj = adj_con;
-		this.chr_adj = adj_chr;
-		this.b_age = base_age;
-		this.m_age = max_age;
-		this.m_b_ht = mbase_ht;
-		this.m_m_ht = mmax_ht;
-		this.m_b_wt = mbase_wt;
-		this.m_m_wt = mmax_wt;
-		this.f_b_ht = fbase_ht;
-		this.f_m_ht = fmax_ht;
-		this.f_b_wt = fbase_wt;
-		this.f_m_wt = fmax_wt;
-		this.b_dis = dis;
-		this.srh = srh;
-		this.stl = stl;
-		this.fos = fos;
-		this.bth = bth;
-		this.bthb = bthb;
-		this.bsav = sav;
-		this.bhitdie = hitdie;
-		this.infra = inf;
-		this.b_exp = exp;
+	public PlayerRaceType(String race, int adjStr, int adjInt, int adjWis,
+			int adjDex, int adjCon, int adjChr, int baseAge, int maxAge,
+			int mBaseHt, int mMaxHt, int mBaseWt, int mMaxWt,
+			int fBaseHt, int fMaxHt, int fBaseWt, int fMaxWt, int disarm,
+			int search, int stealth, int freqOfSearch, int baseToHit,
+			int baseToHitBow, int savingThrow, int hitDie, int seeInfrared,
+			int exp, int classtype) {
+		this.raceType = race;
+		this.strAdjust = adjStr;
+		this.intAdjust = adjInt;
+		this.wisAdjust = adjWis;
+		this.dexAdjust = adjDex;
+		this.conAdjust = adjCon;
+		this.chrAdjust = adjChr;
+		this.baseAge = baseAge;
+		this.maxAge = maxAge;
+		this.baseHeightMale = mBaseHt;
+		this.modHeightMale = mMaxHt;
+		this.baseWeightMale = mBaseWt;
+		this.modWeightMale = mMaxWt;
+		this.baseHeightFemale = fBaseHt;
+		this.modHeightFemale = fMaxHt;
+		this.baseWeightFemale = fBaseWt;
+		this.modWeightFemale = fMaxWt;
+		this.baseDisarmChance = disarm;
+		this.baseSearchChance = search;
+		this.stealth = stealth;
+		this.freqOfSearch = freqOfSearch;
+		this.baseToHit = baseToHit;
+		this.baseToHitBow = baseToHitBow;
+		this.baseSavingThrow = savingThrow;
+		this.baseHitDie = hitDie;
+		this.seeInfrared = seeInfrared;
+		this.baseExpFactor = exp;
 		this.rtclass = classtype;
 	}
 	
 	/**
 	 * Type of race
 	 */
-	public String trace;
+	public String raceType;
 	
 	/**
 	 * Adjustment to strength
 	 */
-	public int str_adj;
+	public int strAdjust;
 	
 	/**
 	 * Adjustment to intelligence
 	 */
-	public int int_adj;
+	public int intAdjust;
 	
 	/**
 	 * Adjustment to wisdom
 	 */
-	public int wis_adj;
+	public int wisAdjust;
 	
 	/**
 	 * Adjustment to dexterity
 	 */
-	public int dex_adj;
+	public int dexAdjust;
 	
 	/**
 	 * Adjustment to constitution
 	 */
-	public int con_adj;
+	public int conAdjust;
 	
 	/**
 	 * Adjustment to charisma
 	 */
-	public int chr_adj;
+	public int chrAdjust;
 	
 	/**
 	 * Base age of character
 	 */
-	public int b_age;
+	public int baseAge;
 	
 	/**
 	 * Maximum age of character
 	 */
-	public int m_age;
+	public int maxAge;
 	
 	/**
 	 * Base height for males
 	 */
-	public int m_b_ht;
+	public int baseHeightMale;
 	
 	/**
 	 * Modified height for males
 	 */
-	public int m_m_ht;
+	public int modHeightMale;
 	
 	/**
 	 * Base weight for males
 	 */
-	public int m_b_wt;
+	public int baseWeightMale;
 	
 	/**
 	 * Modified weight for males
 	 */
-	public int m_m_wt;
+	public int modWeightMale;
 	
 	/**
 	 * Base height females
 	 */
-	public int f_b_ht;
+	public int baseHeightFemale;
 	
 	/**
 	 * Modified height for females
 	 */
-	public int f_m_ht;
+	public int modHeightFemale;
 	
 	/**
 	 * Base weight for female
 	 */
-	public int f_b_wt;
+	public int baseWeightFemale;
 	
 	/**
 	 * Modified weight for females
 	 */
-	public int f_m_wt;
+	public int modWeightFemale;
 	
 	/**
 	 * Base chance to disarm
 	 */
-	public int b_dis;
+	public int baseDisarmChance;
 	
 	/**
 	 * Base chance for search
 	 */
-	public int srh;
+	public int baseSearchChance;
 	
 	/**
 	 * Stealth of character
 	 */
-	public int stl;
+	public int stealth;
 	
 	/**
 	 * Frequency of auto search
 	 */
-	public int fos;
+	public int freqOfSearch;
 	
 	/**
 	 * Adjusted base chance to hit
 	 */
-	public int bth;
+	public int baseToHit;
 	
 	/**
 	 * Adjusted base to hit with bows
 	 */
-	public int bthb;
+	public int baseToHitBow;
 	
 	/**
 	 * Race base for saving throw
 	 */
-	public int bsav;
+	public int baseSavingThrow;
 	
 	/**
 	 * Base hit points for race
 	 */
-	public int bhitdie;
+	public int baseHitDie;
 	
 	/**
 	 * See infrared
 	 */
-	public int infra;
+	public int seeInfrared;
 	
 	/**
 	 * Base experience factor
 	 */
-	public int b_exp;
+	public int baseExpFactor;
 	
 	/**
 	 * Bit field for class types

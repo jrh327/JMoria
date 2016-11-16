@@ -37,9 +37,9 @@ public class Files {
 	 *  Craig Norborg (doc)		Mon Aug 10 16:41:59 EST 1987
 	 */
 	public static void initScoreFile() {
-		Variable.highscore_fp = new File(Config.MORIA_TOP);
+		Variable.highscoreFile = new File(Config.MORIA_TOP);
 		
-		if (Variable.highscore_fp == null) {
+		if (Variable.highscoreFile == null) {
 			System.err.printf("Can't open score file \"%s\"\n", Config.MORIA_TOP);
 			System.exit(1);
 			return;
@@ -219,9 +219,9 @@ public class Files {
 						output.write("\n");
 						j = Misc1.popTreasure();
 						for (i = 0; i < nobj; i++) {
-							Desc.copyIntoInventory(Treasure.t_list[j], Treasure.sorted_objects[Misc3.getRandomObjectForLevel(level, small)]);
+							Desc.copyIntoInventory(Treasure.treasureList[j], Treasure.sortedObjects[Misc3.getRandomObjectForLevel(level, small)]);
 							Misc2.addMagicToTreasure(j, level);
-							i_ptr = Treasure.t_list[j];
+							i_ptr = Treasure.treasureList[j];
 							Desc.setStoreBought(i_ptr);
 							if ((i_ptr.flags & Constants.TR_CURSED) != 0) {
 								Misc4.addInscription(i_ptr, Constants.ID_DAMD);
@@ -278,66 +278,66 @@ public class Files {
 			output.write(String.format("%c\n\n", (Constants.CTRL & 'L')));
 			output.write(String.format(" Name%9s %-23s", colon, Player.py.misc.name));
 			output.write(String.format(" Age%11s %6d", colon, Player.py.misc.age));
-			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_STR]);
+			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_STR]);
 			output.write(String.format("   STR : %s\n", prt1));
-			output.write(String.format(" Race%9s %-23s", colon, Player.race[Player.py.misc.prace].trace));
-			output.write(String.format(" Height%8s %6d", colon, Player.py.misc.ht));
-			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_INT]);
+			output.write(String.format(" Race%9s %-23s", colon, Player.race[Player.py.misc.playerRace].raceType));
+			output.write(String.format(" Height%8s %6d", colon, Player.py.misc.height));
+			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_INT]);
 			output.write(String.format("   INT : %s\n", prt1));
-			output.write(String.format(" Sex%10s %-23s", colon, (Player.py.misc.male ? "Male" : "Female")));
-			output.write(String.format(" Weight%8s %6d", colon, Player.py.misc.wt));
-			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_WIS]);
+			output.write(String.format(" Sex%10s %-23s", colon, (Player.py.misc.isMale ? "Male" : "Female")));
+			output.write(String.format(" Weight%8s %6d", colon, Player.py.misc.weight));
+			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_WIS]);
 			output.write(String.format("   WIS : %s\n", prt1));
-			output.write(String.format(" Class%8s %-23s", colon, Player.Class[Player.py.misc.pclass].title));
-			output.write(String.format(" Social Class : %6d", Player.py.misc.sc));
-			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_DEX]);
+			output.write(String.format(" Class%8s %-23s", colon, Player.Class[Player.py.misc.playerClass].title));
+			output.write(String.format(" Social Class : %6d", Player.py.misc.socialClass));
+			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_DEX]);
 			output.write(String.format("   DEX : %s\n", prt1));
 			output.write(String.format(" Title%8s %-23s", colon, Misc3.getPlayerTitle()));
 			output.write(String.format("%22s", blank));
-			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_CON]);
+			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_CON]);
 			output.write(String.format( "   CON : %s\n", prt1));
 			output.write(String.format("%34s", blank));
 			output.write(String.format("%26s", blank));
-			prt1 = Misc3.convertStat(Player.py.stats.use_stat[Constants.A_CHR]);
+			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_CHR]);
 			output.write(String.format("   CHR : %s\n\n", prt1));
 			
-			output.write(String.format(" + To Hit    : %6d", Player.py.misc.dis_th));
-			output.write(String.format("%7sLevel      : %7d", blank, Player.py.misc.lev));
-			output.write(String.format("    Max Hit Points : %6d\n", Player.py.misc.mhp));
-			output.write(String.format(" + To Damage : %6d", Player.py.misc.dis_td));
-			output.write(String.format("%7sExperience : %7d", blank, Player.py.misc.exp));
-			output.write(String.format("    Cur Hit Points : %6d\n", Player.py.misc.chp));
-			output.write(String.format(" + To AC     : %6d", Player.py.misc.dis_tac));
-			output.write(String.format("%7sMax Exp    : %7d", blank, Player.py.misc.max_exp));
-			output.write(String.format("    Max Mana%8s %6d\n", colon, Player.py.misc.mana));
-			output.write(String.format("   Total AC  : %6d", Player.py.misc.dis_ac));
-			if (Player.py.misc.lev == Constants.MAX_PLAYER_LEVEL) {
+			output.write(String.format(" + To Hit    : %6d", Player.py.misc.displayPlusToHit));
+			output.write(String.format("%7sLevel      : %7d", blank, Player.py.misc.level));
+			output.write(String.format("    Max Hit Points : %6d\n", Player.py.misc.maxHitpoints));
+			output.write(String.format(" + To Damage : %6d", Player.py.misc.displayPlusToDamage));
+			output.write(String.format("%7sExperience : %7d", blank, Player.py.misc.currExp));
+			output.write(String.format("    Cur Hit Points : %6d\n", Player.py.misc.currHitpoints));
+			output.write(String.format(" + To AC     : %6d", Player.py.misc.displayPlusTotalArmorClass));
+			output.write(String.format("%7sMax Exp    : %7d", blank, Player.py.misc.maxExp));
+			output.write(String.format("    Max Mana%8s %6d\n", colon, Player.py.misc.maxMana));
+			output.write(String.format("   Total AC  : %6d", Player.py.misc.displayPlusToArmorClass));
+			if (Player.py.misc.level == Constants.MAX_PLAYER_LEVEL) {
 				output.write(String.format("%7sExp to Adv : *******", blank));
 			} else {
-				output.write(String.format("%7sExp to Adv : %7d", blank, (Player.player_exp[Player.py.misc.lev - 1] * Player.py.misc.expfact / 100)));
+				output.write(String.format("%7sExp to Adv : %7d", blank, (Player.exp[Player.py.misc.level - 1] * Player.py.misc.expFactor / 100)));
 			}
-			output.write(String.format("    Cur Mana%8s %6d\n", colon, Player.py.misc.cmana));
-			output.write(String.format("%28sGold%8s %7d\n\n", blank, colon, Player.py.misc.au));
+			output.write(String.format("    Cur Mana%8s %6d\n", colon, Player.py.misc.currMana));
+			output.write(String.format("%28sGold%8s %7d\n\n", blank, colon, Player.py.misc.gold));
 			
 			p_ptr = Player.py.misc;
-			xbth = p_ptr.bth + p_ptr.ptohit * Constants.BTH_PLUS_ADJ + (Player.class_level_adj[p_ptr.pclass][Constants.CLA_BTH] * p_ptr.lev);
-			xbthb = p_ptr.bthb + p_ptr.ptohit * Constants.BTH_PLUS_ADJ + (Player.class_level_adj[p_ptr.pclass][Constants.CLA_BTHB] * p_ptr.lev);
+			xbth = p_ptr.baseToHit + p_ptr.plusToHit * Constants.BTH_PLUS_ADJ + (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_BTH] * p_ptr.level);
+			xbthb = p_ptr.baseToHitBow + p_ptr.plusToHit * Constants.BTH_PLUS_ADJ + (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_BTHB] * p_ptr.level);
 			/* this results in a range from 0 to 29 */
-			xfos = 40 - p_ptr.fos;
+			xfos = 40 - p_ptr.freqOfSearch;
 			if (xfos < 0) {
 				xfos = 0;
 			}
-			xsrh = p_ptr.srh;
+			xsrh = p_ptr.searchChance;
 			/* this results in a range from 0 to 9 */
-			xstl = p_ptr.stl + 1;
-			xdis = p_ptr.disarm + 2 * Misc3.adjustToDisarm() + Misc3.adjustStat(Constants.A_INT)
-					+ (Player.class_level_adj[p_ptr.pclass][Constants.CLA_DISARM] * p_ptr.lev / 3);
-			xsave = p_ptr.save + Misc3.adjustStat(Constants.A_WIS)
-					+ (Player.class_level_adj[p_ptr.pclass][Constants.CLA_SAVE] * p_ptr.lev / 3);
-			xdev = p_ptr.save + Misc3.adjustStat(Constants.A_INT)
-					+ (Player.class_level_adj[p_ptr.pclass][Constants.CLA_DEVICE] * p_ptr.lev / 3);
+			xstl = p_ptr.stealth + 1;
+			xdis = p_ptr.disarmChance + 2 * Misc3.adjustToDisarm() + Misc3.adjustStat(Constants.A_INT)
+					+ (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_DISARM] * p_ptr.level / 3);
+			xsave = p_ptr.savingThrow + Misc3.adjustStat(Constants.A_WIS)
+					+ (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_SAVE] * p_ptr.level / 3);
+			xdev = p_ptr.savingThrow + Misc3.adjustStat(Constants.A_INT)
+					+ (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_DEVICE] * p_ptr.level / 3);
 			
-			xinfra = String.format("%d feet", Player.py.flags.see_infra * 10);
+			xinfra = String.format("%d feet", Player.py.flags.seeInfrared * 10);
 			
 			output.write("(Miscellaneous Abilities)\n\n");
 			output.write(String.format(" Fighting    : %-10s", Misc3.likeRating(xbth, 12)));
@@ -357,12 +357,12 @@ public class Files {
 			/* Write out the equipment list.	     */
 			j = 0;
 			output.write(String.format("\n  [Character's Equipment List]\n\n"));
-			if (Treasure.equip_ctr == 0) {
+			if (Treasure.equipCounter == 0) {
 				output.write(String.format("  Character has no equipment in use.\n"));
 			} else {
 				for (i = Constants.INVEN_WIELD; i < Constants.INVEN_ARRAY_SIZE; i++) {
 					i_ptr = Treasure.inventory[i];
-					if (i_ptr.tval != Constants.TV_NOTHING) {
+					if (i_ptr.category != Constants.TV_NOTHING) {
 						switch (i)
 						{
 						case Constants.INVEN_WIELD:	p = "You are wielding";	break;
@@ -389,10 +389,10 @@ public class Files {
 			/* Write out the character's inventory.	     */
 			output.write(String.format("%c\n\n", (Constants.CTRL & 'L')));
 			output.write("  [General Inventory List]\n\n");
-			if (Treasure.inven_ctr == 0) {
+			if (Treasure.invenCounter == 0) {
 				output.write("  Character has no objects in inventory.\n");
 			} else {
-				for (i = 0; i < Treasure.inven_ctr; i++) {
+				for (i = 0; i < Treasure.invenCounter; i++) {
 					prt2 = Desc.describeObject(Treasure.inventory[i], true);
 					output.write(String.format("%c) %s\n", i + 'a', prt2));
 				}

@@ -25,7 +25,7 @@ import java.util.Calendar;
 
 import net.jonhopkins.moria.types.HighScoreType;
 import net.jonhopkins.moria.types.PlayerMisc;
-import net.jonhopkins.moria.types.Stats;
+import net.jonhopkins.moria.types.PlayerStats;
 
 public class Death {
 	
@@ -91,7 +91,7 @@ public class Death {
 	/* An flock HACK.  LOCK_SH and LOCK_EX are not distinguished.  DO NOT release
 	 * a lock which you failed to set!  ALWAYS release a lock you set! */
 	private static int lockFile(int f, int l) {
-		Stats sbuf;
+		PlayerStats sbuf;
 /*
 		char lockname[80];
 		
@@ -280,7 +280,7 @@ public class Death {
 		str = String.format("/%s\\,;_          _;,,,;_", centerString(tmp_str, Player.py.misc.name));
 		IO.putBuffer(str, 6, 10);
 		IO.putBuffer("|               the               |   ___", 7, 9);
-		if (!Variable.total_winner) {
+		if (!Variable.isTotalWinner) {
 			p = Misc3.getPlayerTitle();
 		} else {
 			p = "Magnificent";
@@ -289,29 +289,29 @@ public class Death {
 		IO.putBuffer(str, 8, 9);
 		IO.putBuffer("|", 9, 9);
 		IO.putBuffer("|  :   :", 9, 43);
-		if (!Variable.total_winner) {
-			p = Player.Class[Player.py.misc.pclass].title;
-		} else if (Player.py.misc.male) {
+		if (!Variable.isTotalWinner) {
+			p = Player.Class[Player.py.misc.playerClass].title;
+		} else if (Player.py.misc.isMale) {
 			p = "*King*";
 		} else {
 			p = "*Queen*";
 		}
 		str = String.format("| %s | _;,,,;_   ____", centerString(tmp_str, p));
 		IO.putBuffer (str, 10, 9);
-		str = String.format("Level : %d", Player.py.misc.lev);
+		str = String.format("Level : %d", Player.py.misc.level);
 		str = String.format("| %s |          /    \\", centerString(tmp_str, str));
 		IO.putBuffer (str, 11, 9);
-		str = String.format("%d Exp", Player.py.misc.exp);
+		str = String.format("%d Exp", Player.py.misc.currExp);
 		str = String.format("| %s |          :    :", centerString(tmp_str, str));
 		IO.putBuffer (str, 12, 9);
-		str = String.format("%d Au", Player.py.misc.au);
+		str = String.format("%d Au", Player.py.misc.gold);
 		str = String.format("| %s |          :    :", centerString(tmp_str, str));
 		IO.putBuffer (str, 13, 9);
-		str = String.format("Died on Level : %d", Variable.dun_level);
+		str = String.format("Died on Level : %d", Variable.dungeonLevel);
 		str = String.format("| %s |         _;,,,,;_", centerString(tmp_str, str));
 		IO.putBuffer(str, 14, 9);
 		IO.putBuffer("|            killed by            |", 15, 9);
-		p = Variable.died_from;
+		p = Variable.diedFrom;
 		i = p.length();
 		p += ".";  /* add a trailing period */
 		str = String.format("| %s |", centerString (tmp_str, p));
@@ -351,7 +351,7 @@ public class Death {
 						IO.printMessage("");
 						IO.printMessage("You are carrying:");
 						IO.clearFrom(1);
-						Moria1.showInventory(0, Treasure.inven_ctr - 1, true, 0, "");
+						Moria1.showInventory(0, Treasure.invenCounter - 1, true, 0, "");
 						IO.printMessage("");
 					}
 				}
@@ -364,16 +364,16 @@ public class Death {
 		int total;
 		int i;
 		
-		total = Player.py.misc.max_exp + (100 * Player.py.misc.max_dlv);
-		total += Player.py.misc.au / 100;
+		total = Player.py.misc.maxExp + (100 * Player.py.misc.maxDungeonLevel);
+		total += Player.py.misc.gold / 100;
 		for (i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
 			total += Store1.getItemValue(Treasure.inventory[i]);
 		}
-		total += Variable.dun_level * 50;
+		total += Variable.dungeonLevel * 50;
 		
 		/* Don't ever let the score decrease from one save to the next.  */
-		if (Variable.max_score > total) {
-			return Variable.max_score;
+		if (Variable.maxScore > total) {
+			return Variable.maxScore;
 		}
 		
 		return total;
@@ -390,28 +390,28 @@ public class Death {
 		
 		IO.clearScreen();
 		
-		if (Variable.noscore != 0) {
+		if (Variable.noScore != 0) {
 			return;
 		}
 		
-		if (Variable.panic_save == 1) {
+		if (Variable.panicSave == 1) {
 			IO.printMessage("Sorry, scores for games restored from panic save files are not saved.");
 			return;
 		}
 		
 		new_entry.points = getTotalPoints();
-		new_entry.birth_date = Variable.birth_date;
+		new_entry.birthDate = Variable.birthDate;
 		new_entry.uid =  1000000; //(getgid()*1000) + getuid();
-		new_entry.mhp = Player.py.misc.mhp;
-		new_entry.chp = Player.py.misc.chp;
-		new_entry.dun_level = Variable.dun_level;
-		new_entry.lev = Player.py.misc.lev;
-		new_entry.max_dlv = Player.py.misc.max_dlv;
-		new_entry.sex = (Player.py.misc.male ? 'M' : 'F');
-		new_entry.race = Player.py.misc.prace;
-		new_entry.Class = Player.py.misc.pclass;
+		new_entry.maxHitpoints = Player.py.misc.maxHitpoints;
+		new_entry.currHitpoints = Player.py.misc.currHitpoints;
+		new_entry.dungeonLevel = Variable.dungeonLevel;
+		new_entry.level = Player.py.misc.level;
+		new_entry.maxDungeonLevel = Player.py.misc.maxDungeonLevel;
+		new_entry.sex = (Player.py.misc.isMale ? 'M' : 'F');
+		new_entry.race = Player.py.misc.playerRace;
+		new_entry.playerClass = Player.py.misc.playerClass;
 		new_entry.name = Player.py.misc.name;
-		tmp = Variable.died_from;
+		tmp = Variable.diedFrom;
 		
 		int i1 = 0;
 		if ('a' == tmp.charAt(i1)) {
@@ -422,7 +422,7 @@ public class Death {
 				i1++;
 			}
 		}
-		new_entry.died_from = tmp.substring(i);
+		new_entry.diedFrom = tmp.substring(i);
 		
 		/*  First, get a lock on the high score file so no-one else tries */
 		/*  to write to it while we are using it, on VMS and IBMPCs only one
@@ -546,14 +546,14 @@ public class Death {
 		String p;
 		
 		/* Change the character attributes.		 */
-		Variable.dun_level = 0;
-		Variable.died_from = "Ripe Old Age";
+		Variable.dungeonLevel = 0;
+		Variable.diedFrom = "Ripe Old Age";
 		p_ptr = Player.py.misc;
 		Spells.restoreLevel();
-		p_ptr.lev += Constants.MAX_PLAYER_LEVEL;
-		p_ptr.au += 250000L;
-		p_ptr.max_exp += 5000000L;
-		p_ptr.exp = p_ptr.max_exp;
+		p_ptr.level += Constants.MAX_PLAYER_LEVEL;
+		p_ptr.gold += 250000L;
+		p_ptr.maxExp += 5000000L;
+		p_ptr.currExp = p_ptr.maxExp;
 		
 		/* Let the player know that he did good.	 */
 		IO.clearScreen();
@@ -572,7 +572,7 @@ public class Death {
 		IO.putBuffer(p, 12, 24);
 		IO.putBuffer("Veni, Vidi, Vici!", 15, 26);
 		IO.putBuffer("I came, I saw, I conquered!", 16, 21);
-		if (p_ptr.male) {
+		if (p_ptr.isMale) {
 			IO.putBuffer("All Hail the Mighty King!", 17, 22);
 		} else {
 			IO.putBuffer("All Hail the Mighty Queen!", 17, 22);
@@ -590,20 +590,20 @@ public class Death {
 		/* If the game has been saved, then save sets turn back to -1, which
 		 * inhibits the printing of the tomb.	 */
 		if (Variable.turn >= 0) {
-			if (Variable.total_winner) {
+			if (Variable.isTotalWinner) {
 				kingly();
 			}
 			printTomb();
 		}
-		if (Variable.character_generated && Variable.character_saved == 0) {
+		if (Variable.isCharacterGenerated && Variable.characterSaved == 0) {
 			Save.saveCharacter();		/* Save the memory at least. */
 		}
 		/* add score to scorefile if applicable */
-		if (Variable.character_generated) {
+		if (Variable.isCharacterGenerated) {
 			/* Clear character_saved, strange thing to do, but it prevents inkey()
 			 * from recursively calling exit_game() when there has been an eof
 			 * on stdin detected.  */
-			Variable.character_saved = 0;
+			Variable.characterSaved = 0;
 			highscores();
 			displayScores(true);
 		}

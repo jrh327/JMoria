@@ -23,10 +23,10 @@ package net.jonhopkins.moria.types;
 
 public final class OptionDescType {
 	public OptionDescType(String prompt, BooleanPointer var) {
-		o_prompt = prompt;
-		o_var = var;
+		optionPrompt = prompt;
+		isActive = var;
 	}
 	
-	public String o_prompt;
-	public BooleanPointer o_var;
+	public String optionPrompt;
+	public BooleanPointer isActive;
 }

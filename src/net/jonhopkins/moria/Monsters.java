@@ -163,7 +163,7 @@ public class Monsters {
 										*/
 	
 	//Creature_type[MAX_CREATURES]
-	public static CreatureType[] c_list = {	//Name		  cmove,	  spells,defense,  exp, slp,aaf, ac,spd,char,		    hit-die,					  damage, lvl
+	public static CreatureType[] creatureList = { //Name cmove,	    spells,defense,  exp, slp,aaf, ac,spd,char,	          hit-die,                      damage, lvl
 		new CreatureType("Filthy Street Urchin",	0x0012000A, 0x00000000, 0x2034,    0,  40,  4,  1, 11, 'p', new int[] { 1, 4}, new int[] { 72,148,  0,  0},  0),
 		new CreatureType("Blubbering Idiot",		0x0012000A, 0x00000000, 0x2030,    0,   0,  6,  1, 11, 'p', new int[] { 1, 2}, new int[] { 79,  0,  0,  0},  0),
 		new CreatureType("Pitiful-Looking Beggar",	0x0012000A, 0x00000000, 0x2030,    0,  40, 10,  1, 11, 'p', new int[] { 1, 4}, new int[] { 72,  0,  0,  0},  0),
@@ -454,7 +454,7 @@ public class Monsters {
 	
 	/* ERROR: attack #35 is no longer used */
 	//M_attack_type[N_MONS_ATTS]
-	public static MonsterAttackType[] monster_attacks = {
+	public static MonsterAttackType[] monsterAttacks = {
 		/* 0 */
 		new MonsterAttackType(0, 0, 0, 0), new MonsterAttackType(1, 1, 1, 2), new MonsterAttackType(1, 1, 1, 3),
 		new MonsterAttackType(1, 1, 1, 4), new MonsterAttackType(1, 1, 1, 5), new MonsterAttackType(1, 1, 1, 6),
@@ -546,14 +546,14 @@ public class Monsters {
 	
 	private Monsters() { }
 	
-	public static MonsterType[] m_list = new MonsterType[Constants.MAX_MALLOC];
-	public static int[] m_level = new int[Constants.MAX_MONS_LEVEL + 1];
+	public static MonsterType[] monsterList = new MonsterType[Constants.MAX_MALLOC];
+	public static int[] monsterLevel = new int[Constants.MAX_MONS_LEVEL + 1];
 	
 	/* Blank monster values	*/
 	public static MonsterType getBlankMonster() {
 		return new MonsterType(0, 0, 0, 0, 0, 0, 0, false, 0, 0);
 	}
 	
-	public static int mfptr;			/* Cur free monster ptr	*/
-	public static int mon_tot_mult;		/* # of repro's of creature	*/
+	public static int freeMonsterIndex;			/* Cur free monster ptr	*/
+	public static int totalMonsterMultiples;		/* # of repro's of creature	*/
 }

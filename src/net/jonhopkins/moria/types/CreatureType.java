@@ -55,12 +55,12 @@ public final class CreatureType {
 	/**
 	 * Area affect radius
 	 */
-	public int aaf;
+	public int aoeRadius;
 	
 	/**
 	 * AC
 	 */
-	public int ac;
+	public int armorClass;
 	
 	/**
 	 * Movement speed+10
@@ -75,7 +75,7 @@ public final class CreatureType {
 	/**
 	 * Creatures hit die
 	 */
-	public int[] hd = new int[2];
+	public int[] hitDie = new int[2];
 	
 	/**
 	 * Type attack and damage
@@ -96,11 +96,11 @@ public final class CreatureType {
 		this.cdefense = cdefense;
 		this.mexp = mexp;
 		this.sleep = sleep;
-		this.aaf = aaf;
-		this.ac = ac;
+		this.aoeRadius = aaf;
+		this.armorClass = ac;
 		this.speed = speed;
 		this.cchar = cchar;
-		this.hd = hd;
+		this.hitDie = hd;
 		this.damage = damage;
 		this.level = level;
 	}

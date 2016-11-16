@@ -36,12 +36,12 @@ public final class InvenType {
 	/**
 	 * Object special name
 	 */
-	public int name2;
+	public int specialName;
 	
 	/**
 	 * Object inscription
 	 */
-	public String inscrip;
+	public String inscription;
 	
 	/**
 	 * Special flags
@@ -51,7 +51,7 @@ public final class InvenType {
 	/**
 	 * Category number
 	 */
-	public int tval;
+	public int category;
 	
 	/**
 	 * Character representation
@@ -61,7 +61,7 @@ public final class InvenType {
 	/**
 	 * Misc. use variable
 	 */
-	public int p1;
+	public int misc;
 	
 	/**
 	 * Cost of item
@@ -71,7 +71,7 @@ public final class InvenType {
 	/**
 	 * Sub-category number
 	 */
-	public int subval;
+	public int subCategory;
 	
 	/**
 	 * Number of items in stack
@@ -91,17 +91,17 @@ public final class InvenType {
 	/**
 	 * Pluses to damage
 	 */
-	public int todam;
+	public int plusToDam;
 	
 	/**
 	 * Normal AC
 	 */
-	public int ac;
+	public int armorClass;
 	
 	/**
 	 * Pluses to AC
 	 */
-	public int toac;
+	public int plusToArmorClass;
 	
 	/**
 	 * Damage when hits
@@ -116,27 +116,27 @@ public final class InvenType {
 	/**
 	 * Identify information
 	 */
-	public int ident;
+	public int identify;
 	
 	public void copyInto(InvenType item) {
 		item.index = this.index;
-		item.name2 = this.name2;
-		item.inscrip = this.inscrip;
+		item.specialName = this.specialName;
+		item.inscription = this.inscription;
 		item.flags = this.flags;
-		item.tval = this.tval;
+		item.category = this.category;
 		item.tchar = this.tchar;
-		item.p1 = this.p1;
+		item.misc = this.misc;
 		item.cost = this.cost;
-		item.subval = this.subval;
+		item.subCategory = this.subCategory;
 		item.number = this.number;
 		item.weight = this.weight;
 		item.tohit = this.tohit;
-		item.todam = this.todam;
-		item.ac = this.ac;
-		item.toac = this.toac;
+		item.plusToDam = this.plusToDam;
+		item.armorClass = this.armorClass;
+		item.plusToArmorClass = this.plusToArmorClass;
 		item.damage[0] = this.damage[0];
 		item.damage[1] = this.damage[1];
 		item.level = this.level;
-		item.ident = this.ident;
+		item.identify = this.identify;
 	}
 }

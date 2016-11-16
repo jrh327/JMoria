@@ -22,28 +22,28 @@
 package net.jonhopkins.moria.types;
 
 public final class CaveType {
-	public int cptr;
-	public int tptr;
+	public int creatureIndex;
+	public int treasureIndex;
 	public int fval;
 	
 	/**
 	 * Room should be lit with permanent light, walls with
 	 * this set should be permanently lit after tunneled out
 	 */
-	public boolean lr;
+	public boolean litRoom;
 	
 	/**
 	 * Field mark, used for traps/doors/stairs, object is hidden if fm is false
 	 */
-	public boolean fm;
+	public boolean fieldMark;
 	
 	/**
 	 * Permanent light, used for walls and lighted rooms
 	 */
-	public boolean pl;
+	public boolean permLight;
 	
 	/**
 	 * Temporary light, used for player's lamp light, etc.
 	 */
-	public boolean tl;
+	public boolean tempLight;
 }

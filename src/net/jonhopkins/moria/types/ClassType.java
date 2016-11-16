@@ -1,5 +1,5 @@
 /*
- * ClasType.java: character class
+ * ClassType.java: character class
  * 
  * Copyright (C) 1989-2008 James E. Wilson, Robert A. Koeneke, 
  *                         David J. Grabiner
@@ -23,27 +23,27 @@ package net.jonhopkins.moria.types;
 
 public final class ClassType {
 	public ClassType(String title, int hd, int dis, int srh, int stl, int fos,
-			int bth, int bthb, int sav, int adj_str, int adj_int, int adj_wis,
-			int adj_dex, int adj_con, int adj_chr, int spell, int exp,
-			int first_spell_level) {
+			int bth, int bthb, int sav, int adjStr, int adjInt, int adjWis,
+			int adjDex, int adjCon, int adjChr, int spell, int exp,
+			int firstSpellLevel) {
 		this.title = title;
-		this.adj_hd = hd;
-		this.mdis = dis;
-		this.msrh = srh;
-		this.mstl = stl;
-		this.mfos = fos;
-		this.mbth = bth;
-		this.mbthb = bthb;
-		this.msav = sav;
-		this.madj_str = adj_str;
-		this.madj_int = adj_int;
-		this.madj_wis = adj_wis;
-		this.madj_dex = adj_dex;
-		this.madj_con = adj_con;
-		this.madj_chr = adj_chr;
+		this.adjHitpoints = hd;
+		this.modDisarm = dis;
+		this.modSearch = srh;
+		this.modStealth = stl;
+		this.modFreqOfSearch = fos;
+		this.modBaseToHit = bth;
+		this.modBaseToHitBow = bthb;
+		this.modSavingThrow = sav;
+		this.modStrAdjust = adjStr;
+		this.modIntAdjust = adjInt;
+		this.modWisAdjust = adjWis;
+		this.modDexAdjust = adjDex;
+		this.modConAdjust = adjCon;
+		this.modChrAdjust = adjChr;
 		this.spell = spell;
-		this.m_exp = exp;
-		this.first_spell_lev = first_spell_level;
+		this.modExpFactor = exp;
+		this.firstSpellLevel = firstSpellLevel;
 	}
 	
 	/**
@@ -54,72 +54,72 @@ public final class ClassType {
 	/**
 	 * Adjust hit points
 	 */
-	public int adj_hd;
+	public int adjHitpoints;
 	
 	/**
 	 * Class modifier disarming traps
 	 */
-	public int mdis;
+	public int modDisarm;
 	
 	/**
 	 * Class modifier to searching
 	 */
-	public int msrh;
+	public int modSearch;
 	
 	/**
 	 * Class modifier to stealth
 	 */
-	public int mstl;
+	public int modStealth;
 	
 	/**
 	 * Class modifier to frequency-of-search
 	 */
-	public int mfos;
+	public int modFreqOfSearch;
 	
 	/**
 	 * Class modifier to base to hit
 	 */
-	public int mbth;
+	public int modBaseToHit;
 	
 	/**
 	 * Class modifier to base to hit - bows
 	 */
-	public int mbthb;
+	public int modBaseToHitBow;
 	
 	/**
 	 * Class modifier to save
 	 */
-	public int msav;
+	public int modSavingThrow;
 	
 	/**
 	 * Class modifier for strength
 	 */
-	public int madj_str;
+	public int modStrAdjust;
 	
 	/**
 	 * Class modifier for intelligence
 	 */
-	public int madj_int;
+	public int modIntAdjust;
 	
 	/**
 	 * Class modifier for wisdom
 	 */
-	public int madj_wis;
+	public int modWisAdjust;
 	
 	/**
 	 * Class modifier for dexterity
 	 */
-	public int madj_dex;
+	public int modDexAdjust;
 	
 	/**
 	 * Class modifier for constitution
 	 */
-	public int madj_con;
+	public int modConAdjust;
 	
 	/**
 	 * Class modifier for charisma
 	 */
-	public int madj_chr;
+	public int modChrAdjust;
 	
 	/**
 	 * Class use mage spells
@@ -129,10 +129,10 @@ public final class ClassType {
 	/**
 	 * Class experience factor
 	 */
-	public int m_exp;
+	public int modExpFactor;
 	
 	/**
 	 * First level where class can use spells.
 	 */
-	public int first_spell_lev;
+	public int firstSpellLevel;
 }

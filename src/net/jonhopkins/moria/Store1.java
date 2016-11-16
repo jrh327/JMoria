@@ -40,56 +40,56 @@ public class Store1 {
 		
 		value = i_ptr.cost;
 		/* don't purchase known cursed items */
-		if ((i_ptr.ident & Constants.ID_DAMD) != 0) {
+		if ((i_ptr.identify & Constants.ID_DAMD) != 0) {
 			value = 0;
-		} else if (((i_ptr.tval >= Constants.TV_BOW) && (i_ptr.tval <= Constants.TV_SWORD)) || ((i_ptr.tval >= Constants.TV_BOOTS) && (i_ptr.tval <= Constants.TV_SOFT_ARMOR))) {
+		} else if (((i_ptr.category >= Constants.TV_BOW) && (i_ptr.category <= Constants.TV_SWORD)) || ((i_ptr.category >= Constants.TV_BOOTS) && (i_ptr.category <= Constants.TV_SOFT_ARMOR))) {
 			/* Weapons and armor	*/
 			if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
-				value = Treasure.object_list[i_ptr.index].cost;
-			} else if ((i_ptr.tval >= Constants.TV_BOW) && (i_ptr.tval <= Constants.TV_SWORD)) {
+				value = Treasure.objectList[i_ptr.index].cost;
+			} else if ((i_ptr.category >= Constants.TV_BOW) && (i_ptr.category <= Constants.TV_SWORD)) {
 				if (i_ptr.tohit < 0) {
 					value = 0;
-				} else if (i_ptr.todam < 0) {
+				} else if (i_ptr.plusToDam < 0) {
 					value = 0;
-				} else if (i_ptr.toac < 0) {
+				} else if (i_ptr.plusToArmorClass < 0) {
 					value = 0;
 				} else {
-					value = i_ptr.cost + (i_ptr.tohit + i_ptr.todam + i_ptr.toac) * 100;
+					value = i_ptr.cost + (i_ptr.tohit + i_ptr.plusToDam + i_ptr.plusToArmorClass) * 100;
 				}
 			} else {
-				if (i_ptr.toac < 0) {
+				if (i_ptr.plusToArmorClass < 0) {
 					value = 0;
 				} else {
-					value = i_ptr.cost + i_ptr.toac * 100;
+					value = i_ptr.cost + i_ptr.plusToArmorClass * 100;
 				}
 			}
-		} else if ((i_ptr.tval >= Constants.TV_SLING_AMMO) && (i_ptr.tval <= Constants.TV_SPIKE)) {
+		} else if ((i_ptr.category >= Constants.TV_SLING_AMMO) && (i_ptr.category <= Constants.TV_SPIKE)) {
 			/* Ammo			*/
 			if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
-				value = Treasure.object_list[i_ptr.index].cost;
+				value = Treasure.objectList[i_ptr.index].cost;
 			} else {
 				if (i_ptr.tohit < 0) {
 					value = 0;
-				} else if (i_ptr.todam < 0) {
+				} else if (i_ptr.plusToDam < 0) {
 					value = 0;
-				} else if (i_ptr.toac < 0) {
+				} else if (i_ptr.plusToArmorClass < 0) {
 					value = 0;
 				} else {
 					/* use 5, because missiles generally appear in groups of 20,
 					 * so 20 * 5 == 100, which is comparable to weapon bonus above */
-					value = i_ptr.cost + (i_ptr.tohit + i_ptr.todam + i_ptr.toac) * 5;
+					value = i_ptr.cost + (i_ptr.tohit + i_ptr.plusToDam + i_ptr.plusToArmorClass) * 5;
 				}
 			}
-		} else if ((i_ptr.tval == Constants.TV_SCROLL1) || (i_ptr.tval == Constants.TV_SCROLL2) || (i_ptr.tval == Constants.TV_POTION1) || (i_ptr.tval == Constants.TV_POTION2)) {
+		} else if ((i_ptr.category == Constants.TV_SCROLL1) || (i_ptr.category == Constants.TV_SCROLL2) || (i_ptr.category == Constants.TV_POTION1) || (i_ptr.category == Constants.TV_POTION2)) {
 			/* Potions, Scrolls, and Food	*/
 			if (!Desc.isKnownByPlayer(i_ptr)) {
 				value = 20;
 			}
-		} else if (i_ptr.tval == Constants.TV_FOOD) {
-			if ((i_ptr.subval < (Constants.ITEM_SINGLE_STACK_MIN + Constants.MAX_MUSH)) && !Desc.isKnownByPlayer(i_ptr)) {
+		} else if (i_ptr.category == Constants.TV_FOOD) {
+			if ((i_ptr.subCategory < (Constants.ITEM_SINGLE_STACK_MIN + Constants.MAX_MUSH)) && !Desc.isKnownByPlayer(i_ptr)) {
 				value = 1;
 			}
-		} else if ((i_ptr.tval == Constants.TV_AMULET) || (i_ptr.tval == Constants.TV_RING)) {
+		} else if ((i_ptr.category == Constants.TV_AMULET) || (i_ptr.category == Constants.TV_RING)) {
 			/* Rings and amulets	*/
 			if (!Desc.isKnownByPlayer(i_ptr)) {
 				/* player does not know what type of ring/amulet this is */
@@ -98,30 +98,30 @@ public class Store1 {
 				/* player knows what type of ring, but does not know whether it is
 				 * cursed or not, if refuse to buy cursed objects here, then
 				 * player can use this to 'identify' cursed objects */
-				value = Treasure.object_list[i_ptr.index].cost;
+				value = Treasure.objectList[i_ptr.index].cost;
 			}
-		} else if ((i_ptr.tval == Constants.TV_STAFF) || (i_ptr.tval == Constants.TV_WAND)) {
+		} else if ((i_ptr.category == Constants.TV_STAFF) || (i_ptr.category == Constants.TV_WAND)) {
 			/* Wands and staffs*/
 			if (!Desc.isKnownByPlayer(i_ptr)) {
-				if (i_ptr.tval == Constants.TV_WAND) {
+				if (i_ptr.category == Constants.TV_WAND) {
 					value = 50;
 				} else {
 					value = 70;
 				}
 			} else if (Desc.arePlussesKnownByPlayer(i_ptr)) {
-				value = i_ptr.cost + (i_ptr.cost / 20) * i_ptr.p1;
+				value = i_ptr.cost + (i_ptr.cost / 20) * i_ptr.misc;
 			}
-		} else if (i_ptr.tval == Constants.TV_DIGGING) {
+		} else if (i_ptr.category == Constants.TV_DIGGING) {
 			/* picks and shovels */
 			if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
-				value = Treasure.object_list[i_ptr.index].cost;
+				value = Treasure.objectList[i_ptr.index].cost;
 			} else {
-				if (i_ptr.p1 < 0) {
+				if (i_ptr.misc < 0) {
 					value = 0;
 				} else {
 					/* some digging tools start with non-zero p1 values, so only
 					 * multiply the plusses by 100, make sure result is positive */
-					value = i_ptr.cost + (i_ptr.p1 - Treasure.object_list[i_ptr.index].p1) * 100;
+					value = i_ptr.cost + (i_ptr.misc - Treasure.objectList[i_ptr.index].misc) * 100;
 					if (value < 0) {
 						value = 0;
 					}
@@ -129,7 +129,7 @@ public class Store1 {
 			}
 		}
 		/* multiply value by number of items if it is a group stack item */
-		if (i_ptr.subval > Constants.ITEM_GROUP_MIN) {	/* do not include torches here */
+		if (i_ptr.subCategory > Constants.ITEM_GROUP_MIN) {	/* do not include torches here */
 			value = value * i_ptr.number;
 		}
 		return value;
@@ -152,10 +152,10 @@ public class Store1 {
 		i = getItemValue(item);
 		/* check item.cost in case it is cursed, check i in case it is damaged */
 		if ((item.cost > 0) && (i > 0)) {
-			i = i * Tables.rgold_adj[Tables.owners[s_ptr.owner].owner_race][Player.py.misc.prace] / 100;
+			i = i * Tables.raceGoldAdjust[Tables.owners[s_ptr.owner].ownerRace][Player.py.misc.playerRace] / 100;
 			if (i < 1)  i = 1;
-			max_sell.value(i * Tables.owners[s_ptr.owner].max_inflate / 100);
-			min_sell.value(i * Tables.owners[s_ptr.owner].min_inflate / 100);
+			max_sell.value(i * Tables.owners[s_ptr.owner].maxInflate / 100);
+			min_sell.value(i * Tables.owners[s_ptr.owner].minInflate / 100);
 			if (min_sell.value() > max_sell.value())	min_sell.value(max_sell.value());
 			return i;
 		} else {
@@ -179,16 +179,16 @@ public class Store1 {
 		
 		store_check = false;
 		s_ptr = Variable.store[store_num];
-		if (s_ptr.store_ctr < Constants.STORE_INVEN_MAX) {
+		if (s_ptr.storeCounter < Constants.STORE_INVEN_MAX) {
 			store_check = true;
-		} else if (t_ptr.subval >= Constants.ITEM_SINGLE_STACK_MIN) {
-			for (i = 0; i < s_ptr.store_ctr; i++) {
-				i_ptr = s_ptr.store_inven[i].sitem;
+		} else if (t_ptr.subCategory >= Constants.ITEM_SINGLE_STACK_MIN) {
+			for (i = 0; i < s_ptr.storeCounter; i++) {
+				i_ptr = s_ptr.storeInven[i].item;
 				/* note: items with subval of gte ITEM_SINGLE_STACK_MAX only stack
 				 * if their subvals match */
-				if (i_ptr.tval == t_ptr.tval && i_ptr.subval == t_ptr.subval
+				if (i_ptr.category == t_ptr.category && i_ptr.subCategory == t_ptr.subCategory
 						&& (i_ptr.number + t_ptr.number < 256)
-						&& (t_ptr.subval < Constants.ITEM_GROUP_MIN || (i_ptr.p1 == t_ptr.p1))) {
+						&& (t_ptr.subCategory < Constants.ITEM_GROUP_MIN || (i_ptr.misc == t_ptr.misc))) {
 					store_check = true;
 				}
 			}
@@ -209,13 +209,13 @@ public class Store1 {
 		StoreType s_ptr;
 		
 		s_ptr = Variable.store[store_num];
-		for (i = s_ptr.store_ctr - 1; i >= pos; i--) {
-			s_ptr.store_inven[i].sitem.copyInto(s_ptr.store_inven[i + 1].sitem);
-			s_ptr.store_inven[i + 1].scost = s_ptr.store_inven[i].scost;
+		for (i = s_ptr.storeCounter - 1; i >= pos; i--) {
+			s_ptr.storeInven[i].item.copyInto(s_ptr.storeInven[i + 1].item);
+			s_ptr.storeInven[i + 1].cost = s_ptr.storeInven[i].cost;
 		}
-		i_ptr.copyInto(s_ptr.store_inven[pos].sitem);
-		s_ptr.store_inven[pos].scost = -icost;
-		s_ptr.store_ctr++;
+		i_ptr.copyInto(s_ptr.storeInven[pos].item);
+		s_ptr.storeInven[pos].cost = -icost;
+		s_ptr.storeCounter++;
 	}
 	
 	/**
@@ -239,13 +239,13 @@ public class Store1 {
 			item_val = 0;
 			item_num = t_ptr.number;
 			flag = false;
-			typ  = t_ptr.tval;
-			subt = t_ptr.subval;
+			typ  = t_ptr.category;
+			subt = t_ptr.subCategory;
 			do {
-				i_ptr = s_ptr.store_inven[item_val].sitem;
-				if (typ == i_ptr.tval) {
+				i_ptr = s_ptr.storeInven[item_val].item;
+				if (typ == i_ptr.category) {
 					/* Adds to other item	*/
-					if (subt == i_ptr.subval && subt >= Constants.ITEM_SINGLE_STACK_MIN && (subt < Constants.ITEM_GROUP_MIN || i_ptr.p1 == t_ptr.p1)) {
+					if (subt == i_ptr.subCategory && subt >= Constants.ITEM_SINGLE_STACK_MIN && (subt < Constants.ITEM_GROUP_MIN || i_ptr.misc == t_ptr.misc)) {
 						ipos.value(item_val);
 						i_ptr.number += item_num;
 						/* must set new scost for group items, do this only for items
@@ -253,7 +253,7 @@ public class Store1 {
 						 * must be recalculated for entire group */
 						if (subt > Constants.ITEM_GROUP_MIN) {
 							getSellPrice(store_num, icost, dummy, i_ptr);
-							s_ptr.store_inven[item_val].scost = -icost.value();
+							s_ptr.storeInven[item_val].cost = -icost.value();
 						
 						/* must let group objects (except torches) stack over 24
 						 * since there may be more than 24 in the group */
@@ -262,17 +262,17 @@ public class Store1 {
 						}
 						flag = true;
 					}
-				} else if (typ > i_ptr.tval) {
+				} else if (typ > i_ptr.category) {
 					/* Insert into list		*/
 					insertStore(store_num, item_val, icost.value(), t_ptr);
 					flag = true;
 					ipos.value(item_val);
 				}
 				item_val++;
-			} while ((item_val < s_ptr.store_ctr) && (!flag));
+			} while ((item_val < s_ptr.storeCounter) && (!flag));
 			if (!flag) {	/* Becomes last item in list	*/
-				insertStore(store_num, s_ptr.store_ctr, icost.value(), t_ptr);
-				ipos.value(s_ptr.store_ctr - 1);
+				insertStore(store_num, s_ptr.storeCounter, icost.value(), t_ptr);
+				ipos.value(s_ptr.storeCounter - 1);
 			}
 		}
 	}
@@ -291,12 +291,12 @@ public class Store1 {
 		InvenType i_ptr;
 		
 		s_ptr = Variable.store[store_num];
-		i_ptr = s_ptr.store_inven[item_val].sitem;
+		i_ptr = s_ptr.storeInven[item_val].item;
 		
 		/* for single stackable objects, only destroy one half on average,
 		 * this will help ensure that general store and alchemist have
 		 * reasonable selection of objects */
-		if ((i_ptr.subval >= Constants.ITEM_SINGLE_STACK_MIN) && (i_ptr.subval <= Constants.ITEM_SINGLE_STACK_MAX)) {
+		if ((i_ptr.subCategory >= Constants.ITEM_SINGLE_STACK_MIN) && (i_ptr.subCategory <= Constants.ITEM_SINGLE_STACK_MAX)) {
 			if (one_of) {
 				number = 1;
 			} else {
@@ -309,13 +309,13 @@ public class Store1 {
 		if (number != i_ptr.number) {
 			i_ptr.number -= number;
 		} else {
-			for (j = item_val; j < s_ptr.store_ctr - 1; j++) {
-				s_ptr.store_inven[j + 1].sitem.copyInto(s_ptr.store_inven[j].sitem);
-				s_ptr.store_inven[j].scost = s_ptr.store_inven[j + 1].scost;
+			for (j = item_val; j < s_ptr.storeCounter - 1; j++) {
+				s_ptr.storeInven[j + 1].item.copyInto(s_ptr.storeInven[j].item);
+				s_ptr.storeInven[j].cost = s_ptr.storeInven[j + 1].cost;
 			}
-			Desc.copyIntoInventory(s_ptr.store_inven[s_ptr.store_ctr - 1].sitem, Constants.OBJ_NOTHING);
-			s_ptr.store_inven[s_ptr.store_ctr - 1].scost = 0;
-			s_ptr.store_ctr--;
+			Desc.copyIntoInventory(s_ptr.storeInven[s_ptr.storeCounter - 1].item, Constants.OBJ_NOTHING);
+			s_ptr.storeInven[s_ptr.storeCounter - 1].cost = 0;
+			s_ptr.storeCounter--;
 		}
 	}
 	
@@ -330,14 +330,14 @@ public class Store1 {
 		for (j = 0; j < Constants.MAX_STORES; j++) {
 			s_ptr = Variable.store[j];
 			s_ptr.owner = Constants.MAX_STORES * (Misc1.randomInt(i) - 1) + j;
-			s_ptr.insult_cur = 0;
-			s_ptr.store_open = 0;
-			s_ptr.store_ctr	= 0;
-			s_ptr.good_buy = 0;
-			s_ptr.bad_buy = 0;
+			s_ptr.currInsult = 0;
+			s_ptr.storeOpen = 0;
+			s_ptr.storeCounter	= 0;
+			s_ptr.goodBuy = 0;
+			s_ptr.badBuy = 0;
 			for (k = 0; k < Constants.STORE_INVEN_MAX; k++) {
-				Desc.copyIntoInventory(s_ptr.store_inven[k].sitem, Constants.OBJ_NOTHING);
-				s_ptr.store_inven[k].scost = 0;
+				Desc.copyIntoInventory(s_ptr.storeInven[k].item, Constants.OBJ_NOTHING);
+				s_ptr.storeInven[k].cost = 0;
 			}
 		}
 	}
@@ -358,12 +358,12 @@ public class Store1 {
 		cur_pos = Misc1.popTreasure();
 		s_ptr = Variable.store[store_num];
 		do {
-			i = Tables.store_choice[store_num][Misc1.randomInt(Constants.STORE_CHOICES) - 1];
-			Desc.copyIntoInventory(Treasure.t_list[cur_pos], i);
+			i = Tables.storeChoice[store_num][Misc1.randomInt(Constants.STORE_CHOICES) - 1];
+			Desc.copyIntoInventory(Treasure.treasureList[cur_pos], i);
 			Misc2.addMagicToTreasure(cur_pos, Constants.OBJ_TOWN_LEVEL);
-			t_ptr = Treasure.t_list[cur_pos];
+			t_ptr = Treasure.treasureList[cur_pos];
 			if (isStoreFull(t_ptr, store_num)) {
-				if ((t_ptr.cost > 0) &&	(t_ptr.cost < Tables.owners[s_ptr.owner].max_cost)) {
+				if ((t_ptr.cost > 0) &&	(t_ptr.cost < Tables.owners[s_ptr.owner].maxCost)) {
 					/* Item must be good	*/
 					/* equivalent to calling ident_spell(), except will not
 					 * change the object_ident array */
@@ -386,21 +386,21 @@ public class Store1 {
 		
 		for (i = 0; i < Constants.MAX_STORES; i++) {
 			s_ptr = Variable.store[i];
-			s_ptr.insult_cur = 0;
-			if (s_ptr.store_ctr >= Constants.STORE_MIN_INVEN) {
+			s_ptr.currInsult = 0;
+			if (s_ptr.storeCounter >= Constants.STORE_MIN_INVEN) {
 				j = Misc1.randomInt(Constants.STORE_TURN_AROUND);
-				if (s_ptr.store_ctr >= Constants.STORE_MAX_INVEN) {
-					j += 1 + s_ptr.store_ctr - Constants.STORE_MAX_INVEN;
+				if (s_ptr.storeCounter >= Constants.STORE_MAX_INVEN) {
+					j += 1 + s_ptr.storeCounter - Constants.STORE_MAX_INVEN;
 				}
 				while (--j >= 0) {
-					storeDestroy(i, Misc1.randomInt(s_ptr.store_ctr) - 1, false);
+					storeDestroy(i, Misc1.randomInt(s_ptr.storeCounter) - 1, false);
 				}
 			}
 			
-			if (s_ptr.store_ctr <= Constants.STORE_MAX_INVEN) {
+			if (s_ptr.storeCounter <= Constants.STORE_MAX_INVEN) {
 				j = Misc1.randomInt(Constants.STORE_TURN_AROUND);
-				if (s_ptr.store_ctr < Constants.STORE_MIN_INVEN) {
-					j += Constants.STORE_MIN_INVEN - s_ptr.store_ctr;
+				if (s_ptr.storeCounter < Constants.STORE_MIN_INVEN) {
+					j += Constants.STORE_MIN_INVEN - s_ptr.storeCounter;
 				}
 				while (--j >= 0) {
 					storeCreate(i);
@@ -422,10 +422,10 @@ public class Store1 {
 		StoreType s_ptr;
 		
 		s_ptr = Variable.store[store_num];
-		if (s_ptr.good_buy == Constants.MAX_SHORT) {
+		if (s_ptr.goodBuy == Constants.MAX_SHORT) {
 			return true;
 		}
-		bargain_record = (s_ptr.good_buy - 3 * s_ptr.bad_buy - 5);
+		bargain_record = (s_ptr.goodBuy - 3 * s_ptr.badBuy - 5);
 		flagnoneed = ((bargain_record > 0)
 				&& ((long)bargain_record * (long)bargain_record > minprice/50));
 		return flagnoneed;
@@ -444,12 +444,12 @@ public class Store1 {
 		s_ptr = Variable.store[store_num];
 		if (minprice > 9) {
 			if (price == minprice) {
-				if (s_ptr.good_buy < Constants.MAX_SHORT) {
-					s_ptr.good_buy++;
+				if (s_ptr.goodBuy < Constants.MAX_SHORT) {
+					s_ptr.goodBuy++;
 				}
 			} else {
-				if (s_ptr.bad_buy < Constants.MAX_SHORT) {
-					s_ptr.bad_buy++;
+				if (s_ptr.badBuy < Constants.MAX_SHORT) {
+					s_ptr.badBuy++;
 				}
 			}
 		}

@@ -21,11 +21,15 @@
  */
 package net.jonhopkins.moria.types;
 
+import net.jonhopkins.moria.Constants;
+
 public final class MonsterRecallType {
-	public int r_cmove;
-    public int r_spells;
-    public int r_kills, r_deaths;
-    public int r_cdefense;
-    public int r_wake, r_ignore;
-    public int[] r_attacks = new int[net.jonhopkins.moria.Constants.MAX_MON_NATTACK];
+	public int cmove;
+    public int spells;
+    public int kills;
+    public int deaths;
+    public int cdefense;
+    public int wake;
+    public int ignore;
+    public int[] attacks = new int[Constants.MAX_MON_NATTACK];
 }

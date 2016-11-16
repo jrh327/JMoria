@@ -23,14 +23,14 @@ package net.jonhopkins.moria.types;
 
 public final class MonsterAttackType {
 	public MonsterAttackType(int type, int desc, int dice, int sides) {
-		attack_type = type;
-		attack_desc = desc;
-		attack_dice = dice;
-		attack_sides = sides;
+		attackType = type;
+		attackDesc = desc;
+		attackDice = dice;
+		attackSides = sides;
 	}
 	
-	public int attack_type;
-    public int attack_desc;
-    public int attack_dice;
-    public int attack_sides;
+	public int attackType;
+    public int attackDesc;
+    public int attackDice;
+    public int attackSides;
 }

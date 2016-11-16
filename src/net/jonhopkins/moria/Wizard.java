@@ -36,20 +36,20 @@ public class Wizard {
 		int k, l, i, j;
 		boolean flag;
 		
-		if (Variable.cave[Player.char_row][Player.char_col].pl) {
+		if (Variable.cave[Player.y][Player.x].permLight) {
 			flag = false;
 		} else {
 			flag = true;
 		}
-		for (i = 0; i < Variable.cur_height; i++) {
-			for (j = 0; j < Variable.cur_width; j++) {
+		for (i = 0; i < Variable.currHeight; i++) {
+			for (j = 0; j < Variable.currWidth; j++) {
 				if (Variable.cave[i][j].fval <= Constants.MAX_CAVE_FLOOR) {
 					for (k = i - 1; k <= i + 1; k++) {
 						for (l = j - 1; l <= j + 1; l++) {
 							c_ptr = Variable.cave[k][l];
-							c_ptr.pl = flag;
+							c_ptr.permLight = flag;
 							if (!flag) {
-								c_ptr.fm = false;
+								c_ptr.fieldMark = false;
 							}
 						}
 					}
@@ -66,7 +66,7 @@ public class Wizard {
 		String tmp_str;
 		PlayerMisc m_ptr;
 		
-		a_ptr = Player.py.stats.max_stat;
+		a_ptr = Player.py.stats.maxStat;
 		IO.print("(3 - 118) Strength     = ", 0, 0);
 		tmp_str = IO.getString(0, 25, 3);
 		if (tmp_str.isEmpty()) {
@@ -183,9 +183,9 @@ public class Wizard {
 			tmp_val = 0;
 		}
 		if ((tmp_val > 0) && (tmp_val <= Constants.MAX_SHORT)) {
-			m_ptr.mhp  = tmp_val;
-			m_ptr.chp  = tmp_val;
-			m_ptr.chp_frac = 0;
+			m_ptr.maxHitpoints  = tmp_val;
+			m_ptr.currHitpoints  = tmp_val;
+			m_ptr.currHitpointsFraction = 0;
 			Misc3.printMaxHitpoints();
 			Misc3.printCurrentHitpoints();
 		}
@@ -203,13 +203,13 @@ public class Wizard {
 			tmp_val = 0;
 		}
 		if ((tmp_val > -1) && (tmp_val <= Constants.MAX_SHORT)) {
-			m_ptr.mana  = tmp_val;
-			m_ptr.cmana = tmp_val;
-			m_ptr.cmana_frac = 0;
+			m_ptr.maxMana  = tmp_val;
+			m_ptr.currMana = tmp_val;
+			m_ptr.currManaFraction = 0;
 			Misc3.printCurrentMana();
 		}
 		
-		tmp_str = String.format("Current=%d  Gold = ", m_ptr.au);
+		tmp_str = String.format("Current=%d  Gold = ", m_ptr.gold);
 		tmp_val = tmp_str.length();
 		IO.print(tmp_str, 0, 0);
 		tmp_str = IO.getString(0, tmp_val, 7);
@@ -224,11 +224,11 @@ public class Wizard {
 			tmp_val = 0;
 		}
 		if (tmp_val > -1) {
-			m_ptr.au = tmp_val;
+			m_ptr.gold = tmp_val;
 			Misc3.printGold();
 		}
 		
-		tmp_str = String.format("Current=%d  (0-200) Searching = ", m_ptr.srh);
+		tmp_str = String.format("Current=%d  (0-200) Searching = ", m_ptr.searchChance);
 		tmp_val = tmp_str.length();
 		IO.print(tmp_str, 0, 0);
 		tmp_str = IO.getString(0, tmp_val, 3);
@@ -243,10 +243,10 @@ public class Wizard {
 			tmp_val = 0;
 		}
 		if ((tmp_val > -1) && (tmp_val < 201)) {
-			m_ptr.srh  = tmp_val;
+			m_ptr.searchChance  = tmp_val;
 		}
 		
-		tmp_str = String.format("Current=%d  (-1-18) Stealth = ", m_ptr.stl);
+		tmp_str = String.format("Current=%d  (-1-18) Stealth = ", m_ptr.stealth);
 		tmp_val = tmp_str.length();
 		IO.print(tmp_str, 0, 0);
 		tmp_str = IO.getString(0, tmp_val, 3);
@@ -261,10 +261,10 @@ public class Wizard {
 			tmp_val = 0;
 		}
 		if ((tmp_val > -2) && (tmp_val < 19)) {
-			m_ptr.stl  = tmp_val;
+			m_ptr.stealth  = tmp_val;
 		}
 		
-		tmp_str = String.format("Current=%d  (0-200) Disarming = ", m_ptr.disarm);
+		tmp_str = String.format("Current=%d  (0-200) Disarming = ", m_ptr.disarmChance);
 		tmp_val = tmp_str.length();
 		IO.print(tmp_str, 0, 0);
 		tmp_str = IO.getString(0, tmp_val, 3);
@@ -279,10 +279,10 @@ public class Wizard {
 			tmp_val = 0;
 		}
 		if ((tmp_val > -1) && (tmp_val < 201)) {
-			m_ptr.disarm = tmp_val;
+			m_ptr.disarmChance = tmp_val;
 		}
 		
-		tmp_str = String.format("Current=%d  (0-100) Save = ", m_ptr.save);
+		tmp_str = String.format("Current=%d  (0-100) Save = ", m_ptr.savingThrow);
 		tmp_val = tmp_str.length();
 		IO.print(tmp_str, 0, 0);
 		tmp_str = IO.getString(0, tmp_val, 3);
@@ -297,10 +297,10 @@ public class Wizard {
 			tmp_val = 0;
 		}
 		if ((tmp_val > -1) && (tmp_val < 201)) {
-			m_ptr.save = tmp_val;
+			m_ptr.savingThrow = tmp_val;
 		}
 		
-		tmp_str = String.format("Current=%d  (0-200) Base to hit = ", m_ptr.bth);
+		tmp_str = String.format("Current=%d  (0-200) Base to hit = ", m_ptr.baseToHit);
 		tmp_val = tmp_str.length();
 		IO.print(tmp_str, 0, 0);
 		tmp_str = IO.getString(0, tmp_val, 3);
@@ -315,10 +315,10 @@ public class Wizard {
 			tmp_val = 0;
 		}
 		if ((tmp_val > -1) && (tmp_val < 201)) {
-			m_ptr.bth = tmp_val;
+			m_ptr.baseToHit = tmp_val;
 		}
 		
-		tmp_str = String.format("Current=%d  (0-200) Bows/Throwing = ", m_ptr.bthb);
+		tmp_str = String.format("Current=%d  (0-200) Bows/Throwing = ", m_ptr.baseToHitBow);
 		tmp_val = tmp_str.length();
 		IO.print(tmp_str, 0, 0);
 		tmp_str = IO.getString(0, tmp_val, 3);
@@ -333,10 +333,10 @@ public class Wizard {
 			tmp_val = 0;
 		}
 		if ((tmp_val > -1) && (tmp_val < 201)) {
-			m_ptr.bthb = tmp_val;
+			m_ptr.baseToHitBow = tmp_val;
 		}
 		
-		tmp_str = String.format("Current=%d  Weight = ", m_ptr.wt);
+		tmp_str = String.format("Current=%d  Weight = ", m_ptr.weight);
 		tmp_val = tmp_str.length();
 		IO.print(tmp_str, 0, 0);
 		tmp_str = IO.getString(0, tmp_val, 3);
@@ -351,7 +351,7 @@ public class Wizard {
 			tmp_val = 0;
 		}
 		if (tmp_val > -1) {
-			m_ptr.wt = tmp_val;
+			m_ptr.weight = tmp_val;
 		}
 		
 		CharPointer tmp_ch = new CharPointer();
@@ -379,9 +379,9 @@ public class Wizard {
 		IO.printMessage("Warning: This routine can cause a fatal error.");
 		i_ptr = forge;
 		i_ptr.index = Constants.OBJ_WIZARD;
-		i_ptr.name2 = 0;
+		i_ptr.specialName = 0;
 		Misc4.inscribe(i_ptr, "wizard item");
-		i_ptr.ident = Constants.ID_KNOWN2|Constants.ID_STOREBOUGHT;
+		i_ptr.identify = Constants.ID_KNOWN2|Constants.ID_STOREBOUGHT;
 		
 		IO.print("Tval   : ", 0, 0);
 		tmp_str = IO.getString(0, 9, 3);
@@ -395,7 +395,7 @@ public class Wizard {
 			e.printStackTrace();
 			tmp_val = 0;
 		}
-		i_ptr.tval = tmp_val;
+		i_ptr.category = tmp_val;
 		
 		IO.print("Tchar  : ", 0, 0);
 		tmp_str = IO.getString(0, 9, 1);
@@ -416,7 +416,7 @@ public class Wizard {
 			e.printStackTrace();
 			tmp_val = 0;
 		}
-		i_ptr.subval = tmp_val;
+		i_ptr.subCategory = tmp_val;
 		
 		IO.print("Weight : ", 0, 0);
 		tmp_str = IO.getString(0, 9, 5);
@@ -500,7 +500,7 @@ public class Wizard {
 			e.printStackTrace();
 			tmp_val = 0;
 		}
-		i_ptr.todam = tmp_val;
+		i_ptr.plusToDam = tmp_val;
 		
 		IO.print("AC     : ", 0, 0);
 		tmp_str = IO.getString(0, 9, 3);
@@ -514,7 +514,7 @@ public class Wizard {
 			e.printStackTrace();
 			tmp_val = 0;
 		}
-		i_ptr.ac = tmp_val;
+		i_ptr.armorClass = tmp_val;
 		
 		IO.print("+To AC : ", 0, 0);
 		tmp_str = IO.getString(0, 9, 3);
@@ -528,7 +528,7 @@ public class Wizard {
 			e.printStackTrace();
 			tmp_val = 0;
 		}
-		i_ptr.toac = tmp_val;
+		i_ptr.plusToArmorClass = tmp_val;
 		
 		IO.print("P1     : ", 0, 0);
 		tmp_str = IO.getString(0, 9, 5);
@@ -542,7 +542,7 @@ public class Wizard {
 			e.printStackTrace();
 			tmp_val = 0;
 		}
-		i_ptr.p1 = tmp_val;
+		i_ptr.misc = tmp_val;
 		
 		IO.print("Flags (In HEX): ", 0, 0);
 		tmp_str = IO.getString(0, 16, 8);
@@ -592,14 +592,14 @@ public class Wizard {
 		
 		if (IO.getCheck("Allocate?")) {
 			/* delete object first if any, before call popt */
-			c_ptr = Variable.cave[Player.char_row][Player.char_col];
-			if (c_ptr.tptr != 0) {
-				Moria3.deleteObject(Player.char_row, Player.char_col);
+			c_ptr = Variable.cave[Player.y][Player.x];
+			if (c_ptr.treasureIndex != 0) {
+				Moria3.deleteObject(Player.y, Player.x);
 			}
 			
 			tmp_val = Misc1.popTreasure();
-			forge.copyInto(Treasure.t_list[tmp_val]);
-			c_ptr.tptr = tmp_val;
+			forge.copyInto(Treasure.treasureList[tmp_val]);
+			c_ptr.treasureIndex = tmp_val;
 			IO.printMessage("Allocated.");
 		} else {
 			IO.printMessage("Aborted.");

@@ -47,34 +47,34 @@ public class Moria4 {
 				(Misc1.randomInt(4) > 1)) {		/* 75% random movement   */
 			dir = Misc1.randomInt(9);
 		}
-		y = new IntPointer(Player.char_row);
-		x = new IntPointer(Player.char_col);
+		y = new IntPointer(Player.y);
+		x = new IntPointer(Player.x);
 		Misc3.moveMonster(dir, y, x);
 		
 		c_ptr = Variable.cave[y.value()][x.value()];
 		/* Compute the digging ability of player; based on	   */
 		/* strength, and type of tool used			   */
-		tabil = Player.py.stats.use_stat[Constants.A_STR];
+		tabil = Player.py.stats.useStat[Constants.A_STR];
 		i_ptr = Treasure.inventory[Constants.INVEN_WIELD];
 		
 		/* Don't let the player tunnel somewhere illegal, this is necessary to
 		 * prevent the player from getting a free attack by trying to tunnel
 		 * somewhere where it has no effect.  */
-		if (c_ptr.fval < Constants.MIN_CAVE_WALL && (c_ptr.tptr == 0 || (Treasure.t_list[c_ptr.tptr].tval != Constants.TV_RUBBLE && Treasure.t_list[c_ptr.tptr].tval != Constants.TV_SECRET_DOOR))) {
-			if (c_ptr.tptr == 0) {
+		if (c_ptr.fval < Constants.MIN_CAVE_WALL && (c_ptr.treasureIndex == 0 || (Treasure.treasureList[c_ptr.treasureIndex].category != Constants.TV_RUBBLE && Treasure.treasureList[c_ptr.treasureIndex].category != Constants.TV_SECRET_DOOR))) {
+			if (c_ptr.treasureIndex == 0) {
 				IO.printMessage ("Tunnel through what?  Empty air?!?");
-				Variable.free_turn_flag = true;
+				Variable.freeTurnFlag = true;
 			} else {
 				IO.printMessage("You can't tunnel through that.");
-				Variable.free_turn_flag = true;
+				Variable.freeTurnFlag = true;
 			}
 			return;
 		}
 		
-		if (c_ptr.cptr > 1) {
-			m_ptr = Monsters.m_list[c_ptr.cptr];
-			if (m_ptr.ml) {
-				m_name = String.format("The %s", Monsters.c_list[m_ptr.mptr].name);
+		if (c_ptr.creatureIndex > 1) {
+			m_ptr = Monsters.monsterList[c_ptr.creatureIndex];
+			if (m_ptr.monsterLight) {
+				m_name = String.format("The %s", Monsters.creatureList[m_ptr.index].name);
 			} else {
 				m_name = "Something";
 			}
@@ -87,11 +87,11 @@ public class Moria4 {
 			} else {
 				IO.printMessage("You are too afraid!");
 			}
-		} else if (i_ptr.tval != Constants.TV_NOTHING) {
+		} else if (i_ptr.category != Constants.TV_NOTHING) {
 			if ((Constants.TR_TUNNEL & i_ptr.flags) != 0) {
-				tabil += 25 + i_ptr.p1 * 50;
+				tabil += 25 + i_ptr.misc * 50;
 			} else {
-				tabil += (i_ptr.damage[0] * i_ptr.damage[1]) + i_ptr.tohit + i_ptr.todam;
+				tabil += (i_ptr.damage[0] * i_ptr.damage[1]) + i_ptr.tohit + i_ptr.plusToDam;
 				/* divide by two so that digging without shovel isn't too easy */
 				tabil >>= 1;
 			}
@@ -99,8 +99,8 @@ public class Moria4 {
 			/* If this weapon is too heavy for the player to wield properly, then
 			 * also make it harder to dig with it.  */
 			
-			if (Variable.weapon_heavy) {
-				tabil += (Player.py.stats.use_stat[Constants.A_STR] * 15) - i_ptr.weight;
+			if (Variable.isWeaponHeavy) {
+				tabil += (Player.py.stats.useStat[Constants.A_STR] * 15) - i_ptr.weight;
 				if (tabil < 0) {
 					tabil = 0;
 				}
@@ -139,9 +139,9 @@ public class Moria4 {
 				break;
 			default:
 				/* Is there an object in the way?  (Rubble and secret doors)*/
-				if (c_ptr.tptr != 0) {
+				if (c_ptr.treasureIndex != 0) {
 					/* Rubble.     */
-					if (Treasure.t_list[c_ptr.tptr].tval == Constants.TV_RUBBLE) {
+					if (Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_RUBBLE) {
 						if (tabil > Misc1.randomInt(180)) {
 							Moria3.deleteObject(y.value(), x.value());
 							IO.printMessage("You have removed the rubble.");
@@ -157,9 +157,9 @@ public class Moria4 {
 						}
 					
 					/* Secret doors.*/
-					} else if (Treasure.t_list[c_ptr.tptr].tval == Constants.TV_SECRET_DOOR) {
+					} else if (Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_SECRET_DOOR) {
 						IO.countMessagePrint("You tunnel into the granite wall.");
-						Moria2.search(Player.char_row, Player.char_col, Player.py.misc.srh);
+						Moria2.search(Player.y, Player.x, Player.py.misc.searchChance);
 					} else {
 						//abort();
 						return;
@@ -186,39 +186,39 @@ public class Moria4 {
 		MonsterType m_ptr;
 		String m_name, out_val;
 		
-		y = new IntPointer(Player.char_row);
-		x = new IntPointer(Player.char_col);
+		y = new IntPointer(Player.y);
+		x = new IntPointer(Player.x);
 		if (Moria1.getDirection("", dir)) {
 			Misc3.moveMonster(dir.value(), y, x);
 			c_ptr = Variable.cave[y.value()][x.value()];
 			no_disarm = false;
-			if (c_ptr.cptr > 1 && c_ptr.tptr != 0 && (Treasure.t_list[c_ptr.tptr].tval == Constants.TV_VIS_TRAP || Treasure.t_list[c_ptr.tptr].tval == Constants.TV_CHEST)) {
-				m_ptr = Monsters.m_list[c_ptr.cptr];
-				if (m_ptr.ml) {
-					m_name = String.format("The %s", Monsters.c_list[m_ptr.mptr].name);
+			if (c_ptr.creatureIndex > 1 && c_ptr.treasureIndex != 0 && (Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_VIS_TRAP || Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_CHEST)) {
+				m_ptr = Monsters.monsterList[c_ptr.creatureIndex];
+				if (m_ptr.monsterLight) {
+					m_name = String.format("The %s", Monsters.creatureList[m_ptr.index].name);
 				} else {
 					m_name = "Something";
 				}
 				out_val = String.format("%s is in your way!", m_name);
 				IO.printMessage(out_val);
-			} else if (c_ptr.tptr != 0) {
-				tot = Player.py.misc.disarm + 2 * Misc3.adjustToDisarm() + Misc3.adjustStat(Constants.A_INT) + (Player.class_level_adj[Player.py.misc.pclass][Constants.CLA_DISARM] * Player.py.misc.lev / 3);
+			} else if (c_ptr.treasureIndex != 0) {
+				tot = Player.py.misc.disarmChance + 2 * Misc3.adjustToDisarm() + Misc3.adjustStat(Constants.A_INT) + (Player.classLevelAdjust[Player.py.misc.playerClass][Constants.CLA_DISARM] * Player.py.misc.level / 3);
 				if ((Player.py.flags.blind > 0) || (Moria1.playerHasNoLight())) {
 					tot = tot / 10;
 				}
 				if (Player.py.flags.confused > 0) {
 					tot = tot / 10;
 				}
-				if (Player.py.flags.image > 0) {
+				if (Player.py.flags.imagine > 0) {
 					tot = tot / 10;
 				}
-				i_ptr = Treasure.t_list[c_ptr.tptr];
-				i = i_ptr.tval;
+				i_ptr = Treasure.treasureList[c_ptr.treasureIndex];
+				i = i_ptr.category;
 				level = i_ptr.level;
 				if (i == Constants.TV_VIS_TRAP) {	/* Floor trap    */
 					if ((tot + 100 - level) > Misc1.randomInt(100)) {
 						IO.printMessage("You have disarmed the trap.");
-						Player.py.misc.exp += i_ptr.p1;
+						Player.py.misc.currExp += i_ptr.misc;
 						Moria3.deleteObject(y.value(), x.value());
 						/* make sure we move onto the trap even if confused */
 						tmp = Player.py.flags.confused;
@@ -241,18 +241,18 @@ public class Moria4 {
 				} else if (i == Constants.TV_CHEST) {
 					if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
 						IO.printMessage("I don't see a trap.");
-						Variable.free_turn_flag = true;
+						Variable.freeTurnFlag = true;
 					} else if ((Constants.CH_TRAPPED & i_ptr.flags) != 0) {
 						if ((tot - level) > Misc1.randomInt(100)) {
 							i_ptr.flags &= ~Constants.CH_TRAPPED;
 							if ((Constants.CH_LOCKED & i_ptr.flags) != 0) {
-								i_ptr.name2 = Constants.SN_LOCKED;
+								i_ptr.specialName = Constants.SN_LOCKED;
 							} else {
-								i_ptr.name2 = Constants.SN_DISARMED;
+								i_ptr.specialName = Constants.SN_DISARMED;
 							}
 							IO.printMessage("You have disarmed the chest.");
 							Desc.identifyItemPlusses(i_ptr);
-							Player.py.misc.exp += level;
+							Player.py.misc.currExp += level;
 							Misc3.printExperience();
 						} else if ((tot > 5) && (Misc1.randomInt(tot) > 5)) {
 							IO.countMessagePrint("You failed to disarm the chest.");
@@ -263,7 +263,7 @@ public class Moria4 {
 						}
 					} else {
 						IO.printMessage("The chest was not trapped.");
-						Variable.free_turn_flag = true;
+						Variable.freeTurnFlag = true;
 					}
 				} else {
 					no_disarm = true;
@@ -274,7 +274,7 @@ public class Moria4 {
 			
 			if (no_disarm) {
 				IO.printMessage("I do not see anything to disarm there.");
-				Variable.free_turn_flag = true;
+				Variable.freeTurnFlag = true;
 			}
 		}
 	}
@@ -328,19 +328,22 @@ public class Moria4 {
 	 *
 	 * dungeon y = py.char_row	 + gl_fyx * (ray x)  + gl_fyy * (ray y)
 	 * dungeon x = py.char_col	 + gl_fxx * (ray x)  + gl_fxy * (ray y) */
-	private static int gl_fxx, gl_fxy, gl_fyx, gl_fyy;
-	private static int gl_nseen;
-	private static boolean gl_noquery;
-	private static int gl_rock;
+	private static int glFxx;
+	private static int glFxy;
+	private static int glFyx;
+	private static int glFyy;
+	private static int glNseen;
+	private static boolean glNoQuery;
+	private static int glRock;
 	/* Intended to be indexed by dir/2, since is only relevant to horizontal or
 	 * vertical directions. */
-	private static int[] set_fxy = { 0,  1,	 0,  0, -1 };
-	private static int[] set_fxx = { 0,  0, -1,  1,	 0 };
-	private static int[] set_fyy = { 0,  0,	 1, -1,	 0 };
-	private static int[] set_fyx = { 0,  1,	 0,  0, -1 };
+	private static int[] setFxy = { 0,  1,  0,  0, -1 };
+	private static int[] setFxx = { 0,  0, -1,  1,  0 };
+	private static int[] setFyy = { 0,  0,  1, -1,  0 };
+	private static int[] setFyx = { 0,  1,  0,  0, -1 };
 	/* Map diagonal-dir/2 to a normal-dir/2. */
-	private static int[] map_diag1 = { 1, 3, 0, 2, 4 };
-	private static int[] map_diag2 = { 2, 1, 0, 4, 3 };
+	private static int[] mapDiag1 = { 1, 3, 0, 2, 4 };
+	private static int[] mapDiag2 = { 2, 1, 0, 4, 3 };
 	
 	private static final int GRADF = 10000;	/* Any sufficiently big number will do */
 	
@@ -364,13 +367,13 @@ public class Moria4 {
 		
 		if (Player.py.flags.blind > 0) {
 			IO.printMessage("You can't see a damn thing!");
-		} else if (Player.py.flags.image > 0) {
+		} else if (Player.py.flags.imagine > 0) {
 			IO.printMessage("You can't believe what you are seeing! It's like a dream!");
 		} else if (Moria1.getAnyDirection("Look which direction?", dir)) {
 			abort = false;
-			gl_nseen = 0;
-			gl_rock = 0;
-			gl_noquery = false;	/* Have to set this up for the look_see */
+			glNseen = 0;
+			glRock = 0;
+			glNoQuery = false;	/* Have to set this up for the look_see */
 			if (lookSee(0, 0, dummy)) {
 				abort = true;
 			} else {
@@ -378,14 +381,14 @@ public class Moria4 {
 					abort = false;
 					if (dir.value() == 5) {
 						for (i = 1; i <= 4; i++) {
-							gl_fxx = set_fxx[i]; gl_fyx = set_fyx[i];
-							gl_fxy = set_fxy[i]; gl_fyy = set_fyy[i];
+							glFxx = setFxx[i]; glFyx = setFyx[i];
+							glFxy = setFxy[i]; glFyy = setFyy[i];
 							if (lookRay(0, 2 * GRADF - 1, 1)) {
 								abort = true;
 								break;
 							}
-							gl_fxy = -	gl_fxy;
-							gl_fyy = -gl_fyy;
+							glFxy = -	glFxy;
+							glFyy = -glFyy;
 							if (lookRay(0, 2 * GRADF, 2)) {
 								abort = true;
 								break;
@@ -393,33 +396,33 @@ public class Moria4 {
 						}
 					} else if ((dir.value() & 1) == 0) {	/* Straight directions */
 						i = dir.value() >> 1;
-						gl_fxx = set_fxx[i]; gl_fyx = set_fyx[i];
-						gl_fxy = set_fxy[i]; gl_fyy = set_fyy[i];
+						glFxx = setFxx[i]; glFyx = setFyx[i];
+						glFxy = setFxy[i]; glFyy = setFyy[i];
 						if (lookRay(0, GRADF, 1)) {
 							abort = true;
 						} else {
-							gl_fxy = -gl_fxy;
-							gl_fyy = -gl_fyy;
+							glFxy = -glFxy;
+							glFyy = -glFyy;
 							abort = lookRay(0, GRADF, 2);
 						}
 					} else {
-						i = map_diag1[dir.value() >> 1];
-						gl_fxx = set_fxx[i]; gl_fyx = set_fyx[i];
-						gl_fxy = -set_fxy[i]; gl_fyy = -set_fyy[i];
+						i = mapDiag1[dir.value() >> 1];
+						glFxx = setFxx[i]; glFyx = setFyx[i];
+						glFxy = -setFxy[i]; glFyy = -setFyy[i];
 						if (lookRay(1, 2 * GRADF, GRADF)) {
 							abort = true;
 						} else {
-							i = map_diag2[dir.value() >> 1];
-							gl_fxx = set_fxx[i]; gl_fyx = set_fyx[i];
-							gl_fxy = set_fxy[i]; gl_fyy = set_fyy[i];
+							i = mapDiag2[dir.value() >> 1];
+							glFxx = setFxx[i]; glFyx = setFyx[i];
+							glFxy = setFxy[i]; glFyy = setFyy[i];
 							abort = lookRay(1, 2 * GRADF - 1, GRADF);
 						}
 					}
-				} while (!abort && Variable.highlight_seams.value() && (++gl_rock < 2));
+				} while (!abort && Variable.highlightSeams.value() && (++glRock < 2));
 				if (abort) {
 					IO.printMessage("--Aborting look--");
 				} else {
-					if (gl_nseen > 0) {
+					if (glNseen > 0) {
 						if (dir.value() == 5) {
 							IO.printMessage("That's all you see.");
 						} else {
@@ -485,15 +488,15 @@ public class Moria4 {
 	     * stuff along the direct line of sight, but we do have to see
 	     * what is opaque for the purposes of obscuring other objects. */
 		if (y == 0 && to > 1 || y == x && from < GRADF * 2) {
-			gl_noquery = true;
+			glNoQuery = true;
 		} else {
-			gl_noquery = false;
+			glNoQuery = false;
 		}
 		if (lookSee(x, y, transparent)) {
 			return true;
 		}
 		if (y == x) {
-			gl_noquery = false;
+			glNoQuery = false;
 		}
 		
 		boolean init_transparent = transparent.value();
@@ -555,8 +558,8 @@ public class Moria4 {
 		} else {
 			dstring = "You see";
 		}
-		j = Player.char_col + gl_fxx * x + gl_fxy * y;
-		y = Player.char_row + gl_fyx * x + gl_fyy * y;
+		j = Player.x + glFxx * x + glFxy * y;
+		y = Player.y + glFyx * x + glFyy * y;
 		x = j;
 		if (!Misc1.panelContains(y, x)) {
 			transparent.value(false);
@@ -564,13 +567,13 @@ public class Moria4 {
 		}
 		c_ptr = Variable.cave[y][x];
 		transparent.value((c_ptr.fval <= Constants.MAX_OPEN_SPACE));
-		if (gl_noquery) {
+		if (glNoQuery) {
 			return false; /* Don't look at a direct line of sight. A hack. */
 		}
 		out_val = "";
-		if (gl_rock == 0 && c_ptr.cptr > 1 && Monsters.m_list[c_ptr.cptr].ml) {
-			j = Monsters.m_list[c_ptr.cptr].mptr;
-			out_val = String.format("%s %s %s. [(r)ecall]", dstring, Desc.isVowel(Monsters.c_list[j].name.charAt(0) ) ? "an" : "a", Monsters.c_list[j].name);
+		if (glRock == 0 && c_ptr.creatureIndex > 1 && Monsters.monsterList[c_ptr.creatureIndex].monsterLight) {
+			j = Monsters.monsterList[c_ptr.creatureIndex].index;
+			out_val = String.format("%s %s %s. [(r)ecall]", dstring, Desc.isVowel(Monsters.creatureList[j].name.charAt(0) ) ? "an" : "a", Monsters.creatureList[j].name);
 			dstring = "It is on";
 			IO.print(out_val, 0, 0);
 			IO.moveCursorRelative(y, x);
@@ -581,15 +584,15 @@ public class Moria4 {
 				IO.restoreScreen();
 			}
 		}
-		if (c_ptr.tl || c_ptr.pl || c_ptr.fm) {
+		if (c_ptr.tempLight || c_ptr.permLight || c_ptr.fieldMark) {
 			boolean granite = false;
-			if (c_ptr.tptr != 0) {
-				if (Treasure.t_list[c_ptr.tptr].tval == Constants.TV_SECRET_DOOR) {
+			if (c_ptr.treasureIndex != 0) {
+				if (Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_SECRET_DOOR) {
 					//goto granite;
 					granite = true;
 				}
-				if (!granite && gl_rock == 0 && Treasure.t_list[c_ptr.tptr].tval != Constants.TV_INVIS_TRAP) {
-					tmp_str = Desc.describeObject(Treasure.t_list[c_ptr.tptr], true);
+				if (!granite && glRock == 0 && Treasure.treasureList[c_ptr.treasureIndex].category != Constants.TV_INVIS_TRAP) {
+					tmp_str = Desc.describeObject(Treasure.treasureList[c_ptr.treasureIndex], true);
 					out_val = String.format("%s %s ---pause---", dstring, tmp_str);
 					dstring = "It is in";
 					IO.print(out_val, 0, 0);
@@ -597,7 +600,7 @@ public class Moria4 {
 					query = IO.inkey();
 				}
 			}
-			if ((gl_rock != 0 || !out_val.equals("")) && c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {
+			if ((glRock != 0 || !out_val.equals("")) && c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {
 				if (!granite) {
 					switch(c_ptr.fval)
 					{
@@ -634,7 +637,7 @@ public class Moria4 {
 			}
 		}
 		if (!out_val.equals("")) {
-			gl_nseen++;
+			glNseen++;
 			if (query == Constants.ESCAPE) {
 				return true;
 			}
@@ -651,7 +654,7 @@ public class Moria4 {
 		if (i_ptr.number > 1) {
 			t_ptr.number = 1;
 			i_ptr.number--;
-			Treasure.inven_weight -= i_ptr.weight;
+			Treasure.invenWeight -= i_ptr.weight;
 			Player.py.flags.status |= Constants.PY_STR_WGT;
 		} else {
 			Misc3.destroyInvenItem(item_val);
@@ -670,74 +673,74 @@ public class Moria4 {
 		}
 		
 		/* Throwing objects			*/
-		tdam.value(Misc1.pDamageRoll(i_ptr.damage) + i_ptr.todam);
-		tbth.value(Player.py.misc.bthb * 75 / 100);
-		tpth.value(Player.py.misc.ptohit + i_ptr.tohit);
+		tdam.value(Misc1.pDamageRoll(i_ptr.damage) + i_ptr.plusToDam);
+		tbth.value(Player.py.misc.baseToHitBow * 75 / 100);
+		tpth.value(Player.py.misc.plusToHit + i_ptr.tohit);
 		
 		/* Add this back later if the correct throwing device. -CJS- */
-		if (Treasure.inventory[Constants.INVEN_WIELD].tval != Constants.TV_NOTHING) {
+		if (Treasure.inventory[Constants.INVEN_WIELD].category != Constants.TV_NOTHING) {
 			tpth.value(tpth.value() - Treasure.inventory[Constants.INVEN_WIELD].tohit);
 		}
 		
-		tdis.value((((Player.py.stats.use_stat[Constants.A_STR] + 20) * 10) / tmp_weight));
+		tdis.value((((Player.py.stats.useStat[Constants.A_STR] + 20) * 10) / tmp_weight));
 		if (tdis.value() > 10)	tdis.value(10);
 		
 		/* multiply damage bonuses instead of adding, when have proper
 		 * missile/weapon combo, this makes them much more useful */
 		
 		/* Using Bows,  slings,  or crossbows	*/
-		if (Treasure.inventory[Constants.INVEN_WIELD].tval == Constants.TV_BOW) {
-			switch(Treasure.inventory[Constants.INVEN_WIELD].p1) {
+		if (Treasure.inventory[Constants.INVEN_WIELD].category == Constants.TV_BOW) {
+			switch(Treasure.inventory[Constants.INVEN_WIELD].misc) {
 			case 1:
-				if (i_ptr.tval == Constants.TV_SLING_AMMO) {	/* Sling and ammo */
-					tbth.value(Player.py.misc.bthb);
+				if (i_ptr.category == Constants.TV_SLING_AMMO) {	/* Sling and ammo */
+					tbth.value(Player.py.misc.baseToHitBow);
 					tpth.value(tpth.value() + 2 * Treasure.inventory[Constants.INVEN_WIELD].tohit);
-					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].todam);
+					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].plusToDam);
 					tdam.value(tdam.value() * 2);
 					tdis.value(20);
 				}
 				break;
 			case 2:
-				if (i_ptr.tval == Constants.TV_ARROW) {	/* Short Bow and Arrow	*/
-					tbth.value(Player.py.misc.bthb);
+				if (i_ptr.category == Constants.TV_ARROW) {	/* Short Bow and Arrow	*/
+					tbth.value(Player.py.misc.baseToHitBow);
 					tpth.value(tpth.value() + 2 * Treasure.inventory[Constants.INVEN_WIELD].tohit);
-					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].todam);
+					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].plusToDam);
 					tdam.value(tdam.value() * 2);
 					tdis.value(25);
 				}
 				break;
 			case 3:
-				if (i_ptr.tval == Constants.TV_ARROW) {	/* Long Bow and Arrow	*/
-					tbth.value(Player.py.misc.bthb);
+				if (i_ptr.category == Constants.TV_ARROW) {	/* Long Bow and Arrow	*/
+					tbth.value(Player.py.misc.baseToHitBow);
 					tpth.value(tpth.value() + 2 * Treasure.inventory[Constants.INVEN_WIELD].tohit);
-					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].todam);
+					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].plusToDam);
 					tdam.value(tdam.value() * 3);
 					tdis.value(30);
 				}
 				break;
 			case 4:
-				if (i_ptr.tval == Constants.TV_ARROW) {	/* Composite Bow and Arrow*/
-					tbth.value(Player.py.misc.bthb);
+				if (i_ptr.category == Constants.TV_ARROW) {	/* Composite Bow and Arrow*/
+					tbth.value(Player.py.misc.baseToHitBow);
 					tpth.value(tpth.value() + 2 * Treasure.inventory[Constants.INVEN_WIELD].tohit);
-					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].todam);
+					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].plusToDam);
 					tdam.value(tdam.value() * 4);
 					tdis.value(35);
 				}
 				break;
 			case 5:
-				if (i_ptr.tval == Constants.TV_BOLT) {	/* Light Crossbow and Bolt*/
-					tbth.value(Player.py.misc.bthb);
+				if (i_ptr.category == Constants.TV_BOLT) {	/* Light Crossbow and Bolt*/
+					tbth.value(Player.py.misc.baseToHitBow);
 					tpth.value(tpth.value() + 2 * Treasure.inventory[Constants.INVEN_WIELD].tohit);
-					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].todam);
+					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].plusToDam);
 					tdam.value(tdam.value() * 3);
 					tdis.value(25);
 				}
 				break;
 			case 6:
-				if (i_ptr.tval == Constants.TV_BOLT) {	/* Heavy Crossbow and Bolt*/
-					tbth.value(Player.py.misc.bthb);
+				if (i_ptr.category == Constants.TV_BOLT) {	/* Heavy Crossbow and Bolt*/
+					tbth.value(Player.py.misc.baseToHitBow);
 					tpth.value(tpth.value() + 2 * Treasure.inventory[Constants.INVEN_WIELD].tohit);
-					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].todam);
+					tdam.value(tdam.value() + Treasure.inventory[Constants.INVEN_WIELD].plusToDam);
 					tdam.value(tdam.value() * 4);
 					tdis.value(35);
 				}
@@ -763,7 +766,7 @@ public class Moria4 {
 			do {
 				if (Misc1.isInBounds(i, j)) {
 					c_ptr = Variable.cave[i][j];
-					if (c_ptr.fval <= Constants.MAX_OPEN_SPACE && c_ptr.tptr == 0) {
+					if (c_ptr.fval <= Constants.MAX_OPEN_SPACE && c_ptr.treasureIndex == 0) {
 						flag = true;
 					}
 				}
@@ -776,8 +779,8 @@ public class Moria4 {
 		}
 		if (flag) {
 			cur_pos = Misc1.popTreasure();
-			Variable.cave[i][j].tptr = cur_pos;
-			t_ptr.copyInto(Treasure.t_list[cur_pos]);
+			Variable.cave[i][j].treasureIndex = cur_pos;
+			t_ptr.copyInto(Treasure.treasureList[cur_pos]);
 			Moria1.lightUpSpot(i, j);
 		} else {
 			tmp_str = Desc.describeObject(t_ptr, false);
@@ -802,10 +805,10 @@ public class Moria4 {
 		int i;
 		char tchar;
 		
-		if (Treasure.inven_ctr == 0) {
+		if (Treasure.invenCounter == 0) {
 			IO.printMessage("But you are not carrying anything.");
-			Variable.free_turn_flag = true;
-		} else if (Moria1.getItemId(item_val, "Fire/Throw which one?", 0, Treasure.inven_ctr - 1, "", "")) {
+			Variable.freeTurnFlag = true;
+		} else if (Moria1.getItemId(item_val, "Fire/Throw which one?", 0, Treasure.invenCounter - 1, "", "")) {
 			if (Moria1.getDirection("", dir)) {
 				Desc.describeRemaining(item_val.value());
 				if (Player.py.flags.confused > 0) {
@@ -818,10 +821,10 @@ public class Moria4 {
 				facts(throw_obj, tbth, tpth, tdam, tdis);
 				tchar = throw_obj.tchar;
 				flag = false;
-				y = new IntPointer(Player.char_row);
-				x = new IntPointer(Player.char_col);
-				oldy = Player.char_row;
-				oldx = Player.char_col;
+				y = new IntPointer(Player.y);
+				x = new IntPointer(Player.x);
+				oldy = Player.y;
+				oldx = Player.x;
 				cur_dis = 0;
 				do {
 					Misc3.moveMonster(dir.value(), y, x);
@@ -830,39 +833,39 @@ public class Moria4 {
 					if (cur_dis > tdis.value())	flag = true;
 					c_ptr = Variable.cave[y.value()][x.value()];
 					if ((c_ptr.fval <= Constants.MAX_OPEN_SPACE) && (!flag)) {
-						if (c_ptr.cptr > 1) {
+						if (c_ptr.creatureIndex > 1) {
 							flag = true;
-							m_ptr = Monsters.m_list[c_ptr.cptr];
+							m_ptr = Monsters.monsterList[c_ptr.creatureIndex];
 							tbth.value(tbth.value() - cur_dis);
 							/* if monster not lit, make it much more difficult to
 							 * hit, subtract off most bonuses, and reduce bthb
 							 * depending on distance */
-							if (!m_ptr.ml) {
+							if (!m_ptr.monsterLight) {
 								tbth.value((tbth.value() / (cur_dis + 2))
-										- (Player.py.misc.lev * Player.class_level_adj[Player.py.misc.pclass][Constants.CLA_BTHB] / 2)
+										- (Player.py.misc.level * Player.classLevelAdjust[Player.py.misc.playerClass][Constants.CLA_BTHB] / 2)
 										- (tpth.value() * (Constants.BTH_PLUS_ADJ - 1)));
 							}
-							if (Moria1.testHit(tbth.value(), Player.py.misc.lev, tpth.value(), Monsters.c_list[m_ptr.mptr].ac, Constants.CLA_BTHB)) {
-								i = m_ptr.mptr;
+							if (Moria1.testHit(tbth.value(), Player.py.misc.level, tpth.value(), Monsters.creatureList[m_ptr.index].armorClass, Constants.CLA_BTHB)) {
+								i = m_ptr.index;
 								tmp_str = Desc.describeObject(throw_obj, false);
 								/* Does the player know what he's fighting?	   */
-								if (!m_ptr.ml) {
+								if (!m_ptr.monsterLight) {
 									out_val = String.format("You hear a cry as the %s finds a mark.", tmp_str);
 									visible = false;
 								} else {
-									out_val = String.format("The %s hits the %s.", tmp_str, Monsters.c_list[i].name);
+									out_val = String.format("The %s hits the %s.", tmp_str, Monsters.creatureList[i].name);
 									visible = true;
 								}
 								IO.printMessage(out_val);
 								tdam.value(Misc3.totalDamage(throw_obj, tdam.value(), i));
 								tdam.value(Misc3.criticalBlow(throw_obj.weight, tpth.value(), tdam.value(), Constants.CLA_BTHB));
 								if (tdam.value() < 0) tdam.value(0);
-								i = Moria3.monsterTakeHit(c_ptr.cptr, tdam.value());
+								i = Moria3.monsterTakeHit(c_ptr.creatureIndex, tdam.value());
 								if (i >= 0) {
 									if (!visible) {
 										IO.printMessage("You have killed something!");
 									} else {
-										out_val = String.format("You have killed the %s.", Monsters.c_list[i].name);
+										out_val = String.format("You have killed the %s.", Monsters.creatureList[i].name);
 										IO.printMessage(out_val);
 									}
 									Misc3.printExperience();
@@ -871,7 +874,7 @@ public class Moria4 {
 								dropThrow(oldy, oldx, throw_obj);
 							}
 						} else {	/* do not test c_ptr.fm here */
-							if (Misc1.panelContains(y.value(), x.value()) && (Player.py.flags.blind < 1) && (c_ptr.tl || c_ptr.pl)) {
+							if (Misc1.panelContains(y.value(), x.value()) && (Player.py.flags.blind < 1) && (c_ptr.tempLight || c_ptr.permLight)) {
 								IO.print(tchar, y.value(), x.value());
 								IO.putQio(); /* show object moving */
 							}
@@ -895,28 +898,28 @@ public class Moria4 {
 		MonsterType m_ptr;
 		String m_name, out_val;
 		
-		monster = Variable.cave[y][x].cptr;
-		m_ptr = Monsters.m_list[monster];
-		c_ptr = Monsters.c_list[m_ptr.mptr];
-		m_ptr.csleep = 0;
+		monster = Variable.cave[y][x].creatureIndex;
+		m_ptr = Monsters.monsterList[monster];
+		c_ptr = Monsters.creatureList[m_ptr.index];
+		m_ptr.sleep = 0;
 		/* Does the player know what he's fighting?	   */
-		if (!m_ptr.ml) {
+		if (!m_ptr.monsterLight) {
 			m_name = "it";
 		} else {
 			m_name = String.format("the %s", c_ptr.name);
 		}
-		base_tohit = Player.py.stats.use_stat[Constants.A_STR] + Treasure.inventory[Constants.INVEN_ARM].weight / 2 + Player.py.misc.wt / 10;
-		if (!m_ptr.ml) {
-			base_tohit = (base_tohit / 2) - (Player.py.stats.use_stat[Constants.A_DEX] * (Constants.BTH_PLUS_ADJ - 1))
-					- (Player.py.misc.lev * Player.class_level_adj[Player.py.misc.pclass][Constants.CLA_BTH] / 2);
+		base_tohit = Player.py.stats.useStat[Constants.A_STR] + Treasure.inventory[Constants.INVEN_ARM].weight / 2 + Player.py.misc.weight / 10;
+		if (!m_ptr.monsterLight) {
+			base_tohit = (base_tohit / 2) - (Player.py.stats.useStat[Constants.A_DEX] * (Constants.BTH_PLUS_ADJ - 1))
+					- (Player.py.misc.level * Player.classLevelAdjust[Player.py.misc.playerClass][Constants.CLA_BTH] / 2);
 		}
 		
-		if (Moria1.testHit(base_tohit, Player.py.misc.lev, Player.py.stats.use_stat[Constants.A_DEX], c_ptr.ac, Constants.CLA_BTH)) {
+		if (Moria1.testHit(base_tohit, Player.py.misc.level, Player.py.stats.useStat[Constants.A_DEX], c_ptr.armorClass, Constants.CLA_BTH)) {
 			out_val = String.format("You hit %s.", m_name);
 			IO.printMessage(out_val);
 			k = Misc1.pDamageRoll(Treasure.inventory[Constants.INVEN_ARM].damage);
-			k = Misc3.criticalBlow((Treasure.inventory[Constants.INVEN_ARM].weight / 4 + Player.py.stats.use_stat[Constants.A_STR]), 0, k, Constants.CLA_BTH);
-			k += Player.py.misc.wt/60 + 3;
+			k = Misc3.criticalBlow((Treasure.inventory[Constants.INVEN_ARM].weight / 4 + Player.py.stats.useStat[Constants.A_STR]), 0, k, Constants.CLA_BTH);
+			k += Player.py.misc.weight/60 + 3;
 			if (k < 0)	k = 0;
 			
 			/* See if we done it in.				     */
@@ -927,8 +930,8 @@ public class Moria4 {
 			} else {
 				m_name = Character.toUpperCase(m_name.charAt(0)) + m_name.substring(1);	/* Capitalize */
 				/* Can not stun Balrog */
-				avg_max_hp = (((c_ptr.cdefense & Constants.CD_MAX_HP) != 0) ? c_ptr.hd[0] * c_ptr.hd[1] : (c_ptr.hd[0] * (c_ptr.hd[1] + 1)) >> 1);
-				if ((100 + Misc1.randomInt(400) + Misc1.randomInt(400)) > (m_ptr.hp + avg_max_hp)) {
+				avg_max_hp = (((c_ptr.cdefense & Constants.CD_MAX_HP) != 0) ? c_ptr.hitDie[0] * c_ptr.hitDie[1] : (c_ptr.hitDie[0] * (c_ptr.hitDie[1] + 1)) >> 1);
+				if ((100 + Misc1.randomInt(400) + Misc1.randomInt(400)) > (m_ptr.hitpoints + avg_max_hp)) {
 					m_ptr.stunned += Misc1.randomInt(3) + 1;
 					if (m_ptr.stunned > 24)	m_ptr.stunned = 24;
 					out_val = String.format("%s appears stunned!", m_name);
@@ -941,7 +944,7 @@ public class Moria4 {
 			out_val = String.format("You miss %s.", m_name);
 			IO.printMessage(out_val);
 		}
-		if (Misc1.randomInt(150) > Player.py.stats.use_stat[Constants.A_DEX]) {
+		if (Misc1.randomInt(150) > Player.py.stats.useStat[Constants.A_DEX]) {
 			IO.printMessage("You are off balance.");
 			Player.py.flags.paralysis = 1 + Misc1.randomInt(2);
 		}
@@ -977,8 +980,8 @@ public class Moria4 {
 		CaveType c_ptr;
 		InvenType t_ptr;
 		
-		y = new IntPointer(Player.char_row);
-		x = new IntPointer(Player.char_col);
+		y = new IntPointer(Player.y);
+		x = new IntPointer(Player.x);
 		if (Moria1.getDirection("", dir)) {
 			if (Player.py.flags.confused > 0) {
 				IO.printMessage("You are confused.");
@@ -988,35 +991,35 @@ public class Moria4 {
 			}
 			Misc3.moveMonster(dir.value(), y, x);
 			c_ptr = Variable.cave[y.value()][x.value()];
-			if (c_ptr.cptr > 1) {
+			if (c_ptr.creatureIndex > 1) {
 				if (Player.py.flags.afraid > 0) {
 					IO.printMessage("You are afraid!");
 				} else {
 					playerBash(y.value(), x.value());
 				}
-			} else if (c_ptr.tptr != 0) {
-				t_ptr = Treasure.t_list[c_ptr.tptr];
-				if (t_ptr.tval == Constants.TV_CLOSED_DOOR) {
+			} else if (c_ptr.treasureIndex != 0) {
+				t_ptr = Treasure.treasureList[c_ptr.treasureIndex];
+				if (t_ptr.category == Constants.TV_CLOSED_DOOR) {
 					IO.countMessagePrint("You smash into the door!");
-					tmp = Player.py.stats.use_stat[Constants.A_STR] + Player.py.misc.wt / 2;
+					tmp = Player.py.stats.useStat[Constants.A_STR] + Player.py.misc.weight / 2;
 					/* Use (roughly) similar method as for monsters. */
-					if (Misc1.randomInt(tmp * (20 + Math.abs(t_ptr.p1))) < 10 * (tmp - Math.abs(t_ptr.p1))) {
+					if (Misc1.randomInt(tmp * (20 + Math.abs(t_ptr.misc))) < 10 * (tmp - Math.abs(t_ptr.misc))) {
 						IO.printMessage("The door crashes open!");
-						Desc.copyIntoInventory(Treasure.t_list[c_ptr.tptr], Constants.OBJ_OPEN_DOOR);
-						t_ptr.p1 = 1 - Misc1.randomInt(2); /* 50% chance of breaking door */
+						Desc.copyIntoInventory(Treasure.treasureList[c_ptr.treasureIndex], Constants.OBJ_OPEN_DOOR);
+						t_ptr.misc = 1 - Misc1.randomInt(2); /* 50% chance of breaking door */
 						c_ptr.fval = Constants.CORR_FLOOR;
 						if (Player.py.flags.confused == 0) {
 							Moria3.movePlayer(dir.value(), false);
 						} else {
 							Moria1.lightUpSpot(y.value(), x.value());
 						}
-					} else if (Misc1.randomInt(150) > Player.py.stats.use_stat[Constants.A_DEX]) {
+					} else if (Misc1.randomInt(150) > Player.py.stats.useStat[Constants.A_DEX]) {
 						IO.printMessage("You are off-balance.");
 						Player.py.flags.paralysis = 1 + Misc1.randomInt(2);
-					} else if (Variable.command_count == 0) {
+					} else if (Variable.commandCount == 0) {
 						IO.printMessage("The door holds firm.");
 					}
-				} else if (t_ptr.tval == Constants.TV_CHEST) {
+				} else if (t_ptr.category == Constants.TV_CHEST) {
 					if (Misc1.randomInt(10) == 1) {
 						IO.printMessage("You have destroyed the chest.");
 						IO.printMessage("and its contents!");

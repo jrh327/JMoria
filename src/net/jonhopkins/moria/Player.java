@@ -31,20 +31,32 @@ public class Player {
 	
 	private Player() { }
 	
-	/* Player record for most player related info */
+	/**
+	 * Player record for most player related info
+	 */
 	public static PlayerType py = new PlayerType();
 	
-	/* player location in dungeon */
-	public static int char_row;
-	public static int char_col;
-	/* calculated base hp values for player at each level, store them so that
-	 * drain life + restore life does not affect hit points */
-	public static int[] player_hp = new int[Constants.MAX_PLAYER_LEVEL];
+	/**
+	 * Player's vertical location in dungeon
+	 */
+	public static int y;
 	
-	/* Class titles for different levels				*/
-	//String[MAX_CLASS][MAX_PLAYER_LEVEL]
-	public static String[][] player_title = {
-			/* Warrior	 */
+	/**
+	 * Player's horizontal location in dungeon
+	 */
+	public static int x;
+	
+	/**
+	 * Calculated base hp values for player at each level, store them so that
+	 * drain life + restore life does not affect hit points
+	 */
+	public static int[] hitpoints = new int[Constants.MAX_PLAYER_LEVEL];
+	
+	/**
+	 * Class titles for different levels
+	 */
+	public static String[][] title = {
+			// Warrior
 			{
 				"Rookie","Private","Soldier","Mercenary","Veteran(1st)","Veteran(2nd)",
 				"Veteran(3rd)","Warrior(1st)","Warrior(2nd)","Warrior(3rd)","Warrior(4th)",
@@ -54,7 +66,7 @@ public class Player {
 				"Lord (2nd)","Lord (3rd)","Lord (4th)","Lord (5th)","Lord (6th)","Lord (7th)",
 				"Lord (8th)","Lord (9th)","Lord Gallant","Lord Keeper","Lord Noble"
 			},
-			/* Mage		 */
+			// Mage
 			{
 				"Novice","Apprentice","Trickster-1","Trickster-2","Trickster-3","Cabalist-1",
 				"Cabalist-2","Cabalist-3","Visionist","Phantasmist","Shadowist","Spellbinder",
@@ -65,7 +77,7 @@ public class Player {
 				"Wizard (5th)","Wizard (6th)","Wizard (7th)","Wizard (8th)","Wizard (9th)",
 				"Wizard Lord"
 			},
-			/* Priests	 */
+			// Priests
 			{
 				"Believer","Acolyte(1st)","Acolyte(2nd)","Acolyte(3rd)","Adept (1st)",
 				"Adept (2nd)","Adept (3rd)","Priest (1st)","Priest (2nd)","Priest (3rd)",
@@ -76,7 +88,7 @@ public class Player {
 				"Low Lama","Lama-1","Lama-2","Lama-3","High Lama","Great Lama","Patriarch",
 				"High Priest","Great Priest","Noble Priest"
 			},
-			/* Rogues	 */
+			// Rogues
 			{
 				"Vagabond","Footpad","Cutpurse","Robber","Burglar","Filcher","Sharper",
 				"Magsman","Common Rogue","Rogue (1st)","Rogue (2nd)","Rogue (3rd)",
@@ -87,7 +99,7 @@ public class Player {
 				"Thief (9th)","High Thief","Master Thief","Executioner","Low Assassin",
 				"Assassin","High Assassin","Guildsmaster"
 			},
-			/* Rangers	 */
+			// Rangers
 			{
 				"Runner (1st)","Runner (2nd)","Runner (3rd)","Strider (1st)","Strider (2nd)",
 				"Strider (3rd)","Scout (1st)","Scout (2nd)","Scout (3rd)","Scout (4th)",
@@ -99,7 +111,7 @@ public class Player {
 				"Guide (9th)","Pathfinder-1","Pathfinder-2","Pathfinder-3","Ranger",
 				"High Ranger","Ranger Lord"
 			},
-			/* Paladins	 */
+			// Paladins
 			{
 				"Gallant","Keeper (1st)","Keeper (2nd)","Keeper (3rd)","Keeper (4th)",
 				"Keeper (5th)","Keeper (6th)","Keeper (7th)","Keeper (8th)","Keeper (9th)",
@@ -112,9 +124,10 @@ public class Player {
 			}
 	};
 	
-	/* Base experience levels, may be adjusted up for race and/or class*/
-	//long[MAX_PLAYER_LEVEL]
-	public static int[] player_exp = {
+	/**
+	 * Base experience levels, may be adjusted up for race and/or class
+	 */
+	public static int[] exp = {
 			10,     25,     45,     70,     100,     140,     200,      280,
 		   380,    500,    650,    850,    1100,    1400,    1800,     2300,
 		  2900,   3600,   4400,   5400,    6800,    8400,   10200,    12500,
@@ -122,11 +135,12 @@ public class Player {
 		300000, 400000, 500000, 750000, 1500000, 2500000, 5000000, 10000000
 	};
 	
-	/*Race	STR,INT,WIS,DEX,CON,CHR,
-		Ages, heights, and weights (male then female)
-		Racial Bases for: dis,srh,stl,fos,bth,bthb,bsav,hitdie,
-		infra, exp base, choice-classes */
-	//Race_type[MAX_RACES]
+	/**
+	 * Race	STR, INT, WIS, DEX, CON, CHR,
+	 * Ages, heights, and weights (male then female)
+	 * Racial Bases for: dis,srh,stl,fos,bth,bthb,bsav,hitdie,
+	 * infra, exp base, choice-classes
+	 */
 	public static PlayerRaceType[] race = {
 	   new PlayerRaceType("Human",	 0,  0,	 0,  0,	 0,  0,
 	      14,  6, 72,  6,180, 25, 66,  4,150, 20,
@@ -162,8 +176,9 @@ public class Player {
 	    )
 	 };
 	
-	/* Background information					*/
-	//Backgound_type[MAX_BACKGROUND]
+	/**
+	 * Background information
+	 */
 	public static BackgroundType[] background = {
 			new BackgroundType("You are the illegitimate and unacknowledged child ", 10, 1, 2, 25),
 			new BackgroundType("You are the illegitimate but acknowledged child ", 20, 1, 2, 35),
@@ -295,8 +310,9 @@ public class Player {
 			new BackgroundType("leprous skin.", 100, 66, 0, 50)
 	};
 	
-	/* Classes.							*/
-	//Class_type[MAX_CLASS]
+	/**
+	 * Classes.
+	 */
 	public static ClassType[] Class = {
 			/*	  HP Dis Src Stl Fos bth btb sve S  I  W  D Co Ch  Spell Exp  spl */
 			new ClassType("Warrior",9, 25, 14, 1, 38, 70, 55, 18, 5,-2,-2, 2, 2,-1, Constants.NONE,    0, 0),
@@ -312,7 +328,7 @@ public class Player {
 	/* CLA_MISC_HIT is identical to CLA_SAVE, which takes advantage of
 	 * the fact that the save values are independent of the class */
 	//short[MAX_CLASS][MAX_LEV_ADJ]
-	public static short[][] class_level_adj= {
+	public static short[][] classLevelAdjust = {
 			/*	       bth    bthb   device  disarm   save/misc hit  */
 			/* Warrior */ {	4,	4,	2,	2,	3 },
 			/* Mage    */ { 2,	2,	4,	3,	3 },
@@ -322,17 +338,33 @@ public class Player {
 			/* Paladin */ { 3,	3,	3,	2,	3 }
 	};
 	
-	public static int spell_learned = 0;			/* bit mask of spells learned */
-	public static int spell_worked = 0;			/* bit mask of spells tried and worked */
-	public static int spell_forgotten = 0;			/* bit mask of spells learned but forgotten */
-	public static int[] spell_order = new int[32];	/* order spells learned/remembered/forgotten */
+	/**
+	 * Bit mask of spells learned
+	 */
+	public static int spellLearned = 0;
+	
+	/**
+	 * Bit mask of spells tried and worked
+	 */
+	public static int spellWorked = 0;
+	
+	/**
+	 * Bit mask of spells learned but forgotten
+	 */
+	public static int spellForgotten = 0;
+	
+	/**
+	 * Order spells learned/remembered/forgotten
+	 */
+	public static int[] spellOrder = new int[32];
 	
 	/* Warriors don't have spells, so there is no entry for them.  Note that
 	 * this means you must always subtract one from the py.misc.pclass before
 	 * indexing into magic_spell[]. */
 	//Spell_type[MAX_CLASS - 1][31]
-	public static SpellType[][] magic_spell = {
-			{	/* Mage	   */
+	public static SpellType[][] magicSpell = {
+			// Mage
+			{
 				new SpellType(  1,  1, 22,   1),
 				new SpellType(  1,  1, 23,   1),
 				new SpellType(  1,  2, 24,   1),
@@ -365,7 +397,8 @@ public class Player {
 				new SpellType( 33, 21, 80, 125),
 				new SpellType( 37, 25, 95, 200)
 			},
-			{	/* Priest	   */
+			// Priest
+			{
 				new SpellType(  1,  1, 10,   1),
 				new SpellType(  1,  2, 15,   1),
 				new SpellType(  1,  2, 20,   1),
@@ -398,7 +431,8 @@ public class Player {
 				new SpellType( 33, 24, 90, 125),
 				new SpellType( 39, 32, 80, 200)
 			},
-			{	/* Rogue	   */
+			// Rogue
+			{
 				new SpellType( 99, 99,  0,   0),
 				new SpellType(  5,  1, 50,   1),
 				new SpellType(  7,  2, 55,   1),
@@ -431,7 +465,8 @@ public class Player {
 				new SpellType( 99, 99,  0,   0),
 				new SpellType( 99, 99,  0,   0)
 			},
-			{	/* Ranger	    */
+			// Ranger
+			{
 				new SpellType(  3,  1, 30,   1),
 				new SpellType(  3,  2, 35,   2),
 				new SpellType(  3,  2, 35,   2),
@@ -464,7 +499,8 @@ public class Player {
 				new SpellType( 37, 30, 95, 100),
 				new SpellType( 99, 99,  0,   0)
 			},
-			{	/* Paladin	   */
+			// Paladin
+			{
 				new SpellType(  1,  1, 30,   1),
 				new SpellType(  2,  2, 35,   2),
 				new SpellType(  3,  3, 35,   3),
@@ -500,7 +536,7 @@ public class Player {
 	};
 	
 	//String[62]
-	public static String[] spell_names = {
+	public static String[] spellNames = {
 			/* Mage Spells */
 			"Magic Missile", "Detect Monsters", "Phase Door", "Light Area",
 			"Cure Light Wounds", "Find Hidden Traps/Doors", "Stinking Cloud",
@@ -526,7 +562,7 @@ public class Player {
 	/* 344 = Food Ration, 365 = Wooden Torch, 123 = Cloak, 318 = Beginners-Majik,
 	 * 103 = Soft Leather Armor, 30 = Stiletto, 322 = Beginners Handbook */
 	//short[MAX_CLASS][5]
-	public static short[][] player_init = {
+	public static short[][] playerInit = {
 		{ 344, 365, 123,  30, 103},	/* Warrior	 */
 		{ 344, 365, 123,  30, 318},	/* Mage		 */
 		{ 344, 365, 123,  30, 322},	/* Priest	 */

@@ -78,32 +78,32 @@ public class Rnd {
 	private static final long RNG_R = 2836;		/* m mod a */
 	
 	/* 32 bit seed */
-	private static long rnd_seed;
+	private static long rndSeed;
 	
 	private Rnd() { }
 	
 	public static long getRandomSeed() {
-		return rnd_seed;
+		return rndSeed;
 	}
 	
 	public static void setRandomSeed(long seedval) {
 		/* set seed to value between 1 and m-1 */
-		rnd_seed = (seedval % (RNG_M - 1)) + 1;
+		rndSeed = (seedval % (RNG_M - 1)) + 1;
 	}
 	
 	/* returns a pseudo-random number from set 1, 2, ..., RNG_M - 1 */
 	public static long randomNumber() {
 		long low, high, test;
 		
-		high = rnd_seed / RNG_Q;
-		low = rnd_seed % RNG_Q;
+		high = rndSeed / RNG_Q;
+		low = rndSeed % RNG_Q;
 		test = RNG_A * low - RNG_R * high;
 		if (test > 0) {
-			rnd_seed = test;
+			rndSeed = test;
 		} else {
-			rnd_seed = test + RNG_M;
+			rndSeed = test + RNG_M;
 		}
-		return rnd_seed;
+		return rndSeed;
 	}
 	
 	public static void test() {

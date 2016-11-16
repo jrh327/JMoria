@@ -22,6 +22,6 @@
 package net.jonhopkins.moria.types;
 
 public final class InvenRecord {
-	public int scost;
-	public InvenType sitem = new InvenType();
+	public int cost;
+	public InvenType item = new InvenType();
 }

@@ -30,12 +30,12 @@ public class Generate {
 	
 	private Generate() { }
 	
-	private static Point[] doorstk = new Point[100];
-	private static int doorindex;
+	private static Point[] doorStack = new Point[100];
+	private static int doorIndex;
 	
 	static {
 		for (int i = 0; i < 100; i++) {
-			doorstk[i] = new Point();
+			doorStack[i] = new Point();
 		}
 	}
 	
@@ -83,13 +83,13 @@ public class Generate {
 	private static void clearCave() {
 		for (int i = 0; i < Constants.MAX_HEIGHT; i++) {
 			for (int j = 0; j < Constants.MAX_WIDTH; j++) {
-				Variable.cave[i][j].cptr = 0;
-				Variable.cave[i][j].tptr = 0;
+				Variable.cave[i][j].creatureIndex = 0;
+				Variable.cave[i][j].treasureIndex = 0;
 				Variable.cave[i][j].fval = 0;
-				Variable.cave[i][j].lr = false;
-				Variable.cave[i][j].fm = false;
-				Variable.cave[i][j].pl = false;
-				Variable.cave[i][j].tl = false;
+				Variable.cave[i][j].litRoom = false;
+				Variable.cave[i][j].fieldMark = false;
+				Variable.cave[i][j].permLight = false;
+				Variable.cave[i][j].tempLight = false;
 			}
 		}
 	}
@@ -103,10 +103,10 @@ public class Generate {
 		
 		/* no need to check the border of the cave */
 		
-		for (i = Variable.cur_height - 2; i > 0; i--) {
+		for (i = Variable.currHeight - 2; i > 0; i--) {
 			ptr_count = 1;
 			c_ptr = Variable.cave[i][ptr_count];
-			for (j = Variable.cur_width - 2; j > 0; j--) {
+			for (j = Variable.currWidth - 2; j > 0; j--) {
 				if ((c_ptr.fval == Constants.NULL_WALL) || (c_ptr.fval == Constants.TMP1_WALL) || (c_ptr.fval == Constants.TMP2_WALL)) {
 					c_ptr.fval = fval;
 				}
@@ -124,18 +124,18 @@ public class Generate {
 		CaveType right_ptr;
 		
 		/* put permanent wall on leftmost row and rightmost row */
-		for (i = 0; i < Variable.cur_height; i++) {
+		for (i = 0; i < Variable.currHeight; i++) {
 			left_ptr = Variable.cave[i][0];
 			left_ptr.fval	= Constants.BOUNDARY_WALL;
-			right_ptr = Variable.cave[i][Variable.cur_width - 1];
+			right_ptr = Variable.cave[i][Variable.currWidth - 1];
 			right_ptr.fval	= Constants.BOUNDARY_WALL;
 		}
 		
 		/* put permanent wall on top row and bottom row */
-		for (i = 0; i < Variable.cur_width; i++) {
+		for (i = 0; i < Variable.currWidth; i++) {
 			top_ptr = Variable.cave[0][i];
 			top_ptr.fval	= Constants.BOUNDARY_WALL;
-			bottom_ptr = Variable.cave[Variable.cur_height - 1][i];
+			bottom_ptr = Variable.cave[Variable.currHeight - 1][i];
 			bottom_ptr.fval	= Constants.BOUNDARY_WALL;
 		}
 	}
@@ -148,8 +148,8 @@ public class Generate {
 		CaveType c_ptr;
 		
 		/* Choose starting point and direction		*/
-		y = new IntPointer((Variable.cur_height / 2) + 11 - Misc1.randomInt(23));
-		x = new IntPointer((Variable.cur_width / 2)  + 16 - Misc1.randomInt(33));
+		y = new IntPointer((Variable.currHeight / 2) + 11 - Misc1.randomInt(23));
+		x = new IntPointer((Variable.currWidth / 2)  + 16 - Misc1.randomInt(33));
 		
 		dir = Misc1.randomInt(8);	/* Number 1-4, 6-9	*/
 		if (dir > 4) {
@@ -182,8 +182,8 @@ public class Generate {
 		
 		cur_pos = Misc1.popTreasure();
 		cave_ptr = Variable.cave[y][x];
-		cave_ptr.tptr = cur_pos;
-		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_OPEN_DOOR);
+		cave_ptr.treasureIndex = cur_pos;
+		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_OPEN_DOOR);
 		cave_ptr.fval = Constants.CORR_FLOOR;
 	}
 	
@@ -193,10 +193,10 @@ public class Generate {
 		
 		cur_pos = Misc1.popTreasure();
 		cave_ptr = Variable.cave[y][x];
-		cave_ptr.tptr = cur_pos;
-		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_OPEN_DOOR);
+		cave_ptr.treasureIndex = cur_pos;
+		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_OPEN_DOOR);
 		cave_ptr.fval = Constants.CORR_FLOOR;
-		Treasure.t_list[cur_pos].p1 = 1;
+		Treasure.treasureList[cur_pos].misc = 1;
 	}
 	
 	private static void placeClosedDoor(int y, int x) {
@@ -205,8 +205,8 @@ public class Generate {
 		
 		cur_pos = Misc1.popTreasure();
 		cave_ptr = Variable.cave[y][x];
-		cave_ptr.tptr = cur_pos;
-		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_CLOSED_DOOR);
+		cave_ptr.treasureIndex = cur_pos;
+		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_CLOSED_DOOR);
 		cave_ptr.fval = Constants.BLOCKED_FLOOR;
 	}
 	
@@ -216,10 +216,10 @@ public class Generate {
 		
 		cur_pos = Misc1.popTreasure();
 		cave_ptr = Variable.cave[y][x];
-		cave_ptr.tptr = cur_pos;
-		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_CLOSED_DOOR);
+		cave_ptr.treasureIndex = cur_pos;
+		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_CLOSED_DOOR);
 		cave_ptr.fval = Constants.BLOCKED_FLOOR;
-		Treasure.t_list[cur_pos].p1 = Misc1.randomInt(10) + 10;
+		Treasure.treasureList[cur_pos].misc = Misc1.randomInt(10) + 10;
 	}
 	
 	private static void placeStuckDoor(int y, int x) {
@@ -228,10 +228,10 @@ public class Generate {
 		
 		cur_pos = Misc1.popTreasure();
 		cave_ptr = Variable.cave[y][x];
-		cave_ptr.tptr = cur_pos;
-		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_CLOSED_DOOR);
+		cave_ptr.treasureIndex = cur_pos;
+		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_CLOSED_DOOR);
 		cave_ptr.fval = Constants.BLOCKED_FLOOR;
-		Treasure.t_list[cur_pos].p1 = -Misc1.randomInt(10) - 10;
+		Treasure.treasureList[cur_pos].misc = -Misc1.randomInt(10) - 10;
 	}
 	
 	private static void placeSecretDoor(int y, int x) {
@@ -240,8 +240,8 @@ public class Generate {
 		
 		cur_pos = Misc1.popTreasure();
 		cave_ptr = Variable.cave[y][x];
-		cave_ptr.tptr = cur_pos;
-		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_SECRET_DOOR);
+		cave_ptr.treasureIndex = cur_pos;
+		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_SECRET_DOOR);
 		cave_ptr.fval = Constants.BLOCKED_FLOOR;
 	}
 	
@@ -275,12 +275,12 @@ public class Generate {
 		CaveType cave_ptr;
 		
 		cave_ptr = Variable.cave[y][x];
-		if (cave_ptr.tptr != 0) {
+		if (cave_ptr.treasureIndex != 0) {
 			Moria3.deleteObject(y, x);
 		}
 		cur_pos = Misc1.popTreasure();
-		cave_ptr.tptr = cur_pos;
-		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_UP_STAIR);
+		cave_ptr.treasureIndex = cur_pos;
+		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_UP_STAIR);
 	}
 	
 	/* Place a down staircase at given y, x			-RAK-	*/
@@ -289,12 +289,12 @@ public class Generate {
 		CaveType cave_ptr;
 		
 		cave_ptr = Variable.cave[y][x];
-		if (cave_ptr.tptr != 0) {
+		if (cave_ptr.treasureIndex != 0) {
 			Moria3.deleteObject(y, x);
 		}
 		cur_pos = Misc1.popTreasure();
-		cave_ptr.tptr = cur_pos;
-		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_DOWN_STAIR);
+		cave_ptr.treasureIndex = cur_pos;
+		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_DOWN_STAIR);
 	}
 	
 	/* Places a staircase 1=up, 2=down			-RAK-	*/
@@ -312,14 +312,14 @@ public class Generate {
 					/* Note: don't let y1/x1 be zero, and don't let y2/x2 be equal
 					   to cur_height-1/cur_width-1, these values are always
 					   BOUNDARY_ROCK. */
-					y1 = Misc1.randomInt(Variable.cur_height - 14);
-					x1 = Misc1.randomInt(Variable.cur_width  - 14);
+					y1 = Misc1.randomInt(Variable.currHeight - 14);
+					x1 = Misc1.randomInt(Variable.currWidth  - 14);
 					y2 = y1 + 12;
 					x2 = x1 + 12;
 					do {
 						do {
 							cave_ptr = Variable.cave[y1][x1];
-							if (cave_ptr.fval <= Constants.MAX_OPEN_SPACE && (cave_ptr.tptr == 0) && (Misc1.isNextToWalls(y1, x1) >= walls)) {
+							if (cave_ptr.fval <= Constants.MAX_OPEN_SPACE && (cave_ptr.treasureIndex == 0) && (Misc1.isNextToWalls(y1, x1) >= walls)) {
 								flag = true;
 								if (typ == 1) {
 									placeUpStairs(y1, x1);
@@ -353,7 +353,7 @@ public class Generate {
 				y1 = y - yd - 1 + Misc1.randomInt(2 * yd + 1);
 				x1 = x - xd - 1 + Misc1.randomInt(2 * xd + 1);
 				c_ptr = Variable.cave[y1][x1];
-				if ((c_ptr.fval != Constants.NULL_WALL) && (c_ptr.fval <= Constants.MAX_CAVE_FLOOR) && (c_ptr.tptr == 0)) {
+				if ((c_ptr.fval != Constants.NULL_WALL) && (c_ptr.fval <= Constants.MAX_CAVE_FLOOR) && (c_ptr.treasureIndex == 0)) {
 					Misc3.placeTrap(y1, x1, Misc1.randomInt(Constants.MAX_TRAP) - 1);
 					flag = true;
 				}
@@ -381,7 +381,7 @@ public class Generate {
 		short floor;
 		CaveType c_ptr, d_ptr;
 		
-		if (Variable.dun_level <= Misc1.randomInt(25)) {
+		if (Variable.dungeonLevel <= Misc1.randomInt(25)) {
 			floor = Constants.LIGHT_FLOOR;	/* Floor with light	*/
 		} else {
 			floor = Constants.DARK_FLOOR;		/* Dark floor		*/
@@ -399,26 +399,26 @@ public class Generate {
 			for (j = x_left; j <= x_right; j++) {
 				c_ptr = Variable.cave[i][j];
 				c_ptr.fval = floor;
-				c_ptr.lr = true;
+				c_ptr.litRoom = true;
 			}
 		}
 		
 		for (i = (y_height - 1); i <= (y_depth + 1); i++) {
 			c_ptr = Variable.cave[i][x_left - 1];
 			c_ptr.fval = Constants.GRANITE_WALL;
-			c_ptr.lr = true;
+			c_ptr.litRoom = true;
 			c_ptr = Variable.cave[i][x_right + 1];
 			c_ptr.fval = Constants.GRANITE_WALL;
-			c_ptr.lr = true;
+			c_ptr.litRoom = true;
 		}
 		
 		for (i = x_left; i <= x_right; i++) {
 			c_ptr = Variable.cave[y_height - 1][i];
 			c_ptr.fval = Constants.GRANITE_WALL;
-			c_ptr.lr = true;
+			c_ptr.litRoom = true;
 			d_ptr = Variable.cave[y_depth + 1][i];
 			d_ptr.fval = Constants.GRANITE_WALL;
-			d_ptr.lr = true;
+			d_ptr.litRoom = true;
 		}
 	}
 	
@@ -431,7 +431,7 @@ public class Generate {
 		short floor;
 		CaveType c_ptr, d_ptr;
 		
-		if (Variable.dun_level <= Misc1.randomInt(25)) {
+		if (Variable.dungeonLevel <= Misc1.randomInt(25)) {
 			floor = Constants.LIGHT_FLOOR;	/* Floor with light	*/
 		} else {
 			floor = Constants.DARK_FLOOR;		/* Dark floor		*/
@@ -450,31 +450,31 @@ public class Generate {
 				for (j = x_left; j <= x_right; j++) {
 					c_ptr = Variable.cave[i][j];
 					c_ptr.fval = floor;
-					c_ptr.lr = true;
+					c_ptr.litRoom = true;
 				}
 			}
 			for (i = (y_height - 1); i <= (y_depth + 1); i++) {
 				c_ptr = Variable.cave[i][x_left - 1];
 				if (c_ptr.fval != floor) {
 					c_ptr.fval = Constants.GRANITE_WALL;
-					c_ptr.lr = true;
+					c_ptr.litRoom = true;
 				}
 				c_ptr = Variable.cave[i][x_right + 1];
 				if (c_ptr.fval != floor) {
 					c_ptr.fval = Constants.GRANITE_WALL;
-					c_ptr.lr = true;
+					c_ptr.litRoom = true;
 				}
 			}
 			for (i = x_left; i <= x_right; i++) {
 				c_ptr = Variable.cave[y_height - 1][i];
 				if (c_ptr.fval != floor) {
 					c_ptr.fval = Constants.GRANITE_WALL;
-					c_ptr.lr = true;
+					c_ptr.litRoom = true;
 				}
 				d_ptr = Variable.cave[y_depth + 1][i];
 				if (d_ptr.fval != floor) {
 					d_ptr.fval = Constants.GRANITE_WALL;
-					d_ptr.lr = true;
+					d_ptr.litRoom = true;
 				}
 			}
 		}
@@ -493,7 +493,7 @@ public class Generate {
 		short floor;
 		CaveType c_ptr, d_ptr;
 		
-		if (Variable.dun_level <= Misc1.randomInt(25)) {
+		if (Variable.dungeonLevel <= Misc1.randomInt(25)) {
 			floor = Constants.LIGHT_FLOOR;	/* Floor with light	*/
 		} else {
 			floor = Constants.DARK_FLOOR;		/* Dark floor		*/
@@ -510,24 +510,24 @@ public class Generate {
 			for (j = x_left; j <= x_right; j++) {
 				c_ptr = Variable.cave[i][j];
 				c_ptr.fval = floor;
-				c_ptr.lr = true;
+				c_ptr.litRoom = true;
 			}
 		}
 		for (i = (y_height - 1); i <= (y_depth + 1); i++) {
 			c_ptr = Variable.cave[i][x_left - 1];
 			c_ptr.fval = Constants.GRANITE_WALL;
-			c_ptr.lr = true;
+			c_ptr.litRoom = true;
 			c_ptr = Variable.cave[i][x_right + 1];
 			c_ptr.fval = Constants.GRANITE_WALL;
-			c_ptr.lr = true;
+			c_ptr.litRoom = true;
 		}
 		for (i = x_left; i <= x_right; i++) {
 			c_ptr = Variable.cave[y_height - 1][i];
 			c_ptr.fval  = Constants.GRANITE_WALL;
-			c_ptr.lr = true;
+			c_ptr.litRoom = true;
 			d_ptr = Variable.cave[y_depth + 1][i];
 			d_ptr.fval = Constants.GRANITE_WALL;
-			d_ptr.lr = true;
+			d_ptr.litRoom = true;
 		}
 		/* The inner room		*/
 		y_height = y_height + 2;
@@ -752,7 +752,7 @@ public class Generate {
 		short floor;
 		CaveType c_ptr;
 		
-		if (Variable.dun_level <= Misc1.randomInt(25)) {
+		if (Variable.dungeonLevel <= Misc1.randomInt(25)) {
 			floor = Constants.LIGHT_FLOOR;	/* Floor with light	*/
 		} else {
 			floor = Constants.DARK_FLOOR;		/* Dark floor		*/
@@ -766,24 +766,24 @@ public class Generate {
 			for (j = x_left; j <= x_right; j++) {
 				c_ptr = Variable.cave[i][j];
 				c_ptr.fval = floor;
-				c_ptr.lr = true;
+				c_ptr.litRoom = true;
 			}
 		}
 		for (i = (y_height - 1); i <= (y_depth + 1); i++) {
 			c_ptr = Variable.cave[i][x_left-1];
 			c_ptr.fval = Constants.GRANITE_WALL;
-			c_ptr.lr = true;
+			c_ptr.litRoom = true;
 			c_ptr = Variable.cave[i][x_right + 1];
 			c_ptr.fval = Constants.GRANITE_WALL;
-			c_ptr.lr = true;
+			c_ptr.litRoom = true;
 		}
 		for (i = x_left; i <= x_right; i++) {
 			c_ptr = Variable.cave[y_height - 1][i];
 			c_ptr.fval = Constants.GRANITE_WALL;
-			c_ptr.lr = true;
+			c_ptr.litRoom = true;
 			c_ptr = Variable.cave[y_depth + 1][i];
 			c_ptr.fval = Constants.GRANITE_WALL;
-			c_ptr.lr = true;
+			c_ptr.litRoom = true;
 		}
 		tmp = 2 + Misc1.randomInt(9);
 		y_height = yval - 1;
@@ -794,31 +794,31 @@ public class Generate {
 			for (j = x_left; j <= x_right; j++) {
 				c_ptr = Variable.cave[i][j];
 				c_ptr.fval = floor;
-				c_ptr.lr = true;
+				c_ptr.litRoom = true;
 			}
 		}
 		for (i = (y_height - 1); i <= (y_depth + 1); i++) {
 			c_ptr = Variable.cave[i][x_left - 1];
 			if (c_ptr.fval != floor) {
 				c_ptr.fval = Constants.GRANITE_WALL;
-				c_ptr.lr = true;
+				c_ptr.litRoom = true;
 			}
 			c_ptr = Variable.cave[i][x_right + 1];
 			if (c_ptr.fval != floor) {
 				c_ptr.fval = Constants.GRANITE_WALL;
-				c_ptr.lr = true;
+				c_ptr.litRoom = true;
 			}
 		}
 		for (i = x_left; i <= x_right; i++) {
 			c_ptr = Variable.cave[y_height - 1][i];
 			if (c_ptr.fval != floor) {
 				c_ptr.fval = Constants.GRANITE_WALL;
-				c_ptr.lr = true;
+				c_ptr.litRoom = true;
 			}
 			c_ptr = Variable.cave[y_depth + 1][i];
 			if (c_ptr.fval != floor) {
 				c_ptr.fval = Constants.GRANITE_WALL;
-				c_ptr.lr = true;
+				c_ptr.litRoom = true;
 			}
 		}
 		/* Special features.			*/
@@ -985,10 +985,10 @@ public class Generate {
 				row1 = tmp_row;
 				col1 = tmp_col;
 				if (!door_flag) {
-					if (doorindex < 100) {
-						doorstk[doorindex].y = row1;
-						doorstk[doorindex].x = col1;
-						doorindex++;
+					if (doorIndex < 100) {
+						doorStack[doorIndex].y = row1;
+						doorStack[doorIndex].x = col1;
+						doorIndex++;
 					}
 					door_flag = true;
 				}
@@ -1059,10 +1059,10 @@ public class Generate {
 		CaveType c_ptr;
 		
 		do {
-			i = Misc1.randomInt(Variable.cur_height - 2);
-			j = Misc1.randomInt(Variable.cur_width - 2);
+			i = Misc1.randomInt(Variable.currHeight - 2);
+			j = Misc1.randomInt(Variable.currWidth - 2);
 			c_ptr = Variable.cave[i][j];
-		} while (c_ptr.fval >= Constants.MIN_CLOSED_SPACE || (c_ptr.cptr != 0) || (c_ptr.tptr != 0));
+		} while (c_ptr.fval >= Constants.MIN_CLOSED_SPACE || (c_ptr.creatureIndex != 0) || (c_ptr.treasureIndex != 0));
 		
 		y.value(i);
 		x.value(j);
@@ -1076,8 +1076,8 @@ public class Generate {
 		int row_rooms, col_rooms, alloc_level;
 		int[] yloc = new int[400], xloc = new int[400];
 		
-		row_rooms = 2 * (Variable.cur_height / Constants.SCREEN_HEIGHT);
-		col_rooms = 2 * (Variable.cur_width / Constants.SCREEN_WIDTH);
+		row_rooms = 2 * (Variable.currHeight / Constants.SCREEN_HEIGHT);
+		col_rooms = 2 * (Variable.currWidth / Constants.SCREEN_WIDTH);
 		for (i = 0; i < row_rooms; i++) {
 			for (j = 0; j < col_rooms; j++) {
 				room_map[i][j] = 0;
@@ -1093,7 +1093,7 @@ public class Generate {
 				if (room_map[i][j] != 0) {
 					yloc[k] = i * (Constants.SCREEN_HEIGHT >> 1) + Constants.QUART_HEIGHT;
 					xloc[k] = j * (Constants.SCREEN_WIDTH >> 1) + Constants.QUART_WIDTH;
-					if (Variable.dun_level > Misc1.randomInt(Constants.DUN_UNUSUAL)) {
+					if (Variable.dungeonLevel > Misc1.randomInt(Constants.DUN_UNUSUAL)) {
 						tmp = Misc1.randomInt(3);
 						if (tmp == 1) {
 							buildType1(yloc[k], xloc[k]);
@@ -1120,7 +1120,7 @@ public class Generate {
 			yloc[pick2] = y1;
 			xloc[pick2] = x1;
 		}
-		doorindex = 0;
+		doorIndex = 0;
 		/* move zero entry to k, so that can call build_tunnel all k times */
 		yloc[k] = yloc[0];
 		xloc[k] = xloc[0];
@@ -1140,13 +1140,13 @@ public class Generate {
 		}
 		placeBoundary();
 		/* Place intersection doors	*/
-		for (i = 0; i < doorindex; i++) {
-			tryDoor(doorstk[i].y, doorstk[i].x - 1);
-			tryDoor(doorstk[i].y, doorstk[i].x + 1);
-			tryDoor(doorstk[i].y - 1, doorstk[i].x);
-			tryDoor(doorstk[i].y + 1, doorstk[i].x);
+		for (i = 0; i < doorIndex; i++) {
+			tryDoor(doorStack[i].y, doorStack[i].x - 1);
+			tryDoor(doorStack[i].y, doorStack[i].x + 1);
+			tryDoor(doorStack[i].y - 1, doorStack[i].x);
+			tryDoor(doorStack[i].y + 1, doorStack[i].x);
 		}
-		alloc_level = (Variable.dun_level / 3);
+		alloc_level = (Variable.dungeonLevel / 3);
 		if (alloc_level < 2) {
 			alloc_level = 2;
 		} else if (alloc_level > 10) {
@@ -1155,17 +1155,17 @@ public class Generate {
 		placeStairs(2, Misc1.randomInt(2) + 2, 3);
 		placeStairs(1, Misc1.randomInt(2), 3);
 		/* Set up the character co-ords, used by alloc_monster, place_win_monster */
-		IntPointer cr = new IntPointer(Player.char_row), cc = new IntPointer(Player.char_col);
+		IntPointer cr = new IntPointer(Player.y), cc = new IntPointer(Player.x);
 		newSpot(cr, cc);
-		Player.char_row = cr.value();
-		Player.char_col = cc.value();
+		Player.y = cr.value();
+		Player.x = cc.value();
 		Misc1.spawnMonster((Misc1.randomInt(8) + Constants.MIN_MALLOC_LEVEL + alloc_level), 0, true);
 		Misc3.spawnObject(Sets.SET_CORR, 3, Misc1.randomInt(alloc_level));
 		Misc3.spawnObject(Sets.SET_ROOM, 5, Misc1.randomIntNormalized(Constants.TREAS_ROOM_ALLOC, 3));
 		Misc3.spawnObject(Sets.SET_FLOOR, 5, Misc1.randomIntNormalized(Constants.TREAS_ANY_ALLOC, 3));
 		Misc3.spawnObject(Sets.SET_FLOOR, 4, Misc1.randomIntNormalized(Constants.TREAS_GOLD_ALLOC, 3));
 		Misc3.spawnObject(Sets.SET_FLOOR, 1, Misc1.randomInt(alloc_level));
-		if (Variable.dun_level >= Constants.WIN_MON_APPEAR)  Misc1.placeWinMonster();
+		if (Variable.dungeonLevel >= Constants.WIN_MON_APPEAR)  Misc1.placeWinMonster();
 	}
 	
 	/* Builds a store at a row, column coordinate			*/
@@ -1206,8 +1206,8 @@ public class Generate {
 		c_ptr = Variable.cave[i][j];
 		c_ptr.fval = Constants.CORR_FLOOR;
 		cur_pos = Misc1.popTreasure();
-		c_ptr.tptr = cur_pos;
-		Desc.copyIntoInventory(Treasure.t_list[cur_pos], Constants.OBJ_STORE_DOOR + store_num);
+		c_ptr.treasureIndex = cur_pos;
+		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_STORE_DOOR + store_num);
 	}
 	
 	/* Link all free space in treasure list together		*/
@@ -1215,9 +1215,9 @@ public class Generate {
 		int i;
 		
 		for (i = 0; i < Constants.MAX_TALLOC; i++) {
-			Desc.copyIntoInventory(Treasure.t_list[i], Constants.OBJ_NOTHING);
+			Desc.copyIntoInventory(Treasure.treasureList[i], Constants.OBJ_NOTHING);
 		}
-		Treasure.tcptr = Constants.MIN_TRIX;
+		Treasure.currTreasureIndex = Constants.MIN_TRIX;
 	}
 	
 	/* Link all free space in monster list together			*/
@@ -1225,9 +1225,9 @@ public class Generate {
 		int i;
 		
 		for (i = 0; i < Constants.MAX_MALLOC; i++) {
-			Monsters.m_list[i] = Monsters.getBlankMonster();
+			Monsters.monsterList[i] = Monsters.getBlankMonster();
 		}
-		Monsters.mfptr = Constants.MIN_MONIX;
+		Monsters.freeMonsterIndex = Constants.MIN_MONIX;
 	}
 	
 	/* Town logic flow for generation of new town		*/
@@ -1236,7 +1236,7 @@ public class Generate {
 		CaveType c_ptr;
 		int[] rooms = new int[6];
 		
-		Misc1.setSeed(Variable.town_seed);
+		Misc1.setSeed(Variable.townSeed);
 		for (i = 0; i < 6; i++) {
 			rooms[i] = i;
 		}
@@ -1257,19 +1257,19 @@ public class Generate {
 		placeStairs(2, 1, 0);
 		Misc1.resetSeed();
 		/* Set up the character co-ords, used by alloc_monster below */
-		IntPointer cr = new IntPointer(Player.char_row), cc = new IntPointer(Player.char_col);
+		IntPointer cr = new IntPointer(Player.y), cc = new IntPointer(Player.x);
 		newSpot(cr, cc);
-		Player.char_row = cr.value();
-		Player.char_col = cc.value();
+		Player.y = cr.value();
+		Player.x = cc.value();
 		if ((0x1 & (Variable.turn / 5000)) > 0) {
 			/* Night	*/
 			int ptr_count;
-			for (i = 0; i < Variable.cur_height; i++) {
+			for (i = 0; i < Variable.currHeight; i++) {
 				ptr_count = 0;
 				c_ptr = Variable.cave[i][ptr_count];
-				for (j = 0; j < Variable.cur_width; j++) {
+				for (j = 0; j < Variable.currWidth; j++) {
 					if (c_ptr.fval != Constants.DARK_FLOOR) {
-						c_ptr.pl = true;
+						c_ptr.permLight = true;
 						ptr_count++;
 						c_ptr = Variable.cave[i][ptr_count];
 					}
@@ -1278,10 +1278,10 @@ public class Generate {
 			Misc1.spawnMonster(Constants.MIN_MALLOC_TN, 3, true);
 		} else {
 			/* Day	*/
-			for (i = 0; i < Variable.cur_height; i++) {
-				for (j = 0; j < Variable.cur_width; j++) {
+			for (i = 0; i < Variable.currHeight; i++) {
+				for (j = 0; j < Variable.currWidth; j++) {
 					c_ptr = Variable.cave[i][j];
-					c_ptr.pl = true;
+					c_ptr.permLight = true;
 				}
 			}
 			Misc1.spawnMonster(Constants.MIN_MALLOC_TD, 3, true);
@@ -1291,32 +1291,32 @@ public class Generate {
 	
 	/* Generates a random dungeon level			-RAK-	*/
 	public static void generateLevel() {
-		Variable.panel_row_min = 0;
-		Variable.panel_row_max = 0;
-		Variable.panel_col_min = 0;
-		Variable.panel_col_max = 0;
-		Player.char_row = -1;
-		Player.char_col = -1;
+		Variable.panelRowMin = 0;
+		Variable.panelRowMax = 0;
+		Variable.panelColMin = 0;
+		Variable.panelColMax = 0;
+		Player.y = -1;
+		Player.x = -1;
 		
 		clearTreasureList();
 		clearMonsterList();
 		clearCave();
 		
-		if (Variable.dun_level == 0) {
-			Variable.cur_height = Constants.SCREEN_HEIGHT;
-			Variable.cur_width	 = Constants.SCREEN_WIDTH;
-			Variable.max_panel_rows = (Variable.cur_height / Constants.SCREEN_HEIGHT) * 2 - 2;
-			Variable.max_panel_cols = (Variable.cur_width / Constants.SCREEN_WIDTH) * 2 - 2;
-			Variable.panel_row = Variable.max_panel_rows;
-			Variable.panel_col = Variable.max_panel_cols;
+		if (Variable.dungeonLevel == 0) {
+			Variable.currHeight = Constants.SCREEN_HEIGHT;
+			Variable.currWidth	 = Constants.SCREEN_WIDTH;
+			Variable.maxPanelRows = (Variable.currHeight / Constants.SCREEN_HEIGHT) * 2 - 2;
+			Variable.maxPanelCols = (Variable.currWidth / Constants.SCREEN_WIDTH) * 2 - 2;
+			Variable.panelRow = Variable.maxPanelRows;
+			Variable.panelCol = Variable.maxPanelCols;
 			generateTown();
 		} else {
-			Variable.cur_height = Constants.MAX_HEIGHT;
-			Variable.cur_width = Constants.MAX_WIDTH;
-			Variable.max_panel_rows = (Variable.cur_height / Constants.SCREEN_HEIGHT) * 2 - 2;
-			Variable.max_panel_cols = (Variable.cur_width / Constants.SCREEN_WIDTH) * 2 - 2;
-			Variable.panel_row = Variable.max_panel_rows;
-			Variable.panel_col = Variable.max_panel_cols;
+			Variable.currHeight = Constants.MAX_HEIGHT;
+			Variable.currWidth = Constants.MAX_WIDTH;
+			Variable.maxPanelRows = (Variable.currHeight / Constants.SCREEN_HEIGHT) * 2 - 2;
+			Variable.maxPanelCols = (Variable.currWidth / Constants.SCREEN_WIDTH) * 2 - 2;
+			Variable.panelRow = Variable.maxPanelRows;
+			Variable.panelCol = Variable.maxPanelCols;
 			generateCave();
 		}
 	}

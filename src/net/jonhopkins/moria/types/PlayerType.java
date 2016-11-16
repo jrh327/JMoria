@@ -25,12 +25,12 @@ public final class PlayerType {
 	public PlayerType() {
 		misc = new PlayerMisc();
 		flags = new PlayerFlags();
-		stats = new Stats();
+		stats = new PlayerStats();
 	}
 	
 	public final int PLAYER_NAME_SIZE = 27;
 	
 	public PlayerMisc misc;
 	public PlayerFlags flags;
-	public Stats stats;
+	public PlayerStats stats;
 }

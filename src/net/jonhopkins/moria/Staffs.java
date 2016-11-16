@@ -40,16 +40,16 @@ public class Staffs {
 		PlayerMisc m_ptr;
 		InvenType i_ptr;
 		
-		Variable.free_turn_flag = true;
-		if (Treasure.inven_ctr == 0) {
+		Variable.freeTurnFlag = true;
+		if (Treasure.invenCounter == 0) {
 			IO.printMessage("But you are not carrying anything.");
 		} else if (!Misc3.findRange(Constants.TV_STAFF, Constants.TV_NEVER, j, k)) {
 			IO.printMessage("You are not carrying any staffs.");
 		} else if (Moria1.getItemId(item_val, "Use which staff?", j.value(), k.value(), "", "")) {
 			i_ptr = Treasure.inventory[item_val.value()];
-			Variable.free_turn_flag = false;
+			Variable.freeTurnFlag = false;
 			m_ptr = Player.py.misc;
-			chance = m_ptr.save + Misc3.adjustStat(Constants.A_INT) - i_ptr.level - 5 + (Player.class_level_adj[m_ptr.pclass][Constants.CLA_DEVICE] * m_ptr.lev / 3);
+			chance = m_ptr.savingThrow + Misc3.adjustStat(Constants.A_INT) - i_ptr.level - 5 + (Player.classLevelAdjust[m_ptr.playerClass][Constants.CLA_DEVICE] * m_ptr.level / 3);
 			if (Player.py.flags.confused > 0) {
 				chance = chance / 2;
 			}
@@ -59,17 +59,17 @@ public class Staffs {
 			if (chance <= 0)	chance = 1;
 			if (Misc1.randomInt(chance) < Constants.USE_DEVICE) {
 				IO.printMessage("You failed to use the staff properly.");
-			} else if (i_ptr.p1 > 0) {
+			} else if (i_ptr.misc > 0) {
 				i.value(i_ptr.flags);
 				ident = false;
-				(i_ptr.p1)--;
+				(i_ptr.misc)--;
 				while (i.value() != 0) {
 					j.value(Misc1.firstBitPos(i) + 1);
 					/* Staffs.				*/
 					switch(j.value())
 					{
 					case 1:
-						ident = Spells.lightArea(Player.char_row, Player.char_col);
+						ident = Spells.lightArea(Player.y, Player.x);
 						break;
 					case 2:
 						ident = Spells.detectSecretDoors();
@@ -94,18 +94,18 @@ public class Staffs {
 					case 8:
 						ident = false;
 						for (int k1 = 0; k1 < Misc1.randomInt(4); k1++) {
-							y = new IntPointer(Player.char_row);
-							x = new IntPointer(Player.char_col);
+							y = new IntPointer(Player.y);
+							x = new IntPointer(Player.x);
 							ident |= Misc1.summonMonster(y, x, false);
 						}
 						break;
 					case 10:
 						ident = true;
-						Spells.destroyArea(Player.char_row, Player.char_col);
+						Spells.destroyArea(Player.y, Player.x);
 						break;
 					case 11:
 						ident = true;
-						Spells.starLight(Player.char_row, Player.char_col);
+						Spells.starLight(Player.y, Player.x);
 						break;
 					case 12:
 						ident = Spells.speedMonsters(1);
@@ -159,7 +159,7 @@ public class Staffs {
 						ident = Spells.dispelCreature(Constants.CD_EVIL, 60);
 						break;
 					case 25:
-						ident = Spells.unlightArea(Player.char_row, Player.char_col);
+						ident = Spells.unlightArea(Player.y, Player.x);
 						break;
 					case 32:
 						/* store bought flag */
@@ -174,7 +174,7 @@ public class Staffs {
 					if (!Desc.isKnownByPlayer(i_ptr)) {
 						m_ptr = Player.py.misc;
 						/* round half-way case up */
-						m_ptr.exp += (i_ptr.level + (m_ptr.lev >> 1)) / m_ptr.lev;
+						m_ptr.currExp += (i_ptr.level + (m_ptr.level >> 1)) / m_ptr.level;
 						Misc3.printExperience();
 						
 						Desc.identify(item_val);

@@ -27,187 +27,187 @@ public final class PlayerMisc {
 	 * Name of character
 	 */
 	public String name;
-
+	
 	/**
 	 * Sex of character
 	 */
-	public boolean male;
-
+	public boolean isMale;
+	
 	/**
 	 * Gold
 	 */
-	public int au;
-
+	public int gold;
+	
 	/**
 	 * Max experience
 	 */
-	public int max_exp;
-
+	public int maxExp;
+	
 	/**
 	 * Current experience
 	 */
-	public int exp;
-
+	public int currExp;
+	
 	/**
 	 * Current experience fraction * 2^16
 	 */
-	public int exp_frac;
-
+	public int expFraction;
+	
 	/**
 	 * Character's age
 	 */
 	public int age;
-
+	
 	/**
 	 * Character's height
 	 */
-	public int ht;
-
+	public int height;
+	
 	/**
 	 * Character's weight
 	 */
-	public int wt;
-
+	public int weight;
+	
 	/**
 	 * Character's level
 	 */
-	public int lev = 1;
-
+	public int level = 1;
+	
 	/**
 	 * Maximum dungeon level explored
 	 */
-	public int max_dlv;
-
+	public int maxDungeonLevel;
+	
 	/**
 	 * Chance in search
 	 */
-	public int srh;
-
+	public int searchChance;
+	
 	/**
 	 * Frequency of search
 	 */
-	public int fos;
-
+	public int freqOfSearch;
+	
 	/**
 	 * Base to hit
 	 */
-	public int bth;
-
+	public int baseToHit;
+	
 	/**
 	 * Base to hit with bows
 	 */
-	public int bthb;
-
+	public int baseToHitBow;
+	
 	/**
 	 * Mana points
 	 */
-	public int mana;
-
+	public int maxMana;
+	
 	/**
 	 * Maximum hitpoints
 	 */
-	public int mhp;
-
+	public int maxHitpoints;
+	
 	/**
 	 * Pluses to hit
 	 */
-	public int ptohit;
-
+	public int plusToHit;
+	
 	/**
 	 * Pluses to dam
 	 */
-	public int ptodam;
-
+	public int plusToDamage;
+	
 	/**
 	 * Total AC
 	 */
-	public int pac;
-
+	public int totalArmorClass;
+	
 	/**
 	 * Magical AC
 	 */
-	public int ptoac;
-
+	public int magicArmorClass;
+	
 	/**
 	 * Display +ToHit
 	 */
-	public int dis_th;
-
+	public int displayPlusToHit;
+	
 	/**
 	 * Display +ToDam
 	 */
-	public int dis_td;
-
+	public int displayPlusToDamage;
+	
 	/**
 	 * Display +ToAC
 	 */
-	public int dis_ac;
-
+	public int displayPlusToArmorClass;
+	
 	/**
 	 * Display +ToTAC
 	 */
-	public int dis_tac;
-
+	public int displayPlusTotalArmorClass;
+	
 	/**
 	 * Percent chance to Disarm
 	 */
-	public int disarm;
-
+	public int disarmChance;
+	
 	/**
 	 * Saving throw
 	 */
-	public int save;
-
+	public int savingThrow;
+	
 	/**
 	 * Social Class
 	 */
-	public int sc;
-
+	public int socialClass;
+	
 	/**
 	 * Stealth factor
 	 */
-	public int stl;
-
+	public int stealth;
+	
 	/**
 	 * # of class
 	 */
-	public int pclass;
-
+	public int playerClass;
+	
 	/**
 	 * # of race
 	 */
-	public int prace;
-
+	public int playerRace;
+	
 	/**
 	 * Character hit die
 	 */
-	public int hitdie;
-
+	public int hitDie;
+	
 	/**
 	 * Experience factor
 	 */
-	public int expfact;
-
+	public int expFactor;
+	
 	/**
 	 * Current mana points
 	 */
-	public int cmana;
-
+	public int currMana;
+	
 	/**
 	 * Current mana fraction * 2^16
 	 */
-	public int cmana_frac;
-
+	public int currManaFraction;
+	
 	/**
 	 * Current hitpoints
 	 */
-	public int chp;
-
+	public int currHitpoints;
+	
 	/**
 	 * Current hit fraction * 2^16
 	 */
-	public int chp_frac;
-
+	public int currHitpointsFraction;
+	
 	/**
 	 * History record
 	 */
