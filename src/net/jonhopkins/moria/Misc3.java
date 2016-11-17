@@ -1679,8 +1679,7 @@ public class Misc3 {
 	    }
 		
 		/* check to see if know any spells greater than level, eliminate them */
-		for (i = 31; i >= 0; i--) {
-			mask = 1 << i;
+		for (i = 31, mask = 0x80000000L; mask != 0; mask >>>= 1, i--) {
 			if ((mask & Player.spell_learned) != 0) {
 				if (msp_ptr[i].slevel > p_ptr.lev) {
 					Player.spell_learned &= ~mask;
@@ -1705,12 +1704,10 @@ public class Misc3 {
 		}
 		
 		num_known = 0;
-		mask = 0x1;
-		for (i = 0; i < 32; i++) {
+		for (mask = 0x1; mask != 0; mask <<= 1) {
 			if ((mask & Player.spell_learned) != 0) {
 				num_known++;
 			}
-			mask <<= 1;
 		}
 		new_spells = num_allowed - num_known;
 		
