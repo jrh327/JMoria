@@ -333,18 +333,18 @@ public class Moria3 {
 	}
 	
 	/* Deletes a monster entry from the level		-RAK-	*/
-	public static void deleteMonster(int j) {
-		MonsterType m_ptr;
+	public static void deleteMonster(int monsterIndex) {
+		MonsterType monster;
 		
-		m_ptr = Monsters.monsterList[j];
-		Variable.cave[m_ptr.y][m_ptr.x].creatureIndex = 0;
-		if (m_ptr.monsterLight) {
-			Moria1.lightUpSpot(m_ptr.y, m_ptr.x);
+		monster = Monsters.monsterList[monsterIndex];
+		Variable.cave[monster.y][monster.x].creatureIndex = 0;
+		if (monster.monsterLight) {
+			Moria1.lightUpSpot(monster.y, monster.x);
 		}
-		if (j != Monsters.freeMonsterIndex - 1) {
-			m_ptr = Monsters.monsterList[Monsters.freeMonsterIndex - 1];
-			Variable.cave[m_ptr.y][m_ptr.x].creatureIndex = j;
-			Monsters.monsterList[Monsters.freeMonsterIndex - 1].copyInto(Monsters.monsterList[j]);
+		if (monsterIndex != Monsters.freeMonsterIndex - 1) {
+			monster = Monsters.monsterList[Monsters.freeMonsterIndex - 1];
+			Variable.cave[monster.y][monster.x].creatureIndex = monsterIndex;
+			Monsters.monsterList[Monsters.freeMonsterIndex - 1].copyInto(Monsters.monsterList[monsterIndex]);
 		}
 		Monsters.freeMonsterIndex--;
 		Monsters.getBlankMonster().copyInto(Monsters.monsterList[Monsters.freeMonsterIndex]);

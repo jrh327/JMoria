@@ -21,6 +21,8 @@
  */
 package net.jonhopkins.moria.types;
 
+import net.jonhopkins.moria.Constants;
+
 public final class CaveType {
 	public int creatureIndex;
 	public int treasureIndex;
@@ -46,4 +48,30 @@ public final class CaveType {
 	 * Temporary light, used for player's lamp light, etc.
 	 */
 	public boolean tempLight;
+	
+	/**
+	 * Check if the space is occupied.
+	 * <p>
+	 * Possible obstructions include treasure, monsters,
+	 * the player, doors, rubble, or walls.
+	 * 
+	 * @return Whether there is something there
+	 */
+	public boolean isOccupied() {
+		return (this.fval > Constants.MAX_OPEN_SPACE)
+				&& (this.treasureIndex != 0)
+				&& (this.creatureIndex != 0);
+	}
+	
+	public boolean isOccupiedByPlayer() {
+		return this.creatureIndex == 1;
+	}
+	
+	public boolean isOccupiedByMonster() {
+		return this.creatureIndex > 1;
+	}
+	
+	public boolean isOccupiedByTreasure() {
+		return this.treasureIndex > 0;
+	}
 }
