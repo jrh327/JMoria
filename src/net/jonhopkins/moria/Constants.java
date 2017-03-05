@@ -72,7 +72,7 @@ public class Constants {
 	public static final int SCREEN_WIDTH  = 66;
 	public static final int QUART_HEIGHT  = (SCREEN_HEIGHT / 4);
 	public static final int QUART_WIDTH   = (SCREEN_WIDTH / 4);
-
+	
 	/* Dungeon generation values */
 	/* Note: The entire design of dungeon can be changed by only */
 	/*   slight adjustments here. */
@@ -99,6 +99,7 @@ public class Constants {
 	public static final int STORE_MIN_INVEN   = 10;  /* Min diff objs in stock for auto sell */
 	public static final int STORE_TURN_AROUND = 9;   /* Amount of buying and selling normally */
 	public static final int COST_ADJ          = 100; /* Adjust prices for buying and selling */
+	public static final int STORE_TURNOVER    = 1000; /* Number of turns before stores get new stock */
 	
 	/* Treasure constants */
 	public static final int INVEN_ARRAY_SIZE = 34; /* Size of inventory array(Do not change) */

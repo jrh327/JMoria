@@ -2463,42 +2463,42 @@ public class Misc3 {
 	}
 	
 	/**
-	 * Finds range of item in inventory list -RAK-
+	 * Finds range of item in inventory list. -RAK-
 	 * 
-	 * @param item1 - 
-	 * @param item2 - 
-	 * @param j - 
-	 * @param k - 
-	 * @return 
+	 * @param category1 Lowest category of items in range to find 
+	 * @param category2 Highest category of items in range to find, or
+	 *                  TV_NEVER to only search for a single category of item
+	 * @param first Pointer to the index of the first matching item found
+	 * @param last Pointer to the index of the last matching item found
+	 * @return Whether any matching items were found
 	 */
-	public static boolean findRange(int item1, int item2, IntPointer j, IntPointer k) {
-		int i;
-		InvenType i_ptr;
-		boolean flag;
+	public static boolean findRange(int category1, int category2, IntPointer first, IntPointer last) {
+		first.value(-1);
+		last.value(-1);
 		
-		i = 0;
-		j.value(-1);
-		k.value(-1);
-		flag = false;
-		while (i < Treasure.invenCounter) {
-			i_ptr = Treasure.inventory[i];
-			if (!flag) {
-				if ((i_ptr.category == item1) || (i_ptr.category == item2)) {
-					flag = true;
-					j.value(i);
+		boolean found = false;
+		for (int i = 0; i < Treasure.invenCounter; i++) {
+			InvenType item = Treasure.inventory[i];
+			if (!found) { // haven't found a matching item yet
+				if ((item.category == category1) || (item.category == category2)) {
+					found = true;
+					first.value(i);
 				}
 			} else {
-				if ((i_ptr.category != item1) && (i_ptr.category != item2)) {
-					k.value(i - 1);
+				if ((item.category != category1) && (item.category != category2)) {
+					// item's category outside range
+					last.value(i - 1);
 					break;
 				}
 			}
-			i++;
 		}
-		if (flag && (k.value() == -1)) {
-			k.value(Treasure.invenCounter - 1);
+		
+		// reached the end of the inventory without reaching end of range
+		if (found && (last.value() == -1)) {
+			last.value(Treasure.invenCounter - 1);
 		}
-		return flag;
+		
+		return found;
 	}
 	
 	/**
