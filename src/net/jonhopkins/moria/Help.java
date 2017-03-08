@@ -29,13 +29,11 @@ public class Help {
 	
 	public static void identifySymbol() {
 		CharPointer command = new CharPointer();
-		char query;
-		int i, n;
 		
 		if (IO.getCommand("Enter character to be identified :", command)) {
 			switch (command.value()) {
-			/* every printing ASCII character is listed here, in the order in which
-			 * they appear in the ASCII character set */
+			// every printing ASCII character is listed here, in the order in which
+			// they appear in the ASCII character set
 			case ' ': IO.print("  - An open pit.", 0, 0); break;
 			case '!': IO.print("! - A potion.", 0, 0); break;
 			case '"': IO.print("\" - An amulet, periapt, or necklace.", 0, 0); break;
@@ -58,16 +56,16 @@ public class Help {
 			case '-': IO.print("- - A wand", 0, 0); break;
 			case '.': IO.print(". - Floor.", 0, 0); break;
 			case '/': IO.print("/ - A pole weapon.", 0, 0); break;
-			/* case '0': io.prt("0 - Not used.", 0, 0); break; */
+			// case '0': io.prt("0 - Not used.", 0, 0); break;
 			case '1': IO.print("1 - Entrance to General Store.", 0, 0); break;
 			case '2': IO.print("2 - Entrance to Armory.", 0, 0); break;
 			case '3': IO.print("3 - Entrance to Weaponsmith.", 0, 0); break;
 			case '4': IO.print("4 - Entrance to Temple.", 0, 0); break;
 			case '5': IO.print("5 - Entrance to Alchemy shop.", 0, 0); break;
 			case '6': IO.print("6 - Entrance to Magic-Users store.", 0, 0); break;
-			/* case '7': io.prt("7 - Not used.", 0, 0); break; */
-			/* case '8': io.prt("8 - Not used.", 0, 0); break; */
-			/* case '9': io.prt("9 - Not used.", 0, 0);  break;*/
+			// case '7': io.prt("7 - Not used.", 0, 0); break;
+			// case '8': io.prt("8 - Not used.", 0, 0); break;
+			// case '9': io.prt("9 - Not used.", 0, 0);  break;
 			case ':': IO.print(": - Rubble.", 0, 0); break;
 			case ';': IO.print("; - A loose rock.", 0, 0); break;
 			case '<': IO.print("< - An up staircase.", 0, 0); break;
@@ -83,12 +81,12 @@ public class Help {
 			case 'F': IO.print("F - Giant Fly.", 0, 0); break;
 			case 'G': IO.print("G - Ghost.", 0, 0); break;
 			case 'H': IO.print("H - Hobgoblin.", 0, 0); break;
-			/* case 'I': io.prt("I - Invisible Stalker.", 0, 0); break; */
+			// case 'I': io.prt("I - Invisible Stalker.", 0, 0); break;
 			case 'J': IO.print("J - Jelly.", 0, 0); break;
 			case 'K': IO.print("K - Killer Beetle.", 0, 0); break;
 			case 'L': IO.print("L - Lich.", 0, 0); break;
 			case 'M': IO.print("M - Mummy.", 0, 0); break;
-			/* case 'N': io.prt("N - Not used.", 0, 0); break; */
+			// case 'N': io.prt("N - Not used.", 0, 0); break;
 			case 'O': IO.print("O - Ooze.", 0, 0); break;
 			case 'P': IO.print("P - Giant humanoid.", 0, 0); break;
 			case 'Q': IO.print("Q - Quylthulg (Pulsing Flesh Mound).", 0, 0); break;
@@ -100,13 +98,13 @@ public class Help {
 			case 'W': IO.print("W - Wight or Wraith.", 0, 0); break;
 			case 'X': IO.print("X - Xorn.", 0, 0); break;
 			case 'Y': IO.print("Y - Yeti.", 0, 0); break;
-			/* case 'Z': io.prt("Z - Not used.", 0, 0); break; */
+			// case 'Z': io.prt("Z - Not used.", 0, 0); break;
 			case '[': IO.print("[ - Hard armor.", 0, 0); break;
 			case '\\': IO.print("\\ - A hafted weapon.", 0, 0); break;
 			case ']': IO.print("] - Misc. armor.", 0, 0); break;
 			case '^': IO.print("^ - A trap.", 0, 0); break;
 			case '_': IO.print("_ - A staff.", 0, 0); break;
-			/* case '`': io.prt("` - Not used.", 0, 0); break; */
+			// case '`': io.prt("` - Not used.", 0, 0); break;
 			case 'a': IO.print("a - Giant Ant.", 0, 0); break;
 			case 'b': IO.print("b - Giant Bat.", 0, 0); break;
 			case 'c': IO.print("c - Giant Centipede.", 0, 0); break;
@@ -127,10 +125,10 @@ public class Help {
 			case 'r': IO.print("r - Rodent.", 0, 0); break;
 			case 's': IO.print("s - Skeleton.", 0, 0); break;
 			case 't': IO.print("t - Giant Tick.", 0, 0); break;
-			/* case 'u': io.prt(("u - Not used.", 0, 0); break; */
-			/* case 'v': io.prt(("v - Not used.", 0, 0); break; */
+			// case 'u': io.prt(("u - Not used.", 0, 0); break;
+			// case 'v': io.prt(("v - Not used.", 0, 0); break;
 			case 'w': IO.print("w - Worm or Worm Mass.", 0, 0); break;
-			/* case 'x': io.prt(("x - Not used.", 0, 0); break; */
+			// case 'x': io.prt(("x - Not used.", 0, 0); break;
 			case 'y': IO.print("y - Yeek.", 0, 0); break;
 			case 'z': IO.print("z - Zombie.", 0, 0); break;
 			case '{': IO.print("{ - Arrow, bolt, or bullet.", 0, 0); break;
@@ -140,21 +138,31 @@ public class Help {
 			default:  IO.print("Not Used.", 0, 0); break;
 			}
 		}
-		/* Allow access to monster memory. -CJS- */
-		n = 0;
-		for (i = Constants.MAX_CREATURES - 1; i >= 0; i--) {
+		
+		// Allow access to monster memory. -CJS-
+		boolean doingRecall = false;
+		for (int i = Constants.MAX_CREATURES - 1; i >= 0; i--) {
 			if ((Monsters.creatureList[i].cchar == command.value()) && Recall.canRecallMonster(i)) {
-				if (n == 0) {
+				// We haven't shown a recalled monster yet.
+				// Confirm that we want to show the details
+				// and save the current screen for later.
+				if (!doingRecall) {
 					IO.putBuffer("You recall those details? [y/n]", 0, 40);
-					query = IO.inkey();
+					char query = IO.inkey();
 					if (query != 'y' && query != 'Y') {
 						break;
 					}
 					IO.eraseLine (0, 40);
 					IO.saveScreen();
 				}
-				n++;
-				query = Recall.recallMonster(i);
+				
+				// We want to show monster memories.
+				// Keep showing all of them until player
+				// presses ESC or runs out of memories.
+				doingRecall = true;
+				char query = Recall.recallMonster(i);
+				
+				// Restore the game screen between memories.
 				IO.restoreScreen();
 				if (query == Constants.ESCAPE) {
 					break;
