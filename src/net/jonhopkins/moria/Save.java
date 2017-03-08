@@ -478,7 +478,7 @@ public class Save {
 			xorByte = 0;
 			writeInt(Constants.PATCH_LEVEL);
 			xorByte = 0;
-			char_tmp = (short)(Misc1.randomInt(256) - 1);
+			char_tmp = (short)(Rnd.randomInt(256) - 1);
 			writeByte((byte)char_tmp);
 			/* Note that xor_byte is now equal to char_tmp */
 			

@@ -70,7 +70,7 @@ public class Moria2 {
 		}
 		for (i = (y - 1); i <= (y + 1); i++) {
 			for (j = (x - 1); j <= (x + 1); j++) {
-				if (Misc1.randomInt(100) < chance) {	/* always in_bounds here */
+				if (Rnd.randomInt(100) < chance) {	/* always in_bounds here */
 					c_ptr = Variable.cave[i][j];
 					/* Search for hidden objects		   */
 					if (c_ptr.treasureIndex != 0) {
@@ -529,7 +529,7 @@ public class Moria2 {
 		}
 		minus = false;
 		if (i > 0) {
-			j = tmp[Misc1.randomInt(i) - 1];
+			j = tmp[Rnd.randomInt(i) - 1];
 			i_ptr = Treasure.inventory[j];
 			if ((i_ptr.flags & typ_dam) != 0) {
 				tmp_str = Desc.describeObject(Treasure.inventory[j], false);
@@ -551,7 +551,7 @@ public class Moria2 {
 	/* Corrode the unsuspecting person's armor		 -RAK-	 */
 	public static void corrodeGas(String kb_str) {
 		if (!minusAc(Constants.TR_RES_ACID)) {
-			Moria1.takeHit(Misc1.randomInt(8), kb_str);
+			Moria1.takeHit(Rnd.randomInt(8), kb_str);
 		}
 		if (Misc3.damageInvenItem(Sets.SET_CORRODES, 5) > 0) {
 			IO.printMessage("There is an acrid smell coming from your pack.");
@@ -561,7 +561,7 @@ public class Moria2 {
 	/* Poison gas the idiot.				-RAK-	*/
 	public static void poisonGas(int dam, String kb_str) {
 		Moria1.takeHit(dam, kb_str);
-		Player.py.flags.poisoned += 12 + Misc1.randomInt(dam);
+		Player.py.flags.poisoned += 12 + Rnd.randomInt(dam);
 	}
 	
 	/* Burn the fool up.					-RAK-	*/

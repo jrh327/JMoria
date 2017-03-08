@@ -42,7 +42,9 @@ public class Creature {
 	public static void updateMonster(int monsterIndex) {
 		MonsterType monster = Monsters.monsterList[monsterIndex];
 		boolean canSeeMonster = false;
-		if ((monster.currDistance <= Constants.MAX_SIGHT) && (Player.py.flags.status & Constants.PY_BLIND) == 0 && (Misc1.panelContains(monster.y, monster.x))) {
+		if ((monster.currDistance <= Constants.MAX_SIGHT)
+				&& (Player.py.flags.status & Constants.PY_BLIND) == 0
+				&& (Misc1.panelContains(monster.y, monster.x))) {
 			// Wizard sight.
 			if (Variable.isWizard) {
 				canSeeMonster = true;
@@ -51,7 +53,9 @@ public class Creature {
 			} else if (Misc1.isInLineOfSight(Player.y, Player.x, monster.y, monster.x)) {
 				CaveType cavePos = Variable.cave[monster.y][monster.x];
 				CreatureType creature = Monsters.creatureList[monster.index];
-				if (cavePos.permLight || cavePos.tempLight || (Variable.findFlag != 0 && monster.currDistance < 2 && Variable.playerLight)) {
+				if (cavePos.permLight
+						|| cavePos.tempLight
+						|| (Variable.findFlag != 0 && monster.currDistance < 2 && Variable.playerLight)) {
 					if ((Constants.CM_INVISIBLE & creature.cmove) == 0) {
 						canSeeMonster = true;
 					} else if (Player.py.flags.seeInvisible) {
@@ -60,7 +64,9 @@ public class Creature {
 					}
 				
 				// Infra vision.
-				} else if ((Player.py.flags.seeInfrared > 0) && (monster.currDistance <= Player.py.flags.seeInfrared) && (Constants.CD_INFRA & creature.cdefense) != 0) {
+				} else if ((Player.py.flags.seeInfrared > 0)
+						&& (monster.currDistance <= Player.py.flags.seeInfrared)
+						&& (Constants.CD_INFRA & creature.cdefense) != 0) {
 					canSeeMonster = true;
 					Variable.creatureRecall[monster.index].cdefense |= Constants.CD_INFRA;
 				}
@@ -576,7 +582,7 @@ public class Creature {
 					IO.printMessage(tmpStr.toString());
 					break;
 				case 19:
-					switch (Misc1.randomInt(9)) {
+					switch (Rnd.randomInt(9)) {
 					case 1:
 						tmpStr.append("insults you!");
 						IO.printMessage(tmpStr.toString());
@@ -647,7 +653,7 @@ public class Creature {
 					Moria1.takeHit(damage, deathDesc);
 					if (playerFlags.sustainStr) {
 						IO.printMessage("You feel weaker for a moment, but it passes.");
-					} else if (Misc1.randomInt(2) == 1) {
+					} else if (Rnd.randomInt(2) == 1) {
 						IO.printMessage("You feel weaker.");
 						Misc3.decreaseStat(Constants.A_STR);
 					} else {
@@ -656,10 +662,10 @@ public class Creature {
 					break;
 				case 3: // Confusion attack
 					Moria1.takeHit(damage, deathDesc);
-					if (Misc1.randomInt(2) == 1) {
+					if (Rnd.randomInt(2) == 1) {
 						if (playerFlags.confused < 1) {
 							IO.printMessage("You feel confused.");
-							playerFlags.confused += Misc1.randomInt(creature.level);
+							playerFlags.confused += Rnd.randomInt(creature.level);
 						} else {
 							doesNotice = false;
 						}
@@ -674,7 +680,7 @@ public class Creature {
 						IO.printMessage("You resist the effects!");
 					} else if (playerFlags.afraid < 1) {
 						IO.printMessage("You are suddenly afraid!");
-						playerFlags.afraid += 3 + Misc1.randomInt(creature.level);
+						playerFlags.afraid += 3 + Rnd.randomInt(creature.level);
 					} else {
 						playerFlags.afraid += 3;
 						doesNotice = false;
@@ -704,7 +710,7 @@ public class Creature {
 				case 10: // Blindness attack
 					Moria1.takeHit(damage, deathDesc);
 					if (playerFlags.blind < 1) {
-						playerFlags.blind += 10 + Misc1.randomInt(creature.level);
+						playerFlags.blind += 10 + Rnd.randomInt(creature.level);
 						IO.printMessage("Your eyes begin to sting.");
 					} else {
 						playerFlags.blind += 5;
@@ -719,7 +725,7 @@ public class Creature {
 						if (playerFlags.freeAct) {
 							IO.printMessage("You are unaffected.");
 						} else {
-							playerFlags.paralysis = Misc1.randomInt(creature.level) + 3;
+							playerFlags.paralysis = Rnd.randomInt(creature.level) + 3;
 							IO.printMessage("You are paralyzed.");
 						}
 					} else {
@@ -728,10 +734,10 @@ public class Creature {
 					break;
 				case 12: // Steal Money
 					if (playerFlags.paralysis < 1
-							&& Misc1.randomInt(124) < Player.py.stats.useStat[Constants.A_DEX]) {
+							&& Rnd.randomInt(124) < Player.py.stats.useStat[Constants.A_DEX]) {
 						IO.printMessage("You quickly protect your money pouch!");
 					} else {
-						int gold = (playerMisc.gold / 10) + Misc1.randomInt(25);
+						int gold = (playerMisc.gold / 10) + Rnd.randomInt(25);
 						if (gold > playerMisc.gold) {
 							playerMisc.gold = 0;
 						} else {
@@ -740,21 +746,21 @@ public class Creature {
 						IO.printMessage("Your purse feels lighter.");
 						Misc3.printGold();
 					}
-					if (Misc1.randomInt(2) == 1) {
+					if (Rnd.randomInt(2) == 1) {
 						IO.printMessage("There is a puff of smoke!");
 						Spells.teleportMonsterAway(monsterIndex, Constants.MAX_SIGHT);
 					}
 					break;
 				case 13: // Steal Object
 					if (playerFlags.paralysis < 1
-							&& Misc1.randomInt(124) < Player.py.stats.useStat[Constants.A_DEX]) {
+							&& Rnd.randomInt(124) < Player.py.stats.useStat[Constants.A_DEX]) {
 						IO.printMessage("You grab hold of your backpack!");
 					} else {
-						itemIndex.value(Misc1.randomInt(Treasure.invenCounter) - 1);
+						itemIndex.value(Rnd.randomInt(Treasure.invenCounter) - 1);
 						Misc3.destroyInvenItem(itemIndex.value());
 						IO.printMessage("Your backpack feels lighter.");
 					}
-					if (Misc1.randomInt(2) == 1) {
+					if (Rnd.randomInt(2) == 1) {
 						IO.printMessage("There is a puff of smoke!");
 						Spells.teleportMonsterAway(monsterIndex, Constants.MAX_SIGHT);
 					}
@@ -762,7 +768,7 @@ public class Creature {
 				case 14: // Poison
 					Moria1.takeHit(damage, deathDesc);
 					IO.printMessage("You feel very sick.");
-					playerFlags.poisoned += Misc1.randomInt(creature.level) + 5;
+					playerFlags.poisoned += Rnd.randomInt(creature.level) + 5;
 					break;
 				case 15: // Lose dexterity
 					Moria1.takeHit(damage, deathDesc);
@@ -809,7 +815,7 @@ public class Creature {
 					break;
 				case 21: // Disenchant
 					successfulAttack = false;
-					switch (Misc1.randomInt(7)) {
+					switch (Rnd.randomInt(7)) {
 					case 1: itemIndex.value(Constants.INVEN_WIELD);	break;
 					case 2: itemIndex.value(Constants.INVEN_BODY);  break;
 					case 3: itemIndex.value(Constants.INVEN_ARM);   break;
@@ -822,7 +828,7 @@ public class Creature {
 					
 					InvenType item = Treasure.inventory[itemIndex.value()];
 					if (item.tohit > 0) {
-						item.tohit -= Misc1.randomInt(2);
+						item.tohit -= Rnd.randomInt(2);
 						// don't send it below zero
 						if (item.tohit < 0) {
 							item.tohit = 0;
@@ -831,7 +837,7 @@ public class Creature {
 					}
 					
 					if (item.plusToDam > 0) {
-						item.plusToDam -= Misc1.randomInt(2);
+						item.plusToDam -= Rnd.randomInt(2);
 						// don't send it below zero
 						if (item.plusToDam < 0) {
 							item.plusToDam = 0;
@@ -840,7 +846,7 @@ public class Creature {
 					}
 					
 					if (item.plusToArmorClass > 0) {
-						item.plusToArmorClass -= Misc1.randomInt(2);
+						item.plusToArmorClass -= Rnd.randomInt(2);
 						// don't send it below zero
 						if (item.plusToArmorClass < 0) {
 							item.plusToArmorClass = 0;
@@ -867,7 +873,7 @@ public class Creature {
 				case 23: // Eat light
 					item = Treasure.inventory[Constants.INVEN_LIGHT];
 					if (item.misc > 0) {
-						item.misc -= (250 + Misc1.randomInt(250));
+						item.misc -= (250 + Rnd.randomInt(250));
 						if (item.misc < 1)	{
 							item.misc = 1;
 						}
@@ -882,7 +888,7 @@ public class Creature {
 					}
 					break;
 				case 24: // Eat charges
-					itemIndex.value(Misc1.randomInt(Treasure.invenCounter) - 1);
+					itemIndex.value(Rnd.randomInt(Treasure.invenCounter) - 1);
 					item = Treasure.inventory[itemIndex.value()];
 					if ((item.category == Constants.TV_STAFF
 								|| item.category == Constants.TV_WAND)
@@ -913,7 +919,7 @@ public class Creature {
 					IO.printMessage("Your hands stop glowing.");
 					playerFlags.confuseMonster = false;
 					tmpStr = new StringBuilder();
-					if (Misc1.randomInt(Constants.MAX_MONS_LEVEL) < creature.level
+					if (Rnd.randomInt(Constants.MAX_MONS_LEVEL) < creature.level
 							|| (Constants.CD_NO_SLEEP & creature.cdefense) != 0) {
 						tmpStr.append(String.format("%sis unaffected.", creatureDesc));
 					} else {
@@ -921,12 +927,12 @@ public class Creature {
 						if (monster.confused > 0) {
 							monster.confused += 3;
 						} else {
-							monster.confused = 2 + Misc1.randomInt(16);
+							monster.confused = 2 + Rnd.randomInt(16);
 						}
 					}
 					IO.printMessage(tmpStr.toString());
 					
-					if (isMonsterVisible && !Variable.death && Misc1.randomInt(4) == 1) {
+					if (isMonsterVisible && !Variable.death && Rnd.randomInt(4) == 1) {
 						Variable.creatureRecall[monster.index].cdefense |=
 								creature.cdefense & Constants.CD_NO_SLEEP;
 					}
@@ -1006,12 +1012,12 @@ public class Creature {
 							if (item.misc == 0) { // Closed doors
 								doMove = true;
 							} else if (item.misc > 0) { // Locked doors
-								if (Misc1.randomInt((monster.hitpoints + 1) * (50 + item.misc))
+								if (Rnd.randomInt((monster.hitpoints + 1) * (50 + item.misc))
 										< 40 * (monster.hitpoints - 10 - item.misc)) {
 									item.misc = 0;
 								}
 							} else if (item.misc < 0) { // Stuck doors
-								if (Misc1.randomInt((monster.hitpoints + 1) * (50 - item.misc))
+								if (Rnd.randomInt((monster.hitpoints + 1) * (50 - item.misc))
 										< 40 * (monster.hitpoints - 10 + item.misc)) {
 									IO.printMessage("You hear a door burst open!");
 									Moria1.disturbPlayer(true, false);
@@ -1027,7 +1033,7 @@ public class Creature {
 						if (doMove) {
 							Desc.copyIntoInventory(item, Constants.OBJ_OPEN_DOOR);
 							if (isDoorStuck) { // 50% chance of breaking door
-								item.misc = 1 - Misc1.randomInt(2);
+								item.misc = 1 - Rnd.randomInt(2);
 							}
 							cavePos.fval = Constants.CORR_FLOOR;
 							Moria1.lightUpSpot(newY.value(), newX.value());
@@ -1037,11 +1043,11 @@ public class Creature {
 					} else { // Creature can not open doors, must bash them
 						if (item.category == Constants.TV_CLOSED_DOOR) {
 							doTurn = true;
-							if (Misc1.randomInt((monster.hitpoints + 1) * (80 + Math.abs(item.misc)))
+							if (Rnd.randomInt((monster.hitpoints + 1) * (80 + Math.abs(item.misc)))
 									< 40 * (monster.hitpoints - 20 - Math.abs(item.misc))) {
 								Desc.copyIntoInventory(item, Constants.OBJ_OPEN_DOOR);
 								// 50% chance of breaking door
-								item.misc = 1 - Misc1.randomInt(2);
+								item.misc = 1 - Rnd.randomInt(2);
 								cavePos.fval = Constants.CORR_FLOOR;
 								Moria1.lightUpSpot(newY.value(), newX.value());
 								IO.printMessage("You hear a door burst open!");
@@ -1055,7 +1061,7 @@ public class Creature {
 				if (doMove && cavePos.treasureIndex != 0
 						&& Treasure.treasureList[cavePos.treasureIndex].category == Constants.TV_VIS_TRAP
 						&& Treasure.treasureList[cavePos.treasureIndex].subCategory == 99) {
-					if (Misc1.randomInt(Constants.OBJ_RUNE_PROT)
+					if (Rnd.randomInt(Constants.OBJ_RUNE_PROT)
 							< Monsters.creatureList[monster.index].level) {
 						if (newY.value() == Player.y && newX.value() == Player.x) {
 							IO.printMessage("The rune of protection is broken!");
@@ -1159,7 +1165,7 @@ public class Creature {
 		int chance = (creature.spells & Constants.CS_FREQ);
 		boolean tookTurn = false;
 		// 1 in x chance of casting spell
-		if (Misc1.randomInt(chance) != 1) {
+		if (Rnd.randomInt(chance) != 1) {
 			tookTurn = false;
 		// Must be within certain range
 		} else if (monster.currDistance > Constants.MAX_SPELL_DIS) {
@@ -1201,7 +1207,7 @@ public class Creature {
 			}
 			
 			// Choose a spell to cast
-			int thrownSpell = spellChoice[Misc1.randomInt(choices) - 1];
+			int thrownSpell = spellChoice[Rnd.randomInt(choices) - 1];
 			thrownSpell++;
 			// all except teleport_away() and drain mana spells always disturb
 			if (thrownSpell > 6 && thrownSpell != 17) {
@@ -1247,7 +1253,7 @@ public class Creature {
 				} else if (Player.py.flags.paralysis > 0) {
 					Player.py.flags.paralysis += 2;
 				} else {
-					Player.py.flags.paralysis = Misc1.randomInt(5)+4;
+					Player.py.flags.paralysis = Rnd.randomInt(5)+4;
 				}
 				break;
 			case 11: // Cause Blindness
@@ -1256,7 +1262,7 @@ public class Creature {
 				} else if (Player.py.flags.blind > 0) {
 					Player.py.flags.blind += 6;
 				} else {
-					Player.py.flags.blind += 12 + Misc1.randomInt(3);
+					Player.py.flags.blind += 12 + Rnd.randomInt(3);
 				}
 				break;
 			case 12: // Cause Confuse
@@ -1265,7 +1271,7 @@ public class Creature {
 				} else if (Player.py.flags.confused > 0) {
 					Player.py.flags.confused += 2;
 				} else {
-					Player.py.flags.confused = Misc1.randomInt(5) + 3;
+					Player.py.flags.confused = Rnd.randomInt(5) + 3;
 				}
 				break;
 			case 13: // Cause Fear
@@ -1274,7 +1280,7 @@ public class Creature {
 				} else if (Player.py.flags.afraid > 0) {
 					Player.py.flags.afraid += 2;
 				} else {
-					Player.py.flags.afraid = Misc1.randomInt(5) + 3;
+					Player.py.flags.afraid = Rnd.randomInt(5) + 3;
 				}
 				break;
 			case 14: // Summon Monster
@@ -1307,7 +1313,7 @@ public class Creature {
 				} else if (Player.py.flags.slow > 0) {
 					Player.py.flags.slow += 2;
 				} else {
-					Player.py.flags.slow = Misc1.randomInt(5) + 3;
+					Player.py.flags.slow = Rnd.randomInt(5) + 3;
 				}
 				break;
 			case 17: // Drain Mana
@@ -1319,7 +1325,7 @@ public class Creature {
 						outval = String.format("%sappears healthier.", creatureDesc);
 						IO.printMessage(outval);
 					}
-					int r1 = (Misc1.randomInt(creature.level) >> 1) + 1;
+					int r1 = (Rnd.randomInt(creature.level) >> 1) + 1;
 					if (r1 > Player.py.misc.currMana) {
 						r1 = Player.py.misc.currMana;
 						Player.py.misc.currMana = 0;
@@ -1411,8 +1417,8 @@ public class Creature {
 	/* Rats and Flys are fun! */
 	public static boolean multiplyMonster(int y, int x, int creatureIndex, int monsterIndex) {
 		for (int i = 0; i <= 18; i++) {
-			int newY = y - 2 + Misc1.randomInt(3);
-			int newX = x - 2 + Misc1.randomInt(3);
+			int newY = y - 2 + Rnd.randomInt(3);
+			int newX = x - 2 + Rnd.randomInt(3);
 			
 			if (!Misc1.isInBounds(newY, newX)) {
 				continue;
@@ -1497,7 +1503,7 @@ public class Creature {
 			}
 			
 			if (surroundingMonsters < 4
-					&& Misc1.randomInt(surroundingMonsters * Constants.MON_MULT_ADJ) == 1) {
+					&& Rnd.randomInt(surroundingMonsters * Constants.MON_MULT_ADJ) == 1) {
 				if (multiplyMonster(monster.y, monster.x, monster.index, monsterIndex)) {
 					rcmove.value(rcmove.value() | Constants.CM_MULTIPLY);
 				}
@@ -1534,7 +1540,7 @@ public class Creature {
 			}
 			if (k != 0) {
 				// put a random direction first
-				dir = Misc1.randomInt(k) - 1;
+				dir = Rnd.randomInt(k) - 1;
 				int tmp = monsterMoves[0];
 				monsterMoves[0] = monsterMoves[dir];
 				monsterMoves[dir] = tmp;
@@ -1568,14 +1574,14 @@ public class Creature {
 				monsterMoves[0] = 10 - monsterMoves[0];
 				monsterMoves[1] = 10 - monsterMoves[1];
 				monsterMoves[2] = 10 - monsterMoves[2];
-				monsterMoves[3] = Misc1.randomInt(9); // May attack only if cornered
-				monsterMoves[4] = Misc1.randomInt(9);
+				monsterMoves[3] = Rnd.randomInt(9); // May attack only if cornered
+				monsterMoves[4] = Rnd.randomInt(9);
 			} else {
-				monsterMoves[0] = Misc1.randomInt(9);
-				monsterMoves[1] = Misc1.randomInt(9);
-				monsterMoves[2] = Misc1.randomInt(9);
-				monsterMoves[3] = Misc1.randomInt(9);
-				monsterMoves[4] = Misc1.randomInt(9);
+				monsterMoves[0] = Rnd.randomInt(9);
+				monsterMoves[1] = Rnd.randomInt(9);
+				monsterMoves[2] = Rnd.randomInt(9);
+				monsterMoves[3] = Rnd.randomInt(9);
+				monsterMoves[4] = Rnd.randomInt(9);
 			}
 			// don't move him if he is not supposed to move!
 			if ((creature.cmove & Constants.CM_ATTACK_ONLY) == 0) {
@@ -1591,45 +1597,45 @@ public class Creature {
 		if (!move_test) {
 			// 75% random movement
 			if ((creature.cmove & Constants.CM_75_RANDOM) != 0
-					&& Misc1.randomInt(100) < 75) {
-				monsterMoves[0] = Misc1.randomInt(9);
-				monsterMoves[1] = Misc1.randomInt(9);
-				monsterMoves[2] = Misc1.randomInt(9);
-				monsterMoves[3] = Misc1.randomInt(9);
-				monsterMoves[4] = Misc1.randomInt(9);
+					&& Rnd.randomInt(100) < 75) {
+				monsterMoves[0] = Rnd.randomInt(9);
+				monsterMoves[1] = Rnd.randomInt(9);
+				monsterMoves[2] = Rnd.randomInt(9);
+				monsterMoves[3] = Rnd.randomInt(9);
+				monsterMoves[4] = Rnd.randomInt(9);
 				rcmove.value(rcmove.value() | Constants.CM_75_RANDOM);
 				makeMove(monsterIndex, monsterMoves, rcmove);
 			
 			// 40% random movement
 			} else if ((creature.cmove & Constants.CM_40_RANDOM) != 0
-					&& Misc1.randomInt(100) < 40) {
-				monsterMoves[0] = Misc1.randomInt(9);
-				monsterMoves[1] = Misc1.randomInt(9);
-				monsterMoves[2] = Misc1.randomInt(9);
-				monsterMoves[3] = Misc1.randomInt(9);
-				monsterMoves[4] = Misc1.randomInt(9);
+					&& Rnd.randomInt(100) < 40) {
+				monsterMoves[0] = Rnd.randomInt(9);
+				monsterMoves[1] = Rnd.randomInt(9);
+				monsterMoves[2] = Rnd.randomInt(9);
+				monsterMoves[3] = Rnd.randomInt(9);
+				monsterMoves[4] = Rnd.randomInt(9);
 				rcmove.value(rcmove.value() | Constants.CM_40_RANDOM);
 				makeMove(monsterIndex, monsterMoves, rcmove);
 			
 			// 20% random movement
 			} else if ((creature.cmove & Constants.CM_20_RANDOM) != 0
-					&& Misc1.randomInt(100) < 20) {
-				monsterMoves[0] = Misc1.randomInt(9);
-				monsterMoves[1] = Misc1.randomInt(9);
-				monsterMoves[2] = Misc1.randomInt(9);
-				monsterMoves[3] = Misc1.randomInt(9);
-				monsterMoves[4] = Misc1.randomInt(9);
+					&& Rnd.randomInt(100) < 20) {
+				monsterMoves[0] = Rnd.randomInt(9);
+				monsterMoves[1] = Rnd.randomInt(9);
+				monsterMoves[2] = Rnd.randomInt(9);
+				monsterMoves[3] = Rnd.randomInt(9);
+				monsterMoves[4] = Rnd.randomInt(9);
 				rcmove.value(rcmove.value() | Constants.CM_20_RANDOM);
 				makeMove(monsterIndex, monsterMoves, rcmove);
 			
 			// Normal movement
 			} else if ((creature.cmove & Constants.CM_MOVE_NORMAL) != 0) {
-				if (Misc1.randomInt(200) == 1) {
-					monsterMoves[0] = Misc1.randomInt(9);
-					monsterMoves[1] = Misc1.randomInt(9);
-					monsterMoves[2] = Misc1.randomInt(9);
-					monsterMoves[3] = Misc1.randomInt(9);
-					monsterMoves[4] = Misc1.randomInt(9);
+				if (Rnd.randomInt(200) == 1) {
+					monsterMoves[0] = Rnd.randomInt(9);
+					monsterMoves[1] = Rnd.randomInt(9);
+					monsterMoves[2] = Rnd.randomInt(9);
+					monsterMoves[3] = Rnd.randomInt(9);
+					monsterMoves[4] = Rnd.randomInt(9);
 				} else {
 					getMoveDirections(monsterIndex, monsterMoves);
 				}
@@ -1701,8 +1707,8 @@ public class Creature {
 								if (Player.py.flags.aggravate > 0) {
 									monster.sleep = 0;
 								} else if ((Player.py.flags.rest == 0 && Player.py.flags.paralysis < 1)
-										|| (Misc1.randomInt(50) == 1)) {
-									int notice = Misc1.randomInt(1024);
+										|| (Rnd.randomInt(50) == 1)) {
+									int notice = Rnd.randomInt(1024);
 									if (notice * notice * notice <= (1L << (29 - Player.py.misc.stealth))) {
 										monster.sleep -= (100 / monster.currDistance);
 										if (monster.sleep > 0) {
@@ -1720,7 +1726,7 @@ public class Creature {
 								// NOTE: Balrog = 100*100 = 10000, it always
 								// recovers instantly
 								int level = Monsters.creatureList[monster.index].level;
-								if (Misc1.randomInt(5000) < level * level) {
+								if (Rnd.randomInt(5000) < level * level) {
 									monster.stunned = 0;
 								} else {
 									monster.stunned--;

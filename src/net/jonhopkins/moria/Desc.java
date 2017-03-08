@@ -52,51 +52,51 @@ public class Desc {
 	 * Initialize all Potions, wands, staves, scrolls, etc.
 	 */
 	public static void magicInit() {
-		Misc1.setSeed(Variable.randesSeed);
+		Rnd.setSeed(Variable.randesSeed);
 		
 		// The first 3 entries for colors are fixed, (slime & apple juice, water)
 		for (int i = 3; i < Constants.MAX_COLORS; i++) {
-			int j = Misc1.randomInt(Constants.MAX_COLORS - 3) + 2;
+			int j = Rnd.randomInt(Constants.MAX_COLORS - 3) + 2;
 			String tmp = Tables.colors[i];
 			Tables.colors[i] = Tables.colors[j];
 			Tables.colors[j] = tmp;
 		}
 		for (int i = 0; i < Constants.MAX_WOODS; i++) {
-			int j = Misc1.randomInt(Constants.MAX_WOODS) - 1;
+			int j = Rnd.randomInt(Constants.MAX_WOODS) - 1;
 			String tmp = Tables.woods[i];
 			Tables.woods[i] = Tables.woods[j];
 			Tables.woods[j] = tmp;
 		}
 		for (int i = 0; i < Constants.MAX_METALS; i++) {
-			int j = Misc1.randomInt(Constants.MAX_METALS) - 1;
+			int j = Rnd.randomInt(Constants.MAX_METALS) - 1;
 			String tmp = Tables.metals[i];
 			Tables.metals[i] = Tables.metals[j];
 			Tables.metals[j] = tmp;
 		}
 		for (int i = 0; i < Constants.MAX_ROCKS; i++) {
-			int j = Misc1.randomInt(Constants.MAX_ROCKS) - 1;
+			int j = Rnd.randomInt(Constants.MAX_ROCKS) - 1;
 			String tmp = Tables.rocks[i];
 			Tables.rocks[i] = Tables.rocks[j];
 			Tables.rocks[j] = tmp;
 		}
 		for (int i = 0; i < Constants.MAX_AMULETS; i++) {
-			int j = Misc1.randomInt(Constants.MAX_AMULETS) - 1;
+			int j = Rnd.randomInt(Constants.MAX_AMULETS) - 1;
 			String tmp = Tables.amulets[i];
 			Tables.amulets[i] = Tables.amulets[j];
 			Tables.amulets[j] = tmp;
 		}
 		for (int i = 0; i < Constants.MAX_MUSH; i++) {
-			int j = Misc1.randomInt(Constants.MAX_MUSH) - 1;
+			int j = Rnd.randomInt(Constants.MAX_MUSH) - 1;
 			String tmp = Tables.mushrooms[i];
 			Tables.mushrooms[i] = Tables.mushrooms[j];
 			Tables.mushrooms[j] = tmp;
 		}
 		for (int h = 0; h < Constants.MAX_TITLES; h++) {
 			StringBuilder string = new StringBuilder(10);
-			int k = Misc1.randomInt(2) + 1;
+			int k = Rnd.randomInt(2) + 1;
 			for (int i = 0; i < k; i++) {
-				for (int j = Misc1.randomInt(2); j > 0; j--) {
-					string.append(Tables.syllables[Misc1.randomInt(Constants.MAX_SYLLABLES) - 1]);
+				for (int j = Rnd.randomInt(2); j > 0; j--) {
+					string.append(Tables.syllables[Rnd.randomInt(Constants.MAX_SYLLABLES) - 1]);
 				}
 				if (i < k - 1) {
 					string.append(' ');
@@ -111,7 +111,7 @@ public class Desc {
 			}
 			titles[h] = string.toString();
 		}
-		Misc1.resetSeed();
+		Rnd.resetSeed();
 	}
 	
 	/**

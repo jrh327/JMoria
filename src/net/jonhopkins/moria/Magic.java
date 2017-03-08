@@ -60,7 +60,7 @@ public class Magic {
 				m_ptr = Player.magicSpell[Player.py.misc.playerClass - 1][choice.value()];
 				Variable.freeTurnFlag = false;
 				
-				if (Misc1.randomInt(100) < chance.value()) {
+				if (Rnd.randomInt(100) < chance.value()) {
 					IO.printMessage("You failed to get the spell off!");
 				} else {
 					/* Spells.  */
@@ -177,7 +177,7 @@ public class Magic {
 						break;
 					case 28:
 						f_ptr = Player.py.flags;
-						f_ptr.fast += Misc1.randomInt(20) + Player.py.misc.level;
+						f_ptr.fast += Rnd.randomInt(20) + Player.py.misc.level;
 						break;
 					case 29:
 						if (Moria1.getDirection("", dir)) {
@@ -207,10 +207,10 @@ public class Magic {
 				if (!Variable.freeTurnFlag) {
 					if (m_ptr.manaCost > p_ptr.currMana) {
 						IO.printMessage("You faint from the effort!");
-						Player.py.flags.paralysis = Misc1.randomInt((5 * (m_ptr.manaCost - p_ptr.currMana)));
+						Player.py.flags.paralysis = Rnd.randomInt((5 * (m_ptr.manaCost - p_ptr.currMana)));
 						p_ptr.currMana = 0;
 						p_ptr.currManaFraction = 0;
-						if (Misc1.randomInt(3) == 1) {
+						if (Rnd.randomInt(3) == 1) {
 							IO.printMessage("You have damaged your health!");
 							Misc3.decreaseStat(Constants.A_CON);
 						}

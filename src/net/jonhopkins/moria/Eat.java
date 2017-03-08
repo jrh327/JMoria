@@ -113,13 +113,13 @@ public class Eat {
 				identified = restoreCharisma();
 				break;
 			case 22:
-				identified = Spells.changePlayerHitpoints(Misc1.randomInt(6));
+				identified = Spells.changePlayerHitpoints(Rnd.randomInt(6));
 				break;
 			case 23:
-				identified = Spells.changePlayerHitpoints(Misc1.randomInt(12));
+				identified = Spells.changePlayerHitpoints(Rnd.randomInt(12));
 				break;
 			case 24:
-				identified = Spells.changePlayerHitpoints(Misc1.randomInt(18));
+				identified = Spells.changePlayerHitpoints(Rnd.randomInt(18));
 				break;
 			case 26:
 				identified = Spells.changePlayerHitpoints(Misc1.damageRoll(3, 12));
@@ -156,31 +156,31 @@ public class Eat {
 	}
 	
 	private static boolean poisonPlayer(InvenType food) {
-		Player.py.flags.poisoned += Misc1.randomInt(10) + food.level;
+		Player.py.flags.poisoned += Rnd.randomInt(10) + food.level;
 		return true;
 	}
 	
 	private static boolean blindPlayer(InvenType food) {
-		Player.py.flags.blind += Misc1.randomInt(250) + 10 * food.level + 100;
+		Player.py.flags.blind += Rnd.randomInt(250) + 10 * food.level + 100;
 		Misc3.drawCave();
 		IO.printMessage("A veil of darkness surrounds you.");
 		return true;
 	}
 	
 	private static boolean scarePlayer(InvenType food) {
-		Player.py.flags.afraid += Misc1.randomInt(10) + food.level;
+		Player.py.flags.afraid += Rnd.randomInt(10) + food.level;
 		IO.printMessage("You feel terrified!");
 		return true;
 	}
 	
 	private static boolean confusePlayer(InvenType food) {
-		Player.py.flags.confused += Misc1.randomInt(10) + food.level;
+		Player.py.flags.confused += Rnd.randomInt(10) + food.level;
 		IO.printMessage("You feel drugged.");
 		return true;
 	}
 	
 	private static boolean hallucinatePlayer(InvenType food) {
-		Player.py.flags.imagine += Misc1.randomInt(200) + 25 * food.level + 200;
+		Player.py.flags.imagine += Rnd.randomInt(200) + 25 * food.level + 200;
 		IO.printMessage("You feel drugged.");
 		return true;
 	}
@@ -242,7 +242,7 @@ public class Eat {
 	}
 	
 	private static boolean damagePlayer() {
-		Moria1.takeHit(Misc1.randomInt(18), "poisonous food.");
+		Moria1.takeHit(Rnd.randomInt(18), "poisonous food.");
 		return true;
 	}
 }

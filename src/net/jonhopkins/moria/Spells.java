@@ -77,7 +77,7 @@ public class Spells {
 					r_ptr = Monsters.creatureList[m_ptr.index];
 					
 					m_name = getMonsterName(m_ptr, r_ptr);
-					if ((Misc1.randomInt(Constants.MAX_MONS_LEVEL) < r_ptr.level) || (Constants.CD_NO_SLEEP & r_ptr.cdefense) > 0) {
+					if ((Rnd.randomInt(Constants.MAX_MONS_LEVEL) < r_ptr.level) || (Constants.CD_NO_SLEEP & r_ptr.cdefense) > 0) {
 						if (m_ptr.monsterLight && (r_ptr.cdefense & Constants.CD_NO_SLEEP) > 0) {
 							Variable.creatureRecall[m_ptr.index].cdefense |= Constants.CD_NO_SLEEP;
 						}
@@ -294,10 +294,10 @@ public class Spells {
 		int i7, i8, n, m;
 		int i, j, k, l;
 		
-		i = Variable.panelRowMin - Misc1.randomInt(10);
-		j = Variable.panelRowMax + Misc1.randomInt(10);
-		k = Variable.panelColMin - Misc1.randomInt(20);
-		l = Variable.panelColMax + Misc1.randomInt(20);
+		i = Variable.panelRowMin - Rnd.randomInt(10);
+		j = Variable.panelRowMax + Rnd.randomInt(10);
+		k = Variable.panelColMin - Rnd.randomInt(20);
+		l = Variable.panelColMax + Rnd.randomInt(20);
 		for (m = i; m <= j; m++) {
 			for (n = k; n <= l; n++) {
 				if (Misc1.isInBounds(m, n) && (Variable.cave[m][n].fval <= Constants.MAX_CAVE_FLOOR)) {
@@ -386,7 +386,7 @@ public class Spells {
 					if (c_ptr.treasureIndex != 0) {
 						Moria3.deleteObject(i, j);
 					}
-					Misc3.placeTrap(i, j, Misc1.randomInt(Constants.MAX_TRAP) - 1);
+					Misc3.placeTrap(i, j, Rnd.randomInt(Constants.MAX_TRAP) - 1);
 					/* don't let player gain exp from the newly created traps */
 					Treasure.treasureList[c_ptr.treasureIndex].misc = 0;
 					/* open pits are immediately visible, so call mor1.lite_spot */
@@ -973,14 +973,14 @@ public class Spells {
 			if (i.value() < 19) {
 				i.value(1);	/* Automatic failure.  */
 			} else {
-				i.value(Misc1.randomInt(i.value() / 10));
+				i.value(Rnd.randomInt(i.value() / 10));
 			}
 			if (i.value() == 1) {
 				IO.printMessage("There is a bright flash of light.");
 				Misc3.destroyInvenItem(item_val.value());
 			} else {
 				num = (num / (i_ptr.level + 2)) + 1;
-				i_ptr.misc += 2 + Misc1.randomInt(num);
+				i_ptr.misc += 2 + Rnd.randomInt(num);
 				if (Desc.arePlussesKnownByPlayer(i_ptr)) {
 					Desc.clearPlussesIdentity(i_ptr);
 				}
@@ -1105,7 +1105,7 @@ public class Spells {
 					out_val = String.format("%s starts moving faster.", m_name);
 					IO.printMessage(out_val);
 					speed = true;
-				} else if (Misc1.randomInt(Constants.MAX_MONS_LEVEL) > r_ptr.level) {
+				} else if (Rnd.randomInt(Constants.MAX_MONS_LEVEL) > r_ptr.level) {
 					m_ptr.speed += spd;
 					m_ptr.sleep = 0;
 					out_val = String.format("%s starts moving slower.", m_name);
@@ -1145,7 +1145,7 @@ public class Spells {
 				r_ptr = Monsters.creatureList[m_ptr.index];
 				m_name = getMonsterName(m_ptr, r_ptr);
 				flag = true;
-				if ((Misc1.randomInt(Constants.MAX_MONS_LEVEL) < r_ptr.level) || (Constants.CD_NO_SLEEP & r_ptr.cdefense) > 0) {
+				if ((Rnd.randomInt(Constants.MAX_MONS_LEVEL) < r_ptr.level) || (Constants.CD_NO_SLEEP & r_ptr.cdefense) > 0) {
 					if (m_ptr.monsterLight && (r_ptr.cdefense & Constants.CD_NO_SLEEP) > 0) {
 						Variable.creatureRecall[m_ptr.index].cdefense |= Constants.CD_NO_SLEEP;
 					}
@@ -1160,7 +1160,7 @@ public class Spells {
 					if (m_ptr.confused > 0) {
 						m_ptr.confused += 3;
 					} else {
-						m_ptr.confused = 2 + Misc1.randomInt(16);
+						m_ptr.confused = 2 + Rnd.randomInt(16);
 					}
 					confuse = true;
 					m_ptr.sleep = 0;
@@ -1196,7 +1196,7 @@ public class Spells {
 				r_ptr = Monsters.creatureList[m_ptr.index];
 				flag = true;
 				m_name = getMonsterName(m_ptr, r_ptr);
-				if ((Misc1.randomInt(Constants.MAX_MONS_LEVEL) < r_ptr.level) || (Constants.CD_NO_SLEEP & r_ptr.cdefense) > 0) {
+				if ((Rnd.randomInt(Constants.MAX_MONS_LEVEL) < r_ptr.level) || (Constants.CD_NO_SLEEP & r_ptr.cdefense) > 0) {
 					if (m_ptr.monsterLight && (r_ptr.cdefense & Constants.CD_NO_SLEEP) > 0) {
 						Variable.creatureRecall[m_ptr.index].cdefense |= Constants.CD_NO_SLEEP;
 					}
@@ -1255,7 +1255,7 @@ public class Spells {
 				}
 				if (Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_RUBBLE) {
 					Moria3.deleteObject(y, x);
-					if (Misc1.randomInt(10) == 1) {
+					if (Rnd.randomInt(10) == 1) {
 						Misc3.placeObject(y, x, false);
 						if (Misc1.testLight(y, x)) {
 							IO.printMessage("You have found something!");
@@ -1350,11 +1350,11 @@ public class Spells {
 			} else if (c_ptr.creatureIndex > 1) {
 				m_ptr = Monsters.monsterList[c_ptr.creatureIndex];
 				r_ptr = Monsters.creatureList[m_ptr.index];
-				if (Misc1.randomInt(Constants.MAX_MONS_LEVEL) > r_ptr.level) {
+				if (Rnd.randomInt(Constants.MAX_MONS_LEVEL) > r_ptr.level) {
 					flag = true;
 					Moria3.deleteMonster(c_ptr.creatureIndex);
 					/* Place_monster() should always return true here.  */
-					poly = Misc1.placeMonster(y1.value(), x1.value(), Misc1.randomInt(Monsters.monsterLevel[Constants.MAX_MONS_LEVEL] - Monsters.monsterLevel[0]) - 1 + Monsters.monsterLevel[0], false);
+					poly = Misc1.placeMonster(y1.value(), x1.value(), Rnd.randomInt(Monsters.monsterLevel[Constants.MAX_MONS_LEVEL] - Monsters.monsterLevel[0]) - 1 + Monsters.monsterLevel[0], false);
 					/* don't test c_ptr.fm here, only pl/tl */
 					if (poly && Misc1.panelContains(y, x) && (c_ptr.tempLight || c_ptr.permLight)) {
 						poly = true;
@@ -1467,8 +1467,8 @@ public class Spells {
 		ctr = 0;
 		do {
 			do {
-				yn = m_ptr.y + (Misc1.randomInt(2 * dis + 1) - (dis + 1));
-				xn = m_ptr.x + (Misc1.randomInt(2 * dis + 1) - (dis + 1));
+				yn = m_ptr.y + (Rnd.randomInt(2 * dis + 1) - (dis + 1));
+				xn = m_ptr.x + (Rnd.randomInt(2 * dis + 1) - (dis + 1));
 			} while (!Misc1.isInBounds(yn, xn));
 			ctr++;
 			if (ctr > 9) {
@@ -1496,8 +1496,8 @@ public class Spells {
 		dis = 1;
 		ctr = 0;
 		do {
-			y = ny + (Misc1.randomInt(2 * dis + 1) - (dis + 1));
-			x = nx + (Misc1.randomInt(2 * dis + 1) - (dis + 1));
+			y = ny + (Rnd.randomInt(2 * dis + 1) - (dis + 1));
+			x = nx + (Rnd.randomInt(2 * dis + 1) - (dis + 1));
 			ctr++;
 			if (ctr > 9) {
 				ctr = 0;
@@ -1624,7 +1624,7 @@ public class Spells {
 					out_val = String.format("%s starts moving faster.", m_name);
 					IO.printMessage (out_val);
 				}
-			} else if (Misc1.randomInt(Constants.MAX_MONS_LEVEL) > r_ptr.level) {
+			} else if (Rnd.randomInt(Constants.MAX_MONS_LEVEL) > r_ptr.level) {
 				m_ptr.speed += spd;
 				m_ptr.sleep = 0;
 				if (m_ptr.monsterLight) {
@@ -1657,7 +1657,7 @@ public class Spells {
 			if ((m_ptr.currDistance > Constants.MAX_SIGHT) || !Misc1.isInLineOfSight(Player.y, Player.x, m_ptr.y, m_ptr.x)) {
 				/* do nothing */
 				;
-			} else if ((Misc1.randomInt(Constants.MAX_MONS_LEVEL) < r_ptr.level) || (Constants.CD_NO_SLEEP & r_ptr.cdefense) != 0) {
+			} else if ((Rnd.randomInt(Constants.MAX_MONS_LEVEL) < r_ptr.level) || (Constants.CD_NO_SLEEP & r_ptr.cdefense) != 0) {
 				if (m_ptr.monsterLight) {
 					if ((r_ptr.cdefense & Constants.CD_NO_SLEEP) != 0) {
 						Variable.creatureRecall[m_ptr.index].cdefense |= Constants.CD_NO_SLEEP;
@@ -1696,7 +1696,7 @@ public class Spells {
 					x = m_ptr.x;
 					Moria3.deleteMonster(i);
 					/* Place_monster() should always return true here.  */
-					mass = Misc1.placeMonster(y, x, Misc1.randomInt(Monsters.monsterLevel[Constants.MAX_MONS_LEVEL] - Monsters.monsterLevel[0]) - 1 + Monsters.monsterLevel[0], false);
+					mass = Misc1.placeMonster(y, x, Rnd.randomInt(Monsters.monsterLevel[Constants.MAX_MONS_LEVEL] - Monsters.monsterLevel[0]) - 1 + Monsters.monsterLevel[0], false);
 				}
 			}
 		}
@@ -1831,7 +1831,7 @@ public class Spells {
 		
 		for (i = Player.y - 8; i <= Player.y + 8; i++) {
 			for (j = Player.x - 8; j <= Player.x + 8; j++) {
-				if (((i != Player.y) || (j != Player.x)) && Misc1.isInBounds(i, j) && (Misc1.randomInt(8) == 1)) {
+				if (((i != Player.y) || (j != Player.x)) && Misc1.isInBounds(i, j) && (Rnd.randomInt(8) == 1)) {
 					c_ptr = Variable.cave[i][j];
 					if (c_ptr.treasureIndex != 0) {
 						Moria3.deleteObject(i, j);
@@ -1868,7 +1868,7 @@ public class Spells {
 						c_ptr.permLight = false;
 						c_ptr.fieldMark = false;
 					} else if (c_ptr.fval <= Constants.MAX_CAVE_FLOOR) {
-						tmp = Misc1.randomInt(10);
+						tmp = Rnd.randomInt(10);
 						if (tmp < 6) {
 							c_ptr.fval  = Constants.QUARTZ_WALL;
 						} else if (tmp < 9) {
@@ -1896,7 +1896,7 @@ public class Spells {
 		} else {
 			res = false;
 		}
-		f_ptr.protectFromEvil += Misc1.randomInt(25) + 3 * Player.py.misc.level;
+		f_ptr.protectFromEvil += Rnd.randomInt(25) + 3 * Player.py.misc.level;
 		return res;
 	}
 	
@@ -1933,7 +1933,7 @@ public class Spells {
 				r_ptr = Monsters.creatureList[m_ptr.index];
 				Variable.creatureRecall[m_ptr.index].cdefense |= cflag;
 				m_name = getMonsterName(m_ptr, r_ptr);
-				k = Moria3.monsterTakeHit(i, Misc1.randomInt(damage));
+				k = Moria3.monsterTakeHit(i, Rnd.randomInt(damage));
 				/* Should get these messages even if the monster is not
 				 * visible.  */
 				if (k >= 0) {
@@ -1965,7 +1965,7 @@ public class Spells {
 			r_ptr = Monsters.creatureList[m_ptr.index];
 			if ((m_ptr.currDistance <= Constants.MAX_SIGHT) && (Constants.CD_UNDEAD & r_ptr.cdefense) != 0 && (Misc1.isInLineOfSight(Player.y, Player.x, m_ptr.y, m_ptr.x))) {
 				m_name = getMonsterName(m_ptr, r_ptr);
-				if (((Player.py.misc.level + 1) > r_ptr.level) || (Misc1.randomInt(5) == 1)) {
+				if (((Player.py.misc.level + 1) > r_ptr.level) || (Rnd.randomInt(5) == 1)) {
 					if (m_ptr.monsterLight) {
 						out_val = String.format("%s runs frantically!", m_name);
 						IO.printMessage(out_val);
@@ -2165,16 +2165,16 @@ public class Spells {
 						if (k == 0) {	/* clear player's spot, but don't put wall there */
 							replaceSpot(i, j, 1);
 						} else if (k < 13) {
-							replaceSpot(i, j, Misc1.randomInt(6));
+							replaceSpot(i, j, Rnd.randomInt(6));
 						} else if (k < 16) {
-							replaceSpot(i, j, Misc1.randomInt(9));
+							replaceSpot(i, j, Rnd.randomInt(9));
 						}
 					}
 				}
 			}
 		}
 		IO.printMessage("There is a searing blast of light!");
-		Player.py.flags.blind += 10 + Misc1.randomInt(10);
+		Player.py.flags.blind += 10 + Rnd.randomInt(10);
 	}
 	
 	/* Enchants a plus onto an item.			-RAK-	*/
@@ -2192,11 +2192,11 @@ public class Spells {
 		res = false;
 		if (plusses.value() > 0) {
 			chance = plusses.value();
-			if (Misc1.randomInt(100) == 1) {	/* very rarely allow enchantment over limit */
-				chance = Misc1.randomInt(chance) - 1;
+			if (Rnd.randomInt(100) == 1) {	/* very rarely allow enchantment over limit */
+				chance = Rnd.randomInt(chance) - 1;
 			}
 		}
-		if (Misc1.randomInt(limit) > chance) {
+		if (Rnd.randomInt(limit) > chance) {
 			plusses.value(plusses.value() + 1);
 			res = true;
 		}

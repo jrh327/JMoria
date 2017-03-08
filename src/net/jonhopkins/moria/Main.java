@@ -199,7 +199,7 @@ public class Main extends Applet {
 		if (Constants.COST_ADJ != 100) adjustPrices();
 		
 		/* Grab a random seed from the clock		*/
-		Misc1.initSeeds(seed);
+		Rnd.initSeeds(seed);
 		
 		/* Init monster and treasure levels for allocate */
 		initMonsterLevels();

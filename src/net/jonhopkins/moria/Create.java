@@ -42,7 +42,7 @@ public class Create {
 		do {
 			total = 0;
 			for (int i = 0; i < 18; i++) {
-				dice[i] = Misc1.randomInt (3 + i % 3); // Roll 3,4,5 sided dice once each
+				dice[i] = Rnd.randomInt (3 + i % 3); // Roll 3,4,5 sided dice once each
 				total += dice[i];
 			}
 		} while (total <= 42 || total >= 54);
@@ -67,9 +67,9 @@ public class Create {
 				if (tmpStat > 108) {
 					tmpStat--;
 				} else if (tmpStat > 88) {
-					tmpStat += -Misc1.randomInt(6) - 2;
+					tmpStat += -Rnd.randomInt(6) - 2;
 				} else if (tmpStat > 18) {
-					tmpStat += -Misc1.randomInt(15) - 5;
+					tmpStat += -Rnd.randomInt(15) - 5;
 					if (tmpStat < 18) {
 						tmpStat = 18;
 					}
@@ -82,9 +82,9 @@ public class Create {
 				if (tmpStat < 18) {
 					tmpStat++;
 				} else if (tmpStat < 88) {
-					tmpStat += Misc1.randomInt(15) + 5;
+					tmpStat += Rnd.randomInt(15) + 5;
 				} else if (tmpStat < 108) {
-					tmpStat += Misc1.randomInt(6) + 2;
+					tmpStat += Rnd.randomInt(6) + 2;
 				} else if (tmpStat < 118) {
 					tmpStat++;
 				}
@@ -203,14 +203,14 @@ public class Create {
 		// Get a block of history text
 		int histIndex = Player.py.misc.playerRace * 3 + 1;
 		int currIndex = 0;
-		int socialClass = Misc1.randomInt(4);
+		int socialClass = Rnd.randomInt(4);
 		StringBuilder historyBlock = new StringBuilder();
 		
 		do {
 			while (Player.background[currIndex].chart != histIndex) {
 				currIndex++;
 			}
-			int testRoll = Misc1.randomInt(100);
+			int testRoll = Rnd.randomInt(100);
 			while (testRoll > Player.background[currIndex].roll) {
 				currIndex++;
 			}
@@ -292,13 +292,13 @@ public class Create {
 	public static void generateAhw() {
 		PlayerMisc misc = Player.py.misc;
 		PlayerRaceType race = Player.race[misc.playerRace];
-		misc.age = race.baseAge + Misc1.randomInt(race.maxAge);
+		misc.age = race.baseAge + Rnd.randomInt(race.maxAge);
 		if (misc.isMale) {
-			misc.height = Misc1.randomIntNormalized(race.baseHeightMale, race.modHeightMale);
-			misc.weight = Misc1.randomIntNormalized(race.baseWeightMale, race.modWeightMale);
+			misc.height = Rnd.randomIntNormalized(race.baseHeightMale, race.modHeightMale);
+			misc.weight = Rnd.randomIntNormalized(race.baseWeightMale, race.modWeightMale);
 		} else {
-			misc.height = Misc1.randomIntNormalized(race.baseHeightFemale, race.modHeightFemale);
-			misc.weight = Misc1.randomIntNormalized(race.baseWeightFemale, race.modWeightFemale);
+			misc.height = Rnd.randomIntNormalized(race.baseHeightFemale, race.modHeightFemale);
+			misc.weight = Rnd.randomIntNormalized(race.baseWeightFemale, race.modWeightFemale);
 		}
 		misc.disarmChance = race.baseDisarmChance + Misc3.adjustToDisarm();
 	}
@@ -398,7 +398,7 @@ public class Create {
 				Player.hitpoints[0] = misc.hitDie;
 				do {
 					for (int i = 1; i < Constants.MAX_PLAYER_LEVEL; i++) {
-						Player.hitpoints[i] = Misc1.randomInt(misc.hitDie);
+						Player.hitpoints[i] = Rnd.randomInt(misc.hitDie);
 						Player.hitpoints[i] += Player.hitpoints[i - 1];
 					}
 				} while ((Player.hitpoints[Constants.MAX_PLAYER_LEVEL - 1] < minValue) || (Player.hitpoints[Constants.MAX_PLAYER_LEVEL - 1] > maxValue));
@@ -431,7 +431,7 @@ public class Create {
 	}
 	
 	private static int socialClassAdjust() {
-		return Player.py.misc.socialClass * 6 + Misc1.randomInt(25) + 325;
+		return Player.py.misc.socialClass * 6 + Rnd.randomInt(25) + 325;
 	}
 	
 	private static int statAdjust() {

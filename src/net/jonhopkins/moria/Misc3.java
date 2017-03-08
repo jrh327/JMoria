@@ -82,9 +82,9 @@ public class Misc3 {
 		InvenType t_ptr;
 		
 		cur_pos = Misc1.popTreasure();
-		i = ((Misc1.randomInt(Variable.dungeonLevel + 2) + 2) / 2) - 1;
-		if (Misc1.randomInt(Constants.OBJ_GREAT) == 1) {
-			i += Misc1.randomInt(Variable.dungeonLevel + 1);
+		i = ((Rnd.randomInt(Variable.dungeonLevel + 2) + 2) / 2) - 1;
+		if (Rnd.randomInt(Constants.OBJ_GREAT) == 1) {
+			i += Rnd.randomInt(Variable.dungeonLevel + 1);
 		}
 		if (i >= Constants.MAX_GOLD) {
 			i = Constants.MAX_GOLD - 1;
@@ -92,7 +92,7 @@ public class Misc3 {
 		Variable.cave[y][x].treasureIndex = cur_pos;
 		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_GOLD_LIST + i);
 		t_ptr = Treasure.treasureList[cur_pos];
-		t_ptr.cost += (8L * (long)Misc1.randomInt(t_ptr.cost)) + Misc1.randomInt(8);
+		t_ptr.cost += (8L * (long)Rnd.randomInt(t_ptr.cost)) + Rnd.randomInt(8);
 		if (Variable.cave[y][x].creatureIndex == 1) {
 			IO.printMessage("You feel something roll beneath your feet.");
 		}
@@ -102,12 +102,12 @@ public class Misc3 {
 		int i, j;
 		
 		if (level == 0) {
-			i = Misc1.randomInt(Treasure.treasureLevel[0]) - 1;
+			i = Rnd.randomInt(Treasure.treasureLevel[0]) - 1;
 		} else {
 			if (level >= Constants.MAX_OBJ_LEVEL) {
 				level = Constants.MAX_OBJ_LEVEL;
-			} else if (Misc1.randomInt(Constants.OBJ_GREAT) == 1) {
-				level = level * Constants.MAX_OBJ_LEVEL / Misc1.randomInt(Constants.MAX_OBJ_LEVEL) + 1;
+			} else if (Rnd.randomInt(Constants.OBJ_GREAT) == 1) {
+				level = level * Constants.MAX_OBJ_LEVEL / Rnd.randomInt(Constants.MAX_OBJ_LEVEL) + 1;
 				if (level > Constants.MAX_OBJ_LEVEL) {
 					level = Constants.MAX_OBJ_LEVEL;
 				}
@@ -120,24 +120,24 @@ public class Misc3 {
 			 * and 1/2n are 0th level. */
 			
 			do {
-				if (Misc1.randomInt(2) == 1) {
-					i = Misc1.randomInt(Treasure.treasureLevel[level]) - 1;
+				if (Rnd.randomInt(2) == 1) {
+					i = Rnd.randomInt(Treasure.treasureLevel[level]) - 1;
 				} else { /* Choose three objects, pick the highest level. */
-					i = Misc1.randomInt(Treasure.treasureLevel[level]) - 1;
-					j = Misc1.randomInt(Treasure.treasureLevel[level]) - 1;
+					i = Rnd.randomInt(Treasure.treasureLevel[level]) - 1;
+					j = Rnd.randomInt(Treasure.treasureLevel[level]) - 1;
 					if (i < j) {
 						i = j;
 					}
-					j = Misc1.randomInt(Treasure.treasureLevel[level]) - 1;
+					j = Rnd.randomInt(Treasure.treasureLevel[level]) - 1;
 					if (i < j) {
 						i = j;
 					}
 					
 					j = Treasure.objectList[Treasure.sortedObjects[i]].level;
 					if (j == 0) {
-						i = Misc1.randomInt(Treasure.treasureLevel[0]) - 1;
+						i = Rnd.randomInt(Treasure.treasureLevel[0]) - 1;
 					} else {
-						i = Misc1.randomInt(Treasure.treasureLevel[j] - Treasure.treasureLevel[j - 1]) - 1 + Treasure.treasureLevel[j - 1];
+						i = Rnd.randomInt(Treasure.treasureLevel[j] - Treasure.treasureLevel[j - 1]) - 1 + Treasure.treasureLevel[j - 1];
 					}
 				}
 			} while (must_be_small && Sets.isTooLargeForChest(Treasure.objectList[Treasure.sortedObjects[i]]));
@@ -178,8 +178,8 @@ public class Misc3 {
 		
 		for (k = 0; k < num; k++) {
 			do {
-				i = Misc1.randomInt(Variable.currHeight) - 1;
-				j = Misc1.randomInt(Variable.currWidth) - 1;
+				i = Rnd.randomInt(Variable.currHeight) - 1;
+				j = Rnd.randomInt(Variable.currWidth) - 1;
 				
 				/* don't put an object beneath the player, this could cause problems
 				 * if player is standing under rubble, or on a trap */
@@ -188,7 +188,7 @@ public class Misc3 {
 					|| (i == Player.y && j == Player.x));
 			if (typ < 4) {	/* typ == 2 not used, used to be visible traps */
 				if (typ == 1) {
-					placeTrap(i, j, Misc1.randomInt(Constants.MAX_TRAP) - 1); /* typ == 1 */
+					placeTrap(i, j, Rnd.randomInt(Constants.MAX_TRAP) - 1); /* typ == 1 */
 				} else {
 					placeRubble(i, j); /* typ == 3 */
 				}
@@ -230,12 +230,12 @@ public class Misc3 {
 		do {
 			i = 0;
 			do {
-				j = y - 3 + Misc1.randomInt(5);
-				k = x - 4 + Misc1.randomInt(7);
+				j = y - 3 + Rnd.randomInt(5);
+				k = x - 4 + Rnd.randomInt(7);
 				cave_ptr = Variable.cave[j][k];
 				if (Misc1.isInBounds(j, k) && (cave_ptr.fval <= Constants.MAX_CAVE_FLOOR)
 						&& (cave_ptr.treasureIndex == 0)) {
-					if (Misc1.randomInt(100) < 75) {
+					if (Rnd.randomInt(100) < 75) {
 						placeObject(j, k, false);
 					} else {
 						placeGold(j, k);
@@ -764,7 +764,7 @@ public class Misc3 {
 			} else if (tmp_stat < 116) {
 				/* stat increases by 1/6 to 1/3 of difference from max */
 				gain = ((118 - tmp_stat) / 3 + 1) >> 1;
-				tmp_stat += Misc1.randomInt(gain) + gain;
+				tmp_stat += Rnd.randomInt(gain) + gain;
 			} else {
 				tmp_stat++;
 			}
@@ -796,7 +796,7 @@ public class Misc3 {
 				tmp_stat--;
 			} else if (tmp_stat < 117) {
 				loss = (((118 - tmp_stat) >> 1) + 1) >> 1;
-				tmp_stat += -Misc1.randomInt(loss) - loss;
+				tmp_stat += -Rnd.randomInt(loss) - loss;
 				if (tmp_stat < 18) {
 					tmp_stat = 18;
 				}
@@ -1392,7 +1392,7 @@ public class Misc3 {
 		
 		j = 0;
 		for (i = 0; i < Treasure.invenCounter; i++) {
-			if (isSetDamageType(typ, Treasure.inventory[i]) && (Misc1.randomInt(100) < perc)) {
+			if (isSetDamageType(typ, Treasure.inventory[i]) && (Rnd.randomInt(100) < perc)) {
 				destroyInvenItem(i);
 				j++;
 			}
@@ -1965,7 +1965,7 @@ public class Misc3 {
 			} else {
 				/* pick a prayer at random */
 				while (new_spells != 0) {
-					j = Misc1.randomInt(i) - 1;
+					j = Rnd.randomInt(i) - 1;
 					Player.spellLearned |= 1L << spells[j];
 					Player.spellOrder[last_known++] = spells[j];
 					tmp_str = String.format("You have learned the prayer of %s.", Player.spellNames[spells[j] + offset]);
@@ -2367,8 +2367,8 @@ public class Misc3 {
 		critical = dam;
 		/* Weight of weapon, plusses to hit, and character level all	    */
 		/* contribute to the chance of a critical			   */
-		if (Misc1.randomInt(5000) <= (weight + 5 * plus + (Player.classLevelAdjust[Player.py.misc.playerClass][attack_type] * Player.py.misc.level))) {
-			weight += Misc1.randomInt(650);
+		if (Rnd.randomInt(5000) <= (weight + 5 * plus + (Player.classLevelAdjust[Player.py.misc.playerClass][attack_type] * Player.py.misc.level))) {
+			weight += Rnd.randomInt(650);
 			if (weight < 400) {
 				critical = 2 * dam + 5;
 				IO.printMessage("It was a good hit! (x2 damage)");
@@ -2459,7 +2459,7 @@ public class Misc3 {
 		/* MPW C couldn't handle the expression, so split it into two parts */
 		short temp = Player.classLevelAdjust[Player.py.misc.playerClass][Constants.CLA_SAVE];
 
-		return Misc1.randomInt(100) <= (Player.py.misc.savingThrow + adjustStat(Constants.A_WIS) + (temp * Player.py.misc.level / 3));
+		return Rnd.randomInt(100) <= (Player.py.misc.savingThrow + adjustStat(Constants.A_WIS) + (temp * Player.py.misc.level / 3));
 	}
 	
 	/**
@@ -2510,8 +2510,8 @@ public class Misc3 {
 		int y, x, i, j;
 		
 		do {
-			y = Misc1.randomInt(Variable.currHeight) - 1;
-			x = Misc1.randomInt(Variable.currWidth) - 1;
+			y = Rnd.randomInt(Variable.currHeight) - 1;
+			x = Rnd.randomInt(Variable.currWidth) - 1;
 			while (Misc1.distance(y, x, Player.y, Player.x) > dis) {
 				y += ((Player.y - y) / 2);
 				x += ((Player.x - x) / 2);

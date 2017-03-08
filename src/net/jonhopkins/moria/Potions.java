@@ -160,7 +160,7 @@ public class Potions {
 					if (!f_ptr.freeAct) {
 						/* paralysis must == 0, otherwise could not drink potion */
 						IO.printMessage("You fall asleep.");
-						f_ptr.paralysis += Misc1.randomInt(4) + 4;
+						f_ptr.paralysis += Rnd.randomInt(4) + 4;
 						ident = true;
 					}
 					break;
@@ -170,7 +170,7 @@ public class Potions {
 						IO.printMessage("You are covered by a veil of darkness.");
 						ident = true;
 					}
-					f_ptr.blind += Misc1.randomInt(100) + 100;
+					f_ptr.blind += Rnd.randomInt(100) + 100;
 					break;
 				case 21:
 					f_ptr = Player.py.flags;
@@ -178,7 +178,7 @@ public class Potions {
 						IO.printMessage("Hey!  This is good stuff!  * Hick! *");
 						ident = true;
 					}
-					f_ptr.confused += Misc1.randomInt(20) + 12;
+					f_ptr.confused += Rnd.randomInt(20) + 12;
 					break;
 				case 22:
 					f_ptr = Player.py.flags;
@@ -186,19 +186,19 @@ public class Potions {
 						IO.printMessage("You feel very sick.");
 						ident = true;
 					}
-					f_ptr.poisoned += Misc1.randomInt(15) + 10;
+					f_ptr.poisoned += Rnd.randomInt(15) + 10;
 					break;
 				case 23:
 					if (Player.py.flags.fast == 0) {
 						ident = true;
 					}
-					Player.py.flags.fast += Misc1.randomInt(25) + 15;
+					Player.py.flags.fast += Rnd.randomInt(25) + 15;
 					break;
 				case 24:
 					if (Player.py.flags.slow == 0) {
 						ident = true;
 					}
-					Player.py.flags.slow += Misc1.randomInt(25) + 15;
+					Player.py.flags.slow += Rnd.randomInt(25) + 15;
 					break;
 				case 26:
 					if (Misc3.increaseStat(Constants.A_DEX)) {
@@ -235,9 +235,9 @@ public class Potions {
 						m = Player.py.misc.currExp / 5;
 						if (Player.py.misc.currExp > Constants.MAX_SHORT) {
 							scale = (int)(Constants.MAX_LONG / Player.py.misc.currExp);
-							m += (Misc1.randomInt(scale) * Player.py.misc.currExp) / (scale * 5);
+							m += (Rnd.randomInt(scale) * Player.py.misc.currExp) / (scale * 5);
 						} else {
-							m += Misc1.randomInt(Player.py.misc.currExp) / 5;
+							m += Rnd.randomInt(Player.py.misc.currExp) / 5;
 						}
 						Spells.loseExperience(m);
 						ident = true;
@@ -255,19 +255,19 @@ public class Potions {
 					if (Player.py.flags.invulnerability == 0) {
 						ident = true;
 					}
-					Player.py.flags.invulnerability += Misc1.randomInt(10) + 10;
+					Player.py.flags.invulnerability += Rnd.randomInt(10) + 10;
 					break;
 				case 37:
 					if (Player.py.flags.hero == 0) {
 						ident = true;
 					}
-					Player.py.flags.hero += Misc1.randomInt(25) + 25;
+					Player.py.flags.hero += Rnd.randomInt(25) + 25;
 					break;
 				case 38:
 					if (Player.py.flags.superHero == 0) {
 						ident = true;
 					}
-					Player.py.flags.superHero += Misc1.randomInt(25) + 25;
+					Player.py.flags.superHero += Rnd.randomInt(25) + 25;
 					break;
 				case 39:
 					ident = Spells.removeFear();
@@ -280,20 +280,20 @@ public class Potions {
 					if (f_ptr.resistHeat == 0) {
 						ident = true;
 					}
-					f_ptr.resistHeat += Misc1.randomInt(10) + 10;
+					f_ptr.resistHeat += Rnd.randomInt(10) + 10;
 					break;
 				case 42:
 					f_ptr = Player.py.flags;
 					if (f_ptr.resistCold == 0) {
 						ident = true;
 					}
-					f_ptr.resistCold += Misc1.randomInt(10) + 10;
+					f_ptr.resistCold += Rnd.randomInt(10) + 10;
 					break;
 				case 43:
 					if (Player.py.flags.detectInvisible == 0) {
 						ident = true;
 					}
-					Spells.detectInvisibleMonsters(Misc1.randomInt(12) + 12);
+					Spells.detectInvisibleMonsters(Rnd.randomInt(12) + 12);
 					break;
 				case 44:
 					ident = Spells.slowPoison();
@@ -316,7 +316,7 @@ public class Potions {
 						IO.printMessage("Your eyes begin to tingle.");
 						ident = true;
 					}
-					f_ptr.timedSeeInfrared += 100 + Misc1.randomInt(100);
+					f_ptr.timedSeeInfrared += 100 + Rnd.randomInt(100);
 					break;
 				default:
 					IO.printMessage("Internal error in potion()");

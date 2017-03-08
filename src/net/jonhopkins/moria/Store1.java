@@ -300,7 +300,7 @@ public class Store1 {
 			if (one_of) {
 				number = 1;
 			} else {
-				number = Misc1.randomInt(i_ptr.number);
+				number = Rnd.randomInt(i_ptr.number);
 			}
 		} else {
 			number = i_ptr.number;
@@ -329,7 +329,7 @@ public class Store1 {
 		i = Constants.MAX_OWNERS / Constants.MAX_STORES;
 		for (j = 0; j < Constants.MAX_STORES; j++) {
 			s_ptr = Variable.store[j];
-			s_ptr.owner = Constants.MAX_STORES * (Misc1.randomInt(i) - 1) + j;
+			s_ptr.owner = Constants.MAX_STORES * (Rnd.randomInt(i) - 1) + j;
 			s_ptr.currInsult = 0;
 			s_ptr.storeOpen = 0;
 			s_ptr.storeCounter	= 0;
@@ -358,7 +358,7 @@ public class Store1 {
 		cur_pos = Misc1.popTreasure();
 		s_ptr = Variable.store[store_num];
 		do {
-			i = Tables.storeChoice[store_num][Misc1.randomInt(Constants.STORE_CHOICES) - 1];
+			i = Tables.storeChoice[store_num][Rnd.randomInt(Constants.STORE_CHOICES) - 1];
 			Desc.copyIntoInventory(Treasure.treasureList[cur_pos], i);
 			Misc2.addMagicToTreasure(cur_pos, Constants.OBJ_TOWN_LEVEL);
 			t_ptr = Treasure.treasureList[cur_pos];
@@ -388,17 +388,17 @@ public class Store1 {
 			s_ptr = Variable.store[i];
 			s_ptr.currInsult = 0;
 			if (s_ptr.storeCounter >= Constants.STORE_MIN_INVEN) {
-				j = Misc1.randomInt(Constants.STORE_TURN_AROUND);
+				j = Rnd.randomInt(Constants.STORE_TURN_AROUND);
 				if (s_ptr.storeCounter >= Constants.STORE_MAX_INVEN) {
 					j += 1 + s_ptr.storeCounter - Constants.STORE_MAX_INVEN;
 				}
 				while (--j >= 0) {
-					storeDestroy(i, Misc1.randomInt(s_ptr.storeCounter) - 1, false);
+					storeDestroy(i, Rnd.randomInt(s_ptr.storeCounter) - 1, false);
 				}
 			}
 			
 			if (s_ptr.storeCounter <= Constants.STORE_MAX_INVEN) {
-				j = Misc1.randomInt(Constants.STORE_TURN_AROUND);
+				j = Rnd.randomInt(Constants.STORE_TURN_AROUND);
 				if (s_ptr.storeCounter < Constants.STORE_MIN_INVEN) {
 					j += Constants.STORE_MIN_INVEN - s_ptr.storeCounter;
 				}

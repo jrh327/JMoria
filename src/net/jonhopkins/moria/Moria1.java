@@ -1628,8 +1628,8 @@ public class Moria1 {
 		i = bth + pth * Constants.BTH_PLUS_ADJ + (level * Player.classLevelAdjust[Player.py.misc.playerClass][attack_type]);
 		/* pth could be less than 0 if player wielding weapon too heavy for him */
 		/* always miss 1 out of 20, always hit 1 out of 20 */
-		die = Misc1.randomInt(20);
-		return (die != 1) && ((die == 20) || ((i > 0) && (Misc1.randomInt (i) > ac)));	/* normal hit */
+		die = Rnd.randomInt(20);
+		return (die != 1) && ((die == 20) || ((i > 0) && (Rnd.randomInt (i) > ac)));	/* normal hit */
 	}
 	
 	/* Decreases players hit points and sets death flag if necessary*/

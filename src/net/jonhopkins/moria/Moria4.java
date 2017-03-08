@@ -44,8 +44,8 @@ public class Moria4 {
 		String out_val, m_name;
 		
 		if ((Player.py.flags.confused > 0) &&	/* Confused?	     */
-				(Misc1.randomInt(4) > 1)) {		/* 75% random movement   */
-			dir = Misc1.randomInt(9);
+				(Rnd.randomInt(4) > 1)) {		/* 75% random movement   */
+			dir = Rnd.randomInt(9);
 		}
 		y = new IntPointer(Player.y);
 		x = new IntPointer(Player.x);
@@ -60,7 +60,10 @@ public class Moria4 {
 		/* Don't let the player tunnel somewhere illegal, this is necessary to
 		 * prevent the player from getting a free attack by trying to tunnel
 		 * somewhere where it has no effect.  */
-		if (c_ptr.fval < Constants.MIN_CAVE_WALL && (c_ptr.treasureIndex == 0 || (Treasure.treasureList[c_ptr.treasureIndex].category != Constants.TV_RUBBLE && Treasure.treasureList[c_ptr.treasureIndex].category != Constants.TV_SECRET_DOOR))) {
+		if (c_ptr.fval < Constants.MIN_CAVE_WALL
+				&& (c_ptr.treasureIndex == 0
+					|| (Treasure.treasureList[c_ptr.treasureIndex].category != Constants.TV_RUBBLE
+					&& Treasure.treasureList[c_ptr.treasureIndex].category != Constants.TV_SECRET_DOOR))) {
 			if (c_ptr.treasureIndex == 0) {
 				IO.printMessage ("Tunnel through what?  Empty air?!?");
 				Variable.freeTurnFlag = true;
@@ -111,7 +114,7 @@ public class Moria4 {
 			switch(c_ptr.fval)
 			{
 			case Constants.GRANITE_WALL:
-				i = Misc1.randomInt(1200) + 80;
+				i = Rnd.randomInt(1200) + 80;
 				if (Moria3.tunnelThroughWall(y.value(), x.value(), tabil, i)) {
 					IO.printMessage("You have finished the tunnel.");
 				} else {
@@ -119,7 +122,7 @@ public class Moria4 {
 				}
 				break;
 			case Constants.MAGMA_WALL:
-				i = Misc1.randomInt(600) + 10;
+				i = Rnd.randomInt(600) + 10;
 				if (Moria3.tunnelThroughWall(y.value(), x.value(), tabil, i)) {
 					IO.printMessage("You have finished the tunnel.");
 				} else {
@@ -127,7 +130,7 @@ public class Moria4 {
 				}
 				break;
 			case Constants.QUARTZ_WALL:
-				i = Misc1.randomInt(400) + 10;
+				i = Rnd.randomInt(400) + 10;
 				if (Moria3.tunnelThroughWall(y.value(), x.value(), tabil, i)) {
 					IO.printMessage("You have finished the tunnel.");
 				} else {
@@ -142,10 +145,10 @@ public class Moria4 {
 				if (c_ptr.treasureIndex != 0) {
 					/* Rubble.     */
 					if (Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_RUBBLE) {
-						if (tabil > Misc1.randomInt(180)) {
+						if (tabil > Rnd.randomInt(180)) {
 							Moria3.deleteObject(y.value(), x.value());
 							IO.printMessage("You have removed the rubble.");
-							if (Misc1.randomInt(10) == 1) {
+							if (Rnd.randomInt(10) == 1) {
 								Misc3.placeObject(y.value(), x.value(), false);
 								if (Misc1.testLight(y.value(), x.value())) {
 									IO.printMessage("You have found something!");
@@ -192,7 +195,10 @@ public class Moria4 {
 			Misc3.moveMonster(dir.value(), y, x);
 			c_ptr = Variable.cave[y.value()][x.value()];
 			no_disarm = false;
-			if (c_ptr.creatureIndex > 1 && c_ptr.treasureIndex != 0 && (Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_VIS_TRAP || Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_CHEST)) {
+			if (c_ptr.creatureIndex > 1
+					&& c_ptr.treasureIndex != 0
+					&& (Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_VIS_TRAP
+						|| Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_CHEST)) {
 				m_ptr = Monsters.monsterList[c_ptr.creatureIndex];
 				if (m_ptr.monsterLight) {
 					m_name = String.format("The %s", Monsters.creatureList[m_ptr.index].name);
@@ -202,7 +208,9 @@ public class Moria4 {
 				out_val = String.format("%s is in your way!", m_name);
 				IO.printMessage(out_val);
 			} else if (c_ptr.treasureIndex != 0) {
-				tot = Player.py.misc.disarmChance + 2 * Misc3.adjustToDisarm() + Misc3.adjustStat(Constants.A_INT) + (Player.classLevelAdjust[Player.py.misc.playerClass][Constants.CLA_DISARM] * Player.py.misc.level / 3);
+				tot = Player.py.misc.disarmChance + 2 * Misc3.adjustToDisarm()
+						+ Misc3.adjustStat(Constants.A_INT)
+						+ (Player.classLevelAdjust[Player.py.misc.playerClass][Constants.CLA_DISARM] * Player.py.misc.level / 3);
 				if ((Player.py.flags.blind > 0) || (Moria1.playerHasNoLight())) {
 					tot = tot / 10;
 				}
@@ -216,7 +224,7 @@ public class Moria4 {
 				i = i_ptr.category;
 				level = i_ptr.level;
 				if (i == Constants.TV_VIS_TRAP) {	/* Floor trap    */
-					if ((tot + 100 - level) > Misc1.randomInt(100)) {
+					if ((tot + 100 - level) > Rnd.randomInt(100)) {
 						IO.printMessage("You have disarmed the trap.");
 						Player.py.misc.currExp += i_ptr.misc;
 						Moria3.deleteObject(y.value(), x.value());
@@ -228,7 +236,7 @@ public class Moria4 {
 						Misc3.printExperience();
 					
 					/* avoid randint(0) call */
-					} else if ((tot > 5) && (Misc1.randomInt(tot) > 5)) {
+					} else if ((tot > 5) && (Rnd.randomInt(tot) > 5)) {
 						IO.countMessagePrint("You failed to disarm the trap.");
 					} else {
 						IO.printMessage("You set the trap off!");
@@ -243,7 +251,7 @@ public class Moria4 {
 						IO.printMessage("I don't see a trap.");
 						Variable.freeTurnFlag = true;
 					} else if ((Constants.CH_TRAPPED & i_ptr.flags) != 0) {
-						if ((tot - level) > Misc1.randomInt(100)) {
+						if ((tot - level) > Rnd.randomInt(100)) {
 							i_ptr.flags &= ~Constants.CH_TRAPPED;
 							if ((Constants.CH_LOCKED & i_ptr.flags) != 0) {
 								i_ptr.specialName = Constants.SN_LOCKED;
@@ -254,7 +262,7 @@ public class Moria4 {
 							Desc.identifyItemPlusses(i_ptr);
 							Player.py.misc.currExp += level;
 							Misc3.printExperience();
-						} else if ((tot > 5) && (Misc1.randomInt(tot) > 5)) {
+						} else if ((tot > 5) && (Rnd.randomInt(tot) > 5)) {
 							IO.countMessagePrint("You failed to disarm the chest.");
 						} else {
 							IO.printMessage("You set a trap off!");
@@ -762,7 +770,7 @@ public class Moria4 {
 		i = y;
 		j = x;
 		k = 0;
-		if (Misc1.randomInt(10) > 1) {
+		if (Rnd.randomInt(10) > 1) {
 			do {
 				if (Misc1.isInBounds(i, j)) {
 					c_ptr = Variable.cave[i][j];
@@ -771,8 +779,8 @@ public class Moria4 {
 					}
 				}
 				if (!flag) {
-					i = y + Misc1.randomInt(3) - 2;
-					j = x + Misc1.randomInt(3) - 2;
+					i = y + Rnd.randomInt(3) - 2;
+					j = x + Rnd.randomInt(3) - 2;
 					k++;
 				}
 			} while ((!flag) && (k <= 9));
@@ -814,7 +822,7 @@ public class Moria4 {
 				if (Player.py.flags.confused > 0) {
 					IO.printMessage("You are confused.");
 					do {
-						dir.value(Misc1.randomInt(9));
+						dir.value(Rnd.randomInt(9));
 					} while (dir.value() == 5);
 				}
 				throwItem(item_val.value(), throw_obj);
@@ -931,8 +939,8 @@ public class Moria4 {
 				m_name = Character.toUpperCase(m_name.charAt(0)) + m_name.substring(1);	/* Capitalize */
 				/* Can not stun Balrog */
 				avg_max_hp = (((c_ptr.cdefense & Constants.CD_MAX_HP) != 0) ? c_ptr.hitDie[0] * c_ptr.hitDie[1] : (c_ptr.hitDie[0] * (c_ptr.hitDie[1] + 1)) >> 1);
-				if ((100 + Misc1.randomInt(400) + Misc1.randomInt(400)) > (m_ptr.hitpoints + avg_max_hp)) {
-					m_ptr.stunned += Misc1.randomInt(3) + 1;
+				if ((100 + Rnd.randomInt(400) + Rnd.randomInt(400)) > (m_ptr.hitpoints + avg_max_hp)) {
+					m_ptr.stunned += Rnd.randomInt(3) + 1;
 					if (m_ptr.stunned > 24)	m_ptr.stunned = 24;
 					out_val = String.format("%s appears stunned!", m_name);
 				} else {
@@ -944,9 +952,9 @@ public class Moria4 {
 			out_val = String.format("You miss %s.", m_name);
 			IO.printMessage(out_val);
 		}
-		if (Misc1.randomInt(150) > Player.py.stats.useStat[Constants.A_DEX]) {
+		if (Rnd.randomInt(150) > Player.py.stats.useStat[Constants.A_DEX]) {
 			IO.printMessage("You are off balance.");
-			Player.py.flags.paralysis = 1 + Misc1.randomInt(2);
+			Player.py.flags.paralysis = 1 + Rnd.randomInt(2);
 		}
 	}
 	
@@ -986,7 +994,7 @@ public class Moria4 {
 			if (Player.py.flags.confused > 0) {
 				IO.printMessage("You are confused.");
 				do {
-					dir.value(Misc1.randomInt(9));
+					dir.value(Rnd.randomInt(9));
 				} while (dir.value() == 5);
 			}
 			Misc3.moveMonster(dir.value(), y, x);
@@ -1003,29 +1011,29 @@ public class Moria4 {
 					IO.countMessagePrint("You smash into the door!");
 					tmp = Player.py.stats.useStat[Constants.A_STR] + Player.py.misc.weight / 2;
 					/* Use (roughly) similar method as for monsters. */
-					if (Misc1.randomInt(tmp * (20 + Math.abs(t_ptr.misc))) < 10 * (tmp - Math.abs(t_ptr.misc))) {
+					if (Rnd.randomInt(tmp * (20 + Math.abs(t_ptr.misc))) < 10 * (tmp - Math.abs(t_ptr.misc))) {
 						IO.printMessage("The door crashes open!");
 						Desc.copyIntoInventory(Treasure.treasureList[c_ptr.treasureIndex], Constants.OBJ_OPEN_DOOR);
-						t_ptr.misc = 1 - Misc1.randomInt(2); /* 50% chance of breaking door */
+						t_ptr.misc = 1 - Rnd.randomInt(2); /* 50% chance of breaking door */
 						c_ptr.fval = Constants.CORR_FLOOR;
 						if (Player.py.flags.confused == 0) {
 							Moria3.movePlayer(dir.value(), false);
 						} else {
 							Moria1.lightUpSpot(y.value(), x.value());
 						}
-					} else if (Misc1.randomInt(150) > Player.py.stats.useStat[Constants.A_DEX]) {
+					} else if (Rnd.randomInt(150) > Player.py.stats.useStat[Constants.A_DEX]) {
 						IO.printMessage("You are off-balance.");
-						Player.py.flags.paralysis = 1 + Misc1.randomInt(2);
+						Player.py.flags.paralysis = 1 + Rnd.randomInt(2);
 					} else if (Variable.commandCount == 0) {
 						IO.printMessage("The door holds firm.");
 					}
 				} else if (t_ptr.category == Constants.TV_CHEST) {
-					if (Misc1.randomInt(10) == 1) {
+					if (Rnd.randomInt(10) == 1) {
 						IO.printMessage("You have destroyed the chest.");
 						IO.printMessage("and its contents!");
 						t_ptr.index = Constants.OBJ_RUINED_CHEST;
 						t_ptr.flags = 0;
-					} else if ((Constants.CH_LOCKED & t_ptr.flags) != 0 && (Misc1.randomInt(10) == 1)) {
+					} else if ((Constants.CH_LOCKED & t_ptr.flags) != 0 && (Rnd.randomInt(10) == 1)) {
 						IO.printMessage("The lock breaks open!");
 						t_ptr.flags &= ~Constants.CH_LOCKED;
 					} else {

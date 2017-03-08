@@ -121,7 +121,7 @@ public class Store2 {
 	 * Comments vary. Comment one : Finished haggling. -RAK-
 	 */
 	public static void printComment1() {
-		IO.printMessage(comment1[Misc1.randomInt(14) - 1]);
+		IO.printMessage(comment1[Rnd.randomInt(14) - 1]);
 	}
 	
 	/**
@@ -135,9 +135,9 @@ public class Store2 {
 		String comment;
 		
 		if (final_ > 0) {
-			comment = comment2a[Misc1.randomInt(3) - 1];
+			comment = comment2a[Rnd.randomInt(3) - 1];
 		} else {
-			comment = comment2b[Misc1.randomInt(16) - 1];
+			comment = comment2b[Rnd.randomInt(16) - 1];
 		}
 		
 		comment = Misc3.insertLong(comment, "%A1", offer, false);
@@ -156,9 +156,9 @@ public class Store2 {
 		String comment;
 		
 		if (final_ > 0) {
-			comment = comment3a[Misc1.randomInt(3) - 1];
+			comment = comment3a[Rnd.randomInt(3) - 1];
 		} else {
-			comment = comment3b[Misc1.randomInt(15) - 1];
+			comment = comment3b[Rnd.randomInt(15) - 1];
 		}
 		
 		comment = Misc3.insertLong(comment, "%A1", offer, false);
@@ -172,7 +172,7 @@ public class Store2 {
 	public static void printComment4() {
 		int tmp;
 		
-		tmp = Misc1.randomInt(5) - 1;
+		tmp = Rnd.randomInt(5) - 1;
 		IO.printMessage(comment4a[tmp]);
 		IO.printMessage(comment4b[tmp]);
 	}
@@ -181,14 +181,14 @@ public class Store2 {
 	 * Bad offer, store owner is insulted.
 	 */
 	public static void printComment5() {
-		IO.printMessage(comment5[Misc1.randomInt(10) - 1]);
+		IO.printMessage(comment5[Rnd.randomInt(10) - 1]);
 	}
 	
 	/**
 	 * Store owner questioning player's offer.
 	 */
 	public static void printComment6() {
-		IO.printMessage(comment6[Misc1.randomInt(5) - 1]);
+		IO.printMessage(comment6[Rnd.randomInt(5) - 1]);
 	}
 	
 	/**
@@ -370,7 +370,7 @@ public class Store2 {
 			printComment4();
 			s_ptr.currInsult = 0;
 			s_ptr.badBuy++;
-			s_ptr.storeOpen = Variable.turn + 2500 + Misc1.randomInt(2500);
+			s_ptr.storeOpen = Variable.turn + 2500 + Rnd.randomInt(2500);
 			increase = true;
 		}
 		return increase;
@@ -642,7 +642,7 @@ public class Store2 {
 					x1 = x1 * 75 / 100;
 					if (x1 < max_per)	x1 = max_per;
 				}
-				x2 = x1 + Misc1.randomInt(5) - 3;
+				x2 = x1 + Rnd.randomInt(5) - 3;
 				x3 = ((cur_ask - new_offer.value()) * x2 / 100) + 1;
 				/* don't let the price go up */
 				if (x3 < 0) {
@@ -819,7 +819,7 @@ public class Store2 {
 						x1 = x1 * 75 / 100;
 						if (x1 < max_per)	x1 = max_per;
 					}
-					x2 = x1 + Misc1.randomInt(5) - 3;
+					x2 = x1 + Rnd.randomInt(5) - 3;
 					x3 = ((new_offer.value() - cur_ask) * x2 / 100) + 1;
 					/* don't let the price go down */
 					if (x3 < 0) {

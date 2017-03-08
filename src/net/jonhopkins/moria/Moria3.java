@@ -98,7 +98,7 @@ public class Moria3 {
 					IO.printMessage("You are unaffected.");
 				} else {
 					IO.printMessage("You fall asleep.");
-					Player.py.flags.paralysis += Misc1.randomInt(10) + 4;
+					Player.py.flags.paralysis += Rnd.randomInt(10) + 4;
 				}
 			}
 			break;
@@ -141,7 +141,7 @@ public class Moria3 {
 			break;
 		case 11: /* Summon mon*/
 			deleteObject(y, x);	/* Rune disappears.    */
-			num = 2 + Misc1.randomInt (3);
+			num = 2 + Rnd.randomInt (3);
 			for (i = 0; i < num; i++) {
 				ty = new IntPointer(y);
 				tx = new IntPointer(x);
@@ -162,11 +162,11 @@ public class Moria3 {
 			break;
 		case 15: /* Blind Gas */
 			IO.printMessage("A black gas surrounds you!");
-			Player.py.flags.blind += Misc1.randomInt(50) + 50;
+			Player.py.flags.blind += Rnd.randomInt(50) + 50;
 			break;
 		case 16: /* Confuse Gas*/
 			IO.printMessage("A gas of scintillating colors surrounds you!");
-			Player.py.flags.confused += Misc1.randomInt(15) + 15;
+			Player.py.flags.confused += Rnd.randomInt(15) + 15;
 			break;
 		case 17: /* Slow Dart*/
 			if (Moria1.testHit(125, 0, 0, p_ptr.totalArmorClass+p_ptr.magicArmorClass, Constants.CLA_MISC_HIT)) {
@@ -176,7 +176,7 @@ public class Moria3 {
 				if (Player.py.flags.freeAct) {
 					IO.printMessage("You are unaffected.");
 				} else {
-					Player.py.flags.slow += Misc1.randomInt(20) + 10;
+					Player.py.flags.slow += Rnd.randomInt(20) + 10;
 				}
 			} else {
 				IO.printMessage("A small dart barely misses you.");
@@ -407,14 +407,14 @@ public class Moria3 {
 		do {
 			i = 0;
 			do {
-				j = y - 3 + Misc1.randomInt(5);
-				k = x - 3 + Misc1.randomInt(5);
+				j = y - 3 + Rnd.randomInt(5);
+				k = x - 3 + Rnd.randomInt(5);
 				if (Misc1.isInBounds(j, k) && Misc1.isInLineOfSight(y, x, j, k)) {
 					c_ptr = Variable.cave[j][k];
 					if (c_ptr.fval <= Constants.MAX_OPEN_SPACE && (c_ptr.treasureIndex == 0)) {
 						if (typ == 3 || typ == 7) {
 							/* typ == 3 . 50% objects, 50% gold */
-							if (Misc1.randomInt(100) < 50) {
+							if (Rnd.randomInt(100) < 50) {
 								real_typ = 1;
 							} else {
 								real_typ = 256;
@@ -482,14 +482,14 @@ public class Moria3 {
 		}
 		
 		number = 0;
-		if ((flags & Constants.CM_60_RANDOM) != 0 && (Misc1.randomInt(100) < 60)) {
+		if ((flags & Constants.CM_60_RANDOM) != 0 && (Rnd.randomInt(100) < 60)) {
 			number++;
 		}
-		if ((flags & Constants.CM_90_RANDOM) != 0 && (Misc1.randomInt(100) < 90)) {
+		if ((flags & Constants.CM_90_RANDOM) != 0 && (Rnd.randomInt(100) < 90)) {
 			number++;
 		}
 		if ((flags & Constants.CM_1D2_OBJ) != 0) {
-			number += Misc1.randomInt(2);
+			number += Rnd.randomInt(2);
 		}
 		if ((flags & Constants.CM_2D2_OBJ) != 0) {
 			number += Misc1.damageRoll(2, 2);
@@ -623,7 +623,9 @@ public class Moria3 {
 		if (Monsters.monsterList[crptr].monsterLight) {
 			base_tohit = p_ptr.baseToHit;
 		} else {
-			base_tohit = (p_ptr.baseToHit / 2) - (tot_tohit.value() * (Constants.BTH_PLUS_ADJ - 1)) - (p_ptr.level * Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_BTH] / 2);
+			base_tohit = (p_ptr.baseToHit / 2)
+					- (tot_tohit.value() * (Constants.BTH_PLUS_ADJ - 1))
+					- (p_ptr.level * Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_BTH] / 2);
 		}
 		
 		/* Loop for number of blows,	trying to hit the critter.	  */
@@ -645,18 +647,19 @@ public class Moria3 {
 				if (Player.py.flags.confuseMonster) {
 					Player.py.flags.confuseMonster = false;
 					IO.printMessage("Your hands stop glowing.");
-					if ((Monsters.creatureList[monptr].cdefense & Constants.CD_NO_SLEEP) != 0 || (Misc1.randomInt(Constants.MAX_MONS_LEVEL) < Monsters.creatureList[monptr].level)) {
+					if ((Monsters.creatureList[monptr].cdefense & Constants.CD_NO_SLEEP) != 0
+							|| (Rnd.randomInt(Constants.MAX_MONS_LEVEL) < Monsters.creatureList[monptr].level)) {
 						out_val = String.format("%s is unaffected.", m_name);
 					} else {
 						out_val = String.format("%s appears confused.", m_name);
 						if (Monsters.monsterList[crptr].confused > 0) {
 							Monsters.monsterList[crptr].confused += 3;
 						} else {
-							Monsters.monsterList[crptr].confused = 2 + Misc1.randomInt(16);
+							Monsters.monsterList[crptr].confused = 2 + Rnd.randomInt(16);
 						}
 					}
 					IO.printMessage(out_val);
-					if (Monsters.monsterList[crptr].monsterLight && Misc1.randomInt(4) == 1) {
+					if (Monsters.monsterList[crptr].monsterLight && Rnd.randomInt(4) == 1) {
 						Variable.creatureRecall[monptr].cdefense |= Monsters.creatureList[monptr].cdefense & Constants.CD_NO_SLEEP;
 					}
 				}
@@ -697,9 +700,9 @@ public class Moria3 {
 		CaveType c_ptr, d_ptr;
 		
 		if ((Player.py.flags.confused > 0)		/* Confused?	     */
-				&& (Misc1.randomInt(4) > 1)	/* 75% random movement   */
+				&& (Rnd.randomInt(4) > 1)	/* 75% random movement   */
 				&& (dir != 5)) {		/* Never random if sitting*/
-			dir = Misc1.randomInt(9);
+			dir = Rnd.randomInt(9);
 			Moria2.endFind();
 		}
 		y = new IntPointer(Player.y);
@@ -730,7 +733,9 @@ public class Moria3 {
 					}
 					/* Check to see if he notices something  */
 					/* fos may be negative if have good rings of searching */
-					if ((Player.py.misc.freqOfSearch <= 1) || (Misc1.randomInt(Player.py.misc.freqOfSearch) == 1) || (Player.py.flags.status & Constants.PY_SEARCH) != 0) {
+					if ((Player.py.misc.freqOfSearch <= 1)
+							|| (Rnd.randomInt(Player.py.misc.freqOfSearch) == 1)
+							|| (Player.py.flags.status & Constants.PY_SEARCH) != 0) {
 						Moria2.search(Player.y, Player.x, Player.py.misc.searchChance);
 					}
 					/* A room of light should be lit.	     */
@@ -824,7 +829,7 @@ public class Moria3 {
 		if ((Constants.CH_POISON & t_ptr.flags) != 0) {
 			IO.printMessage("A small needle has pricked you!");
 			Moria1.takeHit(Misc1.damageRoll(1, 6), "a poison needle");
-			Player.py.flags.poisoned += 10 + Misc1.randomInt(20);
+			Player.py.flags.poisoned += 10 + Rnd.randomInt(20);
 		}
 		if ((Constants.CH_PARALYSED & t_ptr.flags) != 0) {
 			IO.printMessage("A puff of yellow gas surrounds you!");
@@ -832,7 +837,7 @@ public class Moria3 {
 				IO.printMessage("You are unaffected.");
 			} else {
 				IO.printMessage("You choke and pass out.");
-				Player.py.flags.paralysis = 10 + Misc1.randomInt(20);
+				Player.py.flags.paralysis = 10 + Rnd.randomInt(20);
 			}
 		}
 		if ((Constants.CH_SUMMON & t_ptr.flags) != 0) {
@@ -866,7 +871,9 @@ public class Moria3 {
 			Misc3.moveMonster(dir.value(), y, x);
 			c_ptr = Variable.cave[y.value()][x.value()];
 			no_object = false;
-			if (c_ptr.creatureIndex > 1 && c_ptr.treasureIndex != 0 && (Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_CLOSED_DOOR || Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_CHEST)) {
+			if (c_ptr.creatureIndex > 1 && c_ptr.treasureIndex != 0
+					&& (Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_CLOSED_DOOR
+						|| Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_CHEST)) {
 				m_ptr = Monsters.monsterList[c_ptr.creatureIndex];
 				if (m_ptr.monsterLight) {
 					m_name = String.format("The %s", Monsters.creatureList[m_ptr.index].name);
@@ -881,10 +888,12 @@ public class Moria3 {
 					t_ptr = Treasure.treasureList[c_ptr.treasureIndex];
 					if (t_ptr.misc > 0) {	/* It's locked.	*/
 						p_ptr = Player.py.misc;
-						i = p_ptr.disarmChance + 2 * Misc3.adjustToDisarm() + Misc3.adjustStat(Constants.A_INT) + (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_DISARM] * p_ptr.level / 3);
+						i = p_ptr.disarmChance + 2 * Misc3.adjustToDisarm()
+								+ Misc3.adjustStat(Constants.A_INT)
+								+ (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_DISARM] * p_ptr.level / 3);
 						if (Player.py.flags.confused > 0) {
 							IO.printMessage("You are too confused to pick the lock.");
-						} else if ((i - t_ptr.misc) > Misc1.randomInt(100)) {
+						} else if ((i - t_ptr.misc) > Rnd.randomInt(100)) {
 							IO.printMessage("You have picked the lock.");
 							Player.py.misc.currExp++;
 							Misc3.printExperience();
@@ -906,13 +915,15 @@ public class Moria3 {
 				/* Open a closed chest.		     */
 				} else if (Treasure.treasureList[c_ptr.treasureIndex].category == Constants.TV_CHEST) {
 					p_ptr = Player.py.misc;
-					i = p_ptr.disarmChance + 2 * Misc3.adjustToDisarm() + Misc3.adjustStat(Constants.A_INT) + (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_DISARM] * p_ptr.level / 3);
+					i = p_ptr.disarmChance + 2 * Misc3.adjustToDisarm()
+							+ Misc3.adjustStat(Constants.A_INT)
+							+ (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_DISARM] * p_ptr.level / 3);
 					t_ptr = Treasure.treasureList[c_ptr.treasureIndex];
 					flag = false;
 					if ((Constants.CH_LOCKED & t_ptr.flags) != 0) {
 						if (Player.py.flags.confused > 0) {
 							IO.printMessage("You are too confused to pick the lock.");
-						} else if ((i - t_ptr.level) > Misc1.randomInt(100)) {
+						} else if ((i - t_ptr.level) > Rnd.randomInt(100)) {
 							IO.printMessage("You have picked the lock.");
 							flag = true;
 							Player.py.misc.currExp += t_ptr.level;

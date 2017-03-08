@@ -53,11 +53,11 @@ public class Staffs {
 			if (Player.py.flags.confused > 0) {
 				chance = chance / 2;
 			}
-			if ((chance < Constants.USE_DEVICE) && (Misc1.randomInt(Constants.USE_DEVICE - chance + 1) == 1)) {
+			if ((chance < Constants.USE_DEVICE) && (Rnd.randomInt(Constants.USE_DEVICE - chance + 1) == 1)) {
 				chance = Constants.USE_DEVICE; /* Give everyone a slight chance */
 			}
 			if (chance <= 0)	chance = 1;
-			if (Misc1.randomInt(chance) < Constants.USE_DEVICE) {
+			if (Rnd.randomInt(chance) < Constants.USE_DEVICE) {
 				IO.printMessage("You failed to use the staff properly.");
 			} else if (i_ptr.misc > 0) {
 				i.value(i_ptr.flags);
@@ -93,7 +93,7 @@ public class Staffs {
 						break;
 					case 8:
 						ident = false;
-						for (int k1 = 0; k1 < Misc1.randomInt(4); k1++) {
+						for (int k1 = 0; k1 < Rnd.randomInt(4); k1++) {
 							y = new IntPointer(Player.y);
 							x = new IntPointer(Player.x);
 							ident |= Misc1.summonMonster(y, x, false);
@@ -117,7 +117,7 @@ public class Staffs {
 						ident = Spells.sleepMonsters();
 						break;
 					case 15:
-						ident = Spells.changePlayerHitpoints(Misc1.randomInt(8));
+						ident = Spells.changePlayerHitpoints(Rnd.randomInt(8));
 						break;
 					case 16:
 						ident = Spells.detectInvisibleCreatures();
@@ -126,13 +126,13 @@ public class Staffs {
 						if (Player.py.flags.fast == 0) {
 							ident = true;
 						}
-						Player.py.flags.fast += Misc1.randomInt(30) + 15;
+						Player.py.flags.fast += Rnd.randomInt(30) + 15;
 						break;
 					case 18:
 						if (Player.py.flags.slow == 0) {
 							ident = true;
 						}
-						Player.py.flags.slow += Misc1.randomInt(30) + 15;
+						Player.py.flags.slow += Rnd.randomInt(30) + 15;
 						break;
 					case 19:
 						ident = Spells.massPolymorph();

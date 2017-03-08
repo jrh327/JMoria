@@ -56,7 +56,7 @@ public class Generate {
 			cdir.value(-1);
 		}
 		if ((rdir.value() != 0) && (cdir.value() != 0)) {
-			if (Misc1.randomInt(2) == 1) {
+			if (Rnd.randomInt(2) == 1) {
 				rdir.value(0);
 			} else {
 				cdir.value(0);
@@ -68,7 +68,7 @@ public class Generate {
 	private static void getRandomDirection(IntPointer rdir, IntPointer cdir) {
 		int tmp;
 		
-		tmp = Misc1.randomInt(4);
+		tmp = Rnd.randomInt(4);
 		
 		if (tmp < 3) {
 			cdir.value(0);
@@ -148,10 +148,10 @@ public class Generate {
 		CaveType c_ptr;
 		
 		/* Choose starting point and direction		*/
-		y = new IntPointer((Variable.currHeight / 2) + 11 - Misc1.randomInt(23));
-		x = new IntPointer((Variable.currWidth / 2)  + 16 - Misc1.randomInt(33));
+		y = new IntPointer((Variable.currHeight / 2) + 11 - Rnd.randomInt(23));
+		x = new IntPointer((Variable.currWidth / 2)  + 16 - Rnd.randomInt(33));
 		
-		dir = Misc1.randomInt(8);	/* Number 1-4, 6-9	*/
+		dir = Rnd.randomInt(8);	/* Number 1-4, 6-9	*/
 		if (dir > 4) {
 			++dir;
 		}
@@ -161,13 +161,13 @@ public class Generate {
 		t2 =	 Constants.DUN_STR_RNG + 1;
 		do {
 			for (i = 0; i < Constants.DUN_STR_DEN; i++) {
-				ty = y.value() + Misc1.randomInt(t1) - t2;
-				tx = x.value() + Misc1.randomInt(t1) - t2;
+				ty = y.value() + Rnd.randomInt(t1) - t2;
+				tx = x.value() + Rnd.randomInt(t1) - t2;
 				if (Misc1.isInBounds(ty, tx)) {
 					c_ptr = Variable.cave[ty][tx];
 					if (c_ptr.fval == Constants.GRANITE_WALL) {
 						c_ptr.fval = fval;
-						if (Misc1.randomInt(treas_chance) == 1) {
+						if (Rnd.randomInt(treas_chance) == 1) {
 							Misc3.placeGold(ty, tx);
 						}
 					}
@@ -219,7 +219,7 @@ public class Generate {
 		cave_ptr.treasureIndex = cur_pos;
 		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_CLOSED_DOOR);
 		cave_ptr.fval = Constants.BLOCKED_FLOOR;
-		Treasure.treasureList[cur_pos].misc = Misc1.randomInt(10) + 10;
+		Treasure.treasureList[cur_pos].misc = Rnd.randomInt(10) + 10;
 	}
 	
 	private static void placeStuckDoor(int y, int x) {
@@ -231,7 +231,7 @@ public class Generate {
 		cave_ptr.treasureIndex = cur_pos;
 		Desc.copyIntoInventory(Treasure.treasureList[cur_pos], Constants.OBJ_CLOSED_DOOR);
 		cave_ptr.fval = Constants.BLOCKED_FLOOR;
-		Treasure.treasureList[cur_pos].misc = -Misc1.randomInt(10) - 10;
+		Treasure.treasureList[cur_pos].misc = -Rnd.randomInt(10) - 10;
 	}
 	
 	private static void placeSecretDoor(int y, int x) {
@@ -248,15 +248,15 @@ public class Generate {
 	private static void placeDoor(int y, int x) {
 		int tmp;
 		
-		tmp = Misc1.randomInt(3);
+		tmp = Rnd.randomInt(3);
 		if (tmp == 1) {
-			if (Misc1.randomInt(4) == 1) {
+			if (Rnd.randomInt(4) == 1) {
 				placeBrokenDoor(y, x);
 			} else {
 				placeOpenDoor(y, x);
 			}
 		} else if (tmp == 2) {
-			tmp = Misc1.randomInt(12);
+			tmp = Rnd.randomInt(12);
 			if (tmp > 3) {
 				placeClosedDoor(y, x);
 			} else if (tmp == 3) {
@@ -312,8 +312,8 @@ public class Generate {
 					/* Note: don't let y1/x1 be zero, and don't let y2/x2 be equal
 					   to cur_height-1/cur_width-1, these values are always
 					   BOUNDARY_ROCK. */
-					y1 = Misc1.randomInt(Variable.currHeight - 14);
-					x1 = Misc1.randomInt(Variable.currWidth  - 14);
+					y1 = Rnd.randomInt(Variable.currHeight - 14);
+					x1 = Rnd.randomInt(Variable.currWidth  - 14);
 					y2 = y1 + 12;
 					x2 = x1 + 12;
 					do {
@@ -350,11 +350,11 @@ public class Generate {
 			flag = false;
 			count = 0;
 			do {
-				y1 = y - yd - 1 + Misc1.randomInt(2 * yd + 1);
-				x1 = x - xd - 1 + Misc1.randomInt(2 * xd + 1);
+				y1 = y - yd - 1 + Rnd.randomInt(2 * yd + 1);
+				x1 = x - xd - 1 + Rnd.randomInt(2 * xd + 1);
 				c_ptr = Variable.cave[y1][x1];
 				if ((c_ptr.fval != Constants.NULL_WALL) && (c_ptr.fval <= Constants.MAX_CAVE_FLOOR) && (c_ptr.treasureIndex == 0)) {
-					Misc3.placeTrap(y1, x1, Misc1.randomInt(Constants.MAX_TRAP) - 1);
+					Misc3.placeTrap(y1, x1, Rnd.randomInt(Constants.MAX_TRAP) - 1);
 					flag = true;
 				}
 				count++;
@@ -381,16 +381,16 @@ public class Generate {
 		short floor;
 		CaveType c_ptr, d_ptr;
 		
-		if (Variable.dungeonLevel <= Misc1.randomInt(25)) {
+		if (Variable.dungeonLevel <= Rnd.randomInt(25)) {
 			floor = Constants.LIGHT_FLOOR;	/* Floor with light	*/
 		} else {
 			floor = Constants.DARK_FLOOR;		/* Dark floor		*/
 		}
 		
-		y_height = yval - Misc1.randomInt(4);
-		y_depth  = yval + Misc1.randomInt(3);
-		x_left   = xval - Misc1.randomInt(11);
-		x_right  = xval + Misc1.randomInt(11);
+		y_height = yval - Rnd.randomInt(4);
+		y_depth  = yval + Rnd.randomInt(3);
+		x_left   = xval - Rnd.randomInt(11);
+		x_right  = xval + Rnd.randomInt(11);
 		
 		/* the x dim of rooms tends to be much larger than the y dim, so don't
 		   bother rewriting the y loop */
@@ -431,17 +431,17 @@ public class Generate {
 		short floor;
 		CaveType c_ptr, d_ptr;
 		
-		if (Variable.dungeonLevel <= Misc1.randomInt(25)) {
+		if (Variable.dungeonLevel <= Rnd.randomInt(25)) {
 			floor = Constants.LIGHT_FLOOR;	/* Floor with light	*/
 		} else {
 			floor = Constants.DARK_FLOOR;		/* Dark floor		*/
 		}
-		limit = 1 + Misc1.randomInt(2);
+		limit = 1 + Rnd.randomInt(2);
 		for (i0 = 0; i0 < limit; i0++) {
-			y_height = yval - Misc1.randomInt(4);
-			y_depth  = yval + Misc1.randomInt(3);
-			x_left   = xval - Misc1.randomInt(11);
-			x_right  = xval + Misc1.randomInt(11);
+			y_height = yval - Rnd.randomInt(4);
+			y_depth  = yval + Rnd.randomInt(3);
+			x_left   = xval - Rnd.randomInt(11);
+			x_right  = xval + Rnd.randomInt(11);
 			
 			/* the x dim of rooms tends to be much larger than the y dim, so don't
 			   bother rewriting the y loop */
@@ -493,7 +493,7 @@ public class Generate {
 		short floor;
 		CaveType c_ptr, d_ptr;
 		
-		if (Variable.dungeonLevel <= Misc1.randomInt(25)) {
+		if (Variable.dungeonLevel <= Rnd.randomInt(25)) {
 			floor = Constants.LIGHT_FLOOR;	/* Floor with light	*/
 		} else {
 			floor = Constants.DARK_FLOOR;		/* Dark floor		*/
@@ -545,9 +545,9 @@ public class Generate {
 			d_ptr.fval = Constants.TMP1_WALL;
 		}
 		/* Inner room variations		*/
-		switch(Misc1.randomInt(5)) {
+		switch (Rnd.randomInt(5)) {
 		case 1:	/* Just an inner room.	*/
-			tmp = Misc1.randomInt(4);
+			tmp = Rnd.randomInt(4);
 			if (tmp < 3) {	/* Place a door	*/
 				if (tmp == 1) {
 					placeSecretDoor(y_height - 1, xval);
@@ -565,7 +565,7 @@ public class Generate {
 			break;
 			
 		case 2:	/* Treasure Vault	*/
-			tmp = Misc1.randomInt(4);
+			tmp = Rnd.randomInt(4);
 			if (tmp < 3) {	/* Place a door	*/
 				if (tmp == 1) {
 					placeSecretDoor(y_height - 1, xval);
@@ -587,7 +587,7 @@ public class Generate {
 			Variable.cave[yval - 1][xval].fval = Constants.TMP1_WALL;
 			Variable.cave[yval + 1][xval].fval = Constants.TMP1_WALL;
 			
-			tmp = Misc1.randomInt(4);	/* Place a door	*/
+			tmp = Rnd.randomInt(4);	/* Place a door	*/
 			if (tmp < 3) {
 				placeLockedDoor(yval - 3 + (tmp << 1), xval); /* 1 -> yval-1; 2 -> yval+1*/
 			} else {
@@ -595,7 +595,7 @@ public class Generate {
 			}
 			
 			/* Place an object in the treasure vault	*/
-			tmp = Misc1.randomInt(10);
+			tmp = Rnd.randomInt(10);
 			if (tmp > 2) {
 				Misc3.placeObject(yval, xval, false);
 			} else if (tmp == 2) {
@@ -605,13 +605,13 @@ public class Generate {
 			}
 			
 			/* Guard the treasure well		*/
-			vaultMonster(yval, xval, 2 + Misc1.randomInt(3));
+			vaultMonster(yval, xval, 2 + Rnd.randomInt(3));
 			/* If the monsters don't get 'em.	*/
-			vaultTrap(yval, xval, 4, 10, 2 + Misc1.randomInt(3));
+			vaultTrap(yval, xval, 4, 10, 2 + Rnd.randomInt(3));
 			break;
 			
 		case 3:	/* Inner pillar(s).	*/
-			tmp = Misc1.randomInt(4);
+			tmp = Rnd.randomInt(4);
 			if (tmp < 3) {	/* Place a door	*/
 				if (tmp == 1) {
 					placeSecretDoor(y_height - 1, xval);
@@ -632,8 +632,8 @@ public class Generate {
 					c_ptr.fval = Constants.TMP1_WALL;
 				}
 			}
-			if (Misc1.randomInt(2) == 1) {
-				tmp = Misc1.randomInt(2);
+			if (Rnd.randomInt(2) == 1) {
+				tmp = Rnd.randomInt(2);
 				for (i = yval - 1; i <= yval + 1; i++) {
 					for (j = xval - 5 - tmp; j <= xval - 3 - tmp; j++) {
 						c_ptr = Variable.cave[i][j];
@@ -648,7 +648,7 @@ public class Generate {
 				}
 			}
 			
-			if (Misc1.randomInt(3) == 1) {	/* Inner rooms	*/
+			if (Rnd.randomInt(3) == 1) {	/* Inner rooms	*/
 				for (i = xval - 5; i <= xval + 5; i++) {
 					c_ptr = Variable.cave[yval - 1][i];
 					c_ptr.fval = Constants.TMP1_WALL;
@@ -657,21 +657,21 @@ public class Generate {
 				}
 				Variable.cave[yval][xval - 5].fval = Constants.TMP1_WALL;
 				Variable.cave[yval][xval + 5].fval = Constants.TMP1_WALL;
-				placeSecretDoor(yval - 3 + (Misc1.randomInt(2) << 1), xval - 3);
-				placeSecretDoor(yval - 3 + (Misc1.randomInt(2) << 1), xval + 3);
-				if (Misc1.randomInt(3) == 1) {
+				placeSecretDoor(yval - 3 + (Rnd.randomInt(2) << 1), xval - 3);
+				placeSecretDoor(yval - 3 + (Rnd.randomInt(2) << 1), xval + 3);
+				if (Rnd.randomInt(3) == 1) {
 					Misc3.placeObject(yval, xval - 2, false);
 				}
-				if (Misc1.randomInt(3) == 1) {
+				if (Rnd.randomInt(3) == 1) {
 					Misc3.placeObject(yval, xval + 2, false);
 				}
-				vaultMonster(yval, xval - 2, Misc1.randomInt(2));
-				vaultMonster(yval, xval + 2, Misc1.randomInt(2));
+				vaultMonster(yval, xval - 2, Rnd.randomInt(2));
+				vaultMonster(yval, xval + 2, Rnd.randomInt(2));
 			}
 			break;
 			
 		case 4:	/* Maze inside.	*/
-			tmp = Misc1.randomInt(4);
+			tmp = Rnd.randomInt(4);
 			if (tmp < 3) {	/* Place a door	*/
 				if (tmp == 1) {
 					placeSecretDoor(y_height - 1, xval);
@@ -695,11 +695,11 @@ public class Generate {
 			}
 			
 			/* Monsters just love mazes.		*/
-			vaultMonster(yval, xval - 5, Misc1.randomInt(3));
-			vaultMonster(yval, xval + 5, Misc1.randomInt(3));
+			vaultMonster(yval, xval - 5, Rnd.randomInt(3));
+			vaultMonster(yval, xval + 5, Rnd.randomInt(3));
 			/* Traps make them entertaining.	*/
-			vaultTrap(yval, xval - 3, 2, 8, Misc1.randomInt(3));
-			vaultTrap(yval, xval + 3, 2, 8, Misc1.randomInt(3));
+			vaultTrap(yval, xval - 3, 2, 8, Rnd.randomInt(3));
+			vaultTrap(yval, xval + 3, 2, 8, Rnd.randomInt(3));
 			/* Mazes should have some treasure too..	*/
 			for (i = 0; i < 3; i++) {
 				Misc3.spawnRandomObject(yval, xval, 1);
@@ -716,14 +716,14 @@ public class Generate {
 				c_ptr.fval = Constants.TMP1_WALL;
 			}
 			
-			if (Misc1.randomInt(2) == 1) {
-				i = Misc1.randomInt(10);
+			if (Rnd.randomInt(2) == 1) {
+				i = Rnd.randomInt(10);
 				placeSecretDoor(y_height - 1, xval - i);
 				placeSecretDoor(y_height - 1, xval + i);
 				placeSecretDoor(y_depth + 1, xval - i);
 				placeSecretDoor(y_depth + 1, xval + i);
 			} else {
-				i = Misc1.randomInt(3);
+				i = Rnd.randomInt(3);
 				placeSecretDoor(yval + i, x_left - 1);
 				placeSecretDoor(yval - i, x_left - 1);
 				placeSecretDoor(yval + i, x_right + 1);
@@ -731,12 +731,12 @@ public class Generate {
 			}
 			
 			/* Treasure in each one.		*/
-			Misc3.spawnRandomObject(yval, xval, 2 + Misc1.randomInt(2));
+			Misc3.spawnRandomObject(yval, xval, 2 + Rnd.randomInt(2));
 			/* Gotta have some monsters.		*/
-			vaultMonster(yval + 2, xval - 4, Misc1.randomInt(2));
-			vaultMonster(yval + 2, xval + 4, Misc1.randomInt(2));
-			vaultMonster(yval - 2, xval - 4, Misc1.randomInt(2));
-			vaultMonster(yval - 2, xval + 4, Misc1.randomInt(2));
+			vaultMonster(yval + 2, xval - 4, Rnd.randomInt(2));
+			vaultMonster(yval + 2, xval + 4, Rnd.randomInt(2));
+			vaultMonster(yval - 2, xval - 4, Rnd.randomInt(2));
+			vaultMonster(yval - 2, xval + 4, Rnd.randomInt(2));
 			break;
 		default:
 			break;
@@ -752,12 +752,12 @@ public class Generate {
 		short floor;
 		CaveType c_ptr;
 		
-		if (Variable.dungeonLevel <= Misc1.randomInt(25)) {
+		if (Variable.dungeonLevel <= Rnd.randomInt(25)) {
 			floor = Constants.LIGHT_FLOOR;	/* Floor with light	*/
 		} else {
 			floor = Constants.DARK_FLOOR;		/* Dark floor		*/
 		}
-		tmp = 2 + Misc1.randomInt(2);
+		tmp = 2 + Rnd.randomInt(2);
 		y_height = yval - tmp;
 		y_depth  = yval + tmp;
 		x_left   = xval - 1;
@@ -785,7 +785,7 @@ public class Generate {
 			c_ptr.fval = Constants.GRANITE_WALL;
 			c_ptr.litRoom = true;
 		}
-		tmp = 2 + Misc1.randomInt(9);
+		tmp = 2 + Rnd.randomInt(9);
 		y_height = yval - 1;
 		y_depth  = yval + 1;
 		x_left   = xval - tmp;
@@ -822,7 +822,7 @@ public class Generate {
 			}
 		}
 		/* Special features.			*/
-		switch(Misc1.randomInt(4)) {
+		switch (Rnd.randomInt(4)) {
 		case 1:	/* Large middle pillar		*/
 			for (i = yval-1; i <= yval+1; i++) {
 				for (j = xval - 1; j <= xval + 1; j++) {
@@ -840,7 +840,7 @@ public class Generate {
 			Variable.cave[yval - 1][xval].fval = Constants.TMP1_WALL;
 			Variable.cave[yval + 1][xval].fval = Constants.TMP1_WALL;
 			
-			tmp = Misc1.randomInt(4);	/* Place a door	*/
+			tmp = Rnd.randomInt(4);	/* Place a door	*/
 			if (tmp < 3) {
 				placeSecretDoor(yval - 3 + (tmp << 1), xval);
 			} else {
@@ -850,13 +850,13 @@ public class Generate {
 			/* Place a treasure in the vault		*/
 			Misc3.placeObject(yval, xval, false);
 			/* Let's guard the treasure well.	*/
-			vaultMonster(yval, xval, 2 + Misc1.randomInt(2));
+			vaultMonster(yval, xval, 2 + Rnd.randomInt(2));
 			/* Traps naturally			*/
-			vaultTrap(yval, xval, 4, 4, 1 + Misc1.randomInt(3));
+			vaultTrap(yval, xval, 4, 4, 1 + Rnd.randomInt(3));
 			break;
 			
 		case 3:
-			if (Misc1.randomInt(3) == 1) {
+			if (Rnd.randomInt(3) == 1) {
 				Variable.cave[yval - 1][xval - 2].fval = Constants.TMP1_WALL;
 				Variable.cave[yval + 1][xval - 2].fval = Constants.TMP1_WALL;
 				Variable.cave[yval - 1][xval + 2].fval = Constants.TMP1_WALL;
@@ -865,19 +865,19 @@ public class Generate {
 				Variable.cave[yval - 2][xval + 1].fval = Constants.TMP1_WALL;
 				Variable.cave[yval + 2][xval - 1].fval = Constants.TMP1_WALL;
 				Variable.cave[yval + 2][xval + 1].fval = Constants.TMP1_WALL;
-				if (Misc1.randomInt(3) == 1) {
+				if (Rnd.randomInt(3) == 1) {
 					placeSecretDoor(yval, xval - 2);
 					placeSecretDoor(yval, xval + 2);
 					placeSecretDoor(yval - 2, xval);
 					placeSecretDoor(yval + 2, xval);
 				}
-			} else if (Misc1.randomInt(3) == 1) {
+			} else if (Rnd.randomInt(3) == 1) {
 				Variable.cave[yval][xval].fval = Constants.TMP1_WALL;
 				Variable.cave[yval - 1][xval].fval = Constants.TMP1_WALL;
 				Variable.cave[yval + 1][xval].fval = Constants.TMP1_WALL;
 				Variable.cave[yval][xval - 1].fval = Constants.TMP1_WALL;
 				Variable.cave[yval][xval + 1].fval = Constants.TMP1_WALL;
-			} else if (Misc1.randomInt(3) == 1) {
+			} else if (Rnd.randomInt(3) == 1) {
 				Variable.cave[yval][xval].fval = Constants.TMP1_WALL;
 			}
 			break;
@@ -925,8 +925,8 @@ public class Generate {
 				stop_flag = true;
 			}
 			
-			if (Misc1.randomInt(100) > Constants.DUN_TUN_CHG) {
-				if (Misc1.randomInt(Constants.DUN_TUN_RND) == 1) {
+			if (Rnd.randomInt(100) > Constants.DUN_TUN_CHG) {
+				if (Rnd.randomInt(Constants.DUN_TUN_RND) == 1) {
 					getRandomDirection(row_dir, col_dir);
 				} else {
 					getCorrectDirection(row_dir, col_dir, row1, col1, row2, col2);
@@ -935,7 +935,7 @@ public class Generate {
 			tmp_row = row1 + row_dir.value();
 			tmp_col = col1 + col_dir.value();
 			while (!Misc1.isInBounds(tmp_row, tmp_col)) {
-				if (Misc1.randomInt(Constants.DUN_TUN_RND) == 1) {
+				if (Rnd.randomInt(Constants.DUN_TUN_RND) == 1) {
 					getRandomDirection(row_dir, col_dir);
 				} else {
 					getCorrectDirection(row_dir, col_dir, row1, col1, row2, col2);
@@ -992,7 +992,7 @@ public class Generate {
 					}
 					door_flag = true;
 				}
-				if (Misc1.randomInt(100) > Constants.DUN_TUN_CON) {
+				if (Rnd.randomInt(100) > Constants.DUN_TUN_CON) {
 					/* make sure that tunnel has gone a reasonable distance
 					   before stopping it, this helps prevent isolated rooms */
 					tmp_row = row1 - start_row;
@@ -1017,7 +1017,7 @@ public class Generate {
 		for (i = 0; i < wallindex; i++) {
 			c_ptr = Variable.cave[wallstk[i].y][wallstk[i].x];
 			if (c_ptr.fval == Constants.TMP2_WALL) {
-				if (Misc1.randomInt(100) < Constants.DUN_TUN_PEN) {
+				if (Rnd.randomInt(100) < Constants.DUN_TUN_PEN) {
 					placeDoor(wallstk[i].y, wallstk[i].x);
 				} else {
 					/* these have to be doorways to rooms */
@@ -1048,7 +1048,7 @@ public class Generate {
 	
 	/* Places door at y, x position if at least 2 walls found	*/
 	private static void tryDoor(int y, int x) {
-		if ((Variable.cave[y][x].fval == Constants.CORR_FLOOR) && (Misc1.randomInt(100) > Constants.DUN_TUN_JCT)  && isNextTo(y, x)) {
+		if ((Variable.cave[y][x].fval == Constants.CORR_FLOOR) && (Rnd.randomInt(100) > Constants.DUN_TUN_JCT)  && isNextTo(y, x)) {
 			placeDoor(y, x);
 		}
 	}
@@ -1059,8 +1059,8 @@ public class Generate {
 		CaveType c_ptr;
 		
 		do {
-			i = Misc1.randomInt(Variable.currHeight - 2);
-			j = Misc1.randomInt(Variable.currWidth - 2);
+			i = Rnd.randomInt(Variable.currHeight - 2);
+			j = Rnd.randomInt(Variable.currWidth - 2);
 			c_ptr = Variable.cave[i][j];
 		} while (c_ptr.fval >= Constants.MIN_CLOSED_SPACE || (c_ptr.creatureIndex != 0) || (c_ptr.treasureIndex != 0));
 		
@@ -1083,9 +1083,9 @@ public class Generate {
 				room_map[i][j] = 0;
 			}
 		}
-		k = Misc1.randomIntNormalized(Constants.DUN_ROO_MEA, 2);
+		k = Rnd.randomIntNormalized(Constants.DUN_ROO_MEA, 2);
 		for (i = 0; i < k; i++) {
-			room_map[Misc1.randomInt(row_rooms)-1][Misc1.randomInt(col_rooms)-1] = 1;
+			room_map[Rnd.randomInt(row_rooms)-1][Rnd.randomInt(col_rooms)-1] = 1;
 		}
 		k = 0;
 		for (i = 0; i < row_rooms; i++) {
@@ -1093,8 +1093,8 @@ public class Generate {
 				if (room_map[i][j] != 0) {
 					yloc[k] = i * (Constants.SCREEN_HEIGHT >> 1) + Constants.QUART_HEIGHT;
 					xloc[k] = j * (Constants.SCREEN_WIDTH >> 1) + Constants.QUART_WIDTH;
-					if (Variable.dungeonLevel > Misc1.randomInt(Constants.DUN_UNUSUAL)) {
-						tmp = Misc1.randomInt(3);
+					if (Variable.dungeonLevel > Rnd.randomInt(Constants.DUN_UNUSUAL)) {
+						tmp = Rnd.randomInt(3);
 						if (tmp == 1) {
 							buildType1(yloc[k], xloc[k]);
 						} else if (tmp == 2) {
@@ -1111,8 +1111,8 @@ public class Generate {
 		}
 		
 		for (i = 0; i < k; i++) {
-			pick1 = Misc1.randomInt(k) - 1;
-			pick2 = Misc1.randomInt(k) - 1;
+			pick1 = Rnd.randomInt(k) - 1;
+			pick2 = Rnd.randomInt(k) - 1;
 			y1 = yloc[pick1];
 			x1 = xloc[pick1];
 			yloc[pick1] = yloc[pick2];
@@ -1152,19 +1152,19 @@ public class Generate {
 		} else if (alloc_level > 10) {
 			alloc_level = 10;
 		}
-		placeStairs(2, Misc1.randomInt(2) + 2, 3);
-		placeStairs(1, Misc1.randomInt(2), 3);
+		placeStairs(2, Rnd.randomInt(2) + 2, 3);
+		placeStairs(1, Rnd.randomInt(2), 3);
 		/* Set up the character co-ords, used by alloc_monster, place_win_monster */
 		IntPointer cr = new IntPointer(Player.y), cc = new IntPointer(Player.x);
 		newSpot(cr, cc);
 		Player.y = cr.value();
 		Player.x = cc.value();
-		Misc1.spawnMonster((Misc1.randomInt(8) + Constants.MIN_MALLOC_LEVEL + alloc_level), 0, true);
-		Misc3.spawnObject(Sets.SET_CORR, 3, Misc1.randomInt(alloc_level));
-		Misc3.spawnObject(Sets.SET_ROOM, 5, Misc1.randomIntNormalized(Constants.TREAS_ROOM_ALLOC, 3));
-		Misc3.spawnObject(Sets.SET_FLOOR, 5, Misc1.randomIntNormalized(Constants.TREAS_ANY_ALLOC, 3));
-		Misc3.spawnObject(Sets.SET_FLOOR, 4, Misc1.randomIntNormalized(Constants.TREAS_GOLD_ALLOC, 3));
-		Misc3.spawnObject(Sets.SET_FLOOR, 1, Misc1.randomInt(alloc_level));
+		Misc1.spawnMonster((Rnd.randomInt(8) + Constants.MIN_MALLOC_LEVEL + alloc_level), 0, true);
+		Misc3.spawnObject(Sets.SET_CORR, 3, Rnd.randomInt(alloc_level));
+		Misc3.spawnObject(Sets.SET_ROOM, 5, Rnd.randomIntNormalized(Constants.TREAS_ROOM_ALLOC, 3));
+		Misc3.spawnObject(Sets.SET_FLOOR, 5, Rnd.randomIntNormalized(Constants.TREAS_ANY_ALLOC, 3));
+		Misc3.spawnObject(Sets.SET_FLOOR, 4, Rnd.randomIntNormalized(Constants.TREAS_GOLD_ALLOC, 3));
+		Misc3.spawnObject(Sets.SET_FLOOR, 1, Rnd.randomInt(alloc_level));
 		if (Variable.dungeonLevel >= Constants.WIN_MON_APPEAR)  Misc1.placeWinMonster();
 	}
 	
@@ -1178,25 +1178,25 @@ public class Generate {
 		
 		yval     = y * 10 + 5;
 		xval     = x * 16 + 16;
-		y_height = yval - Misc1.randomInt(3);
-		y_depth  = yval + Misc1.randomInt(4);
-		x_left   = xval - Misc1.randomInt(6);
-		x_right  = xval + Misc1.randomInt(6);
+		y_height = yval - Rnd.randomInt(3);
+		y_depth  = yval + Rnd.randomInt(4);
+		x_left   = xval - Rnd.randomInt(6);
+		x_right  = xval + Rnd.randomInt(6);
 		for (i = y_height; i <= y_depth; i++) {
 			for (j = x_left; j <= x_right; j++) {
 				Variable.cave[i][j].fval	= Constants.BOUNDARY_WALL;
 			}
 		}
-		tmp = Misc1.randomInt(4);
+		tmp = Rnd.randomInt(4);
 		if (tmp < 3) {
-			i = Misc1.randomInt(y_depth - y_height) + y_height - 1;
+			i = Rnd.randomInt(y_depth - y_height) + y_height - 1;
 			if (tmp == 1) {
 				j = x_left;
 			} else {
 				j = x_right;
 			}
 		} else {
-			j = Misc1.randomInt(x_right - x_left) + x_left - 1;
+			j = Rnd.randomInt(x_right - x_left) + x_left - 1;
 			if (tmp == 3) {
 				i = y_depth;
 			} else {
@@ -1236,14 +1236,14 @@ public class Generate {
 		CaveType c_ptr;
 		int[] rooms = new int[6];
 		
-		Misc1.setSeed(Variable.townSeed);
+		Rnd.setSeed(Variable.townSeed);
 		for (i = 0; i < 6; i++) {
 			rooms[i] = i;
 		}
 		l = 6;
 		for (i = 0; i < 2; i++) {
 			for (j = 0; j < 3; j++) {
-				k = Misc1.randomInt(l) - 1;
+				k = Rnd.randomInt(l) - 1;
 				buildStore(rooms[k], i, j);
 				for (m = k; m < l - 1; m++) {
 					rooms[m] = rooms[m + 1];
@@ -1255,7 +1255,7 @@ public class Generate {
 		/* make stairs before reset_seed, so that they don't move around */
 		placeBoundary();
 		placeStairs(2, 1, 0);
-		Misc1.resetSeed();
+		Rnd.resetSeed();
 		/* Set up the character co-ords, used by alloc_monster below */
 		IntPointer cr = new IntPointer(Player.y), cc = new IntPointer(Player.x);
 		newSpot(cr, cc);

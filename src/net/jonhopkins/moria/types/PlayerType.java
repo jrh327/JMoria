@@ -28,6 +28,7 @@ import net.jonhopkins.moria.Misc1;
 import net.jonhopkins.moria.Misc3;
 import net.jonhopkins.moria.Moria1;
 import net.jonhopkins.moria.Moria2;
+import net.jonhopkins.moria.Rnd;
 import net.jonhopkins.moria.Variable;
 
 public final class PlayerType {
@@ -154,8 +155,8 @@ public final class PlayerType {
 					Moria1.disturbPlayer(false, false);
 					Misc3.printHunger();
 				}
-				if ((flags.food < Constants.PLAYER_FOOD_FAINT) && (Misc1.randomInt(8) == 1)) {
-					flags.paralysis += Misc1.randomInt(5);
+				if ((flags.food < Constants.PLAYER_FOOD_FAINT) && (Rnd.randomInt(8) == 1)) {
+					flags.paralysis += Rnd.randomInt(5);
 					IO.printMessage("You faint from the lack of food.");
 					Moria1.disturbPlayer(true, false);
 				}
@@ -538,7 +539,7 @@ public final class PlayerType {
 	
 	private void teleport() {
 		// Random teleportation
-		if ((flags.teleport > 0) && (Misc1.randomInt(100) == 1)) {
+		if ((flags.teleport > 0) && (Rnd.randomInt(100) == 1)) {
 			Moria1.disturbPlayer(false, false);
 			Misc3.teleport(40);
 		}

@@ -31,134 +31,12 @@ public class Misc1 {
 	private Misc1() { }
 	
 	/**
-	 * Gets a new random seed for the random number generator
-	 * 
-	 * @param seed - Used to seed the RNG
-	 */
-	public static void initSeeds(long seed) {
-		long clock_var;
-		
-		if (seed == 0) {
-			clock_var = java.util.Calendar.getInstance().getTimeInMillis();
-		} else {
-			clock_var = seed;
-		}
-		
-		Variable.randesSeed = clock_var;
-		
-		clock_var += 8762;
-		Variable.townSeed = clock_var;
-		
-		clock_var += 113452L;
-		Rnd.setRandomSeed(clock_var);
-		/* make it a little more random */
-		for (clock_var = randomInt(100); clock_var != 0; clock_var--) {
-			Rnd.randomNumber();
-		}
-	}
-	
-	/* holds the previous rnd state */
-	private static long oldSeed;
-	
-	/**
-	 * Change to different random number generator state
-	 * 
-	 * @param seed - Used to seed the RNG
-	 */
-	public static void setSeed(long seed) {
-		oldSeed = Rnd.getRandomSeed();
-		
-		/* want reproducible state here */
-		Rnd.setRandomSeed(seed);
-	}
-	
-	/**
-	 * Restore the normal random generator state
-	 */
-	public static void resetSeed() {
-		Rnd.setRandomSeed(oldSeed);
-	}
-	
-	/**
 	 * Check the day-time strings to see if open -RAK-
 	 * 
 	 * @return Always true, not using play-time hours anymore
 	 */
 	public static boolean checkTime() {
 		return true;
-	}
-	
-	/**
-	 * Generates a random integer x where 1<=X<=MAXVAL -RAK-
-	 * 
-	 * @param maxval - The maximum value to be returned
-	 * @return A random integer x where 1 <= x <= maxval
-	 */
-	public static int randomInt(int maxval) {
-		long randval;
-		
-		randval = Rnd.randomNumber();
-		return (int)(randval % maxval) + 1;
-	}
-	
-	/**
-	 * Generates a random integer number of NORMAL distribution -RAK-
-	 * 
-	 * @param mean - 
-	 * @param stand - 
-	 * @return 
-	 */
-	public static int randomIntNormalized(int mean, int stand) {
-		int tmp, offset, low, iindex, high;
-		
-		tmp = randomInt(Constants.MAX_SHORT);
-		
-		/* off scale, assign random value between 4 and 5 times SD */
-		if (tmp == Constants.MAX_SHORT) {
-			offset = 4 * stand + randomInt(stand);
-			
-			/* one half are negative */
-			if (randomInt(2) == 1) {
-				offset = -offset;
-			}
-			
-			return mean + offset;
-		}
-		
-		/* binary search normal normal_table to get index that matches tmp */
-		/* this takes up to 8 iterations */
-		low = 0;
-		iindex = Constants.NORMAL_TABLE_SIZE >> 1;
-		high = Constants.NORMAL_TABLE_SIZE;
-		while (true) {
-			if ((Tables.normalTable[iindex] == tmp) || (high == (low + 1))) {
-				break;
-			}
-			
-			if (Tables.normalTable[iindex] > tmp) {
-				high = iindex;
-				iindex = low + ((iindex - low) >> 1);
-			} else {
-				low = iindex;
-				iindex += ((high - iindex) >> 1);
-			}
-		}
-		
-		/* might end up one below target, check that here */
-		if (Tables.normalTable[iindex] < tmp) {
-			++iindex;
-		}
-		
-		/* normal_table is based on SD of 64, so adjust the index value here,
-		 * round the half way case up */
-		offset = ((stand * iindex) + (Constants.NORMAL_TABLE_SD >> 1)) / Constants.NORMAL_TABLE_SD;
-		
-		/* one half should be negative */
-		if (randomInt(2) == 1) {
-			offset = -offset;
-		}
-		
-		return mean + offset;
 	}
 	
 	/**
@@ -363,7 +241,7 @@ public class Misc1 {
 		int i, sum = 0;
 		
 		for (i = 0; i < num; i++) {
-			sum += randomInt(sides);
+			sum += Rnd.randomInt(sides);
 		}
 		return sum;
 	}
@@ -555,8 +433,8 @@ public class Misc1 {
 			return '@';
 		} else if ((f_ptr.status & Constants.PY_BLIND) != 0) {
 			return ' ';
-		} else if ((f_ptr.imagine > 0) && (randomInt (12) == 1)) {
-			return (char)(randomInt(95) + 31);
+		} else if ((f_ptr.imagine > 0) && (Rnd.randomInt (12) == 1)) {
+			return (char)(Rnd.randomInt(95) + 31);
 		} else if ((cave_ptr.creatureIndex > 1) && (Monsters.monsterList[cave_ptr.creatureIndex].monsterLight )) {
 			return Monsters.creatureList[Monsters.monsterList[cave_ptr.creatureIndex].index].cchar;
 		} else if (!cave_ptr.permLight && !cave_ptr.tempLight && !cave_ptr.fieldMark) {
@@ -626,7 +504,7 @@ public class Misc1 {
 		do {
 			for (i = Monsters.freeMonsterIndex - 1; i >= Constants.MIN_MONIX; i--) {
 				mon_ptr = Monsters.monsterList[i];
-				if ((cur_dis < mon_ptr.currDistance) && (randomInt(3) == 1)) {
+				if ((cur_dis < mon_ptr.currDistance) && (Rnd.randomInt(3) == 1)) {
 					/* Never compact away the Balrog!! */
 					if ((Monsters.creatureList[mon_ptr.index].cmove & Constants.CM_WIN) == 0) {
 						/* in case this is called from within creatures(), this is a
@@ -749,7 +627,7 @@ public class Misc1 {
 			if (Monsters.creatureList[z].sleep == 0) {
 				mon_ptr.sleep = 0;
 			} else {
-				mon_ptr.sleep = (Monsters.creatureList[z].sleep * 2) + randomInt(Monsters.creatureList[z].sleep * 10);
+				mon_ptr.sleep = (Monsters.creatureList[z].sleep * 2) + Rnd.randomInt(Monsters.creatureList[z].sleep * 10);
 			}
 		} else {
 			mon_ptr.sleep = 0;
@@ -774,15 +652,15 @@ public class Misc1 {
 			}
 			mon_ptr = Monsters.monsterList[cur_pos];
 			do {
-				y = randomInt(Variable.currHeight - 2);
-				x = randomInt(Variable.currWidth - 2);
+				y = Rnd.randomInt(Variable.currHeight - 2);
+				x = Rnd.randomInt(Variable.currWidth - 2);
 			} while ((Variable.cave[y][x].fval >= Constants.MIN_CLOSED_SPACE)
 					|| (Variable.cave[y][x].creatureIndex != 0)
 					|| (Variable.cave[y][x].treasureIndex != 0)
 					|| (distance(y, x, Player.y, Player.x) <= Constants.MAX_SIGHT));
 			mon_ptr.y = y;
 			mon_ptr.x = x;
-			mon_ptr.index = randomInt(Constants.WIN_MON_TOT) - 1 + Monsters.monsterLevel[Constants.MAX_MONS_LEVEL];
+			mon_ptr.index = Rnd.randomInt(Constants.WIN_MON_TOT) - 1 + Monsters.monsterLevel[Constants.MAX_MONS_LEVEL];
 			if ((Monsters.creatureList[mon_ptr.index].cdefense & Constants.CD_MAX_HP) != 0) {
 				mon_ptr.hitpoints = getMaxHitpoints(Monsters.creatureList[mon_ptr.index].hitDie);
 			} else {
@@ -809,13 +687,13 @@ public class Misc1 {
 		int i, j, num;
 		
 		if (level == 0) {
-			i = randomInt(Monsters.monsterLevel[0]) - 1;
+			i = Rnd.randomInt(Monsters.monsterLevel[0]) - 1;
 		} else {
 			if (level > Constants.MAX_MONS_LEVEL) {
 				level = Constants.MAX_MONS_LEVEL;
 			}
-			if (randomInt(Constants.MON_NASTY) == 1) {
-				i = randomIntNormalized (0, 4);
+			if (Rnd.randomInt(Constants.MON_NASTY) == 1) {
+				i = Rnd.randomIntNormalized (0, 4);
 				level += Math.abs(i) + 1;
 				if (level > Constants.MAX_MONS_LEVEL) {
 					level = Constants.MAX_MONS_LEVEL;
@@ -828,14 +706,14 @@ public class Misc1 {
 				 * approx 2/n% of the time on level n, and 1/n*n% are 1st level. */
 				
 				num = Monsters.monsterLevel[level] - Monsters.monsterLevel[0];
-				i = randomInt(num) - 1;
-				j = randomInt(num) - 1;
+				i = Rnd.randomInt(num) - 1;
+				j = Rnd.randomInt(num) - 1;
 				if (j > i) {
 					i = j;
 				}
 				level = Monsters.creatureList[i + Monsters.monsterLevel[0]].level;
 			}
-			i = randomInt(Monsters.monsterLevel[level] - Monsters.monsterLevel[level - 1]) - 1 + Monsters.monsterLevel[level - 1];
+			i = Rnd.randomInt(Monsters.monsterLevel[level] - Monsters.monsterLevel[level - 1]) - 1 + Monsters.monsterLevel[level - 1];
 		}
 		return i;
 	}
@@ -853,8 +731,8 @@ public class Misc1 {
 		
 		for (i = 0; i < num; i++) {
 			do {
-				y = randomInt(Variable.currHeight - 2);
-				x = randomInt(Variable.currWidth - 2);
+				y = Rnd.randomInt(Variable.currHeight - 2);
+				x = Rnd.randomInt(Variable.currWidth - 2);
 			} while (Variable.cave[y][x].fval >= Constants.MIN_CLOSED_SPACE || (Variable.cave[y][x].creatureIndex != 0) || (distance(y, x, Player.y, Player.x) <= dis));
 			
 			l = getRandomMonsterForLevel(Variable.dungeonLevel);
@@ -887,8 +765,8 @@ public class Misc1 {
 		summon = false;
 		l = getRandomMonsterForLevel(Variable.dungeonLevel + Constants.MON_SUMMON_ADJ);
 		do {
-			j = y.value() - 2 + randomInt(3);
-			k = x.value() - 2 + randomInt(3);
+			j = y.value() - 2 + Rnd.randomInt(3);
+			k = x.value() - 2 + Rnd.randomInt(3);
 			if (isInBounds(j, k) ) {
 				cave_ptr = Variable.cave[j][k];
 				if (cave_ptr.fval <= Constants.MAX_OPEN_SPACE && (cave_ptr.creatureIndex == 0)) {
@@ -924,7 +802,7 @@ public class Misc1 {
 		summon = false;
 		l = Monsters.monsterLevel[Constants.MAX_MONS_LEVEL];
 		do {
-			m = randomInt(l) - 1;
+			m = Rnd.randomInt(l) - 1;
 			ctr = 0;
 			do {
 				if ((Monsters.creatureList[m].cdefense & Constants.CD_UNDEAD) != 0) {
@@ -942,8 +820,8 @@ public class Misc1 {
 		} while(l != 0);
 		
 		do {
-			j = y.value() - 2 + randomInt(3);
-			k = x.value() - 2 + randomInt(3);
+			j = y.value() - 2 + Rnd.randomInt(3);
+			k = x.value() - 2 + Rnd.randomInt(3);
 			if (isInBounds(j, k) ) {
 				cave_ptr = Variable.cave[j][k];
 				if (cave_ptr.fval <= Constants.MAX_OPEN_SPACE && (cave_ptr.creatureIndex == 0)) {
@@ -1001,7 +879,7 @@ public class Misc1 {
 						default:
 							chance = 10;
 						}
-						if (randomInt (100) <= chance) {
+						if (Rnd.randomInt (100) <= chance) {
 							Moria3.deleteObject(i, j);
 							ctr++;
 						}
@@ -1061,7 +939,7 @@ public class Misc1 {
 	 * @return Whether the object is enchanted
 	 */
 	public static boolean magik(int chance) {
-		return randomInt(100) <= chance;
+		return Rnd.randomInt(100) <= chance;
 	}
 	
 	/* Enchant a bonus based on degree desired -RAK- */
@@ -1074,7 +952,7 @@ public class Misc1 {
 			stand_dev = max_std;
 		}
 		/* abs may be a macro, don't call it with randnor as a parameter */
-		tmp = randomIntNormalized(0, stand_dev);
+		tmp = Rnd.randomIntNormalized(0, stand_dev);
 		x = (Math.abs(tmp) / 10) + base;
 		if (x < base) {
 			return base;

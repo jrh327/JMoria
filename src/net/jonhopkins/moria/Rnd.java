@@ -22,9 +22,6 @@
 package net.jonhopkins.moria;
 
 public class Rnd {
-	/* Define this to compile as a standalone test */
-	/* #define TEST_RNG */
-	
 	/* This alg uses a prime modulus multiplicative congruential generator
 	   (PMMLCG), also known as a Lehmer Grammer, which satisfies the following
 	   properties
@@ -72,12 +69,12 @@ public class Rnd {
 	   Returns integers in the range 1 to 2^31-1.
 	 */
 	
-	private static final long RNG_M = 2147483647;	/* m = 2^31 - 1 */
+	private static final long RNG_M = 2147483647; // m = 2^31 - 1
 	private static final long RNG_A = 16807;
-	private static final long RNG_Q = 127773;	/* m div a */
-	private static final long RNG_R = 2836;		/* m mod a */
+	private static final long RNG_Q = 127773;     // m div a
+	private static final long RNG_R = 2836;       // m mod a
 	
-	/* 32 bit seed */
+	// 32 bit seed
 	private static long rndSeed;
 	
 	private Rnd() { }
@@ -91,13 +88,16 @@ public class Rnd {
 		rndSeed = (seedval % (RNG_M - 1)) + 1;
 	}
 	
-	/* returns a pseudo-random number from set 1, 2, ..., RNG_M - 1 */
+	/**
+	 * Returns a pseudo-random number from set 1, 2, ..., RNG_M - 1
+	 * 
+	 * @return A random number
+	 */
 	public static long randomNumber() {
-		long low, high, test;
+		long high = rndSeed / RNG_Q;
+		long low = rndSeed % RNG_Q;
+		long test = RNG_A * low - RNG_R * high;
 		
-		high = rndSeed / RNG_Q;
-		low = rndSeed % RNG_Q;
-		test = RNG_A * low - RNG_R * high;
 		if (test > 0) {
 			rndSeed = test;
 		} else {
@@ -106,16 +106,135 @@ public class Rnd {
 		return rndSeed;
 	}
 	
+	/**
+	 * Gets a new random seed for the random number generator
+	 * 
+	 * @param seed - Used to seed the RNG
+	 */
+	public static void initSeeds(long seed) {
+		long clock_var;
+		
+		if (seed == 0) {
+			clock_var = System.currentTimeMillis();
+		} else {
+			clock_var = seed;
+		}
+		
+		Variable.randesSeed = clock_var;
+		
+		clock_var += 8762;
+		Variable.townSeed = clock_var;
+		
+		clock_var += 113452L;
+		setRandomSeed(clock_var);
+		
+		// make it a little more random
+		for (clock_var = randomInt(100); clock_var != 0; clock_var--) {
+			randomNumber();
+		}
+	}
+	
+	// holds the previous rnd state
+	private static long oldSeed;
+	
+	/**
+	 * Change to different random number generator state
+	 * 
+	 * @param seed - Used to seed the RNG
+	 */
+	public static void setSeed(long seed) {
+		oldSeed = getRandomSeed();
+		
+		// want reproducible state here
+		setRandomSeed(seed);
+	}
+	
+	/**
+	 * Restore the normal random generator state
+	 */
+	public static void resetSeed() {
+		setRandomSeed(oldSeed);
+	}
+	
+	/**
+	 * Generates a random integer x where 1<=X<=MAXVAL -RAK-
+	 * 
+	 * @param maxval - The maximum value to be returned
+	 * @return A random integer x where 1 <= x <= maxval
+	 */
+	public static int randomInt(int maxval) {
+		long randval = randomNumber();
+		return (int)(randval % maxval) + 1;
+	}
+	
+	/**
+	 * Generates a random integer number of NORMAL distribution -RAK-
+	 * 
+	 * @param mean
+	 * @param stand 
+	 * @return 
+	 */
+	public static int randomIntNormalized(int mean, int stand) {
+		int tmp = randomInt(Constants.MAX_SHORT);
+		
+		// off scale, assign random value between 4 and 5 times SD
+		if (tmp == Constants.MAX_SHORT) {
+			int offset = 4 * stand + randomInt(stand);
+			
+			// one half are negative
+			if (randomInt(2) == 1) {
+				offset = -offset;
+			}
+			
+			return mean + offset;
+		}
+		
+		// binary search normal normal_table to get index that matches tmp
+		// this takes up to 8 iterations
+		int low = 0;
+		int index = Constants.NORMAL_TABLE_SIZE >> 1;
+		int high = Constants.NORMAL_TABLE_SIZE;
+		
+		while (true) {
+			if ((Tables.normalTable[index] == tmp) || (high == (low + 1))) {
+				break;
+			}
+			
+			if (Tables.normalTable[index] > tmp) {
+				high = index;
+				index = low + ((index - low) >> 1);
+			} else {
+				low = index;
+				index += ((high - index) >> 1);
+			}
+		}
+		
+		// might end up one below target, check that here
+		if (Tables.normalTable[index] < tmp) {
+			++index;
+		}
+		
+		// normal_table is based on SD of 64, so adjust the index value here,
+		// round the half way case up
+		int offset = ((stand * index) + (Constants.NORMAL_TABLE_SD >> 1))
+				/ Constants.NORMAL_TABLE_SD;
+		
+		// one half should be negative
+		if (randomInt(2) == 1) {
+			offset = -offset;
+		}
+		
+		return mean + offset;
+	}
+	
 	public static void test() {
-		long i, random;
+		setRandomSeed(0L);
 		
-		setRandomSeed (0L);
-		
-		for (i = 1; i < 10000; i++) {
+		for (int i = 1; i < 10000; i++) {
 			randomNumber ();
 		}
 		
-		random = randomNumber ();
+		long random = randomNumber();
 		System.out.printf("z[10001] = %d, should be 1043618065\n", random);
 		if (random == 1043618065L) {
 			System.out.println("success!!!\n");

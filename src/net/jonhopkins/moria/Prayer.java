@@ -63,7 +63,7 @@ public class Prayer {
 				s_ptr = Player.magicSpell[Player.py.misc.playerClass - 1][choice.value()];
 				Variable.freeTurnFlag = false;
 				
-				if (Misc1.randomInt(100) < chance.value()) {
+				if (Rnd.randomInt(100) < chance.value()) {
 					IO.printMessage("You lost your concentration!");
 				} else {
 					/* Prayers.					*/
@@ -76,7 +76,7 @@ public class Prayer {
 						Spells.changePlayerHitpoints(Misc1.damageRoll(3, 3));
 						break;
 					case 3:
-						Spells.bless(Misc1.randomInt(12) + 12);
+						Spells.bless(Rnd.randomInt(12) + 12);
 						break;
 					case 4:
 						Spells.removeFear();
@@ -105,7 +105,7 @@ public class Prayer {
 						Spells.changePlayerHitpoints(Misc1.damageRoll(4, 4));
 						break;
 					case 12:
-						Spells.bless(Misc1.randomInt(24) + 24);
+						Spells.bless(Rnd.randomInt(24) + 24);
 						break;
 					case 13:
 						Spells.sleepMonsters(Player.y, Player.x);
@@ -124,8 +124,8 @@ public class Prayer {
 						break;
 					case 16:
 						f_ptr = Player.py.flags;
-						f_ptr.resistHeat += Misc1.randomInt(10) + 10;
-						f_ptr.resistCold += Misc1.randomInt(10) + 10;
+						f_ptr.resistHeat += Rnd.randomInt(10) + 10;
+						f_ptr.resistCold += Rnd.randomInt(10) + 10;
 						break;
 					case 17:
 						Spells.curePoison();
@@ -139,7 +139,7 @@ public class Prayer {
 						Spells.changePlayerHitpoints(Misc1.damageRoll(8, 4));
 						break;
 					case 20:
-						Spells.detectInvisibleMonsters(Misc1.randomInt(24) + 24);
+						Spells.detectInvisibleMonsters(Rnd.randomInt(24) + 24);
 						break;
 					case 21:
 						Spells.protectFromEvil();
@@ -157,7 +157,7 @@ public class Prayer {
 						Spells.turnUndead();
 						break;
 					case 26:
-						Spells.bless(Misc1.randomInt(48) + 48);
+						Spells.bless(Rnd.randomInt(48) + 48);
 						break;
 					case 27:
 						Spells.dispelCreature(Constants.CD_UNDEAD, (3 * Player.py.misc.level));
@@ -205,10 +205,10 @@ public class Prayer {
 				if (!Variable.freeTurnFlag) {
 					if (s_ptr.manaCost > m_ptr.currMana) {
 						IO.printMessage("You faint from fatigue!");
-						Player.py.flags.paralysis = Misc1.randomInt((5 * (s_ptr.manaCost - m_ptr.currMana)));
+						Player.py.flags.paralysis = Rnd.randomInt((5 * (s_ptr.manaCost - m_ptr.currMana)));
 						m_ptr.currMana = 0;
 						m_ptr.currManaFraction = 0;
-						if (Misc1.randomInt(3) == 1) {
+						if (Rnd.randomInt(3) == 1) {
 							IO.printMessage("You have damaged your health!");
 							Misc3.decreaseStat(Constants.A_CON);
 						}

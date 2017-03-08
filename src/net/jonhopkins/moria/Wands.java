@@ -52,7 +52,7 @@ public class Wands {
 				if (Player.py.flags.confused > 0) {
 					IO.printMessage("You are confused.");
 					do {
-						dir.value(Misc1.randomInt(9));
+						dir.value(Rnd.randomInt(9));
 					} while (dir.value() == 5);
 				}
 				ident = false;
@@ -61,11 +61,11 @@ public class Wands {
 				if (Player.py.flags.confused > 0) {
 					chance = chance / 2;
 				}
-				if ((chance < Constants.USE_DEVICE) && (Misc1.randomInt(Constants.USE_DEVICE - chance + 1) == 1)) {
+				if ((chance < Constants.USE_DEVICE) && (Rnd.randomInt(Constants.USE_DEVICE - chance + 1) == 1)) {
 					chance = Constants.USE_DEVICE; /* Give everyone a slight chance */
 				}
 				if (chance <= 0)	chance = 1;
-				if (Misc1.randomInt(chance) < Constants.USE_DEVICE) {
+				if (Rnd.randomInt(chance) < Constants.USE_DEVICE) {
 					IO.printMessage("You failed to use the wand properly.");
 				} else if (i_ptr.misc > 0) {
 					i.value(i_ptr.flags);
@@ -158,7 +158,7 @@ public class Wands {
 							ident = true;
 							break;
 						case 24:
-							i.value(1 << (Misc1.randomInt(23) - 1));
+							i.value(1 << (Rnd.randomInt(23) - 1));
 							break;
 						default:
 							IO.printMessage("Internal error in wands()");

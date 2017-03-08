@@ -102,7 +102,7 @@ public class Dungeon {
 			}
 			
 			// Check for creature generation
-			if (Misc1.randomInt(Constants.MAX_MALLOC_CHANCE) == 1) {
+			if (Rnd.randomInt(Constants.MAX_MALLOC_CHANCE) == 1) {
 				Misc1.spawnMonster(1, Constants.MAX_SIGHT, false);
 			}
 			
@@ -118,7 +118,7 @@ public class Dungeon {
 						
 						// unlight creatures
 						Creature.creatures(false);
-					} else if ((lamp.misc < 40) && (Misc1.randomInt(5) == 1) && (flags.blind < 1)) {
+					} else if ((lamp.misc < 40) && (Rnd.randomInt(5) == 1) && (flags.blind < 1)) {
 						Moria1.disturbPlayer (false, false);
 						IO.printMessage("Your light is growing faint.");
 					}
@@ -146,7 +146,7 @@ public class Dungeon {
 			// for 40th level char, check once every 416 turns
 			if (((Variable.turn & 0xF) == 0)
 					&& (flags.confused == 0)
-					&& (Misc1.randomInt(10 + 750 / (5 + misc.level)) == 1)) {
+					&& (Rnd.randomInt(10 + 750 / (5 + misc.level)) == 1)) {
 				for (int i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
 					if (i == Treasure.invenCounter) {
 						i = 22;
@@ -156,7 +156,7 @@ public class Dungeon {
 					// if in equipment list, success 1 out of 10 times
 					if ((lamp.category != Constants.TV_NOTHING)
 							&& isEnchanted(lamp)
-							&& (Misc1.randomInt((i < 22) ? 50 : 10) == 1)) {
+							&& (Rnd.randomInt((i < 22) ? 50 : 10) == 1)) {
 						String tmp = String.format("There's something about what you are %s...",
 								Moria1.describeUse(i));
 						Moria1.disturbPlayer(false, false);
