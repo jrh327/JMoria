@@ -75,24 +75,22 @@ public class Eat {
 				identified = hallucinatePlayer(food);
 				break;
 			case 6:
-				identified = Spells.curePoison();
+				identified = curePoison();
 				break;
 			case 7:
-				identified = Spells.cureBlindness();
+				identified = cureBlindness();
 				break;
 			case 8:
-				identified = cureConfusion();
+				identified = cureFear();
 				break;
 			case 9:
-				identified = Spells.cureConfusion();
+				identified = cureConfusion();
 				break;
 			case 10:
-				identified = true;
-				Spells.loseStrength();
+				identified = loseStrength();
 				break;
 			case 11:
-				identified = true;
-				Spells.loseConstitution();
+				identified = loseConstitution();
 				break;
 			case 16:
 				identified = restoreStrength();
@@ -113,16 +111,16 @@ public class Eat {
 				identified = restoreCharisma();
 				break;
 			case 22:
-				identified = Spells.changePlayerHitpoints(Rnd.randomInt(6));
+				identified = changeHitpoints1();
 				break;
 			case 23:
-				identified = Spells.changePlayerHitpoints(Rnd.randomInt(12));
+				identified = changeHitpoints2();
 				break;
 			case 24:
-				identified = Spells.changePlayerHitpoints(Rnd.randomInt(18));
+				identified = changeHitpoints3();
 				break;
 			case 26:
-				identified = Spells.changePlayerHitpoints(Misc1.damageRoll(3, 12));
+				identified = changeHitpoints4();
 				break;
 			case 27:
 				identified = damagePlayer();
@@ -185,12 +183,34 @@ public class Eat {
 		return true;
 	}
 	
-	private static boolean cureConfusion() {
+	private static boolean curePoison() {
+		return Spells.curePoison();
+	}
+	
+	private static boolean cureBlindness() {
+		return Spells.cureBlindness();
+	}
+	
+	private static boolean cureFear() {
 		if (Player.py.flags.afraid > 1) {
 			Player.py.flags.afraid = 1;
 			return true;
 		}
 		return false;
+	}
+	
+	private static boolean cureConfusion() {
+		return Spells.cureConfusion();
+	}
+	
+	private static boolean loseStrength() {
+		Spells.loseStrength();
+		return true;
+	}
+	
+	private static boolean loseConstitution() {
+		Spells.loseConstitution();
+		return true;
 	}
 	
 	private static boolean restoreStrength() {
@@ -239,6 +259,22 @@ public class Eat {
 			return true;
 		}
 		return false;
+	}
+	
+	private static boolean changeHitpoints1() {
+		return Spells.changePlayerHitpoints(Rnd.randomInt(6));
+	}
+	
+	private static boolean changeHitpoints2() {
+		return Spells.changePlayerHitpoints(Rnd.randomInt(12));
+	}
+	
+	private static boolean changeHitpoints3() {
+		return Spells.changePlayerHitpoints(Rnd.randomInt(18));
+	}
+	
+	private static boolean changeHitpoints4() {
+		return Spells.changePlayerHitpoints(Misc1.damageRoll(3, 12));
 	}
 	
 	private static boolean damagePlayer() {
