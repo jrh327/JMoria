@@ -81,7 +81,9 @@ public class Eat {
 				identified = cureBlindness();
 				break;
 			case 8:
-				identified = cureFear();
+				if (cureFear()) {
+					identified = true;
+				}
 				break;
 			case 9:
 				identified = cureConfusion();
@@ -92,23 +94,53 @@ public class Eat {
 			case 11:
 				identified = loseConstitution();
 				break;
+			/*
+			case 12:
+				identified = true;
+				loseIntelligence();
+				break;
+			case 13:
+				identified = true;
+				loseWisdom();
+				break;
+			case 14:
+				identified = true;
+				loseDexterity();
+				break;
+			case 15:
+				identified = true;
+				loseCharisma();
+				break;
+			*/
 			case 16:
-				identified = restoreStrength();
+				if (restoreStrength()) {
+					identified = true;
+				}
 				break;
 			case 17:
-				identified = restoreConstitution();
+				if (restoreConstitution()) {
+					identified = true;
+				}
 				break;
 			case 18:
-				identified = restoreIntelligence();
+				if (restoreIntelligence()) {
+					identified = true;
+				}
 				break;
 			case 19:
-				identified = restoreWisdom();
+				if (restoreWisdom()) {
+					identified = true;
+				}
 				break;
 			case 20:
-				identified = restoreDexterity();
+				if (restoreDexterity()) {
+					identified = true;
+				}
 				break;
 			case 21:
-				identified = restoreCharisma();
+				if (restoreCharisma()) {
+					identified = true;
+				}
 				break;
 			case 22:
 				identified = changeHitpoints1();
@@ -119,12 +151,31 @@ public class Eat {
 			case 24:
 				identified = changeHitpoints3();
 				break;
+			/*
+			case 25:
+				identified = Spells.changePlayerHitpoints(Misc1.damageRoll(3, 6));
+				break;
+			*/
 			case 26:
 				identified = changeHitpoints4();
 				break;
 			case 27:
 				identified = damagePlayer();
 				break;
+			/*
+			case 28:
+				Moria1.takeHit(Rnd.randomInt(8), "poisonous food.");
+				identified = true;
+				break;
+			case 29:
+				Moria1.takeHit(Misc1.damageRoll(2, 8), "poisonous food.");
+				identified = true;
+				break;
+			case 30:
+				Moria1.takeHit(Misc1.damageRoll(3, 8), "poisonous food.");
+				identified = true;
+				break;
+			*/
 			default:
 				IO.printMessage("Internal error in eat()");
 				break;
