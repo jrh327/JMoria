@@ -46,12 +46,12 @@ public class Eat {
 			return;
 		}
 		
-		IntPointer item_val = new IntPointer();
-		if (!Moria1.getItemId(item_val, "Eat what?", first.value(), last.value(), "", "")) {
+		IntPointer index = new IntPointer();
+		if (!Moria1.getItemId(index, "Eat what?", first.value(), last.value(), "", "")) {
 			return;
 		}
 		
-		InvenType food = Treasure.inventory[item_val.value()];
+		InvenType food = Treasure.inventory[index.value()];
 		Variable.freeTurnFlag = false;
 		IntPointer flags = new IntPointer(food.flags);
 		boolean identified = false;
@@ -190,8 +190,8 @@ public class Eat {
 				misc.currExp += (food.level + (misc.level >> 1)) / misc.level;
 				Misc3.printExperience();
 				
-				Desc.identify(item_val);
-				food = Treasure.inventory[item_val.value()];
+				Desc.identify(index);
+				food = Treasure.inventory[index.value()];
 			}
 		} else if (!Desc.isKnownByPlayer(food)) {
 			Desc.sample(food);
@@ -200,8 +200,8 @@ public class Eat {
 		Misc1.addFood(food.misc);
 		Player.py.flags.status &= ~(Constants.PY_WEAK | Constants.PY_HUNGRY);
 		Misc3.printHunger();
-		Desc.describeRemaining(item_val.value());
-		Misc3.destroyInvenItem(item_val.value());
+		Desc.describeRemaining(index.value());
+		Misc3.destroyInvenItem(index.value());
 	}
 	
 	private static boolean poisonPlayer(InvenType food) {

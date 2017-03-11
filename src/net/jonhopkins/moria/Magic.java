@@ -68,14 +68,14 @@ public class Magic {
 			return;
 		}
 		
-		IntPointer itemId = new IntPointer();
-		if (!Moria1.getItemId(itemId, "Use which spell-book?", first.value(), last.value(), "", "")) {
+		IntPointer index = new IntPointer();
+		if (!Moria1.getItemId(index, "Use which spell-book?", first.value(), last.value(), "", "")) {
 			return;
 		}
 		
 		IntPointer choice = new IntPointer();
 		IntPointer chance = new IntPointer();
-		int result = Moria3.castSpell("Cast which spell?", itemId.value(), choice, chance);
+		int result = Moria3.castSpell("Cast which spell?", index.value(), choice, chance);
 		if (result < 0) {
 			IO.printMessage("You don't know any spells in that book.");
 			return;
