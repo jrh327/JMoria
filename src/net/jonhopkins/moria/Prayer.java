@@ -31,193 +31,348 @@ public class Prayer {
 	
 	private Prayer() { }
 	
-	/* Pray like HELL.					-RAK-	*/
+	/**
+	 * Pray like HELL. -RAK-
+	 */
 	public static void pray() {
-		IntPointer i = new IntPointer(), j = new IntPointer();
-		IntPointer item_val = new IntPointer(), dir = new IntPointer();
-		IntPointer choice = new IntPointer(), chance = new IntPointer();
-		int result;
-		SpellType s_ptr;
-		PlayerMisc m_ptr;
-		PlayerFlags f_ptr;
-		InvenType i_ptr;
-		
 		Variable.freeTurnFlag = true;
 		if (Player.py.flags.blind > 0) {
 			IO.printMessage("You can't see to read your prayer!");
-		} else if (Moria1.playerHasNoLight()) {
+			return;
+		}
+		
+		if (Moria1.playerHasNoLight()) {
 			IO.printMessage("You have no light to read by.");
-		} else if (Player.py.flags.confused > 0) {
+			return;
+		}
+		
+		if (Player.py.flags.confused > 0) {
 			IO.printMessage("You are too confused.");
-		} else if (Player.Class[Player.py.misc.playerClass].spell != Constants.PRIEST) {
+			return;
+		}
+		
+		if (Player.Class[Player.py.misc.playerClass].spell != Constants.PRIEST) {
 			IO.printMessage("Pray hard enough and your prayers may be answered.");
-		} else if (Treasure.invenCounter == 0) {
+			return;
+		}
+		
+		if (Treasure.invenCounter == 0) {
 			IO.printMessage("But you are not carrying anything!");
-		} else if (!Misc3.findRange(Constants.TV_PRAYER_BOOK, Constants.TV_NEVER, i, j)) {
+			return;
+		}
+		
+		IntPointer first = new IntPointer();
+		IntPointer last = new IntPointer();
+		if (!Misc3.findRange(Constants.TV_PRAYER_BOOK, Constants.TV_NEVER, first, last)) {
 			IO.printMessage("You are not carrying any Holy Books!");
-		} else if (Moria1.getItemId(item_val, "Use which Holy Book?", i.value(), j.value(), "", "")) {
-			result = Moria3.castSpell("Recite which prayer?", item_val.value(), choice, chance);
-			if (result < 0) {
-				IO.printMessage("You don't know any prayers in that book.");
-			} else if (result > 0) {
-				s_ptr = Player.magicSpell[Player.py.misc.playerClass - 1][choice.value()];
-				Variable.freeTurnFlag = false;
-				
-				if (Rnd.randomInt(100) < chance.value()) {
-					IO.printMessage("You lost your concentration!");
-				} else {
-					/* Prayers.					*/
-					switch(choice.value() + 1)
-					{
-					case 1:
-						Spells.detectEvil();
-						break;
-					case 2:
-						Spells.changePlayerHitpoints(Misc1.damageRoll(3, 3));
-						break;
-					case 3:
-						Spells.bless(Rnd.randomInt(12) + 12);
-						break;
-					case 4:
-						Spells.removeFear();
-						break;
-					case 5:
-						Spells.lightArea(Player.y, Player.x);
-						break;
-					case 6:
-						Spells.detectTrap();
-						break;
-					case 7:
-						Spells.detectSecretDoors();
-						break;
-					case 8:
-						Spells.slowPoison();
-						break;
-					case 9:
-						if (Moria1.getDirection("", dir)) {
-							Spells.confuseMonster(dir.value(), Player.y, Player.x);
-						}
-						break;
-					case 10:
-						Misc3.teleport((Player.py.misc.level * 3));
-						break;
-					case 11:
-						Spells.changePlayerHitpoints(Misc1.damageRoll(4, 4));
-						break;
-					case 12:
-						Spells.bless(Rnd.randomInt(24) + 24);
-						break;
-					case 13:
-						Spells.sleepMonsters(Player.y, Player.x);
-						break;
-					case 14:
-						Spells.createFood();
-						break;
-					case 15:
-						for (i.value(0); i.value() < Constants.INVEN_ARRAY_SIZE; i.value(i.value() + 1)) {
-							i_ptr = Treasure.inventory[i.value()];
-							/* only clear flag for items that are wielded or worn */
-							if (i_ptr.category >= Constants.TV_MIN_WEAR && i_ptr.category <= Constants.TV_MAX_WEAR) {
-								i_ptr.flags &= ~Constants.TR_CURSED;
-							}
-						}
-						break;
-					case 16:
-						f_ptr = Player.py.flags;
-						f_ptr.resistHeat += Rnd.randomInt(10) + 10;
-						f_ptr.resistCold += Rnd.randomInt(10) + 10;
-						break;
-					case 17:
-						Spells.curePoison();
-						break;
-					case 18:
-						if (Moria1.getDirection("", dir)) {
-							Spells.fireBall(Constants.GF_HOLY_ORB, dir.value(), Player.y, Player.x, (Misc1.damageRoll(3, 6) + Player.py.misc.level), "Black Sphere");
-						}
-						break;
-					case 19:
-						Spells.changePlayerHitpoints(Misc1.damageRoll(8, 4));
-						break;
-					case 20:
-						Spells.detectInvisibleMonsters(Rnd.randomInt(24) + 24);
-						break;
-					case 21:
-						Spells.protectFromEvil();
-						break;
-					case 22:
-						Spells.earthquake();
-						break;
-					case 23:
-						Spells.mapArea();
-						break;
-					case 24:
-						Spells.changePlayerHitpoints(Misc1.damageRoll(16, 4));
-						break;
-					case 25:
-						Spells.turnUndead();
-						break;
-					case 26:
-						Spells.bless(Rnd.randomInt(48) + 48);
-						break;
-					case 27:
-						Spells.dispelCreature(Constants.CD_UNDEAD, (3 * Player.py.misc.level));
-						break;
-					case 28:
-						Spells.changePlayerHitpoints(200);
-						break;
-					case 29:
-						Spells.dispelCreature(Constants.CD_EVIL, (3 * Player.py.misc.level));
-						break;
-					case 30:
-						Spells.wardingGlyph();
-						break;
-					case 31:
-						Spells.removeFear();
-						Spells.curePoison();
-						Spells.changePlayerHitpoints(1000);
-						for (i.value(Constants.A_STR);
-								i.value() <= Constants.A_CHR;
-								i.value(i.value() + 1)) {
-							Misc3.restoreStat(i.value());
-						}
-						Spells.dispelCreature(Constants.CD_EVIL, 4 * Player.py.misc.level);
-						Spells.turnUndead();
-						if (Player.py.flags.invulnerability < 3) {
-							Player.py.flags.invulnerability = 3;
-						} else {
-							Player.py.flags.invulnerability++;
-						}
-						break;
-					default:
-						break;
-					}
-					/* End of prayers.				*/
-					if (!Variable.freeTurnFlag) {
-						m_ptr = Player.py.misc;
-						if ((Player.spellWorked & (1L << choice.value())) == 0) {
-							m_ptr.currExp += s_ptr.expGained << 2;
-							Misc3.printExperience();
-							Player.spellWorked |= (1L << choice.value());
-						}
-					}
-				}
-				m_ptr = Player.py.misc;
-				if (!Variable.freeTurnFlag) {
-					if (s_ptr.manaCost > m_ptr.currMana) {
-						IO.printMessage("You faint from fatigue!");
-						Player.py.flags.paralysis = Rnd.randomInt((5 * (s_ptr.manaCost - m_ptr.currMana)));
-						m_ptr.currMana = 0;
-						m_ptr.currManaFraction = 0;
-						if (Rnd.randomInt(3) == 1) {
-							IO.printMessage("You have damaged your health!");
-							Misc3.decreaseStat(Constants.A_CON);
-						}
-					} else {
-						m_ptr.currMana -= s_ptr.manaCost;
-					}
-					Misc3.printCurrentMana();
+			return;
+		}
+		
+		IntPointer itemId = new IntPointer();
+		if (!Moria1.getItemId(itemId, "Use which Holy Book?", first.value(), last.value(), "", "")) {
+			return;
+		}
+
+		IntPointer choice = new IntPointer();
+		IntPointer chance = new IntPointer();
+		int result = Moria3.castSpell("Recite which prayer?", itemId.value(), choice, chance);
+		if (result < 0) {
+			IO.printMessage("You don't know any prayers in that book.");
+			return;
+		}
+		
+		if (result == 0) {
+			return;
+		}
+	
+		SpellType prayer = Player.magicSpell[Player.py.misc.playerClass - 1][choice.value()];
+		Variable.freeTurnFlag = false;
+		
+		if (Rnd.randomInt(100) < chance.value()) {
+			IO.printMessage("You lost your concentration!");
+		} else {
+			// Prayers
+			switch (choice.value() + 1) {
+			case 1:
+				prayDetectEvil();
+				break;
+			case 2:
+				prayCureLightWounds();
+				break;
+			case 3:
+				prayBless();
+				break;
+			case 4:
+				prayRemoveFear();
+				break;
+			case 5:
+				prayCallLight();
+				break;
+			case 6:
+				prayFindTraps();
+				break;
+			case 7:
+				prayDetectDoorsAndStairs();
+				break;
+			case 8:
+				praySlowPoison();
+				break;
+			case 9:
+				prayBlindCreature();
+				break;
+			case 10:
+				prayPortal();
+				break;
+			case 11:
+				prayCureMediumWounds();
+				break;
+			case 12:
+				prayChant();
+				break;
+			case 13:
+				praySanctuary();
+				break;
+			case 14:
+				prayCreateFood();
+				break;
+			case 15:
+				prayRemoveCurse();
+				break;
+			case 16:
+				prayResistHeatAndCold();
+				break;
+			case 17:
+				prayNeutralizePoison();
+				break;
+			case 18:
+				prayOrbOfDraining();
+				break;
+			case 19:
+				prayCureSeriousWounds();
+				break;
+			case 20:
+				praySenseInvisible();
+				break;
+			case 21:
+				prayProtectionFromEvil();
+				break;
+			case 22:
+				prayEarthquake();
+				break;
+			case 23:
+				praySenseSurroundings();
+				break;
+			case 24:
+				prayCureCriticalWounds();
+				break;
+			case 25:
+				prayTurnUndead();
+				break;
+			case 26:
+				prayPrayer();
+				break;
+			case 27:
+				prayDispelUndead();
+				break;
+			case 28:
+				prayHeal();
+				break;
+			case 29:
+				prayDispelEvil();
+				break;
+			case 30:
+				prayGlyphOfWarding();
+				break;
+			case 31:
+				prayHolyWord();
+				break;
+			default:
+				break;
+			}
+			
+			if (!Variable.freeTurnFlag) {
+				PlayerMisc misc = Player.py.misc;
+				if ((Player.spellWorked & (1L << choice.value())) == 0) {
+					misc.currExp += prayer.expGained << 2;
+					Player.spellWorked |= (1L << choice.value());
+					Misc3.printExperience();
 				}
 			}
+		}
+		
+		if (!Variable.freeTurnFlag) {
+			PlayerMisc misc = Player.py.misc;
+			if (prayer.manaCost > misc.currMana) {
+				IO.printMessage("You faint from fatigue!");
+				Player.py.flags.paralysis = Rnd.randomInt(
+						(5 * (prayer.manaCost - misc.currMana)));
+				misc.currMana = 0;
+				misc.currManaFraction = 0;
+				if (Rnd.randomInt(3) == 1) {
+					IO.printMessage("You have damaged your health!");
+					Misc3.decreaseStat(Constants.A_CON);
+				}
+			} else {
+				misc.currMana -= prayer.manaCost;
+			}
+			Misc3.printCurrentMana();
+		}
+	}
+	
+	private static void prayDetectEvil() {
+		Spells.detectEvil();
+	}
+	
+	private static void prayCureLightWounds() {
+		Spells.changePlayerHitpoints(Misc1.damageRoll(3, 3));
+	}
+	
+	private static void prayBless() {
+		Spells.bless(Rnd.randomInt(12) + 12);
+	}
+	
+	private static void prayRemoveFear() {
+		Spells.removeFear();
+	}
+	
+	private static void prayCallLight() {
+		Spells.lightArea(Player.y, Player.x);
+	}
+	
+	private static void prayFindTraps() {
+		Spells.detectTrap();
+	}
+	
+	private static void prayDetectDoorsAndStairs() {
+		Spells.detectSecretDoors();
+	}
+	
+	private static void praySlowPoison() {
+		Spells.slowPoison();
+	}
+	
+	private static void prayBlindCreature() {
+		IntPointer dir = new IntPointer();
+		if (Moria1.getDirection("", dir)) {
+			Spells.confuseMonster(dir.value(), Player.y, Player.x);
+		}
+	}
+	
+	private static void prayPortal() {
+		Misc3.teleport((Player.py.misc.level * 3));
+	}
+	
+	private static void prayCureMediumWounds() {
+		Spells.changePlayerHitpoints(Misc1.damageRoll(4, 4));
+	}
+	
+	private static void prayChant() {
+		Spells.bless(Rnd.randomInt(24) + 24);
+	}
+	
+	private static void praySanctuary() {
+		Spells.sleepMonsters(Player.y, Player.x);
+	}
+	
+	private static void prayCreateFood() {
+		Spells.createFood();
+	}
+	
+	private static void prayRemoveCurse() {
+		for (int i = 0; i < Constants.INVEN_ARRAY_SIZE; i++) {
+			InvenType item = Treasure.inventory[i];
+			// only clear flag for items that are wielded or worn
+			if (item.category >= Constants.TV_MIN_WEAR
+					&& item.category <= Constants.TV_MAX_WEAR) {
+				item.flags &= ~Constants.TR_CURSED;
+			}
+		}
+	}
+	
+	private static void prayResistHeatAndCold() {
+		PlayerFlags flags = Player.py.flags;
+		flags.resistHeat += Rnd.randomInt(10) + 10;
+		flags.resistCold += Rnd.randomInt(10) + 10;
+	}
+	
+	private static void prayNeutralizePoison() {
+		Spells.curePoison();
+	}
+	
+	private static void prayOrbOfDraining() {
+		IntPointer dir = new IntPointer();
+		if (Moria1.getDirection("", dir)) {
+			Spells.fireBall(Constants.GF_HOLY_ORB, dir.value(),
+					Player.y, Player.x,
+					(Misc1.damageRoll(3, 6) + Player.py.misc.level),
+					"Black Sphere");
+		}
+	}
+	
+	private static void prayCureSeriousWounds() {
+		Spells.changePlayerHitpoints(Misc1.damageRoll(8, 4));
+	}
+	
+	private static void praySenseInvisible() {
+		Spells.detectInvisibleMonsters(Rnd.randomInt(24) + 24);
+	}
+	
+	private static void prayProtectionFromEvil() {
+		Spells.protectFromEvil();
+	}
+	
+	private static void prayEarthquake() {
+		Spells.earthquake();
+	}
+	
+	private static void praySenseSurroundings() {
+		Spells.mapArea();
+	}
+	
+	private static void prayCureCriticalWounds() {
+		Spells.changePlayerHitpoints(Misc1.damageRoll(16, 4));
+	}
+	
+	private static void prayTurnUndead() {
+		Spells.turnUndead();
+	}
+	
+	private static void prayPrayer() {
+		Spells.bless(Rnd.randomInt(48) + 48);
+	}
+	
+	private static void prayDispelUndead() {
+		Spells.dispelCreature(Constants.CD_UNDEAD, (3 * Player.py.misc.level));
+	}
+	
+	private static void prayHeal() {
+		Spells.changePlayerHitpoints(200);
+	}
+	
+	private static void prayDispelEvil() {
+		Spells.dispelCreature(Constants.CD_EVIL, (3 * Player.py.misc.level));
+	}
+	
+	private static void prayGlyphOfWarding() {
+		Spells.wardingGlyph();
+	}
+	
+	private static void prayHolyWord() {
+		Spells.removeFear();
+		Spells.curePoison();
+		Spells.changePlayerHitpoints(1000);
+		
+		for (int i = Constants.A_STR; i <= Constants.A_CHR; i++) {
+			Misc3.restoreStat(i);
+		}
+		
+		Spells.dispelCreature(Constants.CD_EVIL, 4 * Player.py.misc.level);
+		Spells.turnUndead();
+		
+		if (Player.py.flags.invulnerability < 3) {
+			Player.py.flags.invulnerability = 3;
+		} else {
+			Player.py.flags.invulnerability++;
 		}
 	}
 }

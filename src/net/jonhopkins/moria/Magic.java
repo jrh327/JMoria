@@ -31,7 +31,9 @@ public class Magic {
 	
 	private Magic() { }
 	
-	/* Throw a magic spell					-RAK-	*/
+	/**
+	 * Throw a magic spell -RAK-
+	 */
 	public static void cast() {
 		Variable.freeTurnFlag = true;
 		if (Player.py.flags.blind > 0) {
@@ -53,7 +55,12 @@ public class Magic {
 			IO.printMessage("You can't cast spells!");
 			return;
 		}
-
+		
+		if (Treasure.invenCounter == 0) {
+			IO.printMessage("But you are not carrying anything!");
+			return;
+		}
+		
 		IntPointer first = new IntPointer();
 		IntPointer last = new IntPointer();
 		if (!Misc3.findRange(Constants.TV_MAGIC_BOOK, Constants.TV_NEVER, first, last)) {
@@ -197,7 +204,8 @@ public class Magic {
 			PlayerMisc misc = Player.py.misc;
 			if (spell.manaCost > misc.currMana) {
 				IO.printMessage("You faint from the effort!");
-				Player.py.flags.paralysis = Rnd.randomInt((5 * (spell.manaCost - misc.currMana)));
+				Player.py.flags.paralysis = Rnd.randomInt(
+						(5 * (spell.manaCost - misc.currMana)));
 				misc.currMana = 0;
 				misc.currManaFraction = 0;
 				if (Rnd.randomInt(3) == 1) {
@@ -287,7 +295,7 @@ public class Magic {
 	private static void castRemoveCurse() {
 		for (int i = 22; i < Constants.INVEN_ARRAY_SIZE; i++) {
 			InvenType item = Treasure.inventory[i];
-			item.flags = (item.flags & ~Constants.TR_CURSED);
+			item.flags &= ~Constants.TR_CURSED;
 		}
 	}
 	
