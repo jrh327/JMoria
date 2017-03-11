@@ -60,19 +60,19 @@ public class Eat {
 			// Foods
 			switch (foodType) {
 			case 1:
-				identified = poisonPlayer(food);
+				identified = poison(food);
 				break;
 			case 2:
-				identified = blindPlayer(food);
+				identified = causeBlindness(food);
 				break;
 			case 3:
-				identified = scarePlayer(food);
+				identified = causeParanoia(food);
 				break;
 			case 4:
-				identified = confusePlayer(food);
+				identified = causeConfusion(food);
 				break;
 			case 5:
-				identified = hallucinatePlayer(food);
+				identified = causeHallucination(food);
 				break;
 			case 6:
 				identified = curePoison();
@@ -81,7 +81,7 @@ public class Eat {
 				identified = cureBlindness();
 				break;
 			case 8:
-				if (cureFear()) {
+				if (cureParanoia()) {
 					identified = true;
 				}
 				break;
@@ -89,10 +89,10 @@ public class Eat {
 				identified = cureConfusion();
 				break;
 			case 10:
-				identified = loseStrength();
+				identified = causeWeakness();
 				break;
 			case 11:
-				identified = loseConstitution();
+				identified = causeUnhealth();
 				break;
 			/*
 			case 12:
@@ -143,13 +143,13 @@ public class Eat {
 				}
 				break;
 			case 22:
-				identified = changeHitpoints1();
+				identified = firstAid();
 				break;
 			case 23:
-				identified = changeHitpoints2();
+				identified = minorCures();
 				break;
 			case 24:
-				identified = changeHitpoints3();
+				identified = lightCures();
 				break;
 			/*
 			case 25:
@@ -157,7 +157,7 @@ public class Eat {
 				break;
 			*/
 			case 26:
-				identified = changeHitpoints4();
+				identified = cureSeriousWounds();
 				break;
 			case 27:
 				identified = damagePlayer();
@@ -204,31 +204,31 @@ public class Eat {
 		Misc3.destroyInvenItem(index.value());
 	}
 	
-	private static boolean poisonPlayer(InvenType food) {
+	private static boolean poison(InvenType food) {
 		Player.py.flags.poisoned += Rnd.randomInt(10) + food.level;
 		return true;
 	}
 	
-	private static boolean blindPlayer(InvenType food) {
+	private static boolean causeBlindness(InvenType food) {
 		Player.py.flags.blind += Rnd.randomInt(250) + 10 * food.level + 100;
 		Misc3.drawCave();
 		IO.printMessage("A veil of darkness surrounds you.");
 		return true;
 	}
 	
-	private static boolean scarePlayer(InvenType food) {
+	private static boolean causeParanoia(InvenType food) {
 		Player.py.flags.afraid += Rnd.randomInt(10) + food.level;
 		IO.printMessage("You feel terrified!");
 		return true;
 	}
 	
-	private static boolean confusePlayer(InvenType food) {
+	private static boolean causeConfusion(InvenType food) {
 		Player.py.flags.confused += Rnd.randomInt(10) + food.level;
 		IO.printMessage("You feel drugged.");
 		return true;
 	}
 	
-	private static boolean hallucinatePlayer(InvenType food) {
+	private static boolean causeHallucination(InvenType food) {
 		Player.py.flags.imagine += Rnd.randomInt(200) + 25 * food.level + 200;
 		IO.printMessage("You feel drugged.");
 		return true;
@@ -242,7 +242,7 @@ public class Eat {
 		return Spells.cureBlindness();
 	}
 	
-	private static boolean cureFear() {
+	private static boolean cureParanoia() {
 		if (Player.py.flags.afraid > 1) {
 			Player.py.flags.afraid = 1;
 			return true;
@@ -254,12 +254,12 @@ public class Eat {
 		return Spells.cureConfusion();
 	}
 	
-	private static boolean loseStrength() {
+	private static boolean causeWeakness() {
 		Spells.loseStrength();
 		return true;
 	}
 	
-	private static boolean loseConstitution() {
+	private static boolean causeUnhealth() {
 		Spells.loseConstitution();
 		return true;
 	}
@@ -312,19 +312,19 @@ public class Eat {
 		return false;
 	}
 	
-	private static boolean changeHitpoints1() {
+	private static boolean firstAid() {
 		return Spells.changePlayerHitpoints(Rnd.randomInt(6));
 	}
 	
-	private static boolean changeHitpoints2() {
+	private static boolean minorCures() {
 		return Spells.changePlayerHitpoints(Rnd.randomInt(12));
 	}
 	
-	private static boolean changeHitpoints3() {
+	private static boolean lightCures() {
 		return Spells.changePlayerHitpoints(Rnd.randomInt(18));
 	}
 	
-	private static boolean changeHitpoints4() {
+	private static boolean cureSeriousWounds() {
 		return Spells.changePlayerHitpoints(Misc1.damageRoll(3, 12));
 	}
 	
