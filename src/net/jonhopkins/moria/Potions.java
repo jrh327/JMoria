@@ -30,317 +30,603 @@ public class Potions {
 	
 	private Potions() { }
 	
-	/* Potions for the quaffing				-RAK-	*/
+	/**
+	 * Potions for the quaffing -RAK-
+	 */
 	public static void quaff() {
-		IntPointer i = new IntPointer();
-		long l;
-		IntPointer j = new IntPointer(), k = new IntPointer();
-		IntPointer item_val = new IntPointer();
-		boolean ident;
-		InvenType i_ptr;
-		PlayerMisc m_ptr;
-		PlayerFlags f_ptr;
-		
 		Variable.freeTurnFlag = true;
 		if (Treasure.invenCounter == 0) {
 			IO.printMessage("But you are not carrying anything.");
-		} else if (!Misc3.findRange(Constants.TV_POTION1, Constants.TV_POTION2, j, k)) {
-			IO.printMessage("You are not carrying any potions.");
-		} else if (Moria1.getItemId(item_val, "Quaff which potion?", j.value(), k.value(), "", "")) {
-			i_ptr = Treasure.inventory[item_val.value()];
-			i.value(i_ptr.flags);
-			Variable.freeTurnFlag = false;
-			ident = false;
-			if (i.value() == 0) {
-				IO.printMessage ("You feel less thirsty.");
-				ident = true;
-			} else while (i.value() != 0) {
-				j.value(Misc1.firstBitPos(i) + 1);
-				if (i_ptr.category == Constants.TV_POTION2) {
-					j.value(j.value() + 32);
-				}
-				/* Potions						*/
-				switch(j.value())
-				{
-				case 1:
-					if (Misc3.increaseStat(Constants.A_STR)) {
-						IO.printMessage("Wow!  What bulging muscles!");
-						ident = true;
-					}
-					break;
-				case 2:
-					ident = true;
-					Spells.loseStrength();
-					break;
-				case 3:
-					if (Misc3.restoreStat(Constants.A_STR)) {
-						IO.printMessage("You feel warm all over.");
-						ident = true;
-					}
-					break;
-				case 4:
-					if (Misc3.increaseStat(Constants.A_INT)) {
-						IO.printMessage("Aren't you brilliant!");
-						ident = true;
-					}
-					break;
-				case 5:
-					ident = true;
-					Spells.loseIntelligence();
-					break;
-				case 6:
-					if (Misc3.restoreStat(Constants.A_INT)) {
-						IO.printMessage("You have have a warm feeling.");
-						ident = true;
-					}
-					break;
-				case 7:
-					if (Misc3.increaseStat(Constants.A_WIS)) {
-						IO.printMessage("You suddenly have a profound thought!");
-						ident = true;
-					}
-					break;
-				case 8:
-					ident = true;
-					Spells.loseWisdom();
-					break;
-				case 9:
-					if (Misc3.restoreStat(Constants.A_WIS)) {
-						IO.printMessage("You feel your wisdom returning.");
-						ident = true;
-					}
-					break;
-				case 10:
-					if (Misc3.increaseStat(Constants.A_CHR)) {
-						IO.printMessage("Gee, ain't you cute!");
-						ident = true;
-					}
-					break;
-				case 11:
-					ident = true;
-					Spells.loseCharisma();
-					break;
-				case 12:
-					if (Misc3.restoreStat(Constants.A_CHR)) {
-						IO.printMessage("You feel your looks returning.");
-						ident = true;
-					}
-					break;
-				case 13:
-					ident = Spells.changePlayerHitpoints(Misc1.damageRoll(2, 7));
-					break;
-				case 14:
-					ident = Spells.changePlayerHitpoints(Misc1.damageRoll(4, 7));
-					break;
-				case 15:
-					ident = Spells.changePlayerHitpoints(Misc1.damageRoll(6, 7));
-					break;
-				case 16:
-					ident = Spells.changePlayerHitpoints(1000);
-					break;
-				case 17:
-					if (Misc3.increaseStat(Constants.A_CON)) {
-						IO.printMessage("You feel tingly for a moment.");
-						ident = true;
-					}
-					break;
-				case 18:
-					m_ptr = Player.py.misc;
-					if (m_ptr.currExp < Constants.MAX_EXP) {
-						l = (m_ptr.currExp / 2) + 10;
-						if (l > 100000L)  l = 100000L;
-						m_ptr.currExp += l;
-						IO.printMessage("You feel more experienced.");
-						Misc3.printExperience();
-						ident = true;
-					}
-					break;
-				case 19:
-					f_ptr = Player.py.flags;
-					if (!f_ptr.freeAct) {
-						/* paralysis must == 0, otherwise could not drink potion */
-						IO.printMessage("You fall asleep.");
-						f_ptr.paralysis += Rnd.randomInt(4) + 4;
-						ident = true;
-					}
-					break;
-				case 20:
-					f_ptr = Player.py.flags;
-					if (f_ptr.blind == 0) {
-						IO.printMessage("You are covered by a veil of darkness.");
-						ident = true;
-					}
-					f_ptr.blind += Rnd.randomInt(100) + 100;
-					break;
-				case 21:
-					f_ptr = Player.py.flags;
-					if (f_ptr.confused == 0) {
-						IO.printMessage("Hey!  This is good stuff!  * Hick! *");
-						ident = true;
-					}
-					f_ptr.confused += Rnd.randomInt(20) + 12;
-					break;
-				case 22:
-					f_ptr = Player.py.flags;
-					if (f_ptr.poisoned == 0) {
-						IO.printMessage("You feel very sick.");
-						ident = true;
-					}
-					f_ptr.poisoned += Rnd.randomInt(15) + 10;
-					break;
-				case 23:
-					if (Player.py.flags.fast == 0) {
-						ident = true;
-					}
-					Player.py.flags.fast += Rnd.randomInt(25) + 15;
-					break;
-				case 24:
-					if (Player.py.flags.slow == 0) {
-						ident = true;
-					}
-					Player.py.flags.slow += Rnd.randomInt(25) + 15;
-					break;
-				case 26:
-					if (Misc3.increaseStat(Constants.A_DEX)) {
-						IO.printMessage("You feel more limber!");
-						ident = true;
-					}
-					break;
-				case 27:
-					if (Misc3.restoreStat(Constants.A_DEX)) {
-						IO.printMessage("You feel less clumsy.");
-						ident = true;
-					}
-					break;
-				case 28:
-					if (Misc3.restoreStat(Constants.A_CON)) {
-						IO.printMessage("You feel your health returning!");
-						ident = true;
-					}
-					break;
-				case 29:
-					ident = Spells.cureBlindness();
-					break;
-				case 30:
-					ident = Spells.cureConfusion();
-					break;
-				case 31:
-					ident = Spells.curePoison();
-					break;
-				case 34:
-					if (Player.py.misc.currExp > 0) {
-						int m, scale;
-						IO.printMessage("You feel your memories fade.");
-						/* Lose between 1/5 and 2/5 of your experience */
-						m = Player.py.misc.currExp / 5;
-						if (Player.py.misc.currExp > Constants.MAX_SHORT) {
-							scale = (int)(Constants.MAX_LONG / Player.py.misc.currExp);
-							m += (Rnd.randomInt(scale) * Player.py.misc.currExp) / (scale * 5);
-						} else {
-							m += Rnd.randomInt(Player.py.misc.currExp) / 5;
-						}
-						Spells.loseExperience(m);
-						ident = true;
-					}
-					break;
-				case 35:
-					f_ptr = Player.py.flags;
-					Spells.curePoison();
-					if (f_ptr.food > 150)  f_ptr.food = 150;
-					f_ptr.paralysis = 4;
-					IO.printMessage("The potion makes you vomit!");
-					ident = true;
-					break;
-				case 36:
-					if (Player.py.flags.invulnerability == 0) {
-						ident = true;
-					}
-					Player.py.flags.invulnerability += Rnd.randomInt(10) + 10;
-					break;
-				case 37:
-					if (Player.py.flags.hero == 0) {
-						ident = true;
-					}
-					Player.py.flags.hero += Rnd.randomInt(25) + 25;
-					break;
-				case 38:
-					if (Player.py.flags.superHero == 0) {
-						ident = true;
-					}
-					Player.py.flags.superHero += Rnd.randomInt(25) + 25;
-					break;
-				case 39:
-					ident = Spells.removeFear();
-					break;
-				case 40:
-					ident = Spells.restoreLevel();
-					break;
-				case 41:
-					f_ptr = Player.py.flags;
-					if (f_ptr.resistHeat == 0) {
-						ident = true;
-					}
-					f_ptr.resistHeat += Rnd.randomInt(10) + 10;
-					break;
-				case 42:
-					f_ptr = Player.py.flags;
-					if (f_ptr.resistCold == 0) {
-						ident = true;
-					}
-					f_ptr.resistCold += Rnd.randomInt(10) + 10;
-					break;
-				case 43:
-					if (Player.py.flags.detectInvisible == 0) {
-						ident = true;
-					}
-					Spells.detectInvisibleMonsters(Rnd.randomInt(12) + 12);
-					break;
-				case 44:
-					ident = Spells.slowPoison();
-					break;
-				case 45:
-					ident = Spells.curePoison();
-					break;
-				case 46:
-					m_ptr = Player.py.misc;
-					if (m_ptr.currMana < m_ptr.maxMana) {
-						m_ptr.currMana = m_ptr.maxMana;
-						ident = true;
-						IO.printMessage("Your feel your head clear.");
-						Misc3.printCurrentMana();
-					}
-					break;
-				case 47:
-					f_ptr = Player.py.flags;
-					if (f_ptr.timedSeeInfrared == 0) {
-						IO.printMessage("Your eyes begin to tingle.");
-						ident = true;
-					}
-					f_ptr.timedSeeInfrared += 100 + Rnd.randomInt(100);
-					break;
-				default:
-					IO.printMessage("Internal error in potion()");
-					break;
-				}
-				/* End of Potions.					*/
-			}
-			if (ident) {
-				if (!Desc.isKnownByPlayer(i_ptr)) {
-					m_ptr = Player.py.misc;
-					/* round half-way case up */
-					m_ptr.currExp += (i_ptr.level + (m_ptr.level >> 1)) / m_ptr.level;
-					Misc3.printExperience();
-					
-					Desc.identify(item_val);
-					i_ptr = Treasure.inventory[item_val.value()];
-				}
-			} else if (!Desc.isKnownByPlayer(i_ptr)) {
-				Desc.sample(i_ptr);
-			}
-			
-			Misc1.addFood(i_ptr.misc);
-			Desc.describeRemaining(item_val.value());
-			Misc3.destroyInvenItem(item_val.value());
+			return;
 		}
+		
+		IntPointer first = new IntPointer();
+		IntPointer last = new IntPointer();
+		if (!Misc3.findRange(Constants.TV_POTION1, Constants.TV_POTION2, first, last)) {
+			IO.printMessage("You are not carrying any potions.");
+			return;
+		}
+		
+		IntPointer index = new IntPointer();
+		if (!Moria1.getItemId(index, "Quaff which potion?", first.value(), last.value(), "", "")) {
+			return;
+		}
+		
+		InvenType potion = Treasure.inventory[index.value()];
+		IntPointer flags = new IntPointer(potion.flags);
+		Variable.freeTurnFlag = false;
+		boolean identified = false;
+		if (flags.value() == 0) {
+			IO.printMessage ("You feel less thirsty.");
+			identified = true;
+		}
+		
+		while (flags.value() != 0) {
+			int potionType = Misc1.firstBitPos(flags) + 1;
+			if (potion.category == Constants.TV_POTION2) {
+				potionType += 32;
+			}
+			// Potions
+			switch (potionType) {
+			case 1:
+				if (potionOfGainStrength()) {
+					identified = true;
+				}
+				break;
+			case 2:
+				identified = potionOfWeakness();
+				break;
+			case 3:
+				if (potionOfRestoreStrength()) {
+					identified = true;
+				}
+				break;
+			case 4:
+				if (potionOfGainIntelligence()) {
+					identified = true;
+				}
+				break;
+			case 5:
+				identified = potionOfLoseIntelligence();
+				break;
+			case 6:
+				if (potionOfRestoreIntelligence()) {
+					identified = true;
+				}
+				break;
+			case 7:
+				if (potionOfGainWisdom()) {
+					identified = true;
+				}
+				break;
+			case 8:
+				identified = potionOfLoseWisdom();
+				break;
+			case 9:
+				if (potionOfRestoreWisdom()) {
+					identified = true;
+				}
+				break;
+			case 10:
+				if (potionOfCharisma()) {
+					identified = true;
+				}
+				break;
+			case 11:
+				identified = potionOfUgliness();
+				break;
+			case 12:
+				if (potionOfRestoreCharisma()) {
+					identified = true;
+				}
+				break;
+			case 13:
+				identified = potionOfCureLightWounds();
+				break;
+			case 14:
+				identified = potionOfCureSeriousWounds();
+				break;
+			case 15:
+				identified = potionOfCureCriticalWounds();
+				break;
+			case 16:
+				identified = potionOfHealing();
+				break;
+			case 17:
+				if (potionOfGainConstitution()) {
+					identified = true;
+				}
+				break;
+			case 18:
+				if (potionOfGainExperience()) {
+					identified = true;
+				}
+				break;
+			case 19:
+				if (potionOfSleep()) {
+					identified = true;
+				}
+				break;
+			case 20:
+				if (potionOfBlindness()) {
+					identified = true;
+				}
+				break;
+			case 21:
+				if (potionOfConfusion()) {
+					identified = true;
+				}
+				break;
+			case 22:
+				if (potionOfPoison()) {
+					identified = true;
+				}
+				break;
+			case 23:
+				if (potionOfHasteSelf()) {
+					identified = true;
+				}
+				break;
+			case 24:
+				if (potionOfSlowness()) {
+					identified = true;
+				}
+				break;
+			case 26:
+				if (potionOfGainDexterity()) {
+					identified = true;
+				}
+				break;
+			case 27:
+				if (potionOfRestoreDexterity()) {
+					identified = true;
+				}
+				break;
+			case 28:
+				if (potionOfRestoreConstitution()) {
+					identified = true;
+				}
+				break;
+			case 29:
+				identified = potionOfCureBlindness();
+				break;
+			case 30:
+				identified = potionOfCureConfusion();
+				break;
+			case 31:
+				identified = potionOfCurePoison();
+				break;
+			case 34:
+				if (potionOfLoseExperience()) {
+					identified = true;
+				}
+				break;
+			case 35:
+				identified = potionOfSaltWater();
+				break;
+			case 36:
+				if (potionOfInvulnerability()) {
+					identified = true;
+				}
+				break;
+			case 37:
+				if (potionOfHeroism()) {
+					identified = true;
+				}
+				break;
+			case 38:
+				if (potionOfSuperHeroism()) {
+					identified = true;
+				}
+				break;
+			case 39:
+				identified = potionOfBoldness();
+				break;
+			case 40:
+				identified = potionOfRestoreLifeLevels();
+				break;
+			case 41:
+				if (potionOfResistHeat()) {
+					identified = true;
+				}
+				break;
+			case 42:
+				if (potionOfResistCold()) {
+					identified = true;
+				}
+				break;
+			case 43:
+				if (potionOfDetectInvisible()) {
+					identified = true;
+				}
+				break;
+			case 44:
+				identified = potionOfSlowPoison();
+				break;
+			case 45:
+				identified = potionOfNeutralizePoison();
+				break;
+			case 46:
+				if (potionOfRestoreMana()) {
+					identified = true;
+				}
+				break;
+			case 47:
+				if (potionOfInfraVision()) {
+					identified = true;
+				}
+				break;
+			default:
+				IO.printMessage("Internal error in potion()");
+				break;
+			}
+		}
+		
+		if (identified) {
+			if (!Desc.isKnownByPlayer(potion)) {
+				PlayerMisc misc = Player.py.misc;
+				// round half-way case up
+				misc.currExp += (potion.level + (misc.level >> 1)) / misc.level;
+				Misc3.printExperience();
+				
+				Desc.identify(index);
+				potion = Treasure.inventory[index.value()];
+			}
+		} else if (!Desc.isKnownByPlayer(potion)) {
+			Desc.sample(potion);
+		}
+		
+		Misc1.addFood(potion.misc);
+		Desc.describeRemaining(index.value());
+		Misc3.destroyInvenItem(index.value());
+	}
+	
+	private static boolean potionOfGainStrength() {
+		if (Misc3.increaseStat(Constants.A_STR)) {
+			IO.printMessage("Wow!  What bulging muscles!");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfWeakness() {
+		Spells.loseStrength();
+		return true;
+	}
+	
+	private static boolean potionOfRestoreStrength() {
+		if (Misc3.restoreStat(Constants.A_STR)) {
+			IO.printMessage("You feel warm all over.");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfGainIntelligence() {
+		if (Misc3.increaseStat(Constants.A_INT)) {
+			IO.printMessage("Aren't you brilliant!");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfLoseIntelligence() {
+		Spells.loseIntelligence();
+		return true;
+	}
+	
+	private static boolean potionOfRestoreIntelligence() {
+		if (Misc3.restoreStat(Constants.A_INT)) {
+			IO.printMessage("You have have a warm feeling.");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfGainWisdom() {
+		if (Misc3.increaseStat(Constants.A_WIS)) {
+			IO.printMessage("You suddenly have a profound thought!");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfLoseWisdom() {
+		Spells.loseWisdom();
+		return true;
+	}
+	
+	private static boolean potionOfRestoreWisdom() {
+		if (Misc3.restoreStat(Constants.A_WIS)) {
+			IO.printMessage("You feel your wisdom returning.");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfCharisma() {
+		if (Misc3.increaseStat(Constants.A_CHR)) {
+			IO.printMessage("Gee, ain't you cute!");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfUgliness() {
+		Spells.loseCharisma();
+		return true;
+	}
+	
+	private static boolean potionOfRestoreCharisma() {
+		if (Misc3.restoreStat(Constants.A_CHR)) {
+			IO.printMessage("You feel your looks returning.");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfCureLightWounds() {
+		return Spells.changePlayerHitpoints(Misc1.damageRoll(2, 7));
+	}
+	
+	private static boolean potionOfCureSeriousWounds() {
+		return Spells.changePlayerHitpoints(Misc1.damageRoll(4, 7));
+	}
+	
+	private static boolean potionOfCureCriticalWounds() {
+		return Spells.changePlayerHitpoints(Misc1.damageRoll(6, 7));
+	}
+	
+	private static boolean potionOfHealing() {
+		return Spells.changePlayerHitpoints(1000);
+	}
+	
+	private static boolean potionOfGainConstitution() {
+		if (Misc3.increaseStat(Constants.A_CON)) {
+			IO.printMessage("You feel tingly for a moment.");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfGainExperience() {
+		PlayerMisc misc = Player.py.misc;
+		if (misc.currExp < Constants.MAX_EXP) {
+			long l = (misc.currExp / 2) + 10;
+			if (l > 100000L) {
+				l = 100000L;
+			}
+			misc.currExp += l;
+			IO.printMessage("You feel more experienced.");
+			Misc3.printExperience();
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfSleep() {
+		PlayerFlags flags = Player.py.flags;
+		if (!flags.freeAct) {
+			// paralysis must == 0, otherwise could not drink potion
+			IO.printMessage("You fall asleep.");
+			flags.paralysis += Rnd.randomInt(4) + 4;
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfBlindness() {
+		PlayerFlags flags = Player.py.flags;
+		boolean blinded = false;
+		if (flags.blind == 0) {
+			IO.printMessage("You are covered by a veil of darkness.");
+			blinded = true;
+		}
+		flags.blind += Rnd.randomInt(100) + 100;
+		return blinded;
+	}
+	
+	private static boolean potionOfConfusion() {
+		PlayerFlags flags = Player.py.flags;
+		boolean confused = false;
+		if (flags.confused == 0) {
+			IO.printMessage("Hey!  This is good stuff!  * Hick! *");
+			confused = true;
+		}
+		flags.confused += Rnd.randomInt(20) + 12;
+		return confused;
+	}
+	
+	private static boolean potionOfPoison() {
+		PlayerFlags flags = Player.py.flags;
+		boolean poisoned = false;
+		if (flags.poisoned == 0) {
+			IO.printMessage("You feel very sick.");
+			poisoned = true;
+		}
+		flags.poisoned += Rnd.randomInt(15) + 10;
+		return poisoned;
+	}
+	
+	private static boolean potionOfHasteSelf() {
+		PlayerFlags flags = Player.py.flags;
+		boolean hasted = false;
+		if (flags.fast == 0) {
+			hasted = true;
+		}
+		flags.fast += Rnd.randomInt(25) + 15;
+		return hasted;
+	}
+	
+	private static boolean potionOfSlowness() {
+		PlayerFlags flags = Player.py.flags;
+		boolean slowed = false;
+		if (flags.slow == 0) {
+			slowed = true;
+		}
+		flags.slow += Rnd.randomInt(25) + 15;
+		return slowed;
+	}
+	
+	private static boolean potionOfGainDexterity() {
+		if (Misc3.increaseStat(Constants.A_DEX)) {
+			IO.printMessage("You feel more limber!");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfRestoreDexterity() {
+		if (Misc3.restoreStat(Constants.A_DEX)) {
+			IO.printMessage("You feel less clumsy.");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfRestoreConstitution() {
+		if (Misc3.restoreStat(Constants.A_CON)) {
+			IO.printMessage("You feel your health returning!");
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfCureBlindness() {
+		return Spells.cureBlindness();
+	}
+	
+	private static boolean potionOfCureConfusion() {
+		return Spells.cureConfusion();
+	}
+	
+	private static boolean potionOfCurePoison() {
+		return Spells.curePoison();
+	}
+	
+	private static boolean potionOfLoseExperience() {
+		if (Player.py.misc.currExp > 0) {
+			IO.printMessage("You feel your memories fade.");
+			// Lose between 1/5 and 2/5 of your experience
+			int amount = Player.py.misc.currExp / 5;
+			if (Player.py.misc.currExp > Constants.MAX_SHORT) {
+				int scale = (int)(Constants.MAX_LONG / Player.py.misc.currExp);
+				amount += (Rnd.randomInt(scale) * Player.py.misc.currExp) / (scale * 5);
+			} else {
+				amount += Rnd.randomInt(Player.py.misc.currExp) / 5;
+			}
+			Spells.loseExperience(amount);
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean potionOfSaltWater() {
+		PlayerFlags flags = Player.py.flags;
+		Spells.curePoison();
+		if (flags.food > 150) {
+			flags.food = 150;
+		}
+		flags.paralysis = 4;
+		IO.printMessage("The potion makes you vomit!");
+		return true;
+	}
+	
+	private static boolean potionOfInvulnerability() {
+		PlayerFlags flags = Player.py.flags;
+		boolean invulnerable = false;
+		if (flags.invulnerability == 0) {
+			invulnerable = true;
+		}
+		flags.invulnerability += Rnd.randomInt(10) + 10;
+		return invulnerable;
+	}
+	
+	private static boolean potionOfHeroism() {
+		PlayerFlags flags = Player.py.flags;
+		boolean heroic = false;
+		if (flags.hero == 0) {
+			heroic = true;
+		}
+		flags.hero += Rnd.randomInt(25) + 25;
+		return heroic;
+	}
+	
+	private static boolean potionOfSuperHeroism() {
+		PlayerFlags flags = Player.py.flags;
+		boolean superHeroic = false;
+		if (flags.superHero == 0) {
+			superHeroic = true;
+		}
+		flags.superHero += Rnd.randomInt(25) + 25;
+		return superHeroic;
+	}
+	
+	private static boolean potionOfBoldness() {
+		return Spells.removeFear();
+	}
+	
+	private static boolean potionOfRestoreLifeLevels() {
+		return Spells.restoreLevel();
+	}
+	
+	private static boolean potionOfResistHeat() {
+		PlayerFlags flags = Player.py.flags;
+		boolean resisted = false;
+		if (flags.resistHeat == 0) {
+			resisted = true;
+		}
+		flags.resistHeat += Rnd.randomInt(10) + 10;
+		return resisted;
+	}
+	
+	private static boolean potionOfResistCold() {
+		PlayerFlags flags = Player.py.flags;
+		boolean resisted = false;
+		if (flags.resistCold == 0) {
+			resisted = true;
+		}
+		flags.resistCold += Rnd.randomInt(10) + 10;
+		return resisted;
+	}
+	
+	private static boolean potionOfDetectInvisible() {
+		boolean detected = false;
+		if (Player.py.flags.detectInvisible == 0) {
+			detected = true;
+		}
+		Spells.detectInvisibleMonsters(Rnd.randomInt(12) + 12);
+		return detected;
+	}
+	
+	private static boolean potionOfSlowPoison() {
+		return Spells.slowPoison();
+	}
+	
+	private static boolean potionOfNeutralizePoison() {
+		return Spells.curePoison();
+	}
+	
+	private static boolean potionOfRestoreMana() {
+		PlayerMisc misc = Player.py.misc;
+		boolean restored = false;
+		if (misc.currMana < misc.maxMana) {
+			misc.currMana = misc.maxMana;
+			restored = true;
+			IO.printMessage("Your feel your head clear.");
+			Misc3.printCurrentMana();
+		}
+		return restored;
+	}
+	
+	private static boolean potionOfInfraVision() {
+		PlayerFlags flags = Player.py.flags;
+		boolean infra = false;
+		if (flags.timedSeeInfrared == 0) {
+			IO.printMessage("Your eyes begin to tingle.");
+			infra = true;
+		}
+		flags.timedSeeInfrared += 100 + Rnd.randomInt(100);
+		return infra;
 	}
 }
