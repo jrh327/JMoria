@@ -23,173 +23,284 @@ package net.jonhopkins.moria;
 
 import net.jonhopkins.moria.types.IntPointer;
 import net.jonhopkins.moria.types.InvenType;
+import net.jonhopkins.moria.types.PlayerFlags;
 import net.jonhopkins.moria.types.PlayerMisc;
 
 public class Staffs {
 	
 	private Staffs() { }
 	
-	/* Use a staff.					-RAK-	*/
+	/**
+	 * Use a staff. -RAK-
+	 */
 	public static void use() {
-		IntPointer i = new IntPointer();
-		IntPointer j = new IntPointer(), k = new IntPointer();
-		int chance;
-		IntPointer y, x;
-		IntPointer item_val = new IntPointer();
-		boolean ident;
-		PlayerMisc m_ptr;
-		InvenType i_ptr;
-		
 		Variable.freeTurnFlag = true;
 		if (Treasure.invenCounter == 0) {
 			IO.printMessage("But you are not carrying anything.");
-		} else if (!Misc3.findRange(Constants.TV_STAFF, Constants.TV_NEVER, j, k)) {
+			return;
+		}
+		
+		IntPointer first = new IntPointer();
+		IntPointer last = new IntPointer();
+		if (!Misc3.findRange(Constants.TV_STAFF, Constants.TV_NEVER, first, last)) {
 			IO.printMessage("You are not carrying any staffs.");
-		} else if (Moria1.getItemId(item_val, "Use which staff?", j.value(), k.value(), "", "")) {
-			i_ptr = Treasure.inventory[item_val.value()];
-			Variable.freeTurnFlag = false;
-			m_ptr = Player.py.misc;
-			chance = m_ptr.savingThrow + Misc3.adjustStat(Constants.A_INT) - i_ptr.level - 5 + (Player.classLevelAdjust[m_ptr.playerClass][Constants.CLA_DEVICE] * m_ptr.level / 3);
-			if (Player.py.flags.confused > 0) {
-				chance = chance / 2;
+			return;
+		}
+		
+		IntPointer index = new IntPointer();
+		if (!Moria1.getItemId(index, "Use which staff?", first.value(), last.value(), "", "")) {
+			return;
+		}
+		
+		InvenType staff = Treasure.inventory[index.value()];
+		Variable.freeTurnFlag = false;
+		PlayerMisc misc = Player.py.misc;
+		int chance = misc.savingThrow
+				+ Misc3.adjustStat(Constants.A_INT)
+				- staff.level - 5
+				+ (Player.classLevelAdjust[misc.playerClass][Constants.CLA_DEVICE] * misc.level / 3);
+		if (Player.py.flags.confused > 0) {
+			chance = chance / 2;
+		}
+		if ((chance < Constants.USE_DEVICE)
+				&& (Rnd.randomInt(Constants.USE_DEVICE - chance + 1) == 1)) {
+			chance = Constants.USE_DEVICE; // Give everyone a slight chance
+		}
+		if (chance <= 0)	chance = 1;
+		if (Rnd.randomInt(chance) < Constants.USE_DEVICE) {
+			IO.printMessage("You failed to use the staff properly.");
+			return;
+		}
+		if (staff.misc <= 0) {
+			IO.printMessage("The staff has no charges left.");
+			if (!Desc.arePlussesKnownByPlayer(staff)) {
+				Misc4.addInscription(staff, Constants.ID_EMPTY);
 			}
-			if ((chance < Constants.USE_DEVICE) && (Rnd.randomInt(Constants.USE_DEVICE - chance + 1) == 1)) {
-				chance = Constants.USE_DEVICE; /* Give everyone a slight chance */
-			}
-			if (chance <= 0)	chance = 1;
-			if (Rnd.randomInt(chance) < Constants.USE_DEVICE) {
-				IO.printMessage("You failed to use the staff properly.");
-			} else if (i_ptr.misc > 0) {
-				i.value(i_ptr.flags);
-				ident = false;
-				(i_ptr.misc)--;
-				while (i.value() != 0) {
-					j.value(Misc1.firstBitPos(i) + 1);
-					/* Staffs.				*/
-					switch(j.value())
-					{
-					case 1:
-						ident = Spells.lightArea(Player.y, Player.x);
-						break;
-					case 2:
-						ident = Spells.detectSecretDoors();
-						break;
-					case 3:
-						ident = Spells.detectTrap();
-						break;
-					case 4:
-						ident = Spells.detectTreasure();
-						break;
-					case 5:
-						ident = Spells.detectObject();
-						break;
-					case 6:
-						Misc3.teleport(100);
-						ident = true;
-						break;
-					case 7:
-						ident = true;
-						Spells.earthquake();
-						break;
-					case 8:
-						ident = false;
-						for (int k1 = 0; k1 < Rnd.randomInt(4); k1++) {
-							y = new IntPointer(Player.y);
-							x = new IntPointer(Player.x);
-							ident |= Misc1.summonMonster(y, x, false);
-						}
-						break;
-					case 10:
-						ident = true;
-						Spells.destroyArea(Player.y, Player.x);
-						break;
-					case 11:
-						ident = true;
-						Spells.starLight(Player.y, Player.x);
-						break;
-					case 12:
-						ident = Spells.speedMonsters(1);
-						break;
-					case 13:
-						ident = Spells.speedMonsters(-1);
-						break;
-					case 14:
-						ident = Spells.sleepMonsters();
-						break;
-					case 15:
-						ident = Spells.changePlayerHitpoints(Rnd.randomInt(8));
-						break;
-					case 16:
-						ident = Spells.detectInvisibleCreatures();
-						break;
-					case 17:
-						if (Player.py.flags.fast == 0) {
-							ident = true;
-						}
-						Player.py.flags.fast += Rnd.randomInt(30) + 15;
-						break;
-					case 18:
-						if (Player.py.flags.slow == 0) {
-							ident = true;
-						}
-						Player.py.flags.slow += Rnd.randomInt(30) + 15;
-						break;
-					case 19:
-						ident = Spells.massPolymorph();
-						break;
-					case 20:
-						if (Spells.removeCurse()) {
-							if (Player.py.flags.blind < 1) {
-								IO.printMessage("The staff glows blue for a moment..");
-							}
-							ident = true;
-						}
-						break;
-					case 21:
-						ident = Spells.detectEvil();
-						break;
-					case 22:
-						if (Spells.cureBlindness()
-								|| Spells.curePoison()
-								|| Spells.cureConfusion()) {
-							ident = true;
-						}
-						break;
-					case 23:
-						ident = Spells.dispelCreature(Constants.CD_EVIL, 60);
-						break;
-					case 25:
-						ident = Spells.unlightArea(Player.y, Player.x);
-						break;
-					case 32:
-						/* store bought flag */
-						break;
-					default:
-						IO.printMessage("Internal error in staffs()");
-						break;
-					}
-					/* End of staff actions.		*/
-				}
-				if (ident) {
-					if (!Desc.isKnownByPlayer(i_ptr)) {
-						m_ptr = Player.py.misc;
-						/* round half-way case up */
-						m_ptr.currExp += (i_ptr.level + (m_ptr.level >> 1)) / m_ptr.level;
-						Misc3.printExperience();
-						
-						Desc.identify(item_val);
-						i_ptr = Treasure.inventory[item_val.value()];
-					}
-				} else if (!Desc.isKnownByPlayer(i_ptr)) {
-					Desc.sample(i_ptr);
-				}
-				Desc.describeCharges(item_val.value());
-			} else {
-				IO.printMessage("The staff has no charges left.");
-				if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
-					Misc4.addInscription(i_ptr, Constants.ID_EMPTY);
-				}
+			return;
+		}
+	
+		IntPointer flags = new IntPointer(staff.flags);
+		boolean identified = false;
+		staff.misc--;
+		while (flags.value() != 0) {
+			first.value(Misc1.firstBitPos(flags) + 1);
+			// Staffs
+			switch (first.value()) {
+			case 1:
+				identified = castLight();
+				break;
+			case 2:
+				identified = castDoorAndStairLocation();
+				break;
+			case 3:
+				identified = castTrapLocation();
+				break;
+			case 4:
+				identified = castTreasureLocation();
+				break;
+			case 5:
+				identified = castObjectLocation();
+				break;
+			case 6:
+				identified = castTeleportation();
+				break;
+			case 7:
+				identified = castEarthquakes();
+				break;
+			case 8:
+				identified |= castSummoning();
+				break;
+			case 10:
+				identified = castDestruction();
+				break;
+			case 11:
+				identified = castStarlight();
+				break;
+			case 12:
+				identified = castHasteMonsters();
+				break;
+			case 13:
+				identified = castSlowMonsters();
+				break;
+			case 14:
+				identified = castSleepMonsters();
+				break;
+			case 15:
+				identified = castCureLightWounds();
+				break;
+			case 16:
+				identified = castDetectInvisible();
+				break;
+			case 17:
+				identified |= castSpeed();
+				break;
+			case 18:
+				identified |= castSlowness();
+				break;
+			case 19:
+				identified = castMassPolymorph();
+				break;
+			case 20:
+				identified |= castRemoveCurse();
+				break;
+			case 21:
+				identified = castDetectEvil();
+				break;
+			case 22:
+				identified |= castCuring();
+				break;
+			case 23:
+				identified = castDispelEvil();
+				break;
+			case 25:
+				identified = castDarkness();
+				break;
+			case 32:
+				// store bought flag
+				break;
+			default:
+				IO.printMessage("Internal error in staffs()");
+				break;
 			}
 		}
+		
+		if (identified) {
+			if (!Desc.isKnownByPlayer(staff)) {
+				// round half-way case up
+				misc.currExp += (staff.level + (misc.level >> 1)) / misc.level;
+				Misc3.printExperience();
+				
+				Desc.identify(index);
+				staff = Treasure.inventory[index.value()];
+			}
+		} else if (!Desc.isKnownByPlayer(staff)) {
+			Desc.sample(staff);
+		}
+		Desc.describeCharges(index.value());
+	}
+	
+	private static boolean castLight() {
+		return Spells.lightArea(Player.y, Player.x);
+	}
+	
+	private static boolean castDoorAndStairLocation() {
+		return Spells.detectSecretDoors();
+	}
+	
+	private static boolean castTrapLocation() {
+		return Spells.detectTrap();
+	}
+	
+	private static boolean castTreasureLocation() {
+		return Spells.detectTreasure();
+	}
+	
+	private static boolean castObjectLocation() {
+		return Spells.detectObject();
+	}
+	
+	private static boolean castTeleportation() {
+		Misc3.teleport(100);
+		return true;
+	}
+	
+	private static boolean castEarthquakes() {
+		Spells.earthquake();
+		return true;
+	}
+	
+	private static boolean castSummoning() {
+		boolean summon = false;
+		for (int i = 0; i < Rnd.randomInt(4); i++) {
+			IntPointer y = new IntPointer(Player.y);
+			IntPointer x = new IntPointer(Player.x);
+			summon |= Misc1.summonMonster(y, x, false);
+		}
+		return summon;
+	}
+	
+	private static boolean castDestruction() {
+		Spells.destroyArea(Player.y, Player.x);
+		return true;
+	}
+	
+	private static boolean castStarlight() {
+		Spells.starLight(Player.y, Player.x);
+		return true;
+	}
+	
+	private static boolean castHasteMonsters() {
+		return Spells.speedMonsters(1);
+	}
+	
+	private static boolean castSlowMonsters() {
+		return Spells.speedMonsters(-1);
+	}
+	
+	private static boolean castSleepMonsters() {
+		return Spells.sleepMonsters();
+	}
+	
+	private static boolean castCureLightWounds() {
+		return Spells.changePlayerHitpoints(Rnd.randomInt(8));
+	}
+	
+	private static boolean castDetectInvisible() {
+		return Spells.detectInvisibleCreatures();
+	}
+	
+	private static boolean castSpeed() {
+		PlayerFlags flags = Player.py.flags;
+		boolean speed = false;
+		if (flags.fast == 0) {
+			speed = true;
+		}
+		flags.fast += Rnd.randomInt(30) + 15;
+		return speed;
+	}
+	
+	private static boolean castSlowness() {
+		PlayerFlags flags = Player.py.flags;
+		boolean slow = false;
+		if (flags.slow == 0) {
+			slow = true;
+		}
+		flags.slow += Rnd.randomInt(30) + 15;
+		return slow;
+	}
+	
+	private static boolean castMassPolymorph() {
+		return Spells.massPolymorph();
+	}
+	
+	private static boolean castRemoveCurse() {
+		if (Spells.removeCurse()) {
+			if (Player.py.flags.blind < 1) {
+				IO.printMessage("The staff glows blue for a moment..");
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean castDetectEvil() {
+		return Spells.detectEvil();
+	}
+	
+	private static boolean castCuring() {
+		if (Spells.cureBlindness()
+				|| Spells.curePoison()
+				|| Spells.cureConfusion()) {
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean castDispelEvil() {
+		return Spells.dispelCreature(Constants.CD_EVIL, 60);
+	}
+	
+	private static boolean castDarkness() {
+		return Spells.unlightArea(Player.y, Player.x);
 	}
 }
