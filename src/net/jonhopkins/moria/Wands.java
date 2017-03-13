@@ -29,164 +29,287 @@ public class Wands {
 	
 	private Wands() { }
 	
-	/* Wands for the aiming.				*/
+	/**
+	 * Wands for the aiming.
+	 */
 	public static void aim() {
-		IntPointer i = new IntPointer();
-		int l;
-		boolean ident;
-		IntPointer item_val = new IntPointer(), dir = new IntPointer();
-		IntPointer j = new IntPointer(), k = new IntPointer();
-		int chance;
-		InvenType i_ptr;
-		PlayerMisc m_ptr;
-		
 		Variable.freeTurnFlag = true;
 		if (Treasure.invenCounter == 0) {
 			IO.printMessage("But you are not carrying anything.");
-		} else if (!Misc3.findRange(Constants.TV_WAND, Constants.TV_NEVER, j, k)) {
+			return;
+		}
+		
+		IntPointer first = new IntPointer();
+		IntPointer last = new IntPointer();
+		if (!Misc3.findRange(Constants.TV_WAND, Constants.TV_NEVER, first, last)) {
 			IO.printMessage("You are not carrying any wands.");
-		} else if (Moria1.getItemId(item_val, "Aim which wand?", j.value(), k.value(), "", "")) {
-			i_ptr = Treasure.inventory[item_val.value()];
-			Variable.freeTurnFlag = false;
-			if (Moria1.getDirection("", dir)) {
-				if (Player.py.flags.confused > 0) {
-					IO.printMessage("You are confused.");
-					do {
-						dir.value(Rnd.randomInt(9));
-					} while (dir.value() == 5);
-				}
-				ident = false;
-				m_ptr = Player.py.misc;
-				chance = m_ptr.savingThrow + Misc3.adjustStat(Constants.A_INT) - i_ptr.level + (Player.classLevelAdjust[m_ptr.playerClass][Constants.CLA_DEVICE] * m_ptr.level / 3);
-				if (Player.py.flags.confused > 0) {
-					chance = chance / 2;
-				}
-				if ((chance < Constants.USE_DEVICE) && (Rnd.randomInt(Constants.USE_DEVICE - chance + 1) == 1)) {
-					chance = Constants.USE_DEVICE; /* Give everyone a slight chance */
-				}
-				if (chance <= 0)	chance = 1;
-				if (Rnd.randomInt(chance) < Constants.USE_DEVICE) {
-					IO.printMessage("You failed to use the wand properly.");
-				} else if (i_ptr.misc > 0) {
-					i.value(i_ptr.flags);
-					i_ptr.misc--;
-					while (i.value() != 0) {
-						j.value(Misc1.firstBitPos(i) + 1);
-						k.value(Player.y);
-						l = Player.x;
-						/* Wands			 */
-						switch(j.value())
-						{
-						case 1:
-							IO.printMessage("A line of blue shimmering light appears.");
-							Spells.lightLine(dir.value(), Player.y, Player.x);
-							ident = true;
-							break;
-						case 2:
-							Spells.fireBolt(Constants.GF_LIGHTNING, dir.value(), k.value(), l, Misc1.damageRoll(4, 8), Player.spellNames[8]);
-							ident = true;
-							break;
-						case 3:
-							Spells.fireBolt(Constants.GF_FROST, dir.value(), k.value(), l, Misc1.damageRoll(6, 8), Player.spellNames[14]);
-							ident = true;
-							break;
-						case 4:
-							Spells.fireBolt(Constants.GF_FIRE, dir.value(), k.value(), l, Misc1.damageRoll(9, 8), Player.spellNames[22]);
-							ident = true;
-							break;
-						case 5:
-							ident = Spells.transformWallToMud(dir.value(), k.value(), l);
-							break;
-						case 6:
-							ident = Spells.polymorphMonster(dir.value(), k.value(), l);
-							break;
-						case 7:
-							ident = Spells.changeMonsterHitpoints(dir.value(), k.value(), l, -Misc1.damageRoll(4, 6));
-							break;
-						case 8:
-							ident = Spells.speedMonster(dir.value(), k.value(), l, 1);
-							break;
-						case 9:
-							ident = Spells.speedMonster(dir.value(), k.value(), l, -1);
-							break;
-						case 10:
-							ident = Spells.confuseMonster(dir.value(), k.value(), l);
-							break;
-						case 11:
-							ident = Spells.sleepMonster(dir.value(), k.value(), l);
-							break;
-						case 12:
-							ident = Spells.drainLife(dir.value(), k.value(), l);
-							break;
-						case 13:
-							ident = Spells.destroyTrapsAndDoors(dir.value(), k.value(), l);
-							break;
-						case 14:
-							Spells.fireBolt(Constants.GF_MAGIC_MISSILE, dir.value(), k.value(), l, Misc1.damageRoll(2, 6), Player.spellNames[0]);
-							ident = true;
-							break;
-						case 15:
-							ident = Spells.buildWall(dir.value(), k.value(), l);
-							break;
-						case 16:
-							ident = Spells.cloneMonster(dir.value(), k.value(), l);
-							break;
-						case 17:
-							ident = Spells.teleportMonsters(dir.value(), k.value(), l);
-							break;
-						case 18:
-							ident = Spells.disarmAll(dir.value(), k.value(), l);
-							break;
-						case 19:
-							Spells.fireBall(Constants.GF_LIGHTNING, dir.value(), k.value(), l, 32, "Lightning Ball");
-							ident = true;
-							break;
-						case 20:
-							Spells.fireBall(Constants.GF_FROST, dir.value(), k.value(), l, 48, "Cold Ball");
-							ident = true;
-							break;
-						case 21:
-							Spells.fireBall(Constants.GF_FIRE, dir.value(), k.value(), l, 72, Player.spellNames[28]);
-							ident = true;
-							break;
-						case 22:
-							Spells.fireBall(Constants.GF_POISON_GAS, dir.value(), k.value(), l, 12, Player.spellNames[6]);
-							ident = true;
-							break;
-						case 23:
-							Spells.fireBall(Constants.GF_ACID, dir.value(), k.value(), l, 60, "Acid Ball");
-							ident = true;
-							break;
-						case 24:
-							i.value(1 << (Rnd.randomInt(23) - 1));
-							break;
-						default:
-							IO.printMessage("Internal error in wands()");
-							break;
-						}
-						/* End of Wands.		    */
-					}
-					if (ident) {
-						if (!Desc.isKnownByPlayer(i_ptr)) {
-							m_ptr = Player.py.misc;
-							/* round half-way case up */
-							m_ptr.currExp += (i_ptr.level + (m_ptr.level >> 1)) / m_ptr.level;
-							Misc3.printExperience();
-							
-							Desc.identify(item_val);
-							i_ptr = Treasure.inventory[item_val.value()];
-						}
-					} else if (!Desc.isKnownByPlayer(i_ptr)) {
-						Desc.sample(i_ptr);
-					}
-					Desc.describeCharges(item_val.value());
-				} else {
-					IO.printMessage("The wand has no charges left.");
-					if (!Desc.arePlussesKnownByPlayer(i_ptr)) {
-						Misc4.addInscription(i_ptr, Constants.ID_EMPTY);
-					}
-				}
+			return;
+		}
+		
+		IntPointer index = new IntPointer();
+		if (!Moria1.getItemId(index, "Aim which wand?", first.value(), last.value(), "", "")) {
+			return;
+		}
+		
+		InvenType wand = Treasure.inventory[index.value()];
+		Variable.freeTurnFlag = false;
+		IntPointer dir = new IntPointer();
+		if (!Moria1.getDirection("", dir)) {
+			return;
+		}
+		
+		if (Player.py.flags.confused > 0) {
+			IO.printMessage("You are confused.");
+			do {
+				dir.value(Rnd.randomInt(9));
+			} while (dir.value() == 5);
+		}
+		
+		boolean identified = false;
+		PlayerMisc misc = Player.py.misc;
+		int chance = misc.savingThrow
+				+ Misc3.adjustStat(Constants.A_INT)
+				- wand.level
+				+ (Player.classLevelAdjust[misc.playerClass][Constants.CLA_DEVICE] * misc.level / 3);
+		if (Player.py.flags.confused > 0) {
+			chance = chance / 2;
+		}
+		if ((chance < Constants.USE_DEVICE)
+				&& (Rnd.randomInt(Constants.USE_DEVICE - chance + 1) == 1)) {
+			chance = Constants.USE_DEVICE; // Give everyone a slight chance
+		}
+		if (chance <= 0) {
+			chance = 1;
+		}
+		if (Rnd.randomInt(chance) < Constants.USE_DEVICE) {
+			IO.printMessage("You failed to use the wand properly.");
+			return;
+		}
+		
+		if (wand.misc <= 0) {
+			IO.printMessage("The wand has no charges left.");
+			if (!Desc.arePlussesKnownByPlayer(wand)) {
+				Misc4.addInscription(wand, Constants.ID_EMPTY);
+			}
+			return;
+		}
+		
+		IntPointer flags = new IntPointer(wand.flags);
+		wand.misc--;
+		while (flags.value() != 0) {
+			int wandType = Misc1.firstBitPos(flags) + 1;
+			// Wands
+			switch (wandType) {
+			case 1:
+				identified = castLight(dir.value());
+				break;
+			case 2:
+				identified = castLightningBolts(dir.value());
+				break;
+			case 3:
+				identified = castFrostBolts(dir.value());
+				break;
+			case 4:
+				identified = castFireBolts(dir.value());
+				break;
+			case 5:
+				identified = castStoneToMud(dir.value());
+				break;
+			case 6:
+				identified = castPolymorph(dir.value());
+				break;
+			case 7:
+				identified = castHealMonster(dir.value());
+				break;
+			case 8:
+				identified = castHasteMonster(dir.value());
+				break;
+			case 9:
+				identified = castSlowMonster(dir.value());
+				break;
+			case 10:
+				identified = castConfuseMonster(dir.value());
+				break;
+			case 11:
+				identified = castSleepMonster(dir.value());
+				break;
+			case 12:
+				identified = castDrainLife(dir.value());
+				break;
+			case 13:
+				identified = castTrapAndDoorDestruction(dir.value());
+				break;
+			case 14:
+				identified = castMagicMissile(dir.value());
+				break;
+			case 15:
+				identified = castWallBuilding(dir.value());
+				break;
+			case 16:
+				identified = castCloneMonster(dir.value());
+				break;
+			case 17:
+				identified = castTeleportAway(dir.value());
+				break;
+			case 18:
+				identified = castDisarming(dir.value());
+				break;
+			case 19:
+				identified = castLightningBalls(dir.value());
+				break;
+			case 20:
+				identified = castColdBalls(dir.value());
+				break;
+			case 21:
+				identified = castFireBalls(dir.value());
+				break;
+			case 22:
+				identified = castStinkingCloud(dir.value());
+				break;
+			case 23:
+				identified = castAcidBalls(dir.value());
+				break;
+			case 24:
+				castWonder(flags);
+				break;
+			default:
+				IO.printMessage("Internal error in wands()");
+				break;
 			}
 		}
+		if (identified) {
+			if (!Desc.isKnownByPlayer(wand)) {
+				// round half-way case up
+				misc.currExp += (wand.level + (misc.level >> 1)) / misc.level;
+				Misc3.printExperience();
+				
+				Desc.identify(index);
+				wand = Treasure.inventory[index.value()];
+			}
+		} else if (!Desc.isKnownByPlayer(wand)) {
+			Desc.sample(wand);
+		}
+		Desc.describeCharges(index.value());
+	}
+	
+	private static boolean castLight(int dir) {
+		IO.printMessage("A line of blue shimmering light appears.");
+		Spells.lightLine(dir, Player.y, Player.x);
+		return true;
+	}
+	
+	private static boolean castLightningBolts(int dir) {
+		Spells.fireBolt(Constants.GF_LIGHTNING, dir,
+				Player.y, Player.x, Misc1.damageRoll(4, 8),
+				Player.spellNames[8]);
+		return true;
+	}
+	
+	private static boolean castFrostBolts(int dir) {
+		Spells.fireBolt(Constants.GF_FROST, dir,
+				Player.y, Player.x, Misc1.damageRoll(6, 8),
+				Player.spellNames[14]);
+		return true;
+	}
+	
+	private static boolean castFireBolts(int dir) {
+		Spells.fireBolt(Constants.GF_FIRE, dir,
+				Player.y, Player.x, Misc1.damageRoll(9, 8),
+				Player.spellNames[22]);
+		return true;
+	}
+	
+	private static boolean castStoneToMud(int dir) {
+		return Spells.transformWallToMud(dir, Player.y, Player.x);
+	}
+	
+	private static boolean castPolymorph(int dir) {
+		return Spells.polymorphMonster(dir, Player.y, Player.x);
+	}
+	
+	private static boolean castHealMonster(int dir) {
+		return Spells.changeMonsterHitpoints(dir, Player.y, Player.x,
+				-Misc1.damageRoll(4, 6));
+	}
+	
+	private static boolean castHasteMonster(int dir) {
+		return Spells.speedMonster(dir, Player.y, Player.x, 1);
+	}
+	
+	private static boolean castSlowMonster(int dir) {
+		return Spells.speedMonster(dir, Player.y, Player.x, -1);
+	}
+	
+	private static boolean castConfuseMonster(int dir) {
+		return Spells.confuseMonster(dir, Player.y, Player.x);
+	}
+	
+	private static boolean castSleepMonster(int dir) {
+		return Spells.sleepMonster(dir, Player.y, Player.x);
+	}
+	
+	private static boolean castDrainLife(int dir) {
+		return Spells.drainLife(dir, Player.y, Player.x);
+	}
+	
+	private static boolean castTrapAndDoorDestruction(int dir) {
+		return Spells.destroyTrapsAndDoors(dir, Player.y, Player.x);
+	}
+	
+	private static boolean castMagicMissile(int dir) {
+		Spells.fireBolt(Constants.GF_MAGIC_MISSILE, dir,
+				Player.y, Player.x, Misc1.damageRoll(2, 6),
+				Player.spellNames[0]);
+		return true;
+	}
+	
+	private static boolean castWallBuilding(int dir) {
+		return Spells.buildWall(dir, Player.y, Player.x);
+	}
+	
+	private static boolean castCloneMonster(int dir) {
+		return Spells.cloneMonster(dir, Player.y, Player.x);
+	}
+	
+	private static boolean castTeleportAway(int dir) {
+		return Spells.teleportMonsters(dir, Player.y, Player.x);
+	}
+	
+	private static boolean castDisarming(int dir) {
+		return Spells.disarmAll(dir, Player.y, Player.x);
+	}
+	
+	private static boolean castLightningBalls(int dir) {
+		Spells.fireBall(Constants.GF_LIGHTNING, dir,
+				Player.y, Player.x, 32, "Lightning Ball");
+		return true;
+	}
+	
+	private static boolean castColdBalls(int dir) {
+		Spells.fireBall(Constants.GF_FROST, dir,
+				Player.y, Player.x, 48, "Cold Ball");
+		return true;
+	}
+	
+	private static boolean castFireBalls(int dir) {
+		Spells.fireBall(Constants.GF_FIRE, dir,
+				Player.y, Player.x, 72, Player.spellNames[28]);
+		return true;
+	}
+	
+	private static boolean castStinkingCloud(int dir) {
+		Spells.fireBall(Constants.GF_POISON_GAS, dir,
+				Player.y, Player.x, 12, Player.spellNames[6]);
+		return true;
+	}
+	
+	private static boolean castAcidBalls(int dir) {
+		Spells.fireBall(Constants.GF_ACID, dir,
+				Player.y, Player.x, 60, "Acid Ball");
+		return true;
+	}
+	
+	private static void castWonder(IntPointer flags) {
+		flags.value(1 << (Rnd.randomInt(23) - 1));
 	}
 }
