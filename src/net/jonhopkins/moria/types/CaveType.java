@@ -74,4 +74,17 @@ public final class CaveType {
 	public boolean isOccupiedByTreasure() {
 		return this.treasureIndex > 0;
 	}
+	
+	/**
+	 * Reset all attributes.
+	 */
+	public void blankAll() {
+		this.creatureIndex = 0;
+		this.treasureIndex = 0;
+		this.fval = 0;
+		this.litRoom = false;
+		this.fieldMark = false;
+		this.permLight = false;
+		this.tempLight = false;
+	}
 }
