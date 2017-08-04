@@ -989,7 +989,7 @@ public class Creature {
 			// Get new position
 			IntPointer newY = new IntPointer(monster.y);
 			IntPointer newX = new IntPointer(monster.x);
-			Misc3.moveMonster(monsterMoves[i], newY, newX);
+			Misc3.canMoveDirection(monsterMoves[i], newY, newX);
 			
 			CaveType cavePos = Variable.cave[newY.value()][newX.value()];
 			if (cavePos.fval != Constants.BOUNDARY_WALL) {

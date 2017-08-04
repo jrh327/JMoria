@@ -540,7 +540,7 @@ public class Spells {
 					}
 				}
 			}
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 		} while (!flag);
 	}
 	
@@ -594,7 +594,7 @@ public class Spells {
 					Desc.identifyItemPlusses(t_ptr);
 				}
 			}
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 		} while ((dist <= Constants.OBJ_BOLT_RANGE) && c_ptr.fval <= Constants.MAX_OPEN_SPACE);
 		return disarm;
 	}
@@ -677,7 +677,7 @@ public class Spells {
 		oldx = x;
 		dist = 0;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			c_ptr = Variable.cave[y1.value()][x1.value()];
 			Moria1.lightUpSpot(oldy, oldx);
@@ -758,7 +758,7 @@ public class Spells {
 		oldx = x;
 		dist = 0;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			Moria1.lightUpSpot(oldy, oldx);
 			if (dist > Constants.OBJ_BOLT_RANGE) {
@@ -1005,7 +1005,7 @@ public class Spells {
 		flag = false;
 		dist = 0;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			c_ptr = Variable.cave[y1.value()][x1.value()];
 			if ((dist > Constants.OBJ_BOLT_RANGE) || c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {
@@ -1045,7 +1045,7 @@ public class Spells {
 		flag = false;
 		dist = 0;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			c_ptr = Variable.cave[y1.value()][x1.value()];
 			if ((dist > Constants.OBJ_BOLT_RANGE) || c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {
@@ -1089,7 +1089,7 @@ public class Spells {
 		flag = false;
 		dist = 0;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			c_ptr = Variable.cave[y1.value()][x1.value()];
 			if ((dist > Constants.OBJ_BOLT_RANGE) || c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {
@@ -1135,7 +1135,7 @@ public class Spells {
 		flag = false;
 		dist = 0;
 		do	{
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			c_ptr = Variable.cave[y1.value()][x1.value()];
 			if ((dist > Constants.OBJ_BOLT_RANGE) || c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {
@@ -1186,7 +1186,7 @@ public class Spells {
 		flag = false;
 		dist = 0;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			c_ptr = Variable.cave[y1.value()][x1.value()];
 			if ((dist > Constants.OBJ_BOLT_RANGE) || c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {
@@ -1229,7 +1229,7 @@ public class Spells {
 		flag = false;
 		dist = 0;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			x = x1.value();
 			y = y1.value();
 			dist++;
@@ -1302,7 +1302,7 @@ public class Spells {
 		destroy2 = false;
 		dist= 0;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			c_ptr = Variable.cave[y1.value()][x1.value()];
 			/* must move into first closed spot, as it might be a secret door */
@@ -1342,7 +1342,7 @@ public class Spells {
 		flag = false;
 		dist = 0;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			c_ptr = Variable.cave[y1.value()][x1.value()];
 			if ((dist > Constants.OBJ_BOLT_RANGE) || c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {
@@ -1384,7 +1384,7 @@ public class Spells {
 		dist = 0;
 		flag = false;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			c_ptr = Variable.cave[y1.value()][x1.value()];
 			if ((dist > Constants.OBJ_BOLT_RANGE) || c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {
@@ -1444,7 +1444,7 @@ public class Spells {
 		dist = 0;
 		flag = false;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			c_ptr = Variable.cave[y1.value()][x1.value()];
 			if ((dist > Constants.OBJ_BOLT_RANGE) || c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {
@@ -1531,7 +1531,7 @@ public class Spells {
 		result = false;
 		dist = 0;
 		do {
-			Misc3.moveMonster(dir, y1, x1);
+			Misc3.canMoveDirection(dir, y1, x1);
 			dist++;
 			c_ptr = Variable.cave[y1.value()][x1.value()];
 			if ((dist > Constants.OBJ_BOLT_RANGE) || c_ptr.fval >= Constants.MIN_CLOSED_SPACE) {

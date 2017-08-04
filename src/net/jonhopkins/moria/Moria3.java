@@ -21,6 +21,8 @@
  */
 package net.jonhopkins.moria;
 
+import java.util.Arrays;
+
 import net.jonhopkins.moria.types.CaveType;
 import net.jonhopkins.moria.types.CreatureType;
 import net.jonhopkins.moria.types.IntPointer;
@@ -225,41 +227,82 @@ public class Moria3 {
 		}
 	}
 	
+	/**
+	 * Get a list of indices of spells the player has learned.
+	 * 
+	 * @param spellBook The spell book to check
+	 * @return Array of learned spells' indices
+	 */
+	private static int[] getSpellsList(int spellBook) {
+		IntPointer j = new IntPointer(Treasure.inventory[spellBook].flags & Player.spellLearned);
+		SpellType[] classSpellBook = Player.magicSpell[Player.py.misc.playerClass - 1];
+		int[] spells = new int[classSpellBook.length];
+		int spellCount = 0;
+		
+		while (j.value() != 0) {
+			int spellIndex = Misc1.firstBitPos(j);
+			if (classSpellBook[spellIndex].level <= Player.py.misc.level) {
+				spells[spellCount] = spellIndex;
+				spellCount++;
+			}
+		}
+		
+		return Arrays.copyOf(spells, spellCount);
+	}
+	
+	/**
+	 * Check if the spell book has spells in it.
+	 * 
+	 * @param spellBook The spell book to check
+	 * @return True if there are spells, false if spell book is empty
+	 */
+	public static boolean checkSpellBook(int spellBook) {
+		return getSpellsList(spellBook).length > 0;
+	}
+	
 	/* Return spell number and failure chance		-RAK-	*/
 	/* returns -1 if no spells in book
 	 * returns 1 if choose a spell in book to cast
 	 * returns 0 if don't choose a spell, i.e. exit with an escape */
-	public static int castSpell(String prompt, int item_val, IntPointer sn, IntPointer sc) {
-		IntPointer j;
-		int i, k;
-		int[] spell = new int[31];
-		int result, first_spell;
-		SpellType[] s_ptr;
+	/**
+	 * Choose a spell from the spell book.
+	 * 
+	 * @param prompt
+	 * @param spellBook
+	 * @return The index of the chosen spell, or -1 if no spell chosen
+	 */
+	public static int castSpell(String prompt, int spellBook) {
+		IntPointer j = new IntPointer(Treasure.inventory[spellBook].flags);
+		int firstSpell = Misc1.firstBitPos(j);
+		int[] spells = getSpellsList(spellBook);
 		
-		result = -1;
-		i = 0;
-		j = new IntPointer(Treasure.inventory[item_val].flags);
-		first_spell = Misc1.firstBitPos(j);
-		/* set j again, since bit_pos modified it */
-		j.value(Treasure.inventory[item_val].flags & Player.spellLearned);
-		s_ptr = Player.magicSpell[Player.py.misc.playerClass - 1];
-		while (j.value() != 0) {
-			k = Misc1.firstBitPos(j);
-			if (s_ptr[k].level <= Player.py.misc.level) {
-				spell[i] = k;
-				i++;
+		if (spells.length == 0) {
+			return -1;
+		}
+		
+		int result = Misc3.getSpell(spells, prompt, firstSpell);
+		
+		// Didn't choose a valid spell
+		if (result < 0) {
+			return result;
+		}
+		
+		// Valid spell and enough mana to cast it
+		if (Player.magicSpell[Player.py.misc.playerClass - 1][result].manaCost < Player.py.misc.currMana) {
+			return result;
+		}
+		
+		// Not enough mana, check if the player actually wants to attempt it
+		if (Player.Class[Player.py.misc.playerClass].spell == Constants.MAGE) {
+			if (!IO.getCheck("You summon your limited strength to cast this one! Confirm?")) {
+				result = -1;
+			}
+		} else {
+			if (!IO.getCheck("The gods may think you presumptuous for this! Confirm?")) {
+				result = -1;
 			}
 		}
-		if (i > 0) {
-			result = Misc3.getSpell(spell, i, sn, sc, prompt, first_spell) ? 1 : 0;
-			if (result != 0 && Player.magicSpell[Player.py.misc.playerClass - 1][sn.value()].manaCost > Player.py.misc.currMana) {
-				if (Player.Class[Player.py.misc.playerClass].spell == Constants.MAGE) {
-					result = IO.getCheck("You summon your limited strength to cast this one! Confirm?") ? 1 : 0;
-				} else {
-					result = IO.getCheck("The gods may think you presumptuous for this! Confirm?") ? 1 : 0;
-				}
-			}
-		}
+		
 		return result;
 	}
 	
@@ -707,7 +750,7 @@ public class Moria3 {
 		}
 		y = new IntPointer(Player.y);
 		x = new IntPointer(Player.x);
-		if (Misc3.moveMonster(dir, y, x)) {	/* Legal move?	      */
+		if (Misc3.canMoveDirection(dir, y, x)) {	/* Legal move?	      */
 			c_ptr = Variable.cave[y.value()][x.value()];
 			/* if there is no creature, or an unlit creature in the walls then... */
 			/* disallow attacks against unlit creatures in walls because moving into
@@ -868,7 +911,7 @@ public class Moria3 {
 		y = new IntPointer(Player.y);
 		x = new IntPointer(Player.x);
 		if (Moria1.getDirection("", dir)) {
-			Misc3.moveMonster(dir.value(), y, x);
+			Misc3.canMoveDirection(dir.value(), y, x);
 			c_ptr = Variable.cave[y.value()][x.value()];
 			no_object = false;
 			if (c_ptr.creatureIndex > 1 && c_ptr.treasureIndex != 0
@@ -982,7 +1025,7 @@ public class Moria3 {
 		y = new IntPointer(Player.y);
 		x = new IntPointer(Player.x);
 		if (Moria1.getDirection("", dir)) {
-			Misc3.moveMonster(dir.value(), y, x);
+			Misc3.canMoveDirection(dir.value(), y, x);
 			c_ptr = Variable.cave[y.value()][x.value()];
 			no_object = false;
 			if (c_ptr.treasureIndex != 0) {

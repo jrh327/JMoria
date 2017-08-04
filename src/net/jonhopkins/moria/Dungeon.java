@@ -1359,7 +1359,7 @@ public class Dungeon {
 		IntPointer x = new IntPointer(Player.x);
 		IntPointer dir = new IntPointer();
 		if (Moria1.getDirection("", dir)) {
-			Misc3.moveMonster(dir.value(), y, x);
+			Misc3.canMoveDirection(dir.value(), y, x);
 			CaveType cavePos = Variable.cave[y.value()][x.value()];
 			if (cavePos.treasureIndex != 0) {
 				InvenType door = Treasure.treasureList[cavePos.treasureIndex];

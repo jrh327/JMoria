@@ -49,7 +49,7 @@ public class Moria4 {
 		}
 		y = new IntPointer(Player.y);
 		x = new IntPointer(Player.x);
-		Misc3.moveMonster(dir, y, x);
+		Misc3.canMoveDirection(dir, y, x);
 		
 		c_ptr = Variable.cave[y.value()][x.value()];
 		/* Compute the digging ability of player; based on	   */
@@ -192,7 +192,7 @@ public class Moria4 {
 		y = new IntPointer(Player.y);
 		x = new IntPointer(Player.x);
 		if (Moria1.getDirection("", dir)) {
-			Misc3.moveMonster(dir.value(), y, x);
+			Misc3.canMoveDirection(dir.value(), y, x);
 			c_ptr = Variable.cave[y.value()][x.value()];
 			no_disarm = false;
 			if (c_ptr.creatureIndex > 1
@@ -835,7 +835,7 @@ public class Moria4 {
 				oldx = Player.x;
 				cur_dis = 0;
 				do {
-					Misc3.moveMonster(dir.value(), y, x);
+					Misc3.canMoveDirection(dir.value(), y, x);
 					cur_dis++;
 					Moria1.lightUpSpot(oldy, oldx);
 					if (cur_dis > tdis.value())	flag = true;
@@ -997,7 +997,7 @@ public class Moria4 {
 					dir.value(Rnd.randomInt(9));
 				} while (dir.value() == 5);
 			}
-			Misc3.moveMonster(dir.value(), y, x);
+			Misc3.canMoveDirection(dir.value(), y, x);
 			c_ptr = Variable.cave[y.value()][x.value()];
 			if (c_ptr.creatureIndex > 1) {
 				if (Player.py.flags.afraid > 0) {

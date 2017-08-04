@@ -237,7 +237,7 @@ public class Moria2 {
 		
 		row = new IntPointer(Player.y);
 		col = new IntPointer(Player.x);
-		if (!Misc3.moveMonster(dir, row, col)) {
+		if (!Misc3.canMoveDirection(dir, row, col)) {
 			Variable.findFlag = 0;
 		} else {
 			findDirection = dir;
@@ -329,7 +329,7 @@ public class Moria2 {
 		char c;
 		IntPointer y1 = new IntPointer(y), x1 = new IntPointer(x);
 		
-		if (!Misc3.moveMonster(dir, y1, x1)) {	/* check to see if movement there possible */
+		if (!Misc3.canMoveDirection(dir, y1, x1)) {	/* check to see if movement there possible */
 			return true;
 		} else if ((c = Misc1.locateSymbol(y1.value(), x1.value())) == Variable.wallSymbol || c == '%') {
 			return true;
@@ -341,7 +341,7 @@ public class Moria2 {
 	/* Do we see anything? Used in running.		-CJS- */
 	public static boolean canSeeNothing(int dir, int y, int x) {
 		IntPointer y1 = new IntPointer(y), x1 = new IntPointer(x);
-		if (!Misc3.moveMonster(dir, y1, x1)) {	/* check to see if movement there possible */
+		if (!Misc3.canMoveDirection(dir, y1, x1)) {	/* check to see if movement there possible */
 			return false;
 		} else if (Misc1.locateSymbol(y1.value(), x1.value()) == ' ') {
 			return true;
@@ -368,7 +368,7 @@ public class Moria2 {
 				newdir = cycle[chome[dir] + i];
 				row.value(y);
 				col.value(x);
-				if (Misc3.moveMonster(newdir, row, col)) {
+				if (Misc3.canMoveDirection(newdir, row, col)) {
 					/* Objects player can see (Including doors?) cause a stop. */
 					c_ptr = Variable.cave[row.value()][col.value()];
 					if (Variable.playerLight || c_ptr.tempLight || c_ptr.permLight || c_ptr.fieldMark) {
@@ -463,7 +463,7 @@ public class Moria2 {
 					/* Two options! */
 					row.value(y);
 					col.value(x);
-					Misc3.moveMonster(option, row, col);
+					Misc3.canMoveDirection(option, row, col);
 					if (!canSeeWall(option, row.value(), col.value()) || !canSeeWall(check_dir, row.value(), col.value())) {
 						/* Don't see that it is closed off.  This could be a
 						 * potential corner or an intersection. */

@@ -73,26 +73,24 @@ public class Magic {
 			return;
 		}
 		
-		IntPointer choice = new IntPointer();
-		IntPointer chance = new IntPointer();
-		int result = Moria3.castSpell("Cast which spell?", index.value(), choice, chance);
-		if (result < 0) {
+		if (!Moria3.checkSpellBook(index.value())) {
 			IO.printMessage("You don't know any spells in that book.");
 			return;
 		}
 		
-		if (result == 0) {
+		int spellIndex = Moria3.castSpell("Cast which spell?", index.value());
+		if (spellIndex < 0) {
 			return;
 		}
 		
-		SpellType spell = Player.magicSpell[Player.py.misc.playerClass - 1][choice.value()];
+		SpellType spell = Player.magicSpell[Player.py.misc.playerClass - 1][spellIndex];
 		Variable.freeTurnFlag = false;
 		
-		if (Rnd.randomInt(100) < chance.value()) {
+		if (Rnd.randomInt(100) < Misc3.spellFailChance(spellIndex)) {
 			IO.printMessage("You failed to get the spell off!");
 		} else {
 			// Spells
-			switch (choice.value() + 1) {
+			switch (spellIndex + 1) {
 			case 1:
 				castMagicMissile();
 				break;
@@ -192,9 +190,9 @@ public class Magic {
 			
 			if (!Variable.freeTurnFlag) {
 				PlayerMisc misc = Player.py.misc;
-				if ((Player.spellWorked & (1L << choice.value())) == 0) {
+				if ((Player.spellWorked & (1L << spellIndex)) == 0) {
 					misc.currExp += spell.expGained << 2;
-					Player.spellWorked |= (1L << choice.value());
+					Player.spellWorked |= (1L << spellIndex);
 					Misc3.printExperience();
 				}
 			}

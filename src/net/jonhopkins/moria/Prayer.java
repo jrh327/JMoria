@@ -72,23 +72,23 @@ public class Prayer {
 		if (!Moria1.getItemId(index, "Use which Holy Book?", first.value(), last.value(), "", "")) {
 			return;
 		}
-
-		IntPointer choice = new IntPointer();
-		IntPointer chance = new IntPointer();
-		int result = Moria3.castSpell("Recite which prayer?", index.value(), choice, chance);
-		if (result < 0) {
+		
+		if (!Moria3.checkSpellBook(index.value())) {
 			IO.printMessage("You don't know any prayers in that book.");
 			return;
 		}
 		
+		IntPointer choice = new IntPointer();
+		IntPointer chance = new IntPointer();
+		int result = Moria3.castSpell("Recite which prayer?", index.value());
 		if (result == 0) {
 			return;
 		}
-	
+		
 		SpellType prayer = Player.magicSpell[Player.py.misc.playerClass - 1][choice.value()];
 		Variable.freeTurnFlag = false;
 		
-		if (Rnd.randomInt(100) < chance.value()) {
+		if (Rnd.randomInt(100) < Misc3.spellFailChance(result)) {
 			IO.printMessage("You lost your concentration!");
 		} else {
 			// Prayers
