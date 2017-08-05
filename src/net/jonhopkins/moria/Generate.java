@@ -325,7 +325,7 @@ public class Generate {
 							CaveType cavePos = Variable.cave[y1][x1];
 							if (cavePos.fval <= Constants.MAX_OPEN_SPACE
 									&& (cavePos.treasureIndex == 0)
-									&& (Misc1.isNextToWalls(y1, x1) >= walls)) {
+									&& (Misc1.numAdjacentWalls(y1, x1) >= walls)) {
 								flag = true;
 								if (typ == 1) {
 									placeUpStairs(y1, x1);
@@ -1102,7 +1102,7 @@ public class Generate {
 	private static boolean isNextToCorridor(int y, int x) {
 		boolean nextTo;
 		
-		if (Misc1.isNextToCorridor(y, x) > 2) {
+		if (Misc1.numAdjacentCorridors(y, x) > 2) {
 			if ((Variable.cave[y - 1][x].fval >= Constants.MIN_CAVE_WALL)
 					&& (Variable.cave[y + 1][x].fval >= Constants.MIN_CAVE_WALL)) {
 				nextTo = true;

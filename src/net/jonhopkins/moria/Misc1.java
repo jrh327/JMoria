@@ -22,6 +22,7 @@
 package net.jonhopkins.moria;
 
 import net.jonhopkins.moria.types.CaveType;
+import net.jonhopkins.moria.types.CreatureType;
 import net.jonhopkins.moria.types.PlayerFlags;
 import net.jonhopkins.moria.types.IntPointer;
 import net.jonhopkins.moria.types.MonsterType;
@@ -42,14 +43,11 @@ public class Misc1 {
 	/**
 	 * Returns position of first set bit and clears that bit -RAK-
 	 * 
-	 * @param test - The integer being checked for its first set bit
+	 * @param test The integer being checked for its first set bit
 	 * @return The position of the first set bit
 	 */
 	public static int firstBitPos(IntPointer test) {
-		int i;
-		int mask = 0x1;
-		
-		for (i = 0; i < 32; i++) {
+		for (int i = 0, mask = 0x1; i < 32; i++) {
 			if ((test.value() & mask) != 0) {
 				test.value(test.value() & ~mask);
 				return i;
@@ -57,19 +55,22 @@ public class Misc1 {
 			mask <<= 1;
 		}
 		
-		/* no one bits found */
+		// no one bits found
 		return -1;
 	}
 	
 	/**
 	 * Checks a co-ordinate for in bounds status -RAK-
 	 * 
-	 * @param y - The vertical position of the point to check
-	 * @param x - The horizontal position of the point to check
+	 * @param y The vertical position of the point to check
+	 * @param x The horizontal position of the point to check
 	 * @return True if the coordinate is within the level, otherwise false
 	 */
 	public static boolean isInBounds(int y, int x) {
-		return (y > 0) && (y < Variable.currHeight - 1) && (x > 0) && (x < Variable.currWidth - 1);
+		return (y > 0)
+				&& (y < Variable.currHeight - 1)
+				&& (x > 0)
+				&& (x < Variable.currWidth - 1);
 	}
 	
 	/**
@@ -88,53 +89,54 @@ public class Misc1 {
 	 * Given an row (y) and col (x), this routine detects when a move
 	 * off the screen has occurred and figures new borders. -RAK-
 	 * 
-	 * @param y - The vertical position of the point to check
-	 * @param x - The horizontal position of the point to check
-	 * @param force - Force the panel bounds to be recalculated, useful for 'W'here.
+	 * @param y The vertical position of the point to check
+	 * @param x The horizontal position of the point to check
+	 * @param force Force the panel bounds to be recalculated, useful for 'W'here.
 	 * @return True if the panel bounds have been recalculated, otherwise false
 	 */
 	public static boolean getPanel(int y, int x, boolean force) {
-		int prow, pcol;
-		boolean panel;
+		int panelRow = Variable.panelRow;
+		int panelCol = Variable.panelCol;
 		
-		prow = Variable.panelRow;
-		pcol = Variable.panelCol;
 		if (force || (y < Variable.panelRowMin + 2) || (y > Variable.panelRowMax - 2)) {
-			prow = ((y - Constants.SCREEN_HEIGHT / 4) / (Constants.SCREEN_HEIGHT / 2));
-			if (prow > Variable.maxPanelRows) {
-				prow = Variable.maxPanelRows;
-			} else if (prow < 0) {
-				prow = 0;
+			panelRow = ((y - Constants.SCREEN_HEIGHT / 4) / (Constants.SCREEN_HEIGHT / 2));
+			if (panelRow > Variable.maxPanelRows) {
+				panelRow = Variable.maxPanelRows;
+			} else if (panelRow < 0) {
+				panelRow = 0;
 			}
 		}
+		
 		if (force || (x < Variable.panelColMin + 3) || (x > Variable.panelColMax - 3)) {
-			pcol = ((x - Constants.SCREEN_WIDTH / 4) / (Constants.SCREEN_WIDTH / 2));
-			if (pcol > Variable.maxPanelCols) {
-				pcol = Variable.maxPanelCols;
-			} else if (pcol < 0) {
-				pcol = 0;
+			panelCol = ((x - Constants.SCREEN_WIDTH / 4) / (Constants.SCREEN_WIDTH / 2));
+			if (panelCol > Variable.maxPanelCols) {
+				panelCol = Variable.maxPanelCols;
+			} else if (panelCol < 0) {
+				panelCol = 0;
 			}
 		}
-		if ((prow != Variable.panelRow) || (pcol != Variable.panelCol)) {
-			Variable.panelRow = prow;
-			Variable.panelCol = pcol;
+		
+		if ((panelRow != Variable.panelRow) || (panelCol != Variable.panelCol)) {
+			Variable.panelRow = panelRow;
+			Variable.panelCol = panelCol;
 			calculatePanelBounds();
-			panel = true;
-			/* stop movement if any */
+			
+			// stop movement if any
 			if (Variable.findBound.value()) {
 				Moria2.endFind();
 			}
-		} else {
-			panel = false;
+			
+			return true;
 		}
-		return panel;
+		
+		return false;
 	}
 	
 	/**
 	 * Tests a given point to see if it is within the screen boundaries -RAK-
 	 * 
-	 * @param y - The vertical position of the point to check
-	 * @param x - The horizontal position of the point to check
+	 * @param y The vertical position of the point to check
+	 * @param x The horizontal position of the point to check
 	 * @return Whether the point is within the screen
 	 */
 	public static boolean panelContains(int y, int x) {
@@ -147,20 +149,19 @@ public class Misc1 {
 	/**
 	 * Distance between two points -RAK-
 	 * 
-	 * @param y1 - The vertical position of the starting point
-	 * @param x1 - The horizontal position of the starting point
-	 * @param y2 - The vertical position of the ending point
-	 * @param x2 - The horizontal position of the ending point
+	 * @param y1 The vertical position of the starting point
+	 * @param x1 The horizontal position of the starting point
+	 * @param y2 The vertical position of the ending point
+	 * @param x2 The horizontal position of the ending point
 	 * @return The distance between the two points
 	 */
 	public static int distance(int y1, int x1, int y2, int x2) {
-		int dy, dx;
-		
-		dy = y1 - y2;
+		int dy = y1 - y2;
 		if (dy < 0) {
 			dy = -dy;
 		}
-		dx = x1 - x2;
+		
+		int dx = x1 - x2;
 		if (dx < 0) {
 			dx = -dx;
 		}
@@ -174,33 +175,34 @@ public class Misc1 {
 	 * Note that (y, x) is always in_bounds(),
 	 * i.e. (0 < y < cur_height - 1), and (0 < x < cur_width - 1)
 	 * 
-	 * @param y - The vertical position of the point to check
-	 * @param x - The horizontal position of the point to check
+	 * @param y The vertical position of the point to check
+	 * @param x The horizontal position of the point to check
 	 * @return The number of walls adjacent to the point
 	 */
-	public static int isNextToWalls(int y, int x) {
-		int i;
-		CaveType c_ptr;
+	public static int numAdjacentWalls(int y, int x) {
+		int numWalls = 0;
 		
-		i = 0;
-		c_ptr = Variable.cave[y - 1][x];
-		if (c_ptr.fval >= Constants.MIN_CAVE_WALL) {
-			i++;
-		}
-		c_ptr = Variable.cave[y + 1][x];
-		if (c_ptr.fval >= Constants.MIN_CAVE_WALL) {
-			i++;
-		}
-		c_ptr = Variable.cave[y][x - 1];
-		if (c_ptr.fval >= Constants.MIN_CAVE_WALL) {
-			i++;
-		}
-		c_ptr = Variable.cave[y][x + 1];
-		if (c_ptr.fval >= Constants.MIN_CAVE_WALL) {
-			i++;
+		CaveType cavePos = Variable.cave[y - 1][x];
+		if (cavePos.fval >= Constants.MIN_CAVE_WALL) {
+			numWalls++;
 		}
 		
-		return i;
+		cavePos = Variable.cave[y + 1][x];
+		if (cavePos.fval >= Constants.MIN_CAVE_WALL) {
+			numWalls++;
+		}
+		
+		cavePos = Variable.cave[y][x - 1];
+		if (cavePos.fval >= Constants.MIN_CAVE_WALL) {
+			numWalls++;
+		}
+		
+		cavePos = Variable.cave[y][x + 1];
+		if (cavePos.fval >= Constants.MIN_CAVE_WALL) {
+			numWalls++;
+		}
+		
+		return numWalls;
 	}
 	
 	/**
@@ -209,38 +211,37 @@ public class Misc1 {
 	 * Note that (y, x) is always in_bounds(), hence no need to check that
 	 * (j, k) is in_bounds(); even if they are 0 or cur_x - 1, it still works
 	 * 
-	 * @param y - The vertical position of the point to check
-	 * @param x - The horizontal position of the point to check
+	 * @param y The vertical position of the point to check
+	 * @param x The horizontal position of the point to check
 	 * @return The number of corridors adjacent to the point
 	 */
-	public static int isNextToCorridor(int y, int x) {
-		int k, j, i;
-		CaveType c_ptr;
-		
-		i = 0;
-		for (j = y - 1; j <= (y + 1); j++) {
-			for (k = x - 1; k <= (x + 1); k++) {
-				c_ptr = Variable.cave[j][k];
-				/* should fail if there is already a door present */
-				if (c_ptr.fval == Constants.CORR_FLOOR && (c_ptr.treasureIndex == 0 || Treasure.treasureList[c_ptr.treasureIndex].category < Constants.TV_MIN_DOORS)) {
-					i++;
+	public static int numAdjacentCorridors(int y, int x) {
+		int numCorridors = 0;
+		for (int j = y - 1; j <= (y + 1); j++) {
+			for (int k = x - 1; k <= (x + 1); k++) {
+				CaveType cavePos = Variable.cave[j][k];
+				int treasureCategory = Treasure.treasureList[cavePos.treasureIndex].category;
+				
+				// should fail if there is already a door present
+				if (cavePos.fval == Constants.CORR_FLOOR
+						&& (cavePos.treasureIndex == 0 || treasureCategory < Constants.TV_MIN_DOORS)) {
+					numCorridors++;
 				}
 			}
 		}
-		return i;
+		return numCorridors;
 	}
 	
 	/**
 	 * Generates damage for 2d6 style dice rolls
 	 *
-	 * @param num - Number of times to roll the die
-	 * @param sides - Number of sides on the die
+	 * @param num Number of times to roll the die
+	 * @param sides Number of sides on the die
 	 * @return The total damage counted
 	 */
 	public static int damageRoll(int num, int sides) {
-		int i, sum = 0;
-		
-		for (i = 0; i < num; i++) {
+		int sum = 0;
+		for (int i = 0; i < num; i++) {
 			sum += Rnd.randomInt(sides);
 		}
 		return sum;
@@ -264,150 +265,137 @@ public class Misc1 {
 	 * We don't consider the line to be "passing through" a tile if
 	 * it only passes across one corner of that tile.
 	 * 
-	 * @param fromY - The vertical position of the starting point
-	 * @param fromX - The horizontal position of the starting point
-	 * @param toY - The vertical position of the ending point
-	 * @param toX - The horizontal position of the ending point
+	 * @param fromY The vertical position of the starting point
+	 * @param fromX The horizontal position of the starting point
+	 * @param toY The vertical position of the ending point
+	 * @param toX The horizontal position of the ending point
 	 * @return Whether there is a clear line of sight from the starting point to the ending point
 	 */
 	public static boolean isInLineOfSight(int fromY, int fromX, int toY, int toX) {
-		int tmp, deltaX, deltaY;
+		int deltaX = toX - fromX;
+		int deltaY = toY - fromY;
 		
-		deltaX = toX - fromX;
-		deltaY = toY - fromY;
-		
-		/* Adjacent? */
+		// Adjacent?
 		if ((deltaX < 2) && (deltaX > -2) && (deltaY < 2) && (deltaY > -2)) {
 			return true;
 		}
 		
-		/* Handle the cases where deltaX or deltaY == 0. */
+		// Handle the cases where deltaX or deltaY == 0.
 		if (deltaX == 0) {
-			int p_y;	/* y position -- loop variable	*/
-			
 			if (deltaY < 0) {
-				tmp = fromY;
+				int tmp = fromY;
 				fromY = toY;
 				toY = tmp;
 			}
-			for (p_y = fromY + 1; p_y < toY; p_y++) {
-				if (Variable.cave[p_y][fromX].fval >= Constants.MIN_CLOSED_SPACE) {
+			for (int yPos = fromY + 1; yPos < toY; yPos++) {
+				if (Variable.cave[yPos][fromX].fval >= Constants.MIN_CLOSED_SPACE) {
 					return false;
 				}
 			}
 			return true;
 		} else if (deltaY == 0) {
-			int px;	/* x position -- loop variable	*/
 			
 			if (deltaX < 0) {
-				tmp = fromX;
+				int tmp = fromX;
 				fromX = toX;
 				toX = tmp;
 			}
-			for (px = fromX + 1; px < toX; px++) {
-				if (Variable.cave[fromY][px].fval >= Constants.MIN_CLOSED_SPACE) {
+			for (int xPos = fromX + 1; xPos < toX; xPos++) {
+				if (Variable.cave[fromY][xPos].fval >= Constants.MIN_CLOSED_SPACE) {
 					return false;
 				}
 			}
 			return true;
 		}
 		
-		/* Now, we've eliminated all the degenerate cases.
-		 * In the computations below, dy (or dx) and m are multiplied by a
-		 * scale factor, scale = abs(deltaX * deltaY * 2), so that we can use
-		 * integer arithmetic. */
+		// Now, we've eliminated all the degenerate cases.
+		// In the computations below, dy (or dx) and m are multiplied by a
+		// scale factor, scale = abs(deltaX * deltaY * 2), so that we can use
+		// integer arithmetic.	
 		
-		int px,		/* x position				*/
-		p_y,		/* y position				*/
-		scale2;		/* above scale factor / 2	*/
-		int scale,	/* above scale factor		*/
-		xSign,		/* sign of deltaX			*/
-		ySign,		/* sign of deltaY			*/
-		m;			/* slope or 1/slope of LOS	*/
+		int scale2 = Math.abs(deltaX * deltaY); // above scale factor / 2
+		int scale = scale2 << 1; // above scale factor
+		int xSign = (deltaX < 0) ? -1 : 1; // sign of deltaX
+		int ySign = (deltaY < 0) ? -1 : 1; // sign of deltaY
 		
-		scale2 = Math.abs(deltaX * deltaY);
-		scale = scale2 << 1;
-		xSign = (deltaX < 0) ? -1 : 1;
-		ySign = (deltaY < 0) ? -1 : 1;
-		
-		/* Travel from one end of the line to the other, oriented along
-		 * the longer axis. */
+		// Travel from one end of the line to the other, oriented along
+		// the longer axis.
 		
 		if (Math.abs(deltaX) >= Math.abs(deltaY)) {
-			int dy;		/* "fractional" y position	*/
-			/* We start at the border between the first and second tiles,
-			 * where the y offset = .5 * slope.  Remember the scale
-			 * factor.  We have:
-			 * 
-			 * m = deltaY / deltaX * 2 * (deltaY * deltaX)
-			 *   = 2 * deltaY * deltaY. */
+			// We start at the border between the first and second tiles,
+			// where the y offset = .5 * slope.  Remember the scale
+			// factor.  We have:
+			// 
+			// m = deltaY / deltaX * 2 * (deltaY * deltaX)
+			//   = 2 * deltaY * deltaY.
 			
-			dy = deltaY * deltaY;
-			m = dy << 1;
-			px = fromX + xSign;
+			int dy = deltaY * deltaY; // "fractional" y position
+			int m = dy << 1; // slope or 1/slope of LOS
+			int xPos = fromX + xSign;
 			
-			/* Consider the special case where slope == 1. */
+			// Consider the special case where slope == 1.
+			int yPos;
 			if (dy == scale2) {
-				p_y = fromY + ySign;
+				yPos = fromY + ySign;
 				dy -= scale;
 			} else {
-				p_y = fromY;
+				yPos = fromY;
 			}
 			
-			while (toX - px != 0) {
-				if (Variable.cave[p_y][px].fval >= Constants.MIN_CLOSED_SPACE) {
+			while (toX - xPos != 0) {
+				if (Variable.cave[yPos][xPos].fval >= Constants.MIN_CLOSED_SPACE) {
 					return false;
 				}
 				
 				dy += m;
 				if (dy < scale2) {
-					px += xSign;
+					xPos += xSign;
 				} else if (dy > scale2) {
-					p_y += ySign;
-					if (Variable.cave[p_y][px].fval >= Constants.MIN_CLOSED_SPACE) {
+					yPos += ySign;
+					if (Variable.cave[yPos][xPos].fval >= Constants.MIN_CLOSED_SPACE) {
 						return false;
 					}
-					px += xSign;
+					xPos += xSign;
 					dy -= scale;
 				} else {
-					/* This is the case, dy == scale2, where the LOS
-					 * exactly meets the corner of a tile. */
-					px += xSign;
-					p_y += ySign;
+					// This is the case, dy == scale2, where the LOS
+					// exactly meets the corner of a tile.
+					xPos += xSign;
+					yPos += ySign;
 					dy -= scale;
 				}
 			}
 			return true;
 		} else {
-			int dx;		/* "fractional" x position	*/
-			dx = deltaX * deltaX;
-			m = dx << 1;
+			int dx = deltaX * deltaX; // "fractional" x position
+			int m = dx << 1;
 			
-			p_y = fromY + ySign;
+			int yPos = fromY + ySign;
+			int xPos;
 			if (dx == scale2) {
-				px = fromX + xSign;
+				xPos = fromX + xSign;
 				dx -= scale;
 			} else {
-				px = fromX;
+				xPos = fromX;
 			}
 			
-			while (toY - p_y != 0) {
-				if (Variable.cave[p_y][px].fval >= Constants.MIN_CLOSED_SPACE) {
+			while (toY - yPos != 0) {
+				if (Variable.cave[yPos][xPos].fval >= Constants.MIN_CLOSED_SPACE) {
 					return false;
 				}
 				dx += m;
 				if (dx < scale2) {
-					p_y += ySign;
+					yPos += ySign;
 				} else if (dx > scale2) {
-					px += xSign;
-					if (Variable.cave[p_y][px].fval >= Constants.MIN_CLOSED_SPACE) {
+					xPos += xSign;
+					if (Variable.cave[yPos][xPos].fval >= Constants.MIN_CLOSED_SPACE) {
 						return false;
 					}
-					p_y += ySign;
+					yPos += ySign;
 					dx -= scale;
 				} else {
-					px += xSign;
-					p_y += ySign;
+					xPos += xSign;
+					yPos += ySign;
 					dx -= scale;
 				}
 			}
@@ -418,38 +406,40 @@ public class Misc1 {
 	/**
 	 * Returns symbol for given row, column -RAK-
 	 * 
-	 * @param y - The vertical position of the point to check
-	 * @param x - The horizontal position of the point to check
+	 * @param y The vertical position of the point to check
+	 * @param x The horizontal position of the point to check
 	 * @return The symbol at the given point
 	 */
 	public static char locateSymbol(int y, int x) {
-		CaveType cave_ptr;
-		PlayerFlags f_ptr;
+		CaveType cavePos = Variable.cave[y][x];
+		PlayerFlags playerFlags = Player.py.flags;
 		
-		cave_ptr = Variable.cave[y][x];
-		f_ptr = Player.py.flags;
-		
-		if ((cave_ptr.creatureIndex == 1) && (Variable.findFlag == 0 || !Variable.findPrself.value())) {
+		if ((cavePos.creatureIndex == 1)
+				&& (Variable.findFlag == 0 || !Variable.findPrself.value())) {
 			return '@';
-		} else if ((f_ptr.status & Constants.PY_BLIND) != 0) {
+		} else if ((playerFlags.status & Constants.PY_BLIND) != 0) {
 			return ' ';
-		} else if ((f_ptr.imagine > 0) && (Rnd.randomInt (12) == 1)) {
+		} else if ((playerFlags.imagine > 0)
+				&& (Rnd.randomInt (12) == 1)) {
 			return (char)(Rnd.randomInt(95) + 31);
-		} else if ((cave_ptr.creatureIndex > 1) && (Monsters.monsterList[cave_ptr.creatureIndex].monsterLight )) {
-			return Monsters.creatureList[Monsters.monsterList[cave_ptr.creatureIndex].index].cchar;
-		} else if (!cave_ptr.permLight && !cave_ptr.tempLight && !cave_ptr.fieldMark) {
+		} else if ((cavePos.creatureIndex > 1)
+				&& (Monsters.monsterList[cavePos.creatureIndex].monsterLight)) {
+			return Monsters.creatureList[Monsters.monsterList[cavePos.creatureIndex].index].cchar;
+		} else if (!cavePos.permLight && !cavePos.tempLight && !cavePos.fieldMark) {
 			return ' ';
-		} else if ((cave_ptr.treasureIndex != 0)
-				&& (Treasure.treasureList[cave_ptr.treasureIndex].category != Constants.TV_INVIS_TRAP)) {
-			return Treasure.treasureList[cave_ptr.treasureIndex].tchar;
-		} else if (cave_ptr.fval <= Constants.MAX_CAVE_FLOOR) {
+		} else if ((cavePos.treasureIndex != 0)
+				&& (Treasure.treasureList[cavePos.treasureIndex].category != Constants.TV_INVIS_TRAP)) {
+			return Treasure.treasureList[cavePos.treasureIndex].tchar;
+		} else if (cavePos.fval <= Constants.MAX_CAVE_FLOOR) {
 				return Variable.floorSymbol;
-		} else if (cave_ptr.fval == Constants.GRANITE_WALL || cave_ptr.fval == Constants.BOUNDARY_WALL || !Variable.highlightSeams.value()) {
-				return Variable.wallSymbol;
+		} else if (cavePos.fval == Constants.GRANITE_WALL
+				|| cavePos.fval == Constants.BOUNDARY_WALL
+				|| !Variable.highlightSeams.value()) {
+			return Variable.wallSymbol;
 			//	return (char)240;
 		} else {
-			/* Originally set highlight bit, but that is not portable, now use
-			 * the percent sign instead. */
+			// Originally set highlight bit, but that is not portable, now use
+			// the percent sign instead.
 			return '%';
 		}
 	}
@@ -457,30 +447,27 @@ public class Misc1 {
 	/**
 	 * Tests a spot for light or field mark status -RAK-
 	 * 
-	 * @param y - The vertical position of the point to check
-	 * @param x - The horizonal position of the point to check
+	 * @param y The vertical position of the point to check
+	 * @param x The horizonal position of the point to check
 	 * @return Whether the point is lit or field-marked
 	 */
 	public static boolean testLight(int y, int x) {
-		CaveType cave_ptr = Variable.cave[y][x];
-		return cave_ptr.permLight  || cave_ptr.tempLight  || cave_ptr.fieldMark;
+		CaveType cavePos = Variable.cave[y][x];
+		return cavePos.permLight  || cavePos.tempLight  || cavePos.fieldMark;
 	}
 	
 	/**
 	 * Prints the map of the dungeon -RAK-
 	 */
 	public static void printMap() {
-		int i, j, k;
-		char tmp_char;
-		
-		k = 0;
-		for (i = Variable.panelRowMin; i <= Variable.panelRowMax; i++) {	/* Top to bottom */
-			k++;
-			IO.eraseLine(k, 13);
-			for (j = Variable.panelColMin; j <= Variable.panelColMax; j++) {	/* Left to right */
-				tmp_char = locateSymbol(i, j);
-				if (tmp_char != ' ') {
-					IO.print(tmp_char, i, j);
+		int lineNumber = 0;
+		for (int y = Variable.panelRowMin; y <= Variable.panelRowMax; y++) { // Top to bottom
+			lineNumber++;
+			IO.eraseLine(lineNumber, 13);
+			for (int x = Variable.panelColMin; x <= Variable.panelColMax; x++) { // Left to right
+				char symbol = locateSymbol(y, x);
+				if (symbol != ' ') {
+					IO.print(symbol, y, x);
 				}
 			}
 		}
@@ -492,77 +479,72 @@ public class Misc1 {
 	 * @return True if any monsters were deleted, false if could not delete any monsters.
 	 */
 	public static boolean compactMonsters() {
-		int i;
-		int cur_dis;
-		boolean delete_any;
-		MonsterType mon_ptr;
-		
 		IO.printMessage("Compacting monsters...");
 		
-		cur_dis = 66;
-		delete_any = false;
+		int currDistance = 66;
+		boolean deleteAny = false;
 		do {
-			for (i = Monsters.freeMonsterIndex - 1; i >= Constants.MIN_MONIX; i--) {
-				mon_ptr = Monsters.monsterList[i];
-				if ((cur_dis < mon_ptr.currDistance) && (Rnd.randomInt(3) == 1)) {
-					/* Never compact away the Balrog!! */
-					if ((Monsters.creatureList[mon_ptr.index].cmove & Constants.CM_WIN) == 0) {
-						/* in case this is called from within creatures(), this is a
-						 * horrible hack, the m_list/creatures() code needs to be
-						 * rewritten */
+			for (int i = Monsters.freeMonsterIndex - 1; i >= Constants.MIN_MONIX; i--) {
+				MonsterType monster = Monsters.monsterList[i];
+				if ((currDistance < monster.currDistance) && (Rnd.randomInt(3) == 1)) {
+					// Never compact away the Balrog!!
+					if ((Monsters.creatureList[monster.index].cmove & Constants.CM_WIN) == 0) {
+						// in case this is called from within creatures(), this is a
+						// horrible hack, the m_list/creatures() code needs to be
+						// rewritten TODO
 						if (Variable.hackMonsterIndex < i) {
 							Moria3.deleteMonster(i);
-							delete_any = true;
+							deleteAny = true;
 						} else {
-							/* fix1_delete_monster() does not decrement mfptr, so
-							 * don't set delete_any if this was called */
+							// fix1_delete_monster() does not decrement mfptr, so
+							// don't set deleteAny if this was called
 							Moria3.deleteMonster1(i);
 						}
 					}
 				}
 			}
-			if (!delete_any) {
-				cur_dis -= 6;
-				/* Can't delete any monsters, return failure.  */
-				if (cur_dis < 0) {
+			if (!deleteAny) {
+				currDistance -= 6;
+				// Can't delete any monsters, return failure.
+				if (currDistance < 0) {
 					return false;
 				}
 			}
-		} while (!delete_any);
+		} while (!deleteAny);
 		return true;
 	}
 	
 	/**
 	 * Add to the player's food time -RAK-
 	 * 
-	 * @param num - Amount of food time to add
+	 * @param num Amount of food time to add
 	 */
 	public static void addFood(int num) {
-		PlayerFlags p_ptr;
-		int extra, penalty;
+		PlayerFlags playerFlags = Player.py.flags;
+		if (playerFlags.food < 0) {
+			playerFlags.food = 0;
+		}
 		
-		p_ptr = Player.py.flags;
-		if (p_ptr.food < 0)	p_ptr.food = 0;
-		p_ptr.food += num;
-		if (p_ptr.food > Constants.PLAYER_FOOD_MAX) {
+		playerFlags.food += num;
+		if (playerFlags.food > Constants.PLAYER_FOOD_MAX) {
 			IO.printMessage("You are bloated from overeating.");
 			
-			/* Calculate how much of num is responsible for the bloating.
-			 * Give the player food credit for 1/50, and slow him for that many
-			 * turns also.  */
-			extra = p_ptr.food - Constants.PLAYER_FOOD_MAX;
+			// Calculate how much of num is responsible for the bloating.
+			// Give the player food credit for 1/50, and slow him for that many
+			// turns also.
+			int extra = playerFlags.food - Constants.PLAYER_FOOD_MAX;
 			if (extra > num) {
 				extra = num;
 			}
-			penalty = extra / 50;
+			int penalty = extra / 50;
 			
-			p_ptr.slow += penalty;
+			playerFlags.slow += penalty;
 			if (extra == num) {
-				p_ptr.food = p_ptr.food - num + penalty;
+				playerFlags.food = playerFlags.food - num + penalty;
 			} else {
-				p_ptr.food = Constants.PLAYER_FOOD_MAX + penalty;
+				playerFlags.food = Constants.PLAYER_FOOD_MAX + penalty;
 			}
-		} else if (p_ptr.food > Constants.PLAYER_FOOD_FULL) {
+		} else if (playerFlags.food > Constants.PLAYER_FOOD_FULL) {
 			IO.printMessage("You are full.");
 		}
 	}
@@ -570,7 +552,8 @@ public class Misc1 {
 	/**
 	 * Returns a pointer to next free space -RAK-
 	 * 
-	 * @return The index of the first free space in the monster array, or -1 if could not allocate a monster.
+	 * @return The index of the first free space in the monster array,
+	 *         or -1 if could not allocate a monster.
 	 */
 	public static int popMonster() {
 		if (Monsters.freeMonsterIndex == Constants.MAX_MALLOC) {
@@ -584,54 +567,57 @@ public class Misc1 {
 	/**
 	 * Gives Max hit points -RAK-
 	 * 
-	 * @param array - 
+	 * @param hitDie
 	 * @return Number of hitpoints
 	 */
-	public static int getMaxHitpoints(int[] array) {
-		return array[0] * array[1];
+	public static int getMaxHitpoints(int[] hitDie) {
+		return hitDie[0] * hitDie[1];
 	}
 	
 	/**
 	 * Places a monster at given location -RAK-
 	 * 
-	 * @param y - The vertical position at which to place the monster
-	 * @param x - The horizontal position at which to place the monster
-	 * @param z - mptr of the monster to allocate
-	 * @param slp - Whether to make the monster sleep
+	 * @param y The vertical position at which to place the monster
+	 * @param x The horizontal position at which to place the monster
+	 * @param monsterIndex mptr of the monster to allocate
+	 * @param putToSleep Whether to make the monster sleep
 	 * @return True if the monster was placed, otherwise false
 	 */
-	public static boolean placeMonster(int y, int x, int z, boolean slp) {
-		int cur_pos;
-		MonsterType mon_ptr;
-		
-		cur_pos = popMonster();
-		if (cur_pos == -1) {
+	public static boolean placeMonster(int y, int x, int monsterIndex, boolean putToSleep) {
+		int curPos = popMonster();
+		if (curPos == -1) {
 			return false;
 		}
-		mon_ptr = Monsters.monsterList[cur_pos];
-		mon_ptr.y = y;
-		mon_ptr.x = x;
-		mon_ptr.index = z;
-		if ((Monsters.creatureList[z].cdefense & Constants.CD_MAX_HP) != 0) {
-			mon_ptr.hitpoints = getMaxHitpoints(Monsters.creatureList[z].hitDie);
+		
+		MonsterType monster = Monsters.monsterList[curPos];
+		monster.y = y;
+		monster.x = x;
+		monster.index = monsterIndex;
+		
+		CreatureType creature = Monsters.creatureList[monsterIndex];
+		if ((creature.cdefense & Constants.CD_MAX_HP) != 0) {
+			monster.hitpoints = getMaxHitpoints(creature.hitDie);
 		} else {
-			mon_ptr.hitpoints = pDamageRoll(Monsters.creatureList[z].hitDie);
+			monster.hitpoints = pDamageRoll(creature.hitDie);
 		}
-		/* the c_list speed value is 10 greater, so that it can be a int8u */
-		mon_ptr.speed = Monsters.creatureList[z].speed - 10 + Player.py.flags.speed;
-		mon_ptr.stunned = 0;
-		mon_ptr.currDistance = distance(Player.y, Player.x, y, x);
-		mon_ptr.monsterLight = false;
-		Variable.cave[y][x].creatureIndex = cur_pos;
-		if (slp) {
-			if (Monsters.creatureList[z].sleep == 0) {
-				mon_ptr.sleep = 0;
+		
+		monster.speed = creature.speed - 10 + Player.py.flags.speed;
+		monster.stunned = 0;
+		monster.currDistance = distance(Player.y, Player.x, y, x);
+		monster.monsterLight = false;
+		Variable.cave[y][x].creatureIndex = curPos;
+		
+		if (putToSleep) {
+			if (creature.sleep == 0) {
+				monster.sleep = 0;
 			} else {
-				mon_ptr.sleep = (Monsters.creatureList[z].sleep * 2) + Rnd.randomInt(Monsters.creatureList[z].sleep * 10);
+				monster.sleep = (creature.sleep * 2)
+						+ Rnd.randomInt(creature.sleep * 10);
 			}
 		} else {
-			mon_ptr.sleep = 0;
+			monster.sleep = 0;
 		}
+		
 		return true;
 	}
 	
@@ -639,40 +625,48 @@ public class Misc1 {
 	 * Places a win monster on the map -RAK-
 	 */
 	public static void placeWinMonster() {
-		int y, x, cur_pos;
-		MonsterType mon_ptr;
-		
-		if (!Variable.isTotalWinner) {
-			cur_pos = popMonster();
-			/* Check for case where could not allocate space for the win monster,
-			 * this should never happen.  */
-			if (cur_pos == -1) {
-				//abort();
-				return;
-			}
-			mon_ptr = Monsters.monsterList[cur_pos];
-			do {
-				y = Rnd.randomInt(Variable.currHeight - 2);
-				x = Rnd.randomInt(Variable.currWidth - 2);
-			} while ((Variable.cave[y][x].fval >= Constants.MIN_CLOSED_SPACE)
-					|| (Variable.cave[y][x].creatureIndex != 0)
-					|| (Variable.cave[y][x].treasureIndex != 0)
-					|| (distance(y, x, Player.y, Player.x) <= Constants.MAX_SIGHT));
-			mon_ptr.y = y;
-			mon_ptr.x = x;
-			mon_ptr.index = Rnd.randomInt(Constants.WIN_MON_TOT) - 1 + Monsters.monsterLevel[Constants.MAX_MONS_LEVEL];
-			if ((Monsters.creatureList[mon_ptr.index].cdefense & Constants.CD_MAX_HP) != 0) {
-				mon_ptr.hitpoints = getMaxHitpoints(Monsters.creatureList[mon_ptr.index].hitDie);
-			} else {
-				mon_ptr.hitpoints = pDamageRoll(Monsters.creatureList[mon_ptr.index].hitDie);
-			}
-			/* the c_list speed value is 10 greater, so that it can be a int8u */
-			mon_ptr.speed = Monsters.creatureList[mon_ptr.index].speed - 10 + Player.py.flags.speed;
-			mon_ptr.stunned = 0;
-			mon_ptr.currDistance = distance(Player.y, Player.x, y, x);
-			Variable.cave[y][x].creatureIndex = cur_pos;
-			mon_ptr.sleep = 0;
+		if (Variable.isTotalWinner) {
+			return;
 		}
+		
+		int curPos = popMonster();
+		// Check for case where could not allocate space for the win monster,
+		// this should never happen.
+		if (curPos == -1) {
+			//abort();
+			return;
+		}
+		
+		MonsterType monster = Monsters.monsterList[curPos];
+		CaveType cavePos;
+		int y;
+		int x;
+		do {
+			y = Rnd.randomInt(Variable.currHeight - 2);
+			x = Rnd.randomInt(Variable.currWidth - 2);
+			cavePos = Variable.cave[y][x];
+		} while ((cavePos.fval >= Constants.MIN_CLOSED_SPACE)
+				|| (cavePos.creatureIndex != 0)
+				|| (cavePos.treasureIndex != 0)
+				|| (distance(y, x, Player.y, Player.x) <= Constants.MAX_SIGHT));
+		
+		monster.y = y;
+		monster.x = x;
+		monster.index = Rnd.randomInt(Constants.WIN_MON_TOT) - 1
+				+ Monsters.monsterLevel[Constants.MAX_MONS_LEVEL];
+		
+		CreatureType creature = Monsters.creatureList[monster.index];
+		if ((creature.cdefense & Constants.CD_MAX_HP) != 0) {
+			monster.hitpoints = getMaxHitpoints(creature.hitDie);
+		} else {
+			monster.hitpoints = pDamageRoll(creature.hitDie);
+		}
+		
+		monster.speed = creature.speed - 10 + Player.py.flags.speed;
+		monster.stunned = 0;
+		monster.currDistance = distance(Player.y, Player.x, y, x);
+		monster.sleep = 0;
+		cavePos.creatureIndex = curPos;
 	}
 	
 	/**
@@ -680,185 +674,183 @@ public class Misc1 {
 	 * high level monsters (up to the given level) slightly more common than
 	 * low level monsters at any given level. -CJS-
 	 *
-	 * @param level - Level of the monster to place
+	 * @param level Level of the monster to place
 	 * @return mptr of the monster to place
 	 */
 	public static int getRandomMonsterForLevel(int level) {
-		int i, j, num;
-		
 		if (level == 0) {
-			i = Rnd.randomInt(Monsters.monsterLevel[0]) - 1;
-		} else {
+			return Rnd.randomInt(Monsters.monsterLevel[0]) - 1;
+		}
+		
+		int monsterIndex;
+		if (level > Constants.MAX_MONS_LEVEL) {
+			level = Constants.MAX_MONS_LEVEL;
+		}
+		if (Rnd.randomInt(Constants.MON_NASTY) == 1) {
+			monsterIndex = Rnd.randomIntNormalized (0, 4);
+			level += Math.abs(monsterIndex) + 1;
 			if (level > Constants.MAX_MONS_LEVEL) {
 				level = Constants.MAX_MONS_LEVEL;
 			}
-			if (Rnd.randomInt(Constants.MON_NASTY) == 1) {
-				i = Rnd.randomIntNormalized (0, 4);
-				level += Math.abs(i) + 1;
-				if (level > Constants.MAX_MONS_LEVEL) {
-					level = Constants.MAX_MONS_LEVEL;
-				}
-			} else {
-				/* This code has been added to make it slightly more likely to
-				 * get the higher level monsters. Originally a uniform
-				 * distribution over all monsters of level less than or equal to the
-				 * dungeon level. This distribution makes a level n monster occur
-				 * approx 2/n% of the time on level n, and 1/n*n% are 1st level. */
-				
-				num = Monsters.monsterLevel[level] - Monsters.monsterLevel[0];
-				i = Rnd.randomInt(num) - 1;
-				j = Rnd.randomInt(num) - 1;
-				if (j > i) {
-					i = j;
-				}
-				level = Monsters.creatureList[i + Monsters.monsterLevel[0]].level;
+		} else {
+			// This code has been added to make it slightly more likely to
+			// get the higher level monsters. Originally a uniform
+			// distribution over all monsters of level less than or equal to the
+			// dungeon level. This distribution makes a level n monster occur
+			// approx 2/n% of the time on level n, and 1/n*n% are 1st level.
+			
+			int levelDiff = Monsters.monsterLevel[level] - Monsters.monsterLevel[0];
+			monsterIndex = Rnd.randomInt(levelDiff) - 1;
+			int index2 = Rnd.randomInt(levelDiff) - 1;
+			if (index2 > monsterIndex) {
+				monsterIndex = index2;
 			}
-			i = Rnd.randomInt(Monsters.monsterLevel[level] - Monsters.monsterLevel[level - 1]) - 1 + Monsters.monsterLevel[level - 1];
+			level = Monsters.creatureList[monsterIndex + Monsters.monsterLevel[0]].level;
 		}
-		return i;
+		
+		monsterIndex = Rnd.randomInt(Monsters.monsterLevel[level] - Monsters.monsterLevel[level - 1])
+				- 1 + Monsters.monsterLevel[level - 1];
+		
+		return monsterIndex;
 	}
 	
 	/**
 	 * Allocates a random monster -RAK-
 	 * 
-	 * @param num - Number of monsters to place
-	 * @param dis - Minimum distance from the player to place monsters
-	 * @param slp - Whether to make the monsters sleep
+	 * @param numToPlace Number of monsters to place
+	 * @param distance Minimum distance from the player to place monsters
+	 * @param putToSleep Whether to make the monsters sleep
 	 */
-	public static void spawnMonster(int num, int dis, boolean slp) {
-		int y, x, i;
-		int l;
+	public static void spawnMonster(int numToPlace, int distance, boolean putToSleep) {
+		int y, x;
 		
-		for (i = 0; i < num; i++) {
+		for (int i = 0; i < numToPlace; i++) {
 			do {
 				y = Rnd.randomInt(Variable.currHeight - 2);
 				x = Rnd.randomInt(Variable.currWidth - 2);
-			} while (Variable.cave[y][x].fval >= Constants.MIN_CLOSED_SPACE || (Variable.cave[y][x].creatureIndex != 0) || (distance(y, x, Player.y, Player.x) <= dis));
+			} while (Variable.cave[y][x].fval >= Constants.MIN_CLOSED_SPACE
+					|| (Variable.cave[y][x].creatureIndex != 0)
+					|| (distance(y, x, Player.y, Player.x) <= distance));
 			
-			l = getRandomMonsterForLevel(Variable.dungeonLevel);
-			/* Dragons are always created sleeping here, so as to give the player a
-			 * sporting chance.  */
-			if (Monsters.creatureList[l].cchar == 'd' || Monsters.creatureList[l].cchar == 'D') {
-				slp = true;
+			int monsterIndex = getRandomMonsterForLevel(Variable.dungeonLevel);
+			
+			// Dragons are always created sleeping here, so as to give the player a
+			// sporting chance.
+			if (Monsters.creatureList[monsterIndex].cchar == 'd'
+					|| Monsters.creatureList[monsterIndex].cchar == 'D') {
+				putToSleep = true;
 			}
-			/* Place_monster() should always return TRUE here.  It does not
-			 * matter if it fails though.  */
-			placeMonster(y, x, l, slp);
+			
+			// placeMonster() should always return TRUE here.  It does not
+			// matter if it fails though.
+			placeMonster(y, x, monsterIndex, putToSleep);
 		}
 	}
 	
 	/**
 	 * Places creature adjacent to given location -RAK-
 	 * 
-	 * @param y - The vertical position of the summoner, stores the vertical position of the summoned monster
-	 * @param x - The horizontal position of the summoner, stores the horizontal position of the summoned monster
-	 * @param slp - Whether to make the monster sleep
+	 * @param y The vertical position of the summoner,
+	 *          stores the vertical position of the summoned monster
+	 * @param x The horizontal position of the summoner,
+	 *          stores the horizontal position of the summoned monster
+	 * @param putToSleep Whether to make the monster sleep
 	 * @return True if a monster was successfully summoned, otherwise false
 	 */
-	public static boolean summonMonster(IntPointer y, IntPointer x, boolean slp) {
-		int i, j, k;
-		int l;
-		boolean summon;
-		CaveType cave_ptr;
+	public static boolean summonMonster(IntPointer y, IntPointer x, boolean putToSleep) {
+		int monsterIndex = getRandomMonsterForLevel(Variable.dungeonLevel + Constants.MON_SUMMON_ADJ);
 		
-		i = 0;
-		summon = false;
-		l = getRandomMonsterForLevel(Variable.dungeonLevel + Constants.MON_SUMMON_ADJ);
-		do {
-			j = y.value() - 2 + Rnd.randomInt(3);
-			k = x.value() - 2 + Rnd.randomInt(3);
-			if (isInBounds(j, k) ) {
-				cave_ptr = Variable.cave[j][k];
-				if (cave_ptr.fval <= Constants.MAX_OPEN_SPACE && (cave_ptr.creatureIndex == 0)) {
-					/* Place_monster() should always return TRUE here.  */
-					if (!placeMonster(j, k, l, slp)) {
+		for (int i = 0; i < 10; i++) {
+			int newY = y.value() - 2 + Rnd.randomInt(3);
+			int newX = x.value() - 2 + Rnd.randomInt(3);
+			
+			if (isInBounds(newY, newX)) {
+				CaveType cavePos = Variable.cave[newY][newX];
+				if (cavePos.fval <= Constants.MAX_OPEN_SPACE && (cavePos.creatureIndex == 0)) {
+					// placeMonster() should always return TRUE here.
+					if (!placeMonster(newY, newX, monsterIndex, putToSleep)) {
 						return false;
 					}
-					summon = true;
-					i = 9;
-					y.value(j);
-					x.value(k);
+					
+					y.value(newY);
+					x.value(newX);
+					
+					return true;
 				}
 			}
-			i++;
-		} while (i <= 9);
-		return summon;
+		}
+		
+		return false;
 	}
 	
 	/**
 	 * Places undead adjacent to given location -RAK-
 	 * 
-	 * @param y - The vertical position of the summoner, stores the vertical position of the summoned undead
-	 * @param x - The horizontal position of the summoner, stores the horizontal position of the summoned undead
+	 * @param y The vertical position of the summoner,
+	 *          stores the vertical position of the summoned undead
+	 * @param x The horizontal position of the summoner,
+	 *          stores the horizontal position of the summoned undead
 	 * @return True if an undead was successfully summoned, otherwise false
 	 */
 	public static boolean summonUndead(IntPointer y, IntPointer x) {
-		int i, j, k;
-		int l, m, ctr;
-		boolean summon;
-		CaveType cave_ptr;
+		int monsterIndex;
+		int monsterLevel = Monsters.monsterLevel[Constants.MAX_MONS_LEVEL];
 		
-		i = 0;
-		summon = false;
-		l = Monsters.monsterLevel[Constants.MAX_MONS_LEVEL];
 		do {
-			m = Rnd.randomInt(l) - 1;
-			ctr = 0;
-			do {
-				if ((Monsters.creatureList[m].cdefense & Constants.CD_UNDEAD) != 0) {
-					ctr = 20;
-					l = 0;
+			monsterIndex = Rnd.randomInt(monsterLevel) - 1;
+			for (int i = 0; i < 20; i++) {
+				if ((Monsters.creatureList[monsterIndex].cdefense & Constants.CD_UNDEAD) != 0) {
+					monsterLevel = 0;
+					break;
 				} else {
-					m++;
-					if (m > l) {
-						ctr = 20;
-					} else {
-						ctr++;
+					monsterIndex++;
+					if (monsterIndex > monsterLevel) {
+						break;
 					}
-				}
-			} while (ctr <= 19);
-		} while(l != 0);
-		
-		do {
-			j = y.value() - 2 + Rnd.randomInt(3);
-			k = x.value() - 2 + Rnd.randomInt(3);
-			if (isInBounds(j, k) ) {
-				cave_ptr = Variable.cave[j][k];
-				if (cave_ptr.fval <= Constants.MAX_OPEN_SPACE && (cave_ptr.creatureIndex == 0)) {
-					/* Place_monster() should always return TRUE here.  */
-					if (!placeMonster(j, k, m, false)) {
-						return false;
-					}
-					summon = true;
-					i = 9;
-					y.value(j);
-					x.value(k);
 				}
 			}
-			i++;
-		} while(i <= 9);
-		return summon;
+		} while (monsterLevel != 0);
+		
+		for (int i = 0; i < 10; i++) {
+			int newY = y.value() - 2 + Rnd.randomInt(3);
+			int newX = x.value() - 2 + Rnd.randomInt(3);
+			
+			if (isInBounds(newY, newX) ) {
+				CaveType cavePos = Variable.cave[newY][newX];
+				if (cavePos.fval <= Constants.MAX_OPEN_SPACE && (cavePos.creatureIndex == 0)) {
+					// placeMonster() should always return TRUE here.
+					if (!placeMonster(newY, newX, monsterIndex, false)) {
+						return false;
+					}
+					
+					y.value(newY);
+					x.value(newX);
+					
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	/**
 	 * If too many objects on floor level, delete some of them -RAK-
 	 */
 	public static void compactObjects() {
-		int i, j;
-		int ctr, cur_dis, chance;
-		CaveType cave_ptr;
-		
 		IO.printMessage("Compacting objects...");
 		
-		ctr = 0;
-		cur_dis = 66;
+		boolean deletedObject = false;
+		int currDistance = 66;
 		do {
-			for (i = 0; i < Variable.currHeight; i++) {
-				for (j = 0; j < Variable.currWidth; j++) {
-					cave_ptr = Variable.cave[i][j];
-					if ((cave_ptr.treasureIndex != 0) && (distance(i, j, Player.y, Player.x) > cur_dis)) {
-						switch(Treasure.treasureList[cave_ptr.treasureIndex].category)
-						{
+			for (int y = 0; y < Variable.currHeight; y++) {
+				for (int x = 0; x < Variable.currWidth; x++) {
+					CaveType cavePos = Variable.cave[y][x];
+					if ((cavePos.treasureIndex != 0)
+							&& (distance(y, x, Player.y, Player.x) > currDistance)) {
+						int chance = 0;
+						
+						switch (Treasure.treasureList[cavePos.treasureIndex].category) {
 						case Constants.TV_VIS_TRAP:
 							chance = 15;
 							break;
@@ -867,30 +859,35 @@ public class Misc1 {
 						case Constants.TV_OPEN_DOOR: case Constants.TV_CLOSED_DOOR:
 							chance = 5;
 							break;
-						case Constants.TV_UP_STAIR: case Constants.TV_DOWN_STAIR:
+						case Constants.TV_UP_STAIR:
+						case Constants.TV_DOWN_STAIR:
 						case Constants.TV_STORE_DOOR:
-							/* stairs, don't delete them */
-							/* shop doors, don't delete them */
+							// stairs, don't delete them
+							// shop doors, don't delete them
 							chance = 0;
 							break;
-						case Constants.TV_SECRET_DOOR: /* secret doors */
+						case Constants.TV_SECRET_DOOR: // secret doors
 							chance = 3;
 							break;
 						default:
 							chance = 10;
 						}
-						if (Rnd.randomInt (100) <= chance) {
-							Moria3.deleteObject(i, j);
-							ctr++;
+						
+						if (Rnd.randomInt(100) <= chance) {
+							Moria3.deleteObject(y, x);
+							deletedObject = true;
 						}
 					}
 				}
 			}
-			if (ctr == 0) {
-				cur_dis -= 6;
+			if (!deletedObject) {
+				currDistance -= 6;
 			}
-		} while (ctr <= 0);
-		if (cur_dis < 66)  printMap();
+		} while (!deletedObject && currDistance > 0);
+		
+		if (currDistance < 66) {
+			printMap();
+		}
 	}
 	
 	/**
@@ -908,56 +905,61 @@ public class Misc1 {
 	/**
 	 * Pushes a record back onto free space list -RAK-
 	 * <p>
-	 * Delete_object() should always be called instead, unless the object in
+	 * deleteObject() should always be called instead, unless the object in
 	 * question is not in the dungeon, e.g. in Store1.java and Files.java
 	 * 
-	 * @param x - Location in the treasure array of the item to move
+	 * @param treasureIndex Location in the treasure array of the item to move
 	 */
-	public static void pusht(int x) {
-		int i, j;
-		
-		if (x != Treasure.currTreasureIndex - 1) {
-			Treasure.treasureList[Treasure.currTreasureIndex - 1].copyInto(Treasure.treasureList[x]);
+	public static void pusht(int treasureIndex) {
+		if (treasureIndex != Treasure.currTreasureIndex - 1) {
+			Treasure.treasureList[Treasure.currTreasureIndex - 1]
+					.copyInto(Treasure.treasureList[treasureIndex]);
 			
-			/* must change the tptr in the cave of the object just moved */
-			for (i = 0; i < Variable.currHeight; i++) {
-				for (j = 0; j < Variable.currWidth; j++) {
-					if (Variable.cave[i][j].treasureIndex == Treasure.currTreasureIndex - 1) {
-						Variable.cave[i][j].treasureIndex = x;
+			// must change the tptr in the cave of the object just moved
+			for (int y = 0; y < Variable.currHeight; y++) {
+				for (int x = 0; x < Variable.currWidth; x++) {
+					if (Variable.cave[y][x].treasureIndex == Treasure.currTreasureIndex - 1) {
+						Variable.cave[y][x].treasureIndex = treasureIndex;
 					}
 				}
 			}
 		}
 		Treasure.currTreasureIndex--;
-		Desc.copyIntoInventory(Treasure.treasureList[Treasure.currTreasureIndex], Constants.OBJ_NOTHING);
+		Desc.copyIntoInventory(
+				Treasure.treasureList[Treasure.currTreasureIndex],
+				Constants.OBJ_NOTHING);
 	}
 	
 	/**
-	 * Boolean : is object enchanted -RAK-
+	 * Is object enchanted? -RAK-
 	 * 
-	 * @param chance - Percent chance that the object is enchanted
+	 * @param chance Percent chance that the object is enchanted
 	 * @return Whether the object is enchanted
 	 */
-	public static boolean magik(int chance) {
+	public static boolean isMagik(int chance) {
 		return Rnd.randomInt(100) <= chance;
 	}
 	
-	/* Enchant a bonus based on degree desired -RAK- */
-	public static int m_bonus(int base, int max_std, int level) {
-		int x, stand_dev, tmp;
-		
-		stand_dev = (Constants.OBJ_STD_ADJ * level / 100) + Constants.OBJ_STD_MIN;
-		/* Check for level > max_std since that may have generated an overflow.  */
-		if (stand_dev > max_std || level > max_std) {
-			stand_dev = max_std;
+	/**
+	 * Enchant a bonus based on degree desired -RAK-
+	 * 
+	 * @param base Minimum bonus to award
+	 * @param maxStdDeviation Maximum standard deviation
+	 * @param level Dungeon level at which object was found
+	 * @return The bonus to award
+	 */
+	public static int magicBonus(int base, int maxStdDeviation, int level) {
+		int stdDeviation = (Constants.OBJ_STD_ADJ * level / 100) + Constants.OBJ_STD_MIN;
+		// Check for level > max_std since that may have generated an overflow.
+		if (stdDeviation > maxStdDeviation || level > maxStdDeviation) {
+			stdDeviation = maxStdDeviation;
 		}
-		/* abs may be a macro, don't call it with randnor as a parameter */
-		tmp = Rnd.randomIntNormalized(0, stand_dev);
-		x = (Math.abs(tmp) / 10) + base;
-		if (x < base) {
+		
+		int bonus = (Math.abs(Rnd.randomIntNormalized(0, stdDeviation)) / 10) + base;
+		if (bonus < base) {
 			return base;
 		} else {
-			return x;
+			return bonus;
 		}
 	}
 }

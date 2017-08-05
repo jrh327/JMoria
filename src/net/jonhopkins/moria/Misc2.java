@@ -56,9 +56,9 @@ public class Misc2 {
 		/* Depending on treasure type, it can have certain magical properties */
 		switch (t_ptr.category) {
 		case Constants.TV_SHIELD: case Constants.TV_HARD_ARMOR: case Constants.TV_SOFT_ARMOR:
-			if (Misc1.magik(chance)) {
-				t_ptr.plusToArmorClass += Misc1.m_bonus(1, 30, level);
-				if (Misc1.magik(special)) {
+			if (Misc1.isMagik(chance)) {
+				t_ptr.plusToArmorClass += Misc1.magicBonus(1, 30, level);
+				if (Misc1.isMagik(special)) {
 					switch (Rnd.randomInt(9)) {
 					case 1:
 						t_ptr.flags |= (Constants.TR_RES_LIGHT | Constants.TR_RES_COLD | Constants.TR_RES_ACID | Constants.TR_RES_FIRE);
@@ -90,8 +90,8 @@ public class Misc2 {
 						break;
 					}
 				}
-			} else if (Misc1.magik(cursed)) {
-				t_ptr.plusToArmorClass -= Misc1.m_bonus(1, 40, level);
+			} else if (Misc1.isMagik(cursed)) {
+				t_ptr.plusToArmorClass -= Misc1.magicBonus(1, 40, level);
 				t_ptr.cost = 0;
 				t_ptr.flags |= Constants.TR_CURSED;
 			}
@@ -100,15 +100,15 @@ public class Misc2 {
 		case Constants.TV_HAFTED: case Constants.TV_POLEARM: case Constants.TV_SWORD:
 			/* always show tohit/todam values if identified */
 			t_ptr.identify |= Constants.ID_SHOW_HITDAM;
-			if (Misc1.magik(chance)) {
-				t_ptr.tohit += Misc1.m_bonus(0, 40, level);
+			if (Misc1.isMagik(chance)) {
+				t_ptr.tohit += Misc1.magicBonus(0, 40, level);
 				/* Magical damage bonus now proportional to weapon base damage */
 				tmp = t_ptr.damage[0] * t_ptr.damage[1];
-				t_ptr.plusToDam += Misc1.m_bonus(0, 4 * tmp, tmp * level / 10);
+				t_ptr.plusToDam += Misc1.magicBonus(0, 4 * tmp, tmp * level / 10);
 				/* the 3*special/2 is needed because weapons are not as common as
 				 * before change to treasure distribution, this helps keep same
 				 * number of ego weapons same as before, see also missiles */
-				if (Misc1.magik(3 * special / 2)) {
+				if (Misc1.isMagik(3 * special / 2)) {
 					switch (Rnd.randomInt(16)) {
 					case 1:	/* Holy Avenger	 */
 						t_ptr.flags |= (Constants.TR_SEE_INVIS | Constants.TR_SUST_STAT | Constants.TR_SLAY_UNDEAD | Constants.TR_SLAY_EVIL | Constants.TR_STR);
@@ -182,11 +182,11 @@ public class Misc2 {
 						break;
 					}
 				}
-			} else if (Misc1.magik(cursed)) {
-				t_ptr.tohit -= Misc1.m_bonus(1, 55, level);
+			} else if (Misc1.isMagik(cursed)) {
+				t_ptr.tohit -= Misc1.magicBonus(1, 55, level);
 				/* Magical damage bonus now proportional to weapon base damage */
 				tmp = t_ptr.damage[0] * t_ptr.damage[1];
-				t_ptr.plusToDam -= Misc1.m_bonus(1, 11 * tmp / 2, tmp * level / 10);
+				t_ptr.plusToDam -= Misc1.magicBonus(1, 11 * tmp / 2, tmp * level / 10);
 				t_ptr.flags |= Constants.TR_CURSED;
 				t_ptr.cost = 0;
 			}
@@ -195,12 +195,12 @@ public class Misc2 {
 		case Constants.TV_BOW:
 			/* always show tohit/todam values if identified */
 			t_ptr.identify |= Constants.ID_SHOW_HITDAM;
-			if (Misc1.magik(chance)) {
-				t_ptr.tohit += Misc1.m_bonus(1, 30, level);
-				t_ptr.plusToDam += Misc1.m_bonus(1, 20, level); /* add damage. -CJS- */
-			} else if (Misc1.magik(cursed)) {
-				t_ptr.tohit -= Misc1.m_bonus(1, 50, level);
-				t_ptr.plusToDam -= Misc1.m_bonus(1, 30, level); /* add damage. -CJS- */
+			if (Misc1.isMagik(chance)) {
+				t_ptr.tohit += Misc1.magicBonus(1, 30, level);
+				t_ptr.plusToDam += Misc1.magicBonus(1, 20, level); /* add damage. -CJS- */
+			} else if (Misc1.isMagik(cursed)) {
+				t_ptr.tohit -= Misc1.magicBonus(1, 50, level);
+				t_ptr.plusToDam -= Misc1.magicBonus(1, 30, level); /* add damage. -CJS- */
 				t_ptr.flags |= Constants.TR_CURSED;
 				t_ptr.cost = 0;
 			}
@@ -209,13 +209,13 @@ public class Misc2 {
 		case Constants.TV_DIGGING:
 			/* always show tohit/todam values if identified */
 			t_ptr.identify |= Constants.ID_SHOW_HITDAM;
-			if (Misc1.magik(chance)) {
+			if (Misc1.isMagik(chance)) {
 				tmp = Rnd.randomInt(3);
 				if (tmp < 3) {
-					t_ptr.misc += Misc1.m_bonus(0, 25, level);
+					t_ptr.misc += Misc1.magicBonus(0, 25, level);
 				} else {
 					/* a cursed digging tool */
-					t_ptr.misc = -Misc1.m_bonus(1, 30, level);
+					t_ptr.misc = -Misc1.magicBonus(1, 30, level);
 					t_ptr.cost = 0;
 					t_ptr.flags |= Constants.TR_CURSED;
 				}
@@ -223,9 +223,9 @@ public class Misc2 {
 			break;
 			
 		case Constants.TV_GLOVES:
-			if (Misc1.magik(chance)) {
-				t_ptr.plusToArmorClass += Misc1.m_bonus(1, 20, level);
-				if (Misc1.magik(special)) {
+			if (Misc1.isMagik(chance)) {
+				t_ptr.plusToArmorClass += Misc1.magicBonus(1, 20, level);
+				if (Misc1.isMagik(special)) {
 					if (Rnd.randomInt(2) == 1) {
 						t_ptr.flags |= Constants.TR_FREE_ACT;
 						t_ptr.specialName = Constants.SN_FREE_ACTION;
@@ -238,8 +238,8 @@ public class Misc2 {
 						t_ptr.cost += (t_ptr.tohit + t_ptr.plusToDam) * 250;
 					}
 				}
-			} else if (Misc1.magik(cursed)) {
-				if (Misc1.magik(special)) {
+			} else if (Misc1.isMagik(cursed)) {
+				if (Misc1.isMagik(special)) {
 					if (Rnd.randomInt(2) == 1) {
 						t_ptr.flags |= Constants.TR_DEX;
 						t_ptr.specialName = Constants.SN_CLUMSINESS;
@@ -248,18 +248,18 @@ public class Misc2 {
 						t_ptr.specialName = Constants.SN_WEAKNESS;
 					}
 					t_ptr.identify |= Constants.ID_SHOW_P1;
-					t_ptr.misc   = -Misc1.m_bonus(1, 10, level);
+					t_ptr.misc   = -Misc1.magicBonus(1, 10, level);
 				}
-				t_ptr.plusToArmorClass -= Misc1.m_bonus(1, 40, level);
+				t_ptr.plusToArmorClass -= Misc1.magicBonus(1, 40, level);
 				t_ptr.flags |= Constants.TR_CURSED;
 				t_ptr.cost = 0;
 			}
 			break;
 			
 		case Constants.TV_BOOTS:
-			if (Misc1.magik(chance)) {
-				t_ptr.plusToArmorClass += Misc1.m_bonus(1, 20, level);
-				if (Misc1.magik(special)) {
+			if (Misc1.isMagik(chance)) {
+				t_ptr.plusToArmorClass += Misc1.magicBonus(1, 20, level);
+				if (Misc1.isMagik(special)) {
 					tmp = Rnd.randomInt(12);
 					if (tmp > 5) {
 						t_ptr.flags |= Constants.TR_FFALL;
@@ -279,7 +279,7 @@ public class Misc2 {
 						t_ptr.cost += 500;
 					}
 				}
-			} else if (Misc1.magik(cursed)) {
+			} else if (Misc1.isMagik(cursed)) {
 				tmp = Rnd.randomInt(3);
 				if (tmp == 1) {
 					t_ptr.flags |= Constants.TR_SPEED;
@@ -294,7 +294,7 @@ public class Misc2 {
 					t_ptr.weight = t_ptr.weight * 5;
 				}
 				t_ptr.cost = 0;
-				t_ptr.plusToArmorClass -= Misc1.m_bonus(2, 45, level);
+				t_ptr.plusToArmorClass -= Misc1.magicBonus(2, 45, level);
 				t_ptr.flags |= Constants.TR_CURSED;
 			}
 			break;
@@ -305,9 +305,9 @@ public class Misc2 {
 				chance += (t_ptr.cost / 100);
 				special += special;
 			}
-			if (Misc1.magik(chance)) {
-				t_ptr.plusToArmorClass += Misc1.m_bonus(1, 20, level);
-				if (Misc1.magik(special)) {
+			if (Misc1.isMagik(chance)) {
+				t_ptr.plusToArmorClass += Misc1.magicBonus(1, 20, level);
+				if (Misc1.isMagik(special)) {
 					if (t_ptr.subCategory < 6) {
 						tmp = Rnd.randomInt(3);
 						t_ptr.identify |= Constants.ID_SHOW_P1;
@@ -374,11 +374,11 @@ public class Misc2 {
 						}
 					}
 				}
-			} else if (Misc1.magik(cursed)) {
-				t_ptr.plusToArmorClass -= Misc1.m_bonus(1, 45, level);
+			} else if (Misc1.isMagik(cursed)) {
+				t_ptr.plusToArmorClass -= Misc1.magicBonus(1, 45, level);
 				t_ptr.flags |= Constants.TR_CURSED;
 				t_ptr.cost = 0;
-				if (Misc1.magik(special)) {
+				if (Misc1.isMagik(special)) {
 					switch (Rnd.randomInt(7)) {
 					case 1:
 						t_ptr.identify |= Constants.ID_SHOW_P1;
@@ -426,17 +426,17 @@ public class Misc2 {
 		case Constants.TV_RING: /* Rings	      */
 			switch (t_ptr.subCategory) {
 			case 0: case 1: case 2: case 3:
-				if (Misc1.magik(cursed)) {
-					t_ptr.misc = -Misc1.m_bonus(1, 20, level);
+				if (Misc1.isMagik(cursed)) {
+					t_ptr.misc = -Misc1.magicBonus(1, 20, level);
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
 				} else {
-					t_ptr.misc = Misc1.m_bonus(1, 10, level);
+					t_ptr.misc = Misc1.magicBonus(1, 10, level);
 					t_ptr.cost += t_ptr.misc * 100;
 				}
 				break;
 			case 4:
-				if (Misc1.magik(cursed)) {
+				if (Misc1.isMagik(cursed)) {
 					t_ptr.misc = -Rnd.randomInt(3);
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
@@ -445,36 +445,36 @@ public class Misc2 {
 				}
 				break;
 			case 5:
-				t_ptr.misc = 5 * Misc1.m_bonus(1, 20, level);
+				t_ptr.misc = 5 * Misc1.magicBonus(1, 20, level);
 				t_ptr.cost += t_ptr.misc * 50;
-				if (Misc1.magik(cursed)) {
+				if (Misc1.isMagik(cursed)) {
 					t_ptr.misc = -t_ptr.misc;
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
 				}
 				break;
 			case 19:     /* Increase damage	      */
-				t_ptr.plusToDam += Misc1.m_bonus(1, 20, level);
+				t_ptr.plusToDam += Misc1.magicBonus(1, 20, level);
 				t_ptr.cost += t_ptr.plusToDam * 100;
-				if (Misc1.magik(cursed)) {
+				if (Misc1.isMagik(cursed)) {
 					t_ptr.plusToDam = -t_ptr.plusToDam;
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
 				}
 				break;
 			case 20:     /* Increase To-Hit	      */
-				t_ptr.tohit += Misc1.m_bonus(1, 20, level);
+				t_ptr.tohit += Misc1.magicBonus(1, 20, level);
 				t_ptr.cost += t_ptr.tohit * 100;
-				if (Misc1.magik(cursed)) {
+				if (Misc1.isMagik(cursed)) {
 					t_ptr.tohit = -t_ptr.tohit;
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
 				}
 				break;
 			case 21:     /* Protection	      */
-				t_ptr.plusToArmorClass += Misc1.m_bonus(1, 20, level);
+				t_ptr.plusToArmorClass += Misc1.magicBonus(1, 20, level);
 				t_ptr.cost += t_ptr.plusToArmorClass * 100;
-				if (Misc1.magik(cursed)) {
+				if (Misc1.isMagik(cursed)) {
 					t_ptr.plusToArmorClass = -t_ptr.plusToArmorClass;
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
@@ -486,10 +486,10 @@ public class Misc2 {
 				break;
 			case 30:     /* Slaying	      */
 				t_ptr.identify |= Constants.ID_SHOW_HITDAM;
-				t_ptr.plusToDam += Misc1.m_bonus(1, 25, level);
-				t_ptr.tohit += Misc1.m_bonus(1, 25, level);
+				t_ptr.plusToDam += Misc1.magicBonus(1, 25, level);
+				t_ptr.tohit += Misc1.magicBonus(1, 25, level);
 				t_ptr.cost += (t_ptr.tohit + t_ptr.plusToDam) * 100;
-				if (Misc1.magik(cursed)) {
+				if (Misc1.isMagik(cursed)) {
 					t_ptr.tohit = -t_ptr.tohit;
 					t_ptr.plusToDam = -t_ptr.plusToDam;
 					t_ptr.flags |= Constants.TR_CURSED;
@@ -503,17 +503,17 @@ public class Misc2 {
 			
 		case Constants.TV_AMULET: /* Amulets	      */
 			if (t_ptr.subCategory < 2) {
-				if (Misc1.magik(cursed)) {
-					t_ptr.misc = -Misc1.m_bonus(1, 20, level);
+				if (Misc1.isMagik(cursed)) {
+					t_ptr.misc = -Misc1.magicBonus(1, 20, level);
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = -t_ptr.cost;
 				} else {
-					t_ptr.misc = Misc1.m_bonus(1, 10, level);
+					t_ptr.misc = Misc1.magicBonus(1, 10, level);
 					t_ptr.cost += t_ptr.misc * 100;
 				}
 			} else if (t_ptr.subCategory == 2) {
-				t_ptr.misc = 5 * Misc1.m_bonus(1, 25, level);
-				if (Misc1.magik(cursed)) {
+				t_ptr.misc = 5 * Misc1.magicBonus(1, 25, level);
+				if (Misc1.isMagik(cursed)) {
 					t_ptr.misc = -t_ptr.misc;
 					t_ptr.cost = -t_ptr.cost;
 					t_ptr.flags |= Constants.TR_CURSED;
@@ -522,7 +522,7 @@ public class Misc2 {
 				}
 			} else if (t_ptr.subCategory == 8) {
 				/* amulet of the magi is never cursed */
-				t_ptr.misc = 5 * Misc1.m_bonus(1, 25, level);
+				t_ptr.misc = 5 * Misc1.magicBonus(1, 25, level);
 				t_ptr.cost += 20 * t_ptr.misc;
 			}
 			break;
@@ -602,14 +602,14 @@ public class Misc2 {
 			break;
 			
 		case Constants.TV_CLOAK:
-			if (Misc1.magik(chance)) {
-				if (Misc1.magik(special)) {
+			if (Misc1.isMagik(chance)) {
+				if (Misc1.isMagik(special)) {
 					if (Rnd.randomInt(2) == 1) {
 						t_ptr.specialName = Constants.SN_PROTECTION;
-						t_ptr.plusToArmorClass += Misc1.m_bonus(2, 40, level);
+						t_ptr.plusToArmorClass += Misc1.magicBonus(2, 40, level);
 						t_ptr.cost += 250;
 					} else {
-						t_ptr.plusToArmorClass += Misc1.m_bonus(1, 20, level);
+						t_ptr.plusToArmorClass += Misc1.magicBonus(1, 20, level);
 						t_ptr.identify |= Constants.ID_SHOW_P1;
 						t_ptr.misc = Rnd.randomInt(3);
 						t_ptr.flags |= Constants.TR_STEALTH;
@@ -617,28 +617,28 @@ public class Misc2 {
 						t_ptr.cost += 500;
 					}
 				} else {
-					t_ptr.plusToArmorClass += Misc1.m_bonus(1, 20, level);
+					t_ptr.plusToArmorClass += Misc1.magicBonus(1, 20, level);
 				}
-			} else if (Misc1.magik(cursed)) {
+			} else if (Misc1.isMagik(cursed)) {
 				tmp = Rnd.randomInt(3);
 				if (tmp == 1) {
 					t_ptr.flags |= Constants.TR_AGGRAVATE;
 					t_ptr.specialName = Constants.SN_IRRITATION;
-					t_ptr.plusToArmorClass  -= Misc1.m_bonus(1, 10, level);
+					t_ptr.plusToArmorClass  -= Misc1.magicBonus(1, 10, level);
 					t_ptr.identify |= Constants.ID_SHOW_HITDAM;
-					t_ptr.tohit -= Misc1.m_bonus(1, 10, level);
-					t_ptr.plusToDam -= Misc1.m_bonus(1, 10, level);
+					t_ptr.tohit -= Misc1.magicBonus(1, 10, level);
+					t_ptr.plusToDam -= Misc1.magicBonus(1, 10, level);
 					t_ptr.cost =  0;
 				} else if (tmp == 2) {
 					t_ptr.specialName = Constants.SN_VULNERABILITY;
-					t_ptr.plusToArmorClass -= Misc1.m_bonus(10, 100, level + 50);
+					t_ptr.plusToArmorClass -= Misc1.magicBonus(10, 100, level + 50);
 					t_ptr.cost = 0;
 				} else {
 					t_ptr.specialName = Constants.SN_ENVELOPING;
-					t_ptr.plusToArmorClass  -= Misc1.m_bonus(1, 10, level);
+					t_ptr.plusToArmorClass  -= Misc1.magicBonus(1, 10, level);
 					t_ptr.identify |= Constants.ID_SHOW_HITDAM;
-					t_ptr.tohit -= Misc1.m_bonus(2, 40, level+10);
-					t_ptr.plusToDam -= Misc1.m_bonus(2, 40, level+10);
+					t_ptr.tohit -= Misc1.magicBonus(2, 40, level+10);
+					t_ptr.plusToDam -= Misc1.magicBonus(2, 40, level+10);
 					t_ptr.cost = 0;
 				}
 				t_ptr.flags |= Constants.TR_CURSED;
@@ -692,11 +692,11 @@ public class Misc2 {
 				/* always show tohit/todam values if identified */
 				t_ptr.identify |= Constants.ID_SHOW_HITDAM;
 				
-				if (Misc1.magik(chance)) {
-					t_ptr.tohit += Misc1.m_bonus(1, 35, level);
-					t_ptr.plusToDam += Misc1.m_bonus(1, 35, level);
+				if (Misc1.isMagik(chance)) {
+					t_ptr.tohit += Misc1.magicBonus(1, 35, level);
+					t_ptr.plusToDam += Misc1.magicBonus(1, 35, level);
 					/* see comment for weapons */
-					if (Misc1.magik(3 * special / 2)) {
+					if (Misc1.isMagik(3 * special / 2)) {
 						switch (Rnd.randomInt(10)) {
 						case 1: case 2: case 3:
 							t_ptr.specialName = Constants.SN_SLAYING;
@@ -736,9 +736,9 @@ public class Misc2 {
 							break;
 						}
 					}
-				} else if (Misc1.magik(cursed)) {
-					t_ptr.tohit -= Misc1.m_bonus(5, 55, level);
-					t_ptr.plusToDam -= Misc1.m_bonus(5, 55, level);
+				} else if (Misc1.isMagik(cursed)) {
+					t_ptr.tohit -= Misc1.magicBonus(5, 55, level);
+					t_ptr.plusToDam -= Misc1.magicBonus(5, 55, level);
 					t_ptr.flags |= Constants.TR_CURSED;
 					t_ptr.cost = 0;
 				}
