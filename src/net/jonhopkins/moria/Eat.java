@@ -47,7 +47,7 @@ public class Eat {
 		}
 		
 		IntPointer index = new IntPointer();
-		if (!Moria1.getItemId(index, "Eat what?", first.value(), last.value(), "", "")) {
+		if (!Moria1.getItemId(index, "Eat what?", first.value(), last.value(), null, "")) {
 			return;
 		}
 		

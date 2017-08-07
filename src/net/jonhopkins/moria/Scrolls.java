@@ -63,7 +63,7 @@ public class Scrolls {
 		}
 		
 		IntPointer index = new IntPointer();
-		if (!Moria1.getItemId(index, "Read which scroll?", first.value(), last.value(), "", "")) {
+		if (!Moria1.getItemId(index, "Read which scroll?", first.value(), last.value(), null, "")) {
 			return;
 		}
 		

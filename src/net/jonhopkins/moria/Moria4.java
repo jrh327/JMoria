@@ -816,7 +816,7 @@ public class Moria4 {
 		if (Treasure.invenCounter == 0) {
 			IO.printMessage("But you are not carrying anything.");
 			Variable.freeTurnFlag = true;
-		} else if (Moria1.getItemId(item_val, "Fire/Throw which one?", 0, Treasure.invenCounter - 1, "", "")) {
+		} else if (Moria1.getItemId(item_val, "Fire/Throw which one?", 0, Treasure.invenCounter - 1, null, "")) {
 			if (Moria1.getDirection("", dir)) {
 				Desc.describeRemaining(item_val.value());
 				if (Player.py.flags.confused > 0) {

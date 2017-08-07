@@ -48,7 +48,7 @@ public class Staffs {
 		}
 		
 		IntPointer index = new IntPointer();
-		if (!Moria1.getItemId(index, "Use which staff?", first.value(), last.value(), "", "")) {
+		if (!Moria1.getItemId(index, "Use which staff?", first.value(), last.value(), null, "")) {
 			return;
 		}
 		

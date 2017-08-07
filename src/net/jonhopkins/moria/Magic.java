@@ -69,7 +69,7 @@ public class Magic {
 		}
 		
 		IntPointer index = new IntPointer();
-		if (!Moria1.getItemId(index, "Use which spell-book?", first.value(), last.value(), "", "")) {
+		if (!Moria1.getItemId(index, "Use which spell-book?", first.value(), last.value(), null, "")) {
 			return;
 		}
 		

@@ -47,7 +47,7 @@ public class Wands {
 		}
 		
 		IntPointer index = new IntPointer();
-		if (!Moria1.getItemId(index, "Aim which wand?", first.value(), last.value(), "", "")) {
+		if (!Moria1.getItemId(index, "Aim which wand?", first.value(), last.value(), null, "")) {
 			return;
 		}
 		

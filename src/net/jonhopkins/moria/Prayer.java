@@ -69,7 +69,7 @@ public class Prayer {
 		}
 		
 		IntPointer index = new IntPointer();
-		if (!Moria1.getItemId(index, "Use which Holy Book?", first.value(), last.value(), "", "")) {
+		if (!Moria1.getItemId(index, "Use which Holy Book?", first.value(), last.value(), null, "")) {
 			return;
 		}
 		

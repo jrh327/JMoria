@@ -1259,7 +1259,7 @@ public class Dungeon {
 			IO.printMessage("You have no light to read by.");
 		} else if (Player.py.flags.confused > 0) {
 			IO.printMessage("You are too confused.");
-		} else if (Moria1.getItemId(index, "Which Book?", first.value(), last.value(), "", "")) {
+		} else if (Moria1.getItemId(index, "Which Book?", first.value(), last.value(), null, "")) {
 			boolean canUnderstand = true;
 			InvenType book = Treasure.inventory[index.value()];
 			if (Player.Class[Player.py.misc.playerClass].spell == Constants.MAGE) {

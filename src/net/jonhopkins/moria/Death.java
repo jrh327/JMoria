@@ -351,7 +351,7 @@ public class Death {
 						IO.printMessage("");
 						IO.printMessage("You are carrying:");
 						IO.clearFrom(1);
-						Moria1.showInventory(0, Treasure.invenCounter - 1, true, 0, "");
+						Moria1.showInventory(0, Treasure.invenCounter - 1, true, 0, null);
 						IO.printMessage("");
 					}
 				}

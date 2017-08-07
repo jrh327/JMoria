@@ -39,7 +39,7 @@ public class Misc4 {
 		}
 		
 		IntPointer itemIndex = new IntPointer();
-		if (Moria1.getItemId(itemIndex, "Which one? ", 0, Constants.INVEN_ARRAY_SIZE, "", "")) {
+		if (Moria1.getItemId(itemIndex, "Which one? ", 0, Constants.INVEN_ARRAY_SIZE, null, "")) {
 			String itemDesc = Desc.describeObject(Treasure.inventory[itemIndex.value()], true);
 			String msgInscribing = String.format("Inscribing %s", itemDesc);
 			IO.printMessage(msgInscribing);

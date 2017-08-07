@@ -327,7 +327,7 @@ public class Spells {
 		InvenType i_ptr;
 		
 		ident = false;
-		if (Moria1.getItemId(item_val, "Item you wish identified?", 0, Constants.INVEN_ARRAY_SIZE, "", "")) {
+		if (Moria1.getItemId(item_val, "Item you wish identified?", 0, Constants.INVEN_ARRAY_SIZE, null, "")) {
 			ident = true;
 			Desc.identify(item_val);
 			i_ptr = Treasure.inventory[item_val.value()];
@@ -961,7 +961,7 @@ public class Spells {
 		res = false;
 		if (!Misc3.findRange(Constants.TV_STAFF, Constants.TV_WAND, i, j)) {
 			IO.printMessage("You have nothing to recharge.");
-		} else if (Moria1.getItemId(item_val, "Recharge which item?", i.value(), j.value(), "", "")) {
+		} else if (Moria1.getItemId(item_val, "Recharge which item?", i.value(), j.value(), null, "")) {
 			i_ptr = Treasure.inventory[item_val.value()];
 			res = true;
 			/* recharge I = recharge(20) = 1/6 failure for empty 10th level wand */

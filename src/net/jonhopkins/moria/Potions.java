@@ -48,7 +48,7 @@ public class Potions {
 		}
 		
 		IntPointer index = new IntPointer();
-		if (!Moria1.getItemId(index, "Quaff which potion?", first.value(), last.value(), "", "")) {
+		if (!Moria1.getItemId(index, "Quaff which potion?", first.value(), last.value(), null, "")) {
 			return;
 		}
 		
