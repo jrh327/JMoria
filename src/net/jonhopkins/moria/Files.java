@@ -21,7 +21,14 @@
  */
 package net.jonhopkins.moria;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Paths;
+import java.util.List;
+
 import net.jonhopkins.moria.types.InvenType;
 import net.jonhopkins.moria.types.PlayerMisc;
 
@@ -29,218 +36,240 @@ public class Files {
 	
 	private Files() { }
 	
-	/*
-	 *  init_scorefile
-	 *  Open the score file while we still have the setuid privileges.  Later
-	 *  when the score is being written out, you must be sure to flock the file
-	 *  so we don't have multiple people trying to write to it at the same time.
-	 *  Craig Norborg (doc)		Mon Aug 10 16:41:59 EST 1987
+	/**
+	 * Open the score file while we still have the setuid privileges. Later
+	 * when the score is being written out, you must be sure to flock the file
+	 * so we don't have multiple people trying to write to it at the same time.
+	 * <p>
+	 * Craig Norborg (doc) Mon Aug 10 16:41:59 EST 1987
 	 */
 	public static void initScoreFile() {
 		Variable.highscoreFile = new File(Config.MORIA_TOP);
 		
-		if (Variable.highscoreFile == null) {
+		if (!Variable.highscoreFile.isFile()
+				|| !Variable.highscoreFile.canRead()
+				|| !Variable.highscoreFile.canWrite()) {
 			System.err.printf("Can't open score file \"%s\"\n", Config.MORIA_TOP);
 			System.exit(1);
 			return;
 		}
-		/* can't leave it open, since this causes problems on networked PCs and VMS,
-		 * we DO want to check to make sure we can open the file, though */
-		//fclose (var.highscore_fp);
 	}
 	
-	/* Attempt to open the intro file			-RAK-	 */
-	/* This routine also checks the hours file vs. what time it is	-Doc */
+	/**
+	 * Operating hours for Moria -RAK-
+	 * X = Open; . = Closed
+	 */
+	public static String[] days = {
+			"SUN:XXXXXXXXXXXXXXXXXXXXXXXX",
+			"MON:XXXXXXXX.........XXXXXXX",
+			"TUE:XXXXXXXX.........XXXXXXX",
+			"WED:XXXXXXXX.........XXXXXXX",
+			"THU:XXXXXXXX.........XXXXXXX",
+			"FRI:XXXXXXXX.........XXXXXXX",
+			"SAT:XXXXXXXXXXXXXXXXXXXXXXXX"
+	};
+	
+	/**
+	 * Attempt to open the intro file. -RAK-
+	 * <p>
+	 * This routine also checks the hours file vs. what time it is -Doc
+	 */
 	public static void readTimes() {
-		//String in_line;
-		//int i;
-		//File file1;
+		if (Config.MORIA_HOU.isEmpty()) {
+			return;
+		}
 		
-		/* Attempt to read hours.dat.	 If it does not exist,	   */
-		/* inform the user so he can tell the wizard about it	 */
-		/*
-		if ((file1 = fopen(Config.MORIA_HOU, "r")) != NULL) {
-			while (fgets(in_line, 80, file1) != CNIL) {
-				if (in_line.length() > 3) {
-					if (!strncmp(in_line, "SUN:", 4))
-						strcpy(days[0], in_line);
-					else if (!strncmp(in_line, "MON:", 4))
-						strcpy(days[1], in_line);
-					else if (!strncmp(in_line, "TUE:", 4))
-						strcpy(days[2], in_line);
-					else if (!strncmp(in_line, "WED:", 4))
-						strcpy(days[3], in_line);
-					else if (!strncmp(in_line, "THU:", 4))
-						strcpy(days[4], in_line);
-					else if (!strncmp(in_line, "FRI:", 4))
-						strcpy(days[5], in_line);
-					else if (!strncmp(in_line, "SAT:", 4))
-						strcpy(days[6], in_line);
+		// Attempt to read hours.dat. If it does not exist,
+		// inform the user so he can tell the wizard about it
+		try {
+			List<String> lines = java.nio.file.Files.readAllLines(Paths.get(Config.MORIA_HOU));
+			for (String line : lines) {
+				if (line.length() > 3) {
+					if (line.startsWith("SUN:")) {
+						days[0] = line;
+					} else if (line.startsWith("MON:")) {
+						days[1] = line;
+					} else if (line.startsWith("TUE:")) {
+						days[2] = line;
+					} else if (line.startsWith("WED:")) {
+						days[3] = line;
+					} else if (line.startsWith("THU:")) {
+						days[4] = line;
+					} else if (line.startsWith("FRI:")) {
+						days[5] = line;
+					} else if (line.startsWith("SAT:")) {
+						days[6] = line;
+					}
 				}
 			}
-			fclose(file1);
-		} else {
-			io.restore_term();
+			
+			// Check the hours, if closed then exit.
+			if (!Misc1.checkTime()) {
+				IO.clearScreen();
+				int i = 0;
+				for (String line : lines) {
+					IO.putBuffer(line, i, 0);
+					i++;
+				}
+				IO.pauseLine(23);
+				Death.exitGame();
+			}
+		} catch (IOException e) {
+			IO.restoreTerminal();
 			System.err.printf("There is no hours file \"%s\".\n", Config.MORIA_HOU);
 			System.err.printf("Please inform the wizard, %s, so he ", Config.WIZARD);
 			System.err.printf("can correct this!\n");
 			System.exit(1);
 		}
-		*/
-		/* Check the hours, if closed	then exit. */
-		/*
-		if (!check_time()) {
-			if ((file1 = fopen(Config.MORIA_HOU, "r")) != NULL) {
-				io.clear_screen();
-				for (i = 0; fgets(in_line, 80, file1) != CNIL; i++) {
-					io.put_buffer(in_line, i, 0);
-				}
-				io.pause_line(23);
-				fclose(file1);
+		
+		try {
+			// Print the introduction message, news, etc.
+			List<String> lines = java.nio.file.Files.readAllLines(Paths.get(Config.MORIA_MOR));
+			IO.clearScreen();
+			int i = 0;
+			for (String line : lines) {
+				IO.putBuffer(line, i, 0);
+				i++;
 			}
-			exit_game();
+			IO.pauseLine(23);
+		} catch (IOException e) {
+			IO.restoreTerminal();
+			System.err.printf("There is no news file \"%s\".\n", Config.MORIA_MOR);
+			System.err.printf("Please inform the wizard, %s, so he ", Config.WIZARD);
+			System.err.printf("can correct this!\n");
+			System.exit(1);
 		}
-		*/
-		/* Print the introduction message, news, etc.		 */
-		/*
-		if ((file1 = fopen(Config.MORIA_MOR, "r")) != NULL) {
-			io.clear_screen();
-			for (i = 0; fgets(in_line, 80, file1) != CNIL; i++) {
-				io.put_buffer(in_line, i, 0);
-			}
-			io.pause_line(23);
-			fclose(file1);
-		}
-		*/
 	}
 	
-	/* File perusal.	    -CJS-
-	 * primitive, but portable */
+	/**
+	 * File perusal. -CJS-
+	 * <p>
+	 * Primitive, but portable.
+	 * 
+	 * @param filename the path to the help file
+	 */
 	public static void helpfile(String filename) {
-		String tmp_str = "";
-		java.io.File file;
-		char input;
-		int i;
-		
-		file = new File(filename);
+		File file = new File(filename);
 		if (!file.exists()) {
-			tmp_str = String.format("Can not find help file \"%s\".\n", filename);
-			IO.print(tmp_str, 0, 0);
+			IO.print(String.format("Can not find help file \"%s\".\n", filename), 0, 0);
 			return;
 		}
 		
 		IO.saveScreen();
 		
-		try{
-			FileInputStream fstream = new FileInputStream(filename);
-			DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			while ((tmp_str = br.readLine()) != null) {
+		try {
+			List<String> lines = java.nio.file.Files.readAllLines(Paths.get(filename));
+			boolean eof = false;
+			int lineIndex = 0;
+			while (!eof) {
 				IO.clearScreen();
-				IO.putBuffer(tmp_str, 0, 0);
-				for (i = 1; i < 23 && (tmp_str = br.readLine()) != null; i++) {
-					IO.putBuffer(tmp_str, i, 0);
+				for (int i = 1; i < 23 && lineIndex < lines.size(); i++, lineIndex++) {
+					IO.putBuffer(lines.get(lineIndex), i, 0);
+				}
+				if (lineIndex >= lines.size()) {
+					eof = true;
 				}
 				IO.print("[Press any key to continue.]", 23, 23);
-				input = IO.inkey();
+				char input = IO.inkey();
 				if (input == Constants.ESCAPE) {
 					break;
 				}
 			}
-			br.close();
-			in.close();
-			fstream.close();
-		}catch (IOException e){
+		} catch (IOException e){
 			e.printStackTrace();
 		}
 		
 		IO.restoreScreen();
 	}
 	
-	/* Prints a list of random objects to a file.  Note that -RAK-	 */
-	/* the objects produced is a sampling of objects which		 */
-	/* be expected to appear on that level.				 */
+	/**
+	 * Prints a list of random objects to a file. -RAK-
+	 * <p>
+	 * Note that the objects produced is a sampling of 
+	 * objects which be expected to appear on that level.
+	 */
 	public static void printObjects() {
-		int i;
-		int nobj, j = 0, level;
-		String filename1, tmp_str;
-		File file1;
-		InvenType i_ptr;
-		boolean small;
-		
 		IO.print("Produce objects on what level?: ", 0, 0);
-		level = 0;
-		
-		if ((tmp_str = IO.getString(0, 32, 10)).length() == 0) {
+		String strLevel = IO.getString(0, 32, 10).trim();
+		if (strLevel.isEmpty()) {
 			return;
 		}
+		
+		int level = 0;
 		try {
-			level = Integer.parseInt(tmp_str);
+			level = Integer.parseInt(strLevel);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
-			level = 0;
 		}
+		
 		IO.print("Produce how many objects?: ", 0, 0);
-		nobj = 0;
-		small = IO.getCheck("Small objects only?");
-		
-		if ((tmp_str = IO.getString(0, 27,10)).length() == 0) {
+		boolean small = IO.getCheck("Small objects only?");
+		String strNumObjects = IO.getString(0, 27, 10).trim();
+		if (strNumObjects.isEmpty()) {
 			return;
 		}
+		
+		int numObjects = 0;
 		try {
-			nobj = Integer.parseInt(tmp_str);
+			numObjects = Integer.parseInt(strNumObjects);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
-			nobj = 1;
+			numObjects = 1;
 		}
-		if ((nobj > 0) && (level > -1) && (level < 1201)) {
-			if (nobj > 10000) {
-				nobj = 10000;
+		
+		if (numObjects > 0 && level > -1 && level < 1201) {
+			if (numObjects > 10000) {
+				numObjects = 10000;
 			}
+			
 			IO.print("File name: ", 0, 0);
-			if ((filename1 = IO.getString(0, 11, 64)).length() > 0) {
-				if ((file1 = new File(filename1)).exists()) {
-					tmp_str = String.format("%d", nobj);
-					IO.print(tmp_str.concat(" random objects being produced..."), 0, 0);
-					IO.putQio();
-					Writer output;
-					try {
-						output = new BufferedWriter(new FileWriter(file1));
-					} catch (IOException e) {
-						IO.print("Files.print_objects(): Failed to open file as BufferedWriter.", 0, 0);
-						e.printStackTrace();
-						return;
+			String filename = IO.getString(0, 11, 64).trim();
+			if (filename.isEmpty()) {
+				return;
+			}
+			File file = new File(filename);
+			if (!file.exists()) {
+				IO.print("File could not be opened.", 0, 0);
+				return;
+			}
+			
+			IO.print(String.format("%d random objects being produced...", numObjects), 0, 0);
+			IO.putQio();
+			
+			Writer output;
+			try {
+				output = new BufferedWriter(new FileWriter(file));
+			} catch (IOException e) {
+				IO.print("Files.print_objects(): Failed to open file as BufferedWriter.", 0, 0);
+				e.printStackTrace();
+				return;
+			}
+			
+			try {
+				output.write("*** Random Object Sampling:\n");
+				output.write(String.format("*** %d objects\n", numObjects));
+				output.write(String.format("*** For Level %d\n", level));
+				output.write("\n");
+				output.write("\n");
+				
+				int treasureIndex = Misc1.popTreasure();
+				for (int i = 0; i < numObjects; i++) {
+					Desc.copyIntoInventory(Treasure.treasureList[treasureIndex], Treasure.sortedObjects[Misc3.getRandomObjectForLevel(level, small)]);
+					Misc2.addMagicToTreasure(treasureIndex, level);
+					InvenType item = Treasure.treasureList[treasureIndex];
+					Desc.setStoreBought(item);
+					if ((item.flags & Constants.TR_CURSED) != 0) {
+						Misc4.addInscription(item, Constants.ID_DAMD);
 					}
-					try {
-						output.write("*** Random Object Sampling:\n");
-						output.write(String.format("*** %d objects\n", nobj));
-						output.write(String.format("*** For Level %d\n", level));
-						output.write("\n");
-						output.write("\n");
-						j = Misc1.popTreasure();
-						for (i = 0; i < nobj; i++) {
-							Desc.copyIntoInventory(Treasure.treasureList[j], Treasure.sortedObjects[Misc3.getRandomObjectForLevel(level, small)]);
-							Misc2.addMagicToTreasure(j, level);
-							i_ptr = Treasure.treasureList[j];
-							Desc.setStoreBought(i_ptr);
-							if ((i_ptr.flags & Constants.TR_CURSED) != 0) {
-								Misc4.addInscription(i_ptr, Constants.ID_DAMD);
-							}
-							tmp_str = Desc.describeObject(i_ptr, true);
-							output.write(String.format("%d %s\n", i_ptr.level, tmp_str));
-						}
-						Misc1.pusht(j);
-						output.close();
-						IO.print("Completed.", 0, 0);
-					} catch (IOException e) {
-						IO.print("Files.print_objects(): Failed to write to file.", 0, 0);
-						e.printStackTrace();
-						return;
-					}
-				} else {
-					IO.print("File could not be opened.", 0, 0);
+					output.write(String.format("%d %s\n", item.level, Desc.describeObject(item, true)));
 				}
-			} else {
+				Misc1.pusht(treasureIndex);
+				
+				output.close();
+				IO.print("Completed.", 0, 0);
+			} catch (IOException e) {
+				IO.print("Files.print_objects(): Failed to write to file.", 0, 0);
+				e.printStackTrace();
 				return;
 			}
 		} else {
@@ -249,57 +278,44 @@ public class Files {
 	}
 	
 	/* Print the character to a file or device		-RAK-	 */
-	public static boolean fileCharacter(String filename1) {
-		int i;
-		int j, xbth, xbthb, xfos, xsrh, xstl, xdis, xsave, xdev;
-		String xinfra;
-		File file1;
-		String prt2;
-		PlayerMisc p_ptr;
-		InvenType i_ptr;
-		String out_val, prt1;
-		String p, colon, blank;
+	public static boolean fileCharacter(String filename) {
+		File file = new File(filename);
+		if (!file.isFile()) {
+			IO.print("Files.fileCharacter(): Should not be a directory: " + file, 0, 0);
+			return false;
+		}
 		
-		file1 = new File(filename1);
-		if (!file1.isFile()) {
-			IO.print("Files.fileCharacter(): Should not be a directory: " + file1, 0, 0);
+		if (!file.canWrite()) {
+			IO.print("Files.fileCharacter(): File cannot be written: " + file, 0, 0);
 			return false;
 		}
-		if (!file1.canWrite()) {
-			IO.print("Files.fileCharacter(): File cannot be written: " + file1, 0, 0);
-			return false;
-		}
+		
 		try {
-			Writer output = new BufferedWriter(new FileWriter(file1));
+			Writer output = new BufferedWriter(new FileWriter(file));
 			IO.print("Writing character sheet...", 0, 0);
 			IO.putQio();
-			colon = ":";
-			blank = " ";
+			final String colon = ":";
+			final String blank = " ";
+			
 			output.write(String.format("%c\n\n", (Constants.CTRL & 'L')));
 			output.write(String.format(" Name%9s %-23s", colon, Player.py.misc.name));
 			output.write(String.format(" Age%11s %6d", colon, Player.py.misc.age));
-			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_STR]);
-			output.write(String.format("   STR : %s\n", prt1));
+			output.write(String.format("   STR : %s\n", Misc3.convertStat(Player.py.stats.useStat[Constants.A_STR])));
 			output.write(String.format(" Race%9s %-23s", colon, Player.race[Player.py.misc.playerRace].raceType));
 			output.write(String.format(" Height%8s %6d", colon, Player.py.misc.height));
-			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_INT]);
-			output.write(String.format("   INT : %s\n", prt1));
+			output.write(String.format("   INT : %s\n", Misc3.convertStat(Player.py.stats.useStat[Constants.A_INT])));
 			output.write(String.format(" Sex%10s %-23s", colon, (Player.py.misc.isMale ? "Male" : "Female")));
 			output.write(String.format(" Weight%8s %6d", colon, Player.py.misc.weight));
-			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_WIS]);
-			output.write(String.format("   WIS : %s\n", prt1));
+			output.write(String.format("   WIS : %s\n", Misc3.convertStat(Player.py.stats.useStat[Constants.A_WIS])));
 			output.write(String.format(" Class%8s %-23s", colon, Player.Class[Player.py.misc.playerClass].title));
 			output.write(String.format(" Social Class : %6d", Player.py.misc.socialClass));
-			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_DEX]);
-			output.write(String.format("   DEX : %s\n", prt1));
+			output.write(String.format("   DEX : %s\n", Misc3.convertStat(Player.py.stats.useStat[Constants.A_DEX])));
 			output.write(String.format(" Title%8s %-23s", colon, Misc3.getPlayerTitle()));
 			output.write(String.format("%22s", blank));
-			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_CON]);
-			output.write(String.format( "   CON : %s\n", prt1));
+			output.write(String.format( "   CON : %s\n", Misc3.convertStat(Player.py.stats.useStat[Constants.A_CON])));
 			output.write(String.format("%34s", blank));
 			output.write(String.format("%26s", blank));
-			prt1 = Misc3.convertStat(Player.py.stats.useStat[Constants.A_CHR]);
-			output.write(String.format("   CHR : %s\n\n", prt1));
+			output.write(String.format("   CHR : %s\n\n", Misc3.convertStat(Player.py.stats.useStat[Constants.A_CHR])));
 			
 			output.write(String.format(" + To Hit    : %6d", Player.py.misc.displayPlusToHit));
 			output.write(String.format("%7sLevel      : %7d", blank, Player.py.misc.level));
@@ -311,33 +327,37 @@ public class Files {
 			output.write(String.format("%7sMax Exp    : %7d", blank, Player.py.misc.maxExp));
 			output.write(String.format("    Max Mana%8s %6d\n", colon, Player.py.misc.maxMana));
 			output.write(String.format("   Total AC  : %6d", Player.py.misc.displayPlusToArmorClass));
+			
 			if (Player.py.misc.level == Constants.MAX_PLAYER_LEVEL) {
 				output.write(String.format("%7sExp to Adv : *******", blank));
 			} else {
 				output.write(String.format("%7sExp to Adv : %7d", blank, (Player.exp[Player.py.misc.level - 1] * Player.py.misc.expFactor / 100)));
 			}
+			
 			output.write(String.format("    Cur Mana%8s %6d\n", colon, Player.py.misc.currMana));
 			output.write(String.format("%28sGold%8s %7d\n\n", blank, colon, Player.py.misc.gold));
 			
-			p_ptr = Player.py.misc;
-			xbth = p_ptr.baseToHit + p_ptr.plusToHit * Constants.BTH_PLUS_ADJ + (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_BTH] * p_ptr.level);
-			xbthb = p_ptr.baseToHitBow + p_ptr.plusToHit * Constants.BTH_PLUS_ADJ + (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_BTHB] * p_ptr.level);
-			/* this results in a range from 0 to 29 */
-			xfos = 40 - p_ptr.freqOfSearch;
+			PlayerMisc misc = Player.py.misc;
+			int xbth = misc.baseToHit + misc.plusToHit * Constants.BTH_PLUS_ADJ + (Player.classLevelAdjust[misc.playerClass][Constants.CLA_BTH] * misc.level);
+			int xbthb = misc.baseToHitBow + misc.plusToHit * Constants.BTH_PLUS_ADJ + (Player.classLevelAdjust[misc.playerClass][Constants.CLA_BTHB] * misc.level);
+			
+			// this results in a range from 0 to 29
+			int xfos = 40 - misc.freqOfSearch;
 			if (xfos < 0) {
 				xfos = 0;
 			}
-			xsrh = p_ptr.searchChance;
-			/* this results in a range from 0 to 9 */
-			xstl = p_ptr.stealth + 1;
-			xdis = p_ptr.disarmChance + 2 * Misc3.adjustToDisarm() + Misc3.adjustStat(Constants.A_INT)
-					+ (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_DISARM] * p_ptr.level / 3);
-			xsave = p_ptr.savingThrow + Misc3.adjustStat(Constants.A_WIS)
-					+ (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_SAVE] * p_ptr.level / 3);
-			xdev = p_ptr.savingThrow + Misc3.adjustStat(Constants.A_INT)
-					+ (Player.classLevelAdjust[p_ptr.playerClass][Constants.CLA_DEVICE] * p_ptr.level / 3);
+			int xsrh = misc.searchChance;
 			
-			xinfra = String.format("%d feet", Player.py.flags.seeInfrared * 10);
+			// this results in a range from 0 to 9
+			int xstl = misc.stealth + 1;
+			int xdis = misc.disarmChance + 2 * Misc3.adjustToDisarm() + Misc3.adjustStat(Constants.A_INT)
+					+ (Player.classLevelAdjust[misc.playerClass][Constants.CLA_DISARM] * misc.level / 3);
+			int xsave = misc.savingThrow + Misc3.adjustStat(Constants.A_WIS)
+					+ (Player.classLevelAdjust[misc.playerClass][Constants.CLA_SAVE] * misc.level / 3);
+			int xdev = misc.savingThrow + Misc3.adjustStat(Constants.A_INT)
+					+ (Player.classLevelAdjust[misc.playerClass][Constants.CLA_DEVICE] * misc.level / 3);
+			
+			String xinfra = String.format("%d feet", Player.py.flags.seeInfrared * 10);
 			
 			output.write("(Miscellaneous Abilities)\n\n");
 			output.write(String.format(" Fighting    : %-10s", Misc3.likeRating(xbth, 12)));
@@ -349,52 +369,80 @@ public class Files {
 			output.write(String.format(" Saving Throw: %-10s", Misc3.likeRating(xsave, 6)));
 			output.write(String.format("   Magic Device: %-10s", Misc3.likeRating(xdev, 6)));
 			output.write(String.format("   Infra-Vision: %s\n\n", xinfra));
-			/* Write out the character's history     */
+			
+			// Write out the character's history
 			output.write("Character Background\n");
-			for (i = 0; i < 4; i++) {
+			for (int i = 0; i < 4; i++) {
 				output.write(String.format(" %s\n", Player.py.misc.history[i]));
 			}
-			/* Write out the equipment list.	     */
-			j = 0;
+			
+			// Write out the equipment list.
+			int j = 0;
 			output.write(String.format("\n  [Character's Equipment List]\n\n"));
 			if (Treasure.equipCounter == 0) {
 				output.write(String.format("  Character has no equipment in use.\n"));
 			} else {
-				for (i = Constants.INVEN_WIELD; i < Constants.INVEN_ARRAY_SIZE; i++) {
-					i_ptr = Treasure.inventory[i];
-					if (i_ptr.category != Constants.TV_NOTHING) {
-						switch (i)
-						{
-						case Constants.INVEN_WIELD:	p = "You are wielding";	break;
-						case Constants.INVEN_HEAD:	p = "Worn on head";	break;
-						case Constants.INVEN_NECK:	p = "Worn around neck";	break;
-						case Constants.INVEN_BODY:	p = "Worn on body";	break;
-						case Constants.INVEN_ARM:	p = "Worn on shield arm";break;
-						case Constants.INVEN_HANDS:	p = "Worn on hands";	break;
-						case Constants.INVEN_RIGHT:	p = "Right ring finger";break;
-						case Constants.INVEN_LEFT:	p = "Left  ring finger";break;
-						case Constants.INVEN_FEET:	p = "Worn on feet";	break;
-						case Constants.INVEN_OUTER:	p = "Worn about body";	break;
-						case Constants.INVEN_LIGHT:	p = "Light source is";	break;
-						case Constants.INVEN_AUX:	p = "Secondary weapon";	break;
-						default: p = "*Unknown value*";     break;
+				for (int i = Constants.INVEN_WIELD; i < Constants.INVEN_ARRAY_SIZE; i++) {
+					InvenType item = Treasure.inventory[i];
+					if (item.category != Constants.TV_NOTHING) {
+						String prefix;
+						switch (i) {
+						case Constants.INVEN_WIELD:
+							prefix = "You are wielding";
+							break;
+						case Constants.INVEN_HEAD:
+							prefix = "Worn on head";
+							break;
+						case Constants.INVEN_NECK:
+							prefix = "Worn around neck";
+							break;
+						case Constants.INVEN_BODY:
+							prefix = "Worn on body";
+							break;
+						case Constants.INVEN_ARM:
+							prefix = "Worn on shield arm";
+							break;
+						case Constants.INVEN_HANDS:
+							prefix = "Worn on hands";
+							break;
+						case Constants.INVEN_RIGHT:
+							prefix = "Right ring finger";
+							break;
+						case Constants.INVEN_LEFT:
+							prefix = "Left  ring finger";
+							break;
+						case Constants.INVEN_FEET:
+							prefix = "Worn on feet";
+							break;
+						case Constants.INVEN_OUTER:
+							prefix = "Worn about body";
+							break;
+						case Constants.INVEN_LIGHT:
+							prefix = "Light source is";
+							break;
+						case Constants.INVEN_AUX:
+							prefix = "Secondary weapon";
+							break;
+						default:
+							prefix = "*Unknown value*";
+							break;
 						}
-						prt2 = Desc.describeObject(Treasure.inventory[i], true);
-						output.write(String.format("  %c) %-19s: %s\n", j+'a', p, prt2));
+						String itemDesc = Desc.describeObject(Treasure.inventory[i], true);
+						output.write(String.format("  %c) %-19s: %s\n", j + 'a', prefix, itemDesc));
 						j++;
 					}
 				}
 			}
 			
-			/* Write out the character's inventory.	     */
+			// Write out the character's inventory.
 			output.write(String.format("%c\n\n", (Constants.CTRL & 'L')));
 			output.write("  [General Inventory List]\n\n");
 			if (Treasure.invenCounter == 0) {
 				output.write("  Character has no objects in inventory.\n");
 			} else {
-				for (i = 0; i < Treasure.invenCounter; i++) {
-					prt2 = Desc.describeObject(Treasure.inventory[i], true);
-					output.write(String.format("%c) %s\n", i + 'a', prt2));
+				for (int i = 0; i < Treasure.invenCounter; i++) {
+					String itemDesc = Desc.describeObject(Treasure.inventory[i], true);
+					output.write(String.format("%c) %s\n", i + 'a', itemDesc));
 				}
 			}
 			output.write(String.format("%c", (Constants.CTRL & 'L')));
@@ -402,8 +450,7 @@ public class Files {
 			IO.print("Completed.", 0, 0);
 			return true;
 		} catch (IOException e) {
-			out_val = String.format("Can't open file %s:", filename1);
-			IO.printMessage(out_val);
+			IO.printMessage(String.format("Can't open file %s:", filename));
 			e.printStackTrace();
 			return false;
 		}

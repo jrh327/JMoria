@@ -29,19 +29,20 @@ public class Config {
 	
 	/* Files used by moria, set these to valid pathnames for your system. */
 	/* Files which can be in a varying place */
-	public static final String MORIA_SAV       = "files/moriasav";
-	public static final String MORIA_TOP       = "files/moriatop";
-	public static final String MORIA_MOR       = "files/news";
-	public static final String MORIA_GPL       = "files/COPYING";
-	public static final String MORIA_TOP_NAME  = "files/scores";
-	public static final String MORIA_SAV_NAME  = "files/MORIA.SAV";
-	public static final String MORIA_CNF_NAME  = "files/MORIA.CNF";
-	public static final String MORIA_HELP      = "files/roglcmds.hlp";
-	public static final String MORIA_ORIG_HELP = "files/origcmds.hlp";
-	public static final String MORIA_WIZ_HELP  = "files/rwizcmds.hlp";
-	public static final String MORIA_OWIZ_HELP = "files/owizcmds.hlp";
-	public static final String MORIA_WELCOME   = "files/welcome.hlp";
-	public static final String MORIA_VER       = "files/version.hlp";
+	public static final String MORIA_SAV       = "../files/moriasav";
+	public static final String MORIA_TOP       = "../files/moriatop";
+	public static final String MORIA_HOU       = "../files/hours";
+	public static final String MORIA_MOR       = "../files/news";
+	public static final String MORIA_GPL       = "../files/COPYING";
+	public static final String MORIA_TOP_NAME  = "../files/scores";
+	public static final String MORIA_SAV_NAME  = "../files/MORIA.SAV";
+	public static final String MORIA_CNF_NAME  = "../files/MORIA.CNF";
+	public static final String MORIA_HELP      = "../files/roglcmds.hlp";
+	public static final String MORIA_ORIG_HELP = "../files/origcmds.hlp";
+	public static final String MORIA_WIZ_HELP  = "../files/rwizcmds.hlp";
+	public static final String MORIA_OWIZ_HELP = "../files/owizcmds.hlp";
+	public static final String MORIA_WELCOME   = "../files/welcome.hlp";
+	public static final String MORIA_VER       = "../files/version.hlp";
 	
 	/* This sets the default user interface. */
 	/* To use the original key bindings (keypad for movement) set ROGUE_LIKE

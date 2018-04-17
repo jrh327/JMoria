@@ -21,6 +21,8 @@
  */
 package net.jonhopkins.moria;
 
+import java.util.Calendar;
+
 import net.jonhopkins.moria.types.CaveType;
 import net.jonhopkins.moria.types.CreatureType;
 import net.jonhopkins.moria.types.PlayerFlags;
@@ -37,7 +39,10 @@ public class Misc1 {
 	 * @return Always true, not using play-time hours anymore
 	 */
 	public static boolean checkTime() {
-		return true;
+		//return true;
+		Calendar cal = Calendar.getInstance();
+		String today = Files.days[cal.get(Calendar.DAY_OF_WEEK - 1)];
+		return today.charAt(cal.get(Calendar.HOUR_OF_DAY)) == 'X';
 	}
 	
 	/**
