@@ -277,7 +277,11 @@ public class Files {
 		}
 	}
 	
-	/* Print the character to a file or device		-RAK-	 */
+	/**
+	 * Print the character to a file or device. -RAK-
+	 * 
+	 * @param filename the name of the file to write to
+	 */
 	public static boolean fileCharacter(String filename) {
 		File file = new File(filename);
 		if (!file.isFile()) {
