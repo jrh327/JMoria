@@ -31,11 +31,11 @@ import net.jonhopkins.moria.types.StoreType;
 public class Store2 {
 	
 	public static String[] comment1 = {
-			"Done!",  "Accepted!",  "Fine.",  "Agreed!",  "Ok.",  "Taken!",
+			"Done!", "Accepted!", "Fine.", "Agreed!", "Ok.", "Taken!",
 			"You drive a hard bargain, but taken.",
-			"You'll force me bankrupt, but it's a deal.",  "Sigh.  I'll take it.",
-			"My poor sick children may starve, but done!",  "Finally!  I accept.",
-			"Robbed again.",  "A pleasure to do business with you!",
+			"You'll force me bankrupt, but it's a deal.", "Sigh.  I'll take it.",
+			"My poor sick children may starve, but done!", "Finally!  I accept.",
+			"Robbed again.", "A pleasure to do business with you!",
 			"My spouse will skin me, but accepted."
 	};
 	
@@ -78,9 +78,9 @@ public class Store2 {
 			"%A1 gold for that junk, no more.",
 			"%A1 gold pieces and be thankful for it!",
 			"%A1 gold pieces and not a copper more.",
-			"%A2 gold?  HA!  %A1 is more like it.",  "Try about %A1 gold.",
+			"%A2 gold?  HA!  %A1 is more like it.", "Try about %A1 gold.",
 			"I wouldn't pay %A2 for your children, try %A1.",
-			"*CHOKE* For that!?  Let's say %A1.",  "How about %A1?",
+			"*CHOKE* For that!?  Let's say %A1.", "How about %A1?",
 			"That looks war surplus!  Say %A1 gold.",
 			"I'll buy it as scrap for %A1.",
 			"%A2 is too much, let us say %A1 gold."
@@ -95,8 +95,8 @@ public class Store2 {
 	};
 	
 	public static String[] comment4b = {
-			"Out of my place!",  "out... Out... OUT!!!",  "Come back tomorrow.",
-			"Leave my place.  Begone!",  "Come back when thou art richer."
+			"Out of my place!", "out... Out... OUT!!!", "Come back tomorrow.",
+			"Leave my place.  Begone!", "Come back when thou art richer."
 	};
 	
 	public static String[] comment5 = {
@@ -127,14 +127,14 @@ public class Store2 {
 	/**
 	 * %A1 is offer, %A2 is asking.
 	 * 
-	 * @param offer - Player's offer price
-	 * @param asking - Store's asking price
-	 * @param final_ - If greater than 0, at final offer before store owner kicks player out
+	 * @param offer player's offer price
+	 * @param asking store's asking price
+	 * @param finalChance if true, at final offer before store owner kicks player out
 	 */
-	public static void printComment2(int offer, int asking, int final_) {
+	public static void printComment2(int offer, int asking, boolean finalChance) {
 		String comment;
 		
-		if (final_ > 0) {
+		if (finalChance) {
 			comment = comment2a[Rnd.randomInt(3) - 1];
 		} else {
 			comment = comment2b[Rnd.randomInt(16) - 1];
@@ -148,14 +148,14 @@ public class Store2 {
 	/**
 	 * Player trying to sell for too high of a price.
 	 * 
-	 * @param offer - Store owner's offer
-	 * @param asking - Player's asking price
-	 * @param final_ - If greater than 0, at final offer before store owner kicks player out
+	 * @param offer store owner's offer
+	 * @param asking player's asking price
+	 * @param finalChance if true, at final offer before store owner kicks player out
 	 */
-	public static void printComment3(int offer, int asking, int final_) {
+	public static void printComment3(int offer, int asking, boolean finalChance) {
 		String comment;
 		
-		if (final_ > 0) {
+		if (finalChance) {
 			comment = comment3a[Rnd.randomInt(3) - 1];
 		} else {
 			comment = comment3b[Rnd.randomInt(15) - 1];
@@ -170,9 +170,7 @@ public class Store2 {
 	 * Kick 'da bum out. -RAK-
 	 */
 	public static void printComment4() {
-		int tmp;
-		
-		tmp = Rnd.randomInt(5) - 1;
+		int tmp = Rnd.randomInt(5) - 1;
 		IO.printMessage(comment4a[tmp]);
 		IO.printMessage(comment4b[tmp]);
 	}
@@ -204,7 +202,7 @@ public class Store2 {
 	/**
 	 * Displays the set of commands. -RAK-
 	 * 
-	 * @param typ - Specifies what the player is doing, -1 if selling, otherwise buying
+	 * @param typ specifies what the player is doing, -1 if selling, otherwise buying
 	 */
 	public static void haggleCommands(int typ) {
 		if (typ == -1) {
@@ -213,57 +211,56 @@ public class Store2 {
 			IO.print("Specify an offer in gold pieces.", 21, 0);
 		}
 		IO.print("ESC) Quit Haggling.", 22, 0);
-		IO.eraseLine(23, 0);	/* clear last line */
+		IO.eraseLine(23, 0); // clear last line
 	}
 	
 	/**
 	 * Displays a store's inventory. -RAK-
 	 * 
-	 * @param store_num - Store number
-	 * @param start - Where in the store's inventory to start listing items
+	 * @param storeNum store number
+	 * @param start where in the store's inventory to start listing items
 	 */
-	public static void displayInventory(int store_num, int start) {
-		StoreType s_ptr;
-		InvenType i_ptr;
-		int i, j, stop;
-		String out_val1, out_val2;
-		int x;
+	public static void displayInventory(int storeNum, int start) {
+		StoreType store = Variable.store[storeNum];
+		int i = (start % 12);
+		int stop = ((start / 12) + 1) * 12;
+		if (stop > store.storeCounter) {
+			stop = store.storeCounter;
+		}
 		
-		s_ptr = Variable.store[store_num];
-		i = (start % 12);
-		stop = ((start / 12) + 1) * 12;
-		if (stop > s_ptr.storeCounter)	stop = s_ptr.storeCounter;
 		while (start < stop) {
-			i_ptr = s_ptr.storeInven[start].item;
-			x = i_ptr.number;
-			if ((i_ptr.subCategory >= Constants.ITEM_SINGLE_STACK_MIN) && (i_ptr.subCategory <= Constants.ITEM_SINGLE_STACK_MAX)) {
-				i_ptr.number = 1;
+			InvenType item = store.storeInven[start].item;
+			int x = item.number;
+			if (item.subCategory >= Constants.ITEM_SINGLE_STACK_MIN
+					&& item.subCategory <= Constants.ITEM_SINGLE_STACK_MAX) {
+				item.number = 1;
 			}
-			out_val1 = Desc.describeObject(i_ptr, true);
-			i_ptr.number = x;
-			out_val2 = String.format("%c) %s", 'a' + i, out_val1);
-			IO.print(out_val2, i + 5, 0);
-			x = s_ptr.storeInven[start].cost;
+			
+			String itemDesc = Desc.describeObject(item, true);
+			item.number = x;
+			IO.print(String.format("%c) %s", 'a' + i, itemDesc), i + 5, 0);
+			x = store.storeInven[start].cost;
 			if (x <= 0) {
 				int value = -x;
 				value = value * Misc3.adjustCharisma() / 100;
 				if (value <= 0) {
 					value = 1;
 				}
-				out_val2 = String.format("%9d", value);
+				IO.print(String.format("%9d", value), i + 5, 59);
 			} else {
-				out_val2 = String.format("%9d [Fixed]", x);
+				IO.print(String.format("%9d [Fixed]", x), i + 5, 59);
 			}
-			IO.print(out_val2, i+5, 59);
 			i++;
 			start++;
 		}
+		
 		if (i < 12) {
-			for (j = 0; j < (11 - i + 1); j++) {
-				IO.eraseLine(j + i + 5, 0); /* clear remaining lines */
+			for (int j = 0; j < (11 - i + 1); j++) {
+				IO.eraseLine(j + i + 5, 0); // clear remaining lines
 			}
 		}
-		if (s_ptr.storeCounter > 12) {
+		
+		if (store.storeCounter > 12) {
 			IO.putBuffer("- cont. -", 17, 60);
 		} else {
 			IO.eraseLine(17, 60);
@@ -273,269 +270,244 @@ public class Store2 {
 	/**
 	 * Re-displays only a single cost. -RAK-
 	 * 
-	 * @param store_num - Store number
-	 * @param pos - Position in the store's inventory for which to display the cost
+	 * @param storeNum store number
+	 * @param pos position in the store's inventory for which to display the cost
 	 */
-	public static void displayCost(int store_num, int pos) {
-		int i;
-		int j;
-		String out_val;
-		StoreType s_ptr;
-		
-		s_ptr = Variable.store[store_num];
-		i = (pos % 12);
+	public static void displayCost(int storeNum, int pos) {
+		StoreType s_ptr = Variable.store[storeNum];
+		int i = (pos % 12);
 		if (s_ptr.storeInven[pos].cost < 0) {
-			j = - s_ptr.storeInven[pos].cost;
+			int j = - s_ptr.storeInven[pos].cost;
 			j = j * Misc3.adjustCharisma() / 100;
-			out_val = String.format("%d", j);
+			IO.print(String.format("%d", j), i + 5, 59);
 		} else {
-			out_val = String.format("%9d [Fixed]", s_ptr.storeInven[pos].cost);
+			IO.print(String.format("%9d [Fixed]", s_ptr.storeInven[pos].cost), i + 5, 59);
 		}
-		IO.print(out_val, i+5, 59);
 	}
 	
 	/**
 	 * Displays player's gold. -RAK-
 	 */
 	public static void storePrintGold() {
-		String out_val;
-		
-		out_val = String.format("Gold Remaining : %d", Player.py.misc.gold);
-		IO.print(out_val, 18, 17);
+		IO.print(String.format("Gold Remaining : %d", Player.py.misc.gold), 18, 17);
 	}
 	
 	/**
 	 * Displays store. -RAK-
 	 * 
-	 * @param store_num - Store number
-	 * @param cur_top - Position in store's inventory currently at top of display
+	 * @param storeNum store number
+	 * @param curTop position in store's inventory currently at top of display
 	 */
-	public static void displayStore(int store_num, int cur_top) {
-		StoreType s_ptr;
-		
-		s_ptr = Variable.store[store_num];
+	public static void displayStore(int storeNum, int curTop) {
+		StoreType store = Variable.store[storeNum];
 		IO.clearScreen();
-		IO.putBuffer(Tables.owners[s_ptr.owner].ownerName, 3, 9);
+		IO.putBuffer(Tables.owners[store.owner].ownerName, 3, 9);
 		IO.putBuffer("Item", 4, 3);
 		IO.putBuffer("Asking Price", 4, 60);
 		storePrintGold();
 		displayCommands();
-		displayInventory(store_num, cur_top);
+		displayInventory(storeNum, curTop);
 	}
 	
 	/**
 	 * Get the ID of a store item and return it's value. -RAK-
 	 * 
-	 * @param com_val - Stores player commands
-	 * @param pmt - Display message
-	 * @param i - Letter of the first item in the list
-	 * @param j - Letter of the last item in the list
-	 * @return True if player selected an item to purchase
+	 * @param comVal stores player commands
+	 * @param prompt display message
+	 * @param firstLetter letter of the first item in the list
+	 * @param lastLetter letter of the last item in the list
+	 * @return whether the player selected an item to purchase
 	 */
-	public static boolean getStoreItem(IntPointer com_val, String pmt, int i, int j) {
-		CharPointer command = new CharPointer();
-		String out_val;
-		boolean flag;
+	public static boolean getStoreItem(IntPointer comVal, String prompt, int firstLetter, int lastLetter) {
+		comVal.value(-1);
 		
-		com_val.value(-1);
-		flag = false;
-		out_val = String.format("(Items %c-%c, ESC to exit) %s", i + 'a', j + 'a', pmt);
-		while (IO.getCommand(out_val, command)) {
+		CharPointer command = new CharPointer();
+		boolean choseItem = false;
+		final String message = String.format(
+				"(Items %c-%c, ESC to exit) %s",
+				firstLetter + 'a', lastLetter + 'a', prompt);
+		
+		while (IO.getCommand(message, command)) {
 			command.value((char)(command.value() - 'a'));
-			if (command.value() >= i && command.value() <= j) {
-				flag = true;
-				com_val.value(command.value());
+			if (command.value() >= firstLetter && command.value() <= lastLetter) {
+				choseItem = true;
+				comVal.value(command.value());
 				break;
 			}
 			IO.bell();
 		}
+		
 		IO.eraseLine(Constants.MSG_LINE, 0);
-		return flag;
+		return choseItem;
 	}
 	
 	/**
 	 * Increase the insult counter and get angry if too many. -RAK-
 	 * 
-	 * @param store_num - Store number
-	 * @return True if the store owner is angry
+	 * @param storeNum store number
+	 * @return whether the store owner is angry
 	 */
-	public static boolean increaseInsults(int store_num) {
-		boolean increase;
-		StoreType s_ptr;
+	public static boolean increaseInsults(int storeNum) {
+		boolean increase = false;
+		StoreType store = Variable.store[storeNum];
+		store.currInsult++;
 		
-		increase = false;
-		s_ptr = Variable.store[store_num];
-		s_ptr.currInsult++;
-		if (s_ptr.currInsult > Tables.owners[s_ptr.owner].insultMax) {
+		if (store.currInsult > Tables.owners[store.owner].insultMax) {
 			printComment4();
-			s_ptr.currInsult = 0;
-			s_ptr.badBuy++;
-			s_ptr.storeOpen = Variable.turn + 2500 + Rnd.randomInt(2500);
+			store.currInsult = 0;
+			store.badBuy++;
+			store.storeOpen = Variable.turn + 2500 + Rnd.randomInt(2500);
 			increase = true;
 		}
+		
 		return increase;
 	}
 	
 	/**
 	 * Decrease insults. -RAK-
 	 * 
-	 * @param store_num - Store number
+	 * @param storeNum store number
 	 */
-	public static void decreaseInsults(int store_num) {
-		StoreType s_ptr;
-		
-		s_ptr = Variable.store[store_num];
-		if (s_ptr.currInsult != 0) {
-			s_ptr.currInsult--;
+	public static void decreaseInsults(int storeNum) {
+		StoreType store = Variable.store[storeNum];
+		if (store.currInsult != 0) {
+			store.currInsult--;
 		}
 	}
 	
 	/**
 	 * Have insulted while haggling. -RAK-
 	 * 
-	 * @param store_num - Store number
-	 * @return True if offer insults store owner
+	 * @param storeNum store number
+	 * @return whether the offer insults store owner
 	 */
-	public static boolean haggleInsults(int store_num) {
-		boolean haggle;
-		
-		haggle = false;
-		if (increaseInsults(store_num)) {
-			haggle = true;
-		} else {
-			printComment5();
-			IO.printMessage(""); /* keep insult separate from rest of haggle */
+	public static boolean haggleInsults(int storeNum) {
+		if (increaseInsults(storeNum)) {
+			return true;
 		}
-		return haggle;
+		
+		printComment5();
+		IO.printMessage(""); // keep insult separate from rest of haggle
+		return false;
 	}
 	
 	/**
 	 * Haggle with the store owner.
 	 * 
-	 * @param comment - Store owner's response to player's offer
-	 * @param new_offer - Store's the player's newest offer
-	 * @param num_offer - How many offers have been made so far
-	 * @return True if the player successfully purchased an item
+	 * @param comment store owner's response to player's offer
+	 * @param newOffer store's the player's newest offer
+	 * @param numOffer how many offers have been made so far
+	 * @return whether the player successfully purchased an item
 	 */
-	public static boolean getHaggle(String comment, IntPointer new_offer, boolean num_offer) {
-		int i;
-		String out_val, default_offer;
-		boolean flag;
-		int clen;
-		int orig_clen;
-		int p;
-		boolean increment;
-		
-		flag = true;
-		increment = false;
-		clen = comment.length();
-		orig_clen = clen;
-		if (!num_offer) {
+	public static boolean getHaggle(String comment, IntPointer newOffer, boolean numOffer) {
+		boolean purchasingItem = true;
+		boolean increment = false;
+		int commentLen = comment.length();
+		int origCommentLen = commentLen;
+		if (!numOffer) {
 			lastStoreInc = 0;
 		}
-		i = 0;
-		do {
+		
+		int offer = 0;
+		while (purchasingItem && offer == 0) {
 			IO.print(comment, 0, 0);
-			if (num_offer && lastStoreInc != 0) {
-				default_offer = String.format("[%c%d] ", (lastStoreInc < 0) ? '-' : '+', Math.abs(lastStoreInc));
-				IO.print(default_offer, 0, orig_clen);
-				clen = orig_clen + default_offer.length();
+			if (numOffer && lastStoreInc != 0) {
+				String defaultOffer = String.format("[%c%d] ", (lastStoreInc < 0) ? '-' : '+', Math.abs(lastStoreInc));
+				IO.print(defaultOffer, 0, origCommentLen);
+				commentLen = origCommentLen + defaultOffer.length();
 			}
-			out_val = IO.getString(0, clen, 40);
-			if (out_val.equals("")) {
-				flag = false;
+			String strOffer = IO.getString(0, commentLen, 40);
+			if (strOffer.isEmpty()) {
+				purchasingItem = false;
 				break;
 			}
-			p = 0;
-			while (out_val.charAt(p) == ' ') {
-				p++;
-			}
-			if (out_val.charAt(p) == '+' || out_val.charAt(p) == '-') {
+			
+			strOffer = strOffer.trim();
+			if (strOffer.charAt(0) == '+' || strOffer.charAt(0) == '-') {
 				increment = true;
 			}
-			if (num_offer && increment) {
+			
+			if (numOffer && increment) {
 				try {
-					i = Integer.parseInt(out_val);
+					offer = Integer.parseInt(strOffer);
 				} catch (NumberFormatException e) {
 					System.err.println("Could not convert out_val to an integer in Store2.get_haggle()");
 					e.printStackTrace();
-					i = 0;
+					offer = 0;
 				}
-				/* Don't accept a zero here.  Turn off increment if it was zero
-				 * because a zero will not exit.  This can be zero if the user
-				 * did not type a number after the +/- sign.  */
-				if (i == 0) {
+				// Don't accept a zero here.  Turn off increment if it was zero
+				// because a zero will not exit.  This can be zero if the user
+				// did not type a number after the +/- sign.
+				if (offer == 0) {
 					increment = false;
 				} else {
-					lastStoreInc = i;
+					lastStoreInc = offer;
 				}
-			} else if (num_offer && out_val.equals("")) {
-				i = lastStoreInc;
+			} else if (numOffer && strOffer.isEmpty()) {
+				offer = lastStoreInc;
 				increment = true;
 			} else {
 				try {
-					i = Integer.parseInt(out_val);
+					offer = Integer.parseInt(strOffer);
 				} catch (NumberFormatException e) {
 					System.err.println("Could not convert out_val to an integer in Store2.get_haggle()");
 					e.printStackTrace();
-					i = 0;
+					offer = 0;
 				}
 			}
 			
-			/* don't allow incremental haggling, if player has not made an offer yet */
-			if (flag && !num_offer && increment) {
+			// don't allow incremental haggling, if player has not made an offer yet
+			if (purchasingItem && !numOffer && increment) {
 				IO.printMessage("You haven't even made your first offer yet!");
-				i = 0;
+				offer = 0;
 				increment = false;
 			}
-		} while (flag && (i == 0));
+		}
 		
-		if (flag) {
+		if (purchasingItem) {
 			if (increment) {
-				new_offer.value(new_offer.value() + i);
+				newOffer.value(newOffer.value() + offer);
 			} else {
-				new_offer.value(i);
+				newOffer.value(offer);
 			}
 		} else {
 			IO.eraseLine(0, 0);
 		}
-		return flag;
+		
+		return purchasingItem;
 	}
 	
 	/**
 	 * Player makes an offer.
 	 * 
-	 * @param store_num - Store number
-	 * @param comment - 
-	 * @param new_offer - Stores the player's newest offer
-	 * @param last_offer - The player's last offer
-	 * @param num_offer - Number of offers made so far
-	 * @param factor - 
+	 * @param storeNum store number
+	 * @param comment
+	 * @param newOffer stores the player's newest offer
+	 * @param lastOffer the player's last offer
+	 * @param numOffer number of offers made so far
+	 * @param factor
 	 * @return
 	 */
-	public static int receiveOffer(int store_num, String comment, IntPointer new_offer, int last_offer, boolean num_offer, int factor) {
-		boolean flag;
-		int receive;
-		
-		receive = 0;
-		flag = false;
-		do {
-			if (getHaggle(comment, new_offer, num_offer)) {
-				if (new_offer.value() * factor >= last_offer * factor) {
+	public static int receiveOffer(int storeNum, String comment, IntPointer newOffer, int lastOffer, boolean numOffer, int factor) {
+		int receive = 0;
+		boolean flag = false;
+		while (!flag) {
+			if (getHaggle(comment, newOffer, numOffer)) {
+				if (newOffer.value() * factor >= lastOffer * factor) {
 					flag = true;
-				} else if (haggleInsults(store_num)) {
+				} else if (haggleInsults(storeNum)) {
 					receive = 2;
 					flag = true;
 				} else {
-					/* new_offer rejected, reset new_offer so that incremental
-					 * haggling works correctly */
-					new_offer.value(last_offer);
+					// new_offer rejected, reset new_offer so that incremental
+					// haggling works correctly
+					newOffer.value(lastOffer);
 				}
 			} else {
 				receive = 1;
 				flag = true;
 			}
-		} while (!flag);
+		}
 		
 		return receive;
 	}
@@ -543,329 +515,348 @@ public class Store2 {
 	/**
 	 * Haggling routine. -RAK-
 	 * 
-	 * @param store_num - Store number
-	 * @param price - Stores the price of the item
-	 * @param item - The item being purchased
+	 * @param storeNum store number
+	 * @param price stores the price of the item
+	 * @param item the item being purchased
 	 * @return 
 	 */
-	public static int purchaseHaggle(int store_num, IntPointer price, InvenType item) {
-		IntPointer max_sell = new IntPointer(), min_sell = new IntPointer();
-		int max_buy;
-		int cost, cur_ask, final_ask, min_offer;
-		int last_offer;
-		IntPointer new_offer = new IntPointer();
-		int x1, x2, x3;
-		int min_per, max_per;
-		boolean flag, loop_flag;
-		String comment;
-		String out_val;
-		int purchase, final_flag;
-		boolean num_offer;
-		boolean didnt_haggle;
-		StoreType s_ptr;
-		StoreOwnerType o_ptr;
-		
-		flag = false;
-		purchase = 0;
+	public static int purchaseHaggle(int storeNum, IntPointer price, InvenType item) {
 		price.value(0);
-		final_flag = 0;
-		didnt_haggle = false;
-		s_ptr = Variable.store[store_num];
-		o_ptr = Tables.owners[s_ptr.owner];
-		cost = Store1.getSellPrice(store_num, max_sell, min_sell, item);
-		max_sell.value(max_sell.value() * Misc3.adjustCharisma() / 100);
-		if (max_sell.value() <= 0)	max_sell.value(1);
-		min_sell.value(min_sell.value() * Misc3.adjustCharisma() / 100);
-		if (min_sell.value() <= 0)	min_sell.value(1);
-		/* cast max_inflate to signed so that subtraction works correctly */
-		max_buy = cost * (200 - o_ptr.maxInflate) / 100;
-		if (max_buy <= 0) max_buy = 1;
-		min_per  = o_ptr.hagglePercent;
-		max_per  = min_per * 3;
-		haggleCommands(1);
-		cur_ask   = max_sell.value();
-		final_ask = min_sell.value();
-		min_offer = max_buy;
-		last_offer = min_offer;
-		new_offer.value(0);
-		num_offer = false; /* this prevents incremental haggling on first try */
-		comment = "Asking";
 		
-		/* go right to final price if player has bargained well */
-		if (Store1.doesNotNeedToBargain(store_num, final_ask)) {
-			IO.printMessage("After a long bargaining session, you agree upon the price.");
-			cur_ask = min_sell.value();
-			comment = "Final offer";
-			didnt_haggle = true;
-			
-			/* Set up automatic increment, so that a return will accept the
-			 * final price.  */
-			lastStoreInc = min_sell.value();
-			num_offer = true;
+		IntPointer maxSell = new IntPointer();
+		IntPointer minSell = new IntPointer();
+		int cost = Store1.getSellPrice(storeNum, maxSell, minSell, item);
+		maxSell.value(maxSell.value() * Misc3.adjustCharisma() / 100);
+		if (maxSell.value() <= 0) {
+			maxSell.value(1);
 		}
 		
-		do {
-			do {
-				loop_flag = true;
-				out_val = String.format("%s :  %d", comment, cur_ask);
-				IO.putBuffer(out_val, 1, 0);
-				purchase = receiveOffer(store_num, "What do you offer? ", new_offer, last_offer, num_offer, 1);
+		minSell.value(minSell.value() * Misc3.adjustCharisma() / 100);
+		if (minSell.value() <= 0) {
+			minSell.value(1);
+		}
+		
+		StoreType store = Variable.store[storeNum];
+		StoreOwnerType storeOwner = Tables.owners[store.owner];
+		// cast max_inflate to signed so that subtraction works correctly
+		int maxBuy = cost * (200 - storeOwner.maxInflate) / 100;
+		if (maxBuy <= 0) {
+			maxBuy = 1;
+		}
+		
+		final int minHagglePercent = storeOwner.hagglePercent;
+		final int maxHagglePercent = minHagglePercent * 3;
+		haggleCommands(1);
+		int curAskingValue = maxSell.value();
+		final int finalAskingValue = minSell.value();
+		final int minOffer = maxBuy;
+		IntPointer newOffer = new IntPointer();
+		boolean numOffer = false; // this prevents incremental haggling on first try
+		String comment = "Asking";
+		
+		boolean didntHaggle = false;
+		// go right to final price if player has bargained well
+		if (Store1.doesNotNeedToBargain(storeNum, finalAskingValue)) {
+			IO.printMessage("After a long bargaining session, you agree upon the price.");
+			curAskingValue = minSell.value();
+			comment = "Final offer";
+			didntHaggle = true;
+			
+			// Set up automatic increment, so that a return will accept the
+			// final price.
+			lastStoreInc = minSell.value();
+			numOffer = true;
+		}
+		
+		int lastOffer = minOffer;
+		int finalFlag = 0;
+		int purchase = 0;
+		boolean flag = false;
+		while (!flag) {
+			boolean loopFlag = true;
+			while (!flag && loopFlag) {
+				IO.putBuffer(String.format("%s :  %d", comment, curAskingValue), 1, 0);
+				purchase = receiveOffer(storeNum, "What do you offer? ", newOffer, lastOffer, numOffer, 1);
 				if (purchase != 0) {
 					flag = true;
-				} else {
-					if (new_offer.value() > cur_ask) {
-						printComment6();
-						/* rejected, reset new_offer for incremental haggling */
-						new_offer.value(last_offer);
-						
-						/* If the automatic increment is large enough to overflow,
-						 * then the player must have made a mistake.  Clear it
-						 * because it is useless.  */
-						if (last_offer + lastStoreInc > cur_ask) {
-							lastStoreInc = 0;
-						}
-					} else if (new_offer.value() == cur_ask) {
-						flag = true;
-						price.value(new_offer.value());
-					} else {
-						loop_flag = false;
-					}
+					break;
 				}
-			} while (!flag && loop_flag);
+				
+				if (newOffer.value() > curAskingValue) {
+					printComment6();
+					// rejected, reset new_offer for incremental haggling
+					newOffer.value(lastOffer);
+					
+					// If the automatic increment is large enough to overflow,
+					// then the player must have made a mistake.  Clear it
+					// because it is useless.
+					if (lastOffer + lastStoreInc > curAskingValue) {
+						lastStoreInc = 0;
+					}
+				} else if (newOffer.value() == curAskingValue) {
+					flag = true;
+					price.value(newOffer.value());
+				} else {
+					loopFlag = false;
+				}
+			}
 			
 			if (!flag) {
-				x1 = (new_offer.value() - last_offer) * 100 / (cur_ask - last_offer);
-				if (x1 < min_per) {
-					flag = haggleInsults(store_num);
-					if (flag)	purchase = 2;
-				} else if (x1 > max_per) {
+				int x1 = (newOffer.value() - lastOffer) * 100 / (curAskingValue - lastOffer);
+				if (x1 < minHagglePercent) {
+					flag = haggleInsults(storeNum);
+					if (flag) {
+						purchase = 2;
+					}
+				} else if (x1 > maxHagglePercent) {
 					x1 = x1 * 75 / 100;
-					if (x1 < max_per)	x1 = max_per;
+					if (x1 < maxHagglePercent) {
+						x1 = maxHagglePercent;
+					}
 				}
-				x2 = x1 + Rnd.randomInt(5) - 3;
-				x3 = ((cur_ask - new_offer.value()) * x2 / 100) + 1;
-				/* don't let the price go up */
+				
+				int x2 = x1 + Rnd.randomInt(5) - 3;
+				int x3 = ((curAskingValue - newOffer.value()) * x2 / 100) + 1;
+				// don't let the price go up
 				if (x3 < 0) {
 					x3 = 0;
 				}
-				cur_ask -= x3;
-				if (cur_ask < final_ask) {
-					cur_ask = final_ask;
+				
+				curAskingValue -= x3;
+				if (curAskingValue < finalAskingValue) {
+					curAskingValue = finalAskingValue;
 					comment = "Final Offer";
-					/* Set the automatic haggle increment so that RET will give
-					 * a new_offer equal to the final_ask price.  */
-					lastStoreInc = final_ask - new_offer.value();
-					final_flag++;
-					if (final_flag > 3) {
-						if (increaseInsults(store_num)) {
+					// Set the automatic haggle increment so that RET will give
+					// a new_offer equal to the final_ask price.
+					lastStoreInc = finalAskingValue - newOffer.value();
+					finalFlag++;
+					if (finalFlag > 3) {
+						if (increaseInsults(storeNum)) {
 							purchase = 2;
 						} else {
 							purchase = 1;
 						}
 						flag = true;
 					}
-				} else if (new_offer.value() >= cur_ask) {
+				} else if (newOffer.value() >= curAskingValue) {
 					flag = true;
-					price.value(new_offer.value());
+					price.value(newOffer.value());
 				}
+				
 				if (!flag) {
-					last_offer = new_offer.value();
-					num_offer = true; /* enable incremental haggling */
+					lastOffer = newOffer.value();
+					numOffer = true; // enable incremental haggling
 					IO.eraseLine(1, 0);
-					out_val = String.format("Your last offer : %d", last_offer);
-					IO.putBuffer(out_val, 1, 39);
-					printComment2(last_offer, cur_ask, final_flag);
+					IO.putBuffer(String.format("Your last offer : %d", lastOffer), 1, 39);
+					printComment2(lastOffer, curAskingValue, finalFlag > 0);
 					
-					/* If the current increment would take you over the store's
-					 * price, then decrease it to an exact match.  */
-					if (cur_ask - last_offer < lastStoreInc) {
-						lastStoreInc = cur_ask - last_offer;
+					// If the current increment would take you over the store's
+					// price, then decrease it to an exact match.
+					if (curAskingValue - lastOffer < lastStoreInc) {
+						lastStoreInc = curAskingValue - lastOffer;
 					}
 				}
 			}
-		} while (!flag);
+		}
 		
-		/* update bargaining info */
-		if ((purchase == 0) && (!didnt_haggle)) {
-			Store1.updateBargain(store_num, price.value(), final_ask);
+		// update bargaining info
+		if (purchase == 0 && !didntHaggle) {
+			Store1.updateBargain(storeNum, price.value(), finalAskingValue);
 		}
 		
 		return purchase;
 	}
 	
 	/**
-	 * Haggling routine -RAK-
+	 * Haggling routine. -RAK-
 	 * 
-	 * @param store_num - Store number
-	 * @param price - Stores the price
-	 * @param item - The item being sold
+	 * @param storeNum store number
+	 * @param price stores the price
+	 * @param item the item being sold
 	 * @return 
 	 */
-	public static int sellHaggle(int store_num, IntPointer price, InvenType item) {
-		int max_sell = 0, max_buy = 0, min_buy = 0;
-		int cost, cur_ask, final_ask = 0, min_offer;
-		int last_offer;
-		IntPointer new_offer = new IntPointer();
-		int max_gold = 0;
-		int x1, x2, x3;
-		int min_per = 0, max_per = 0;
-		boolean flag, loop_flag;
-		String comment;
-		String out_val;
-		StoreType s_ptr;
-		StoreOwnerType o_ptr;
-		int sell, final_flag;
-		boolean num_offer;
-		boolean didnt_haggle;
-		
-		flag = false;
-		sell = 0;
+	public static int sellHaggle(int storeNum, IntPointer price, InvenType item) {
 		price.value(0);
-		final_flag = 0;
-		didnt_haggle = false;
-		s_ptr = Variable.store[store_num];
-		cost = Store1.getItemValue(item);
+		
+		int sell = 0;
+		int maxGold = 0;
+		int minHagglePercent = 0;
+		int maxHagglePercent = 0;
+		int maxSell = 0;
+		int maxBuy = 0;
+		int minBuy = 0;
+		boolean flag = false;
+		int cost = Store1.getItemValue(item);
 		if (cost < 1) {
 			sell = 3;
 			flag = true;
 		} else {
-			o_ptr = Tables.owners[s_ptr.owner];
+			StoreType store = Variable.store[storeNum];
+			StoreOwnerType storeOwner = Tables.owners[store.owner];
 			cost = cost * (200 - Misc3.adjustCharisma()) / 100;
-			cost = cost * (200 - Tables.raceGoldAdjust[o_ptr.ownerRace][Player.py.misc.playerRace]) / 100;
-			if (cost < 1)  cost = 1;
-			max_sell = cost * o_ptr.maxInflate / 100;
-			/* cast max_inflate to signed so that subtraction works correctly */
-			max_buy  = cost * (200 - o_ptr.maxInflate) / 100;
-			min_buy  = cost * (200 - o_ptr.minInflate) / 100;
-			if (min_buy < 1) min_buy = 1;
-			if (max_buy < 1) max_buy = 1;
-			if (min_buy < max_buy)  min_buy = max_buy;
-			min_per  = o_ptr.hagglePercent;
-			max_per  = min_per * 3;
-			max_gold = o_ptr.maxCost;
+			cost = cost * (200 - Tables.raceGoldAdjust[storeOwner.ownerRace][Player.py.misc.playerRace]) / 100;
+			if (cost < 1) {
+				cost = 1;
+			}
+			
+			maxSell = cost * storeOwner.maxInflate / 100;
+			// cast max_inflate to signed so that subtraction works correctly
+			maxBuy = cost * (200 - storeOwner.maxInflate) / 100;
+			minBuy = cost * (200 - storeOwner.minInflate) / 100;
+			if (minBuy < 1) {
+				minBuy = 1;
+			}
+			if (maxBuy < 1) {
+				maxBuy = 1;
+			}
+			if (minBuy < maxBuy) {
+				minBuy = maxBuy;
+			}
+			minHagglePercent = storeOwner.hagglePercent;
+			maxHagglePercent = minHagglePercent * 3;
+			maxGold = storeOwner.maxCost;
 		}
+		
+		int finalFlag = 0;
+		boolean numOffer;
+		boolean didntHaggle = false;
+		String comment;
+		int finalAskingPrice = 0;
 		if (!flag) {
+			int curAskingPrice;
+			int minOffer;
+			int lastOffer;
 			haggleCommands(-1);
-			num_offer = false; /* this prevents incremental haggling on first try */
-			if (max_buy > max_gold) {
-				final_flag= 1;
+			numOffer = false; // this prevents incremental haggling on first try
+			if (maxBuy > maxGold) {
+				finalFlag = 1;
 				comment = "Final Offer";
-				/* Disable the automatic haggle increment on RET.  */
+				
+				// Disable the automatic haggle increment on RET.
 				lastStoreInc = 0;
-				cur_ask   = max_gold;
-				final_ask = max_gold;
+				curAskingPrice = maxGold;
+				finalAskingPrice = maxGold;
 				IO.printMessage("I am sorry, but I have not the money to afford such a fine item.");
-				didnt_haggle = true;
+				didntHaggle = true;
 			} else {
-				cur_ask   = max_buy;
-				final_ask = min_buy;
-				if (final_ask > max_gold) {
-					final_ask = max_gold;
+				curAskingPrice = maxBuy;
+				finalAskingPrice = minBuy;
+				if (finalAskingPrice > maxGold) {
+					finalAskingPrice = maxGold;
 				}
 				comment = "Offer";
 				
-				/* go right to final price if player has bargained well */
-				if (Store1.doesNotNeedToBargain(store_num, final_ask)) {
+				// go right to final price if player has bargained well
+				if (Store1.doesNotNeedToBargain(storeNum, finalAskingPrice)) {
 					IO.printMessage("After a long bargaining session, you agree upon the price.");
-					cur_ask = final_ask;
+					curAskingPrice = finalAskingPrice;
 					comment = "Final offer";
-					didnt_haggle = true;
+					didntHaggle = true;
 					
-					/* Set up automatic increment, so that a return will accept the
-					 * final price.  */
-					lastStoreInc = final_ask;
-					num_offer = true;
+					// Set up automatic increment, so that a return will accept the
+					// final price.
+					lastStoreInc = finalAskingPrice;
+					numOffer = true;
 				}
 			}
-			min_offer = max_sell;
-			last_offer = min_offer;
-			new_offer.value(0);
-			if (cur_ask < 1)	cur_ask = 1;
-			do {
-				do {
-					loop_flag = true;
-					out_val = String.format("%s :  %d", comment, cur_ask);
-					IO.putBuffer(out_val, 1, 0);
-					sell = receiveOffer(store_num, "What price do you ask? ", new_offer, last_offer, num_offer, -1);
+			
+			minOffer = maxSell;
+			lastOffer = minOffer;
+			IntPointer newOffer = new IntPointer();
+			if (curAskingPrice < 1) {
+				curAskingPrice = 1;
+			}
+			
+			while (!flag) {
+				boolean loopFlag = true;
+				while (!flag && loopFlag) {
+					IO.putBuffer(String.format("%s :  %d", comment, curAskingPrice), 1, 0);
+					sell = receiveOffer(storeNum, "What price do you ask? ", newOffer, lastOffer, numOffer, -1);
 					if (sell != 0) {
-						flag   = true;
-					} else {
-						if (new_offer.value() < cur_ask) {
-							printComment6();
-							/* rejected, reset new_offer for incremental haggling */
-							new_offer.value(last_offer);
-							
-							/* If the automatic increment is large enough to
-							 * overflow, then the player must have made a mistake.
-							 * Clear it because it is useless.  */
-							if (last_offer + lastStoreInc < cur_ask) {
-								lastStoreInc = 0;
-							}
-						} else if (new_offer.value() == cur_ask) {
-							flag = true;
-							price.value(new_offer.value());
-						} else {
-							loop_flag = false;
-						}
+						flag = true;
+						break;
 					}
-				} while (!flag && loop_flag);
+					
+					if (newOffer.value() < curAskingPrice) {
+						printComment6();
+						// rejected, reset new_offer for incremental haggling
+						newOffer.value(lastOffer);
+						
+						// If the automatic increment is large enough to
+						// overflow, then the player must have made a mistake.
+						// Clear it because it is useless.
+						if (lastOffer + lastStoreInc < curAskingPrice) {
+							lastStoreInc = 0;
+						}
+					} else if (newOffer.value() == curAskingPrice) {
+						flag = true;
+						price.value(newOffer.value());
+					} else {
+						loopFlag = false;
+					}
+				}
 				
 				if (!flag) {
-					x1 = (last_offer - new_offer.value()) * 100 / (last_offer - cur_ask);
-					if (x1 < min_per) {
-						flag = haggleInsults(store_num);
+					int x1 = (lastOffer - newOffer.value()) * 100 / (lastOffer - curAskingPrice);
+					if (x1 < minHagglePercent) {
+						flag = haggleInsults(storeNum);
 						if (flag)	sell = 2;
-					} else if (x1 > max_per) {
+					} else if (x1 > maxHagglePercent) {
 						x1 = x1 * 75 / 100;
-						if (x1 < max_per)	x1 = max_per;
+						if (x1 < maxHagglePercent) {
+							x1 = maxHagglePercent;
+						}
 					}
-					x2 = x1 + Rnd.randomInt(5) - 3;
-					x3 = ((new_offer.value() - cur_ask) * x2 / 100) + 1;
-					/* don't let the price go down */
+					
+					int x2 = x1 + Rnd.randomInt(5) - 3;
+					int x3 = ((newOffer.value() - curAskingPrice) * x2 / 100) + 1;
+					// don't let the price go down
 					if (x3 < 0) {
 						x3 = 0;
 					}
-					cur_ask += x3;
-					if (cur_ask > final_ask) {
-						cur_ask = final_ask;
+					
+					curAskingPrice += x3;
+					if (curAskingPrice > finalAskingPrice) {
+						curAskingPrice = finalAskingPrice;
 						comment = "Final Offer";
-						/* Set the automatic haggle increment so that RET will give
-						 * a new_offer equal to the final_ask price.  */
-						lastStoreInc = final_ask - new_offer.value();
-						final_flag++;
-						if (final_flag > 3) {
-							if (increaseInsults(store_num)) {
+						
+						// Set the automatic haggle increment so that RET will give
+						// a new_offer equal to the final_ask price.
+						lastStoreInc = finalAskingPrice - newOffer.value();
+						finalFlag++;
+						if (finalFlag > 3) {
+							if (increaseInsults(storeNum)) {
 								sell = 2;
 							} else {
 								sell = 1;
 							}
 							flag = true;
 						}
-					} else if (new_offer.value() <= cur_ask) {
+					} else if (newOffer.value() <= curAskingPrice) {
 						flag = true;
-						price.value(new_offer.value());
+						price.value(newOffer.value());
 					}
+					
 					if (!flag) {
-						last_offer = new_offer.value();
-						num_offer = true; /* enable incremental haggling */
+						lastOffer = newOffer.value();
+						numOffer = true; // enable incremental haggling
 						IO.eraseLine(1, 0);
-						out_val = String.format("Your last bid %d", last_offer);
-						IO.putBuffer(out_val, 1, 39);
-						printComment3(cur_ask, last_offer, final_flag);
+						IO.putBuffer(String.format("Your last bid %d", lastOffer), 1, 39);
+						printComment3(curAskingPrice, lastOffer, finalFlag > 0);
 						
-						/* If the current decrement would take you under the store's
-						 * price, then increase it to an exact match.  */
-						if (cur_ask - last_offer > lastStoreInc) {
-							lastStoreInc = cur_ask - last_offer;
+						// If the current decrement would take you under the store's
+						// price, then increase it to an exact match.
+						if (curAskingPrice - lastOffer > lastStoreInc) {
+							lastStoreInc = curAskingPrice - lastOffer;
 						}
 					}
 				}
-			} while (!flag);
+			}
 		}
 		
-		/* update bargaining info */
-		if ((sell == 0) && (!didnt_haggle)) {
-			Store1.updateBargain(store_num, price.value(), final_ask);
+		// update bargaining info
+		if (sell == 0 && !didntHaggle) {
+			Store1.updateBargain(storeNum, price.value(), finalAskingPrice);
 		}
 		
 		return sell;
@@ -874,103 +865,106 @@ public class Store2 {
 	/**
 	 * Buy an item from a store. -RAK-
 	 * 
-	 * @param store_num - Store number
-	 * @param cur_top - Stores the store inventory position of the first item being displayed
-	 * @return True if bought an item
+	 * @param storeNum store number
+	 * @param curTop stores the store inventory position of the first item being displayed
+	 * @return whether the player bought an item
 	 */
-	public static boolean storePurchase(int store_num, IntPointer cur_top) {
-		IntPointer price = new IntPointer();
-		int i, choice;
-		String out_val, tmp_str;
-		StoreType s_ptr;
-		InvenType sell_obj = new InvenType();
-		InvenRecord r_ptr;
-		IntPointer item_val = new IntPointer();
-		int item_new;
-		boolean purchase;
-		
-		purchase = false;
-		s_ptr = Variable.store[store_num];
-		/* i == number of objects shown on screen	*/
-		if (cur_top.value() == 12) {
-			i = s_ptr.storeCounter - 1 - 12;
-		} else if (s_ptr.storeCounter > 11) {
-			i = 11;
-		} else {
-			i = s_ptr.storeCounter - 1;
-		}
-		if (s_ptr.storeCounter < 1) {
+	public static boolean storePurchase(int storeNum, IntPointer curTop) {
+		StoreType store = Variable.store[storeNum];
+		if (store.storeCounter < 1) {
 			IO.printMessage("I am currently out of stock.");
+			return false;
+		}
 		
-		/* Get the item number to be bought		*/
-		} else if (getStoreItem(item_val, "Which item are you interested in? ", 0, i)) {
-			item_val.value(item_val.value() + cur_top.value());	/* true item_val	*/
-			Misc3.takeOneItem(sell_obj, s_ptr.storeInven[item_val.value()].item);
-			if (Misc3.canPickUpItem(sell_obj)) {
-				if (s_ptr.storeInven[item_val.value()].cost > 0) {
-					price.value(s_ptr.storeInven[item_val.value()].cost);
-					choice = 0;
-				} else {
-					choice = purchaseHaggle(store_num, price, sell_obj);
-				}
-				if (choice == 0) {
-					if (Player.py.misc.gold >= price.value()) {
-						printComment1();
-						decreaseInsults(store_num);
-						Player.py.misc.gold -= price.value();
-						item_new = Misc3.pickUpItem(sell_obj);
-						i = s_ptr.storeCounter;
-						Store1.storeDestroy(store_num, item_val.value(), true);
-						tmp_str = Desc.describeObject(Treasure.inventory[item_new], true);
-						out_val = String.format("You have %s (%c)", tmp_str, item_new + 'a');
-						IO.print(out_val, 0, 0);
-						Misc3.checkStrength();
-						if (cur_top.value() >= s_ptr.storeCounter) {
-							cur_top.value(0);
-							displayInventory(store_num, cur_top.value());
-						} else {
-							r_ptr = s_ptr.storeInven[item_val.value()];
-							if (i == s_ptr.storeCounter) {
-								if (r_ptr.cost < 0) {
-									r_ptr.cost = price.value();
-									displayCost(store_num, item_val.value());
-								}
-							} else {
-								displayInventory(store_num, item_val.value());
-							}
-						}
-						storePrintGold();
-					} else {
-						if (increaseInsults(store_num)) {
-							purchase = true;
-						} else {
-							printComment1();
-							IO.printMessage("Liar!  You have not the gold!");
-						}
-					}
-				} else if (choice == 2) {
-					purchase = true;
-				}
-				
-				/* Less intuitive, but looks better here than in purchase_haggle. */
-				displayCommands();
-				IO.eraseLine(1, 0);
+		// shownItems == number of objects shown on screen
+		int shownItems;
+		if (curTop.value() == 12) {
+			shownItems = store.storeCounter - 1 - 12;
+		} else if (store.storeCounter > 11) {
+			shownItems = 11;
+		} else {
+			shownItems = store.storeCounter - 1;
+		}
+		
+		IntPointer itemVal = new IntPointer();
+		// Get the item number to be bought
+		if (!getStoreItem(itemVal, "Which item are you interested in? ", 0, shownItems)) {
+			return false;
+		}
+		
+		itemVal.value(itemVal.value() + curTop.value()); // true item_val
+		InvenType itemToSell = new InvenType();
+		Misc3.takeOneItem(itemToSell, store.storeInven[itemVal.value()].item);
+		if (!Misc3.canPickUpItem(itemToSell)) {
+			IO.print("You cannot carry that many different items.", 0, 0);
+			return false;
+		}
+		
+		IntPointer price = new IntPointer();
+		int choice;
+		if (store.storeInven[itemVal.value()].cost > 0) {
+			price.value(store.storeInven[itemVal.value()].cost);
+			choice = 0;
+		} else {
+			choice = purchaseHaggle(storeNum, price, itemToSell);
+		}
+		
+		if (choice == 2) {
+			return true;
+		} else if (choice != 0) {
+			return false;
+		}
+		
+		if (Player.py.misc.gold >= price.value()) {
+			printComment1();
+			decreaseInsults(storeNum);
+			Player.py.misc.gold -= price.value();
+			int newItem = Misc3.pickUpItem(itemToSell);
+			shownItems = store.storeCounter;
+			Store1.storeDestroy(storeNum, itemVal.value(), true);
+			String itemDesc = Desc.describeObject(Treasure.inventory[newItem], true);
+			IO.print(String.format("You have %s (%c)", itemDesc, newItem + 'a'), 0, 0);
+			Misc3.checkStrength();
+			if (curTop.value() >= store.storeCounter) {
+				curTop.value(0);
+				displayInventory(storeNum, curTop.value());
 			} else {
-				IO.print("You cannot carry that many different items.", 0, 0);
+				InvenRecord item = store.storeInven[itemVal.value()];
+				if (shownItems == store.storeCounter) {
+					if (item.cost < 0) {
+						item.cost = price.value();
+						displayCost(storeNum, itemVal.value());
+					}
+				} else {
+					displayInventory(storeNum, itemVal.value());
+				}
+			}
+			storePrintGold();
+		} else {
+			if (increaseInsults(storeNum)) {
+				return true;
+			} else {
+				printComment1();
+				IO.printMessage("Liar!  You have not the gold!");
 			}
 		}
-		return purchase;
+		
+		// Less intuitive, but looks better here than in purchase_haggle.
+		displayCommands();
+		IO.eraseLine(1, 0);
+		
+		return false;
 	}
 	
 	/**
 	 * Check if the store will buy a particular item.
 	 * 
-	 * @param store_num - Store number
-	 * @param inv - Item being sold to the store
-	 * @return True if the store will buy the item
+	 * @param storeNum store number
+	 * @param inv item being sold to the store
+	 * @return whether the store will buy the item
 	 */
-	private static boolean storeBuy(int store_num, int inv) {
-		switch(store_num) {
+	private static boolean storeBuy(int storeNum, int inv) {
+		switch (storeNum) {
 		case Sets.GENERAL_STORE:
 			return Sets.isSoldInGeneralStore(inv);
 		case Sets.ARMORY:
@@ -989,168 +983,166 @@ public class Store2 {
 	}
 	
 	/**
-	 * Sell an item to the store -RAK-
+	 * Sell an item to the store. -RAK-
 	 * 
-	 * @param store_num - Store number
-	 * @param cur_top - Stores the store inventory position of the first item being displayed
-	 * @return True if sold an item
+	 * @param storeNum store number
+	 * @param curTop stores the store inventory position of the first item being displayed
+	 * @return whether sold an item
 	 */
-	public static boolean storeSell(int store_num, IntPointer cur_top) {
-		IntPointer item_val = new IntPointer();
-		IntPointer item_pos = new IntPointer();
-		IntPointer price = new IntPointer();
-		String out_val, tmp_str;
-		InvenType sold_obj = new InvenType();
-		boolean sell;
-		int choice;
-		boolean flag;
+	public static boolean storeSell(int storeNum, IntPointer curTop) {
+		int firstItem = Treasure.invenCounter;
+		int lastItem = -1;
 		char[] mask = new char[Constants.INVEN_WIELD];
-		int counter, first_item, last_item;
-		sell = false;
-		first_item = Treasure.invenCounter;
-		last_item = -1;
-		for (counter = 0; counter < Treasure.invenCounter; counter++) {
-			flag = storeBuy(store_num, Treasure.inventory[counter].category);
-			mask[counter] = (flag ? (char)1 : (char)0);
+		for (int i = 0; i < Treasure.invenCounter; i++) {
+			boolean flag = storeBuy(storeNum, Treasure.inventory[i].category);
+			mask[i] = (flag ? (char)1 : (char)0);
 			if (flag) {
-				if (counter < first_item) {
-					first_item = counter;
+				if (i < firstItem) {
+					firstItem = i;
 				}
-				if (counter > last_item) {
-					last_item = counter;
+				if (i > lastItem) {
+					lastItem = i;
 				}
-			} /* end of if (flag) */
-		} /* end of for (counter) */
-		if (last_item == -1) {
-			IO.printMessage("You have nothing to sell to this store!");
-		} else if (Moria1.getItemId(item_val, "Which one? ", first_item, last_item, mask, "I do not buy such items.")) {
-			Misc3.takeOneItem(sold_obj, Treasure.inventory[item_val.value()]);
-			tmp_str = Desc.describeObject(sold_obj, true);
-			out_val = String.format("Selling %s (%c)", tmp_str, item_val.value() + 'a');
-			IO.printMessage(out_val);
-			if (Store1.isStoreFull(sold_obj, store_num)) {
-				choice = sellHaggle(store_num, price, sold_obj);
-				if (choice == 0) {
-					printComment1();
-					decreaseInsults(store_num);
-					Player.py.misc.gold += price.value();
-					/* identify object in inventory to set object_ident */
-					Desc.identify(item_val);
-					/* retake sold_obj so that it will be identified */
-					Misc3.takeOneItem(sold_obj, Treasure.inventory[item_val.value()]);
-					/* call known2 for store item, so charges/pluses are known */
-					Desc.identifyItemPlusses(sold_obj);
-					Misc3.destroyInvenItem(item_val.value());
-					tmp_str = Desc.describeObject(sold_obj, true);
-					out_val = String.format("You've sold %s", tmp_str);
-					IO.printMessage(out_val);
-					Store1.storeCarry(store_num, item_pos, sold_obj);
-					Misc3.checkStrength();
-					if (item_pos.value() >= 0) {
-						if (item_pos.value() < 12) {
-							if (cur_top.value() < 12) {
-								displayInventory(store_num, item_pos.value());
-							} else {
-								cur_top.value(0);
-								displayInventory(store_num, cur_top.value());
-							}
-						} else if (cur_top.value() > 11) {
-							displayInventory(store_num, item_pos.value());
-						} else {
-							cur_top.value(12);
-							displayInventory(store_num, cur_top.value());
-						}
-					}
-					storePrintGold();
-				} else if (choice == 2) {
-					sell = true;
-				} else if (choice == 3) {
-					IO.printMessage("How dare you!");
-					IO.printMessage("I will not buy that!");
-					sell = increaseInsults(store_num);
-				}
-				/* Less intuitive, but looks better here than in sell_haggle. */
-				IO.eraseLine(1, 0);
-				displayCommands();
-			} else {
-				IO.printMessage("I have not the room in my store to keep it.");
 			}
 		}
+		
+		if (lastItem == -1) {
+			IO.printMessage("You have nothing to sell to this store!");
+			return false;
+		}
+		
+		IntPointer itemVal = new IntPointer();
+		if (!Moria1.getItemId(itemVal, "Which one? ", firstItem, lastItem, mask, "I do not buy such items.")) {
+			IO.printMessage("I have not the room in my store to keep it.");
+			return false;
+		}
+		
+		InvenType soldObject = new InvenType();
+		Misc3.takeOneItem(soldObject, Treasure.inventory[itemVal.value()]);
+		String itemDesc = Desc.describeObject(soldObject, true);
+		IO.printMessage(String.format("Selling %s (%c)", itemDesc, itemVal.value() + 'a'));
+		if (!Store1.storeHasRoom(soldObject, storeNum)) {
+			return false;
+		}
+		
+		boolean sell = false;
+		IntPointer price = new IntPointer();
+		int choice = sellHaggle(storeNum, price, soldObject);
+		if (choice == 0) {
+			printComment1();
+			decreaseInsults(storeNum);
+			Player.py.misc.gold += price.value();
+			// identify object in inventory to set object_ident
+			Desc.identify(itemVal);
+			// retake sold_obj so that it will be identified
+			Misc3.takeOneItem(soldObject, Treasure.inventory[itemVal.value()]);
+			// call known2 for store item, so charges/pluses are known
+			Desc.identifyItemPlusses(soldObject);
+			Misc3.destroyInvenItem(itemVal.value());
+			itemDesc = Desc.describeObject(soldObject, true);
+			IO.printMessage(String.format("You've sold %s", itemDesc));
+			
+			IntPointer item_pos = new IntPointer();
+			Store1.storeCarry(storeNum, item_pos, soldObject);
+			Misc3.checkStrength();
+			if (item_pos.value() >= 0) {
+				if (item_pos.value() < 12) {
+					if (curTop.value() < 12) {
+						displayInventory(storeNum, item_pos.value());
+					} else {
+						curTop.value(0);
+						displayInventory(storeNum, curTop.value());
+					}
+				} else if (curTop.value() > 11) {
+					displayInventory(storeNum, item_pos.value());
+				} else {
+					curTop.value(12);
+					displayInventory(storeNum, curTop.value());
+				}
+			}
+			storePrintGold();
+		} else if (choice == 2) {
+			sell = true;
+		} else if (choice == 3) {
+			IO.printMessage("How dare you!");
+			IO.printMessage("I will not buy that!");
+			sell = increaseInsults(storeNum);
+		}
+		
+		// Less intuitive, but looks better here than in sell_haggle.
+		IO.eraseLine(1, 0);
+		displayCommands();
+		
 		return sell;
 	}
 	
 	/**
 	 * Entering a store. -RAK-
 	 * 
-	 * @param store_num - Store number
+	 * @param storeNum store number
 	 */
-	public static void enterStore(int store_num) {
-		IntPointer cur_top = new IntPointer(0);
-		int tmp_chr;
-		CharPointer command = new CharPointer();
-		boolean exit_flag;
-		StoreType s_ptr;
-		
-		s_ptr = Variable.store[store_num];
-		
-		if (s_ptr.storeOpen < Variable.turn) {
-			exit_flag = false;
-			cur_top.value(0);
-			displayStore(store_num, cur_top.value());
-			do {
-				IO.moveCursor(20, 9);
-				/* clear the msg flag just like we do in dungeon.java */
-				Variable.msgFlag = 0;
-				if (IO.getCommand("", command)) {
-					switch(command.value())
-					{
-					case 'b':
-						if (cur_top.value() == 0) {
-							if (s_ptr.storeCounter > 12) {
-								cur_top.value(12);
-								displayInventory(store_num, cur_top.value());
-							} else {
-								IO.printMessage("Entire inventory is shown.");
-							}
-						} else {
-							cur_top.value(0);
-							displayInventory(store_num, cur_top.value());
-						}
-						break;
-					case 'E': case 'e':	 /* Equipment List	*/
-					case 'I': case 'i':	 /* Inventory		*/
-					case 'T': case 't':	 /* Take off		*/
-					case 'W': case 'w':	/* Wear			*/
-					case 'X': case 'x':	/* Switch weapon		*/
-						tmp_chr = Player.py.stats.useStat[Constants.A_CHR];
-						do {
-							Moria1.doInvenCommand(command.value());
-							command.value(Variable.doingInven);
-						} while (command.value() != '\0');
-						/* redisplay store prices if charisma changes */
-						if (tmp_chr != Player.py.stats.useStat[Constants.A_CHR]) {
-							displayInventory(store_num, cur_top.value());
-						}
-						Variable.freeTurnFlag = false;	/* No free moves here. -CJS- */
-						break;
-					case 'p':
-						exit_flag = storePurchase(store_num, cur_top);
-						break;
-					case 's':
-						exit_flag = storeSell(store_num, cur_top);
-						break;
-					default:
-						IO.bell();
-						break;
-					}
-				} else {
-					exit_flag = true;
-				}
-			} while (!exit_flag);
-			/* Can't save and restore the screen because inven_command does that. */
-			Misc3.drawCave();
-		} else {
+	public static void enterStore(int storeNum) {
+		StoreType store = Variable.store[storeNum];
+		if (store.storeOpen >= Variable.turn) {
 			IO.printMessage("The doors are locked.");
+			return;
 		}
+		
+		IntPointer curTop = new IntPointer(0);
+		displayStore(storeNum, curTop.value());
+		
+		boolean exitFlag = false;
+		while (!exitFlag) {
+			IO.moveCursor(20, 9);
+			// clear the msg flag just like we do in dungeon.java
+			Variable.msgFlag = 0;
+			CharPointer command = new CharPointer();
+			if (IO.getCommand("", command)) {
+				switch (command.value()) {
+				case 'b':
+					if (curTop.value() == 0) {
+						if (store.storeCounter > 12) {
+							curTop.value(12);
+							displayInventory(storeNum, curTop.value());
+						} else {
+							IO.printMessage("Entire inventory is shown.");
+						}
+					} else {
+						curTop.value(0);
+						displayInventory(storeNum, curTop.value());
+					}
+					break;
+				case 'E': case 'e': // Equipment List
+				case 'I': case 'i': // Inventory
+				case 'T': case 't': // Take off
+				case 'W': case 'w': // Wear
+				case 'X': case 'x': // Switch weapon
+					int charisma = Player.py.stats.useStat[Constants.A_CHR];
+					do {
+						Moria1.doInvenCommand(command.value());
+						command.value(Variable.doingInven);
+					} while (command.value() != '\0');
+					// redisplay store prices if charisma changes
+					if (charisma != Player.py.stats.useStat[Constants.A_CHR]) {
+						displayInventory(storeNum, curTop.value());
+					}
+					Variable.freeTurnFlag = false; // No free moves here. -CJS-
+					break;
+				case 'p':
+					exitFlag = storePurchase(storeNum, curTop);
+					break;
+				case 's':
+					exitFlag = storeSell(storeNum, curTop);
+					break;
+				default:
+					IO.bell();
+					break;
+				}
+			} else {
+				exitFlag = true;
+			}
+		}
+		// Can't save and restore the screen because inven_command does that.
+		Misc3.drawCave();
 	}
 }
