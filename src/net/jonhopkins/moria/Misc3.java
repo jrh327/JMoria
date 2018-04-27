@@ -151,9 +151,7 @@ public class Misc3 {
 								- 1 + Treasure.treasureLevel[j - 1];
 					}
 				}
-			} while (mustBeSmall
-					&& Sets.isTooLargeForChest(
-							Treasure.objectList[Treasure.sortedObjects[i]]));
+			} while (mustBeSmall && Treasure.objectList[Treasure.sortedObjects[i]].isTooLargeForChest());
 		}
 		return i;
 	}
@@ -196,7 +194,7 @@ public class Misc3 {
 				
 				/* don't put an object beneath the player, this could cause problems
 				 * if player is standing under rubble, or on a trap */
-			} while ((!allocSet(Variable.cave[y][x].fval, allocSet))
+			} while ((!allocSet(Variable.cave[y][x], allocSet))
 					|| (Variable.cave[y][x].treasureIndex != 0)
 					|| (y == Player.y && x == Player.x));
 			if (typ < 4) { // typ == 2 not used, used to be visible traps
@@ -215,14 +213,14 @@ public class Misc3 {
 		}
 	}
 	
-	private static boolean allocSet(int val, int allocSet) {
+	private static boolean allocSet(CaveType cavePos, int allocSet) {
 		switch (allocSet) {
 		case Sets.SET_CORR:
-			return Sets.isCorridor(val);
+			return cavePos.isCorridor();
 		case Sets.SET_FLOOR:
-			return Sets.isFloor(val);
+			return cavePos.isFloor();
 		case Sets.SET_ROOM:
-			return Sets.isRoom(val);
+			return cavePos.isRoom();
 		default:
 			return false;
 		}
@@ -1319,21 +1317,21 @@ public class Misc3 {
 	private static boolean isSetDamageType(int typ, InvenType inv) {
 		switch (typ) {
 		case Sets.SET_CORRODES:
-			return Sets.isCorrosive(inv);
+			return inv.isCorrosive();
 		case Sets.SET_FLAMMABLE:
-			return Sets.isFlammable(inv);
+			return inv.isFlammable();
 		case Sets.SET_FROST_DESTROY:
-			return Sets.doesFrostDestroy(inv);
+			return inv.doesFrostDestroy();
 		case Sets.SET_ACID_AFFECT:
-			return Sets.doesAcidAffect(inv);
+			return inv.doesAcidAffect();
 		case Sets.SET_LIGHTNING_DESTROY:
-			return Sets.doesLightningDestroy(inv);
+			return inv.doesLightningDestroy();
 		case Sets.SET_NULL:
-			return Sets.isNull(inv);
+			return inv.isNull();
 		case Sets.SET_ACID_DESTROY:
-			return Sets.doesAcidDestroy(inv);
+			return inv.doesAcidDestroy();
 		case Sets.SET_FIRE_DESTROY:
-			return Sets.doesFireDestroy(inv);
+			return inv.doesFireDestroy();
 		default:
 			return false;
 		}

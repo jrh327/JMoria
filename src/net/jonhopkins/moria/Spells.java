@@ -645,15 +645,15 @@ public class Spells {
 	private static boolean doesDestroy(int func, InvenType item) {
 		switch (func) {
 		case 0:
-			return Sets.isNull(item);
+			return item.isNull();
 		case 1:
-			return Sets.doesLightningDestroy(item);
+			return item.doesLightningDestroy();
 		case 2:
-			return Sets.doesAcidDestroy(item);
+			return item.doesAcidDestroy();
 		case 3:
-			return Sets.doesFrostDestroy(item);
+			return item.doesFrostDestroy();
 		case 4:
-			return Sets.doesFireDestroy(item);
+			return item.doesFireDestroy();
 		default:
 			return false;
 		}

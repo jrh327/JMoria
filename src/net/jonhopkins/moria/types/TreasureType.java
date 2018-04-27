@@ -143,4 +143,28 @@ public final class TreasureType {
 		item.level = this.level;
 		item.identify = 0;
 	}
+	
+	/**
+	 * Items too large to fit in chests. -DJG-
+	 * 
+	 * @return whether the item is too large to fit in a chest
+	 */
+	public boolean isTooLargeForChest() {
+		// Use treasure_type since item not yet created
+		switch (category) {
+		case Constants.TV_CHEST:
+		case Constants.TV_BOW:
+		case Constants.TV_POLEARM:
+		case Constants.TV_HARD_ARMOR:
+		case Constants.TV_SOFT_ARMOR:
+		case Constants.TV_STAFF:
+			return true;
+		case Constants.TV_HAFTED:
+		case Constants.TV_SWORD:
+		case Constants.TV_DIGGING:
+			return weight > 150;
+		default:
+			return false;
+		}
+	}
 }

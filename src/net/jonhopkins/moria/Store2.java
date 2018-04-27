@@ -963,20 +963,20 @@ public class Store2 {
 	 * @param inv item being sold to the store
 	 * @return whether the store will buy the item
 	 */
-	private static boolean storeBuy(int storeNum, int inv) {
+	private static boolean storeBuy(int storeNum, InvenType inv) {
 		switch (storeNum) {
 		case Sets.GENERAL_STORE:
-			return Sets.isSoldInGeneralStore(inv);
+			return inv.isSoldInGeneralStore();
 		case Sets.ARMORY:
-			return Sets.isSoldInArmory(inv);
+			return inv.isSoldInArmory();
 		case Sets.WEAPONSMITH:
-			return Sets.isSoldInWeaponsmith(inv);
+			return inv.isSoldInWeaponsmith();
 		case Sets.TEMPLE:
-			return Sets.isSoldInTemple(inv);
+			return inv.isSoldInTemple();
 		case Sets.ALCHEMIST:
-			return Sets.isSoldInAlchemist(inv);
+			return inv.isSoldInAlchemist();
 		case Sets.MAGIC_SHOP:
-			return Sets.isSoldInMagicShop(inv);
+			return inv.isSoldInMagicShop();
 		default:
 			return false;
 		}
@@ -994,7 +994,7 @@ public class Store2 {
 		int lastItem = -1;
 		char[] mask = new char[Constants.INVEN_WIELD];
 		for (int i = 0; i < Treasure.invenCounter; i++) {
-			boolean flag = storeBuy(storeNum, Treasure.inventory[i].category);
+			boolean flag = storeBuy(storeNum, Treasure.inventory[i]);
 			mask[i] = (flag ? (char)1 : (char)0);
 			if (flag) {
 				if (i < firstItem) {

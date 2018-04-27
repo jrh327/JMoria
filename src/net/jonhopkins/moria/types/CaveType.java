@@ -87,4 +87,16 @@ public final class CaveType {
 		this.permLight = false;
 		this.tempLight = false;
 	}
+	
+	public boolean isRoom() {
+		return fval == Constants.DARK_FLOOR || fval == Constants.LIGHT_FLOOR;
+	}
+	
+	public boolean isCorridor() {
+		return fval == Constants.CORR_FLOOR || fval == Constants.BLOCKED_FLOOR;
+	}
+	
+	public boolean isFloor() {
+		return fval <= Constants.MAX_CAVE_FLOOR;
+	}
 }
