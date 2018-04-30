@@ -126,10 +126,8 @@ public class Recall {
 			"rock remover"
 	};
 	
-	private static String roffbuf; // Line buffer.
-	//static char *roffp; // Pointer into line buffer.
-	private static String roffp;
-	private static int roffpline; // Place to print line now being loaded.
+	private static int curCol; // Current column to start printing
+	private static int curLine; // Place to print line now being loaded.
 	
 	private static String plural(int count, String singular, String plural) {
 		return (count == 1) ? singular : plural;
@@ -187,10 +185,8 @@ public class Recall {
 		CreatureType creature = Monsters.creatureList[monsterIndex];
 		MonsterRecallType saveMem = saveMemory(memory, creature);
 		
-		roffpline = 0;
-		roffp = roffbuf;
 		// the Constants.CM_WIN property is always known, set it if a win monster
-		roff(String.format("The %s:\n", creature.name));
+		printRecall(String.format("The %s:\n", creature.name));
 		
 		printConflictHistory(memory);
 		
@@ -211,10 +207,10 @@ public class Recall {
 		
 		// Always know the win creature.
 		if ((creature.cmove & Constants.CM_WIN) != 0) {
-			roff(" Killing one of these wins the game!");
+			printRecall(" Killing one of these wins the game!");
 		}
-		roff("\n");
-		IO.print("--pause--", roffpline, 0);
+		printRecall("\n");
+		IO.print("--pause--", curLine, 0);
 		restoreMemory(saveMem, memory);
 		
 		return IO.inkey();
@@ -298,28 +294,28 @@ public class Recall {
 	
 	private static void printConflictHistory(MonsterRecallType memory) {
 		if (memory.deaths > 0) {
-			roff(String.format("%d of the contributors to your monster memory %s",
+			printRecall(String.format("%d of the contributors to your monster memory %s",
 					memory.deaths, plural(memory.deaths, "has", "have")));
-			roff(" been killed by this creature, and ");
+			printRecall(" been killed by this creature, and ");
 			if (memory.kills == 0) {
-				roff("it is not ever known to have been defeated.");
+				printRecall("it is not ever known to have been defeated.");
 			} else {
-				roff(String.format("at least %d of the beasts %s been exterminated.",
+				printRecall(String.format("at least %d of the beasts %s been exterminated.",
 						memory.kills, plural(memory.kills, "has", "have")));
 			}
 		} else if (memory.kills > 0) {
-			roff(String.format("At least %d of these creatures %s",
+			printRecall(String.format("At least %d of these creatures %s",
 					memory.kills, plural(memory.kills, "has", "have")));
-			roff(" been killed by contributors to your monster memory.");
+			printRecall(" been killed by contributors to your monster memory.");
 		} else {
-			roff("No known battles to the death are recalled.");
+			printRecall("No known battles to the death are recalled.");
 		}
 	}
 	
 	private static boolean printKnownLevel(MonsterRecallType memory, CreatureType creature) {
 		// Immediately obvious.
 		if (creature.level == 0) {
-			roff(" It lives in the town");
+			printRecall(" It lives in the town");
 			return true;
 		} else if (memory.kills > 0) {
 			// The Balrog is a level 100 monster, but appears at 50 feet.
@@ -328,7 +324,7 @@ public class Recall {
 				level = Constants.WIN_MON_APPEAR;
 			}
 			
-			roff(String.format(" It is normally found at depths of %d feet", level * 50));
+			printRecall(String.format(" It is normally found at depths of %d feet", level * 50));
 			return true;
 		}
 		
@@ -341,38 +337,38 @@ public class Recall {
 		final int mspeed = creature.speed - 10;
 		if ((monsterMovement & Constants.CM_ALL_MV_FLAGS) != 0) {
 			if (continueLine) {
-				roff(", and");
+				printRecall(", and");
 			} else {
-				roff(" It");
+				printRecall(" It");
 				continueLine = true;
 			}
 			
-			roff(" moves");
+			printRecall(" moves");
 			if ((monsterMovement & Constants.CM_RANDOM_MOVE) != 0) {
-				roff(descHowMuch[(monsterMovement & Constants.CM_RANDOM_MOVE) >> 3]);
-				roff(" erratically");
+				printRecall(descHowMuch[(monsterMovement & Constants.CM_RANDOM_MOVE) >> 3]);
+				printRecall(" erratically");
 			}
 			
 			if (mspeed == 1) {
-				roff(" at normal speed");
+				printRecall(" at normal speed");
 			} else {
 				if ((monsterMovement & Constants.CM_RANDOM_MOVE) != 0) {
-					roff(", and");
+					printRecall(", and");
 				}
 				if (mspeed <= 0) {
 					if (mspeed == -1) {
-						roff(" very");
+						printRecall(" very");
 					} else if (mspeed < -1) {
-						roff(" incredibly");
+						printRecall(" incredibly");
 					}
-					roff(" slowly");
+					printRecall(" slowly");
 				} else {
 					if (mspeed == 3) {
-						roff(" very");
+						printRecall(" very");
 					} else if (mspeed > 3) {
-						roff(" unbelievably");
+						printRecall(" unbelievably");
 					}
-					roff(" quickly");
+					printRecall(" quickly");
 				}
 			}
 		}
@@ -384,12 +380,12 @@ public class Recall {
 		int monsterMovement = getMovement(memory, creature);
 		if ((monsterMovement & Constants.CM_ATTACK_ONLY) != 0) {
 			if (continueLine) {
-				roff(", but");
+				printRecall(", but");
 			} else {
-				roff(" It");
+				printRecall(" It");
 				continueLine = true;
 			}
-			roff(" does not deign to chase intruders");
+			printRecall(" does not deign to chase intruders");
 		}
 		
 		return continueLine;
@@ -399,15 +395,15 @@ public class Recall {
 		int rcmove = getMovement(memory, creature);
 		if ((rcmove & Constants.CM_ONLY_MAGIC) != 0) {
 			if (continueLine) {
-				roff (", but");
+				printRecall (", but");
 			} else {
-				roff (" It");
+				printRecall (" It");
 				continueLine = true;
 			}
-			roff (" always moves and attacks by using magic");
+			printRecall (" always moves and attacks by using magic");
 		}
 		if (continueLine) {
-			roff(".");
+			printRecall(".");
 		}
 		return continueLine;
 	}
@@ -419,15 +415,15 @@ public class Recall {
 			return;
 		}
 		
-		roff(" A kill of this");
+		printRecall(" A kill of this");
 		if ((creature.cdefense & Constants.CD_ANIMAL) != 0) {
-			roff(" natural");
+			printRecall(" natural");
 		}
 		if ((creature.cdefense & Constants.CD_EVIL) != 0) {
-			roff(" evil");
+			printRecall(" evil");
 		}
 		if ((creature.cdefense & Constants.CD_UNDEAD) != 0) {
-			roff(" undead");
+			printRecall(" undead");
 		}
 		
 		// calculate the integer exp part, can be larger than 64K when first
@@ -438,7 +434,7 @@ public class Recall {
 		int expFraction = ((creature.mexp * creature.level % Player.py.misc.level)
 				* 1000 / Player.py.misc.level + 5) / 10;
 		
-		roff(String.format(" creature is worth %d.%02d point%s",
+		printRecall(String.format(" creature is worth %d.%02d point%s",
 				exp, expFraction, (exp == 1 && expFraction == 0) ? "" : "s"));
 		
 		String suffix;
@@ -465,7 +461,7 @@ public class Recall {
 			article = "a";
 		}
 		
-		roff(String.format(" for a%s %d%s level character.", article, level, suffix));
+		printRecall(String.format(" for a%s %d%s level character.", article, level, suffix));
 	}
 	
 	private static void printKnownSpells(MonsterRecallType memory, CreatureType creature) {
@@ -480,17 +476,17 @@ public class Recall {
 				spells &= ~(Constants.CS_BR_LIGHT << i);
 				if (firstLine) {
 					if ((memory.spells & Constants.CS_FREQ) != 0) {
-						roff(" It can breathe ");
+						printRecall(" It can breathe ");
 					} else {
-						roff(" It is resistant to ");
+						printRecall(" It is resistant to ");
 					}
 					firstLine = false;
 				} else if ((spells & Constants.CS_BREATHE) != 0) {
-					roff(", ");
+					printRecall(", ");
 				} else {
-					roff(" and ");
+					printRecall(" and ");
 				}
-				roff(descBreath[i]);
+				printRecall(descBreath[i]);
 			}
 		}
 		
@@ -500,35 +496,35 @@ public class Recall {
 				spells &= ~(Constants.CS_TEL_SHORT << i);
 				if (continueLine) {
 					if ((monsterSpells & Constants.CS_BREATHE) != 0) {
-						roff(", and is also");
+						printRecall(", and is also");
 					} else {
-						roff(" It is");
+						printRecall(" It is");
 					}
-					roff(" magical, casting spells which ");
+					printRecall(" magical, casting spells which ");
 					continueLine = false;
 				} else if ((spells & Constants.CS_SPELLS) != 0) {
-					roff(", ");
+					printRecall(", ");
 				} else {
-					roff(" or ");
+					printRecall(" or ");
 				}
-				roff(descSpell[i]);
+				printRecall(descSpell[i]);
 			}
 		}
 		
 		if ((monsterSpells & (Constants.CS_BREATHE | Constants.CS_SPELLS)) != 0) {
 			if ((memory.spells & Constants.CS_FREQ) > 5) {
 				// Could offset by level
-				roff(String.format("; 1 time in %d", creature.spells & Constants.CS_FREQ));
+				printRecall(String.format("; 1 time in %d", creature.spells & Constants.CS_FREQ));
 			}
-			roff(".");
+			printRecall(".");
 		}
 	}
 	
 	private static void printArmor(MonsterRecallType memory, CreatureType creature) {
 		// Do we know how hard they are to kill? Armor class, hit die.
 		if (knowArmor(creature.level, memory.kills)) {
-			roff(String.format(" It has an armor rating of %d", creature.armorClass));
-			roff(String.format(" and a%s life rating of %dd%d.",
+			printRecall(String.format(" It has an armor rating of %d", creature.armorClass));
+			printRecall(String.format(" and a%s life rating of %dd%d.",
 					(creature.cdefense & Constants.CD_MAX_HP) != 0 ? " maximized" : "",
 					creature.hitDie[0], creature.hitDie[1]));
 		}
@@ -542,18 +538,18 @@ public class Recall {
 			if ((monsterMovement & (Constants.CM_INVISIBLE << i)) != 0) {
 				monsterMovement &= ~(Constants.CM_INVISIBLE << i);
 				if (continueLine) {
-					roff(" It can ");
+					printRecall(" It can ");
 					continueLine = false;
 				} else if ((monsterMovement & Constants.CM_SPECIAL) != 0) {
-					roff(", ");
+					printRecall(", ");
 				} else {
-					roff(" and ");
+					printRecall(" and ");
 				}
-				roff(descMove[i]);
+				printRecall(descMove[i]);
 			}
 		}
 		if (!continueLine) {
-			roff(".");
+			printRecall(".");
 		}
 	}
 	
@@ -566,33 +562,33 @@ public class Recall {
 			if ((defense & (Constants.CD_FROST << i)) != 0) {
 				defense &= ~(Constants.CD_FROST << i);
 				if (continueLine) {
-					roff(" It is susceptible to ");
+					printRecall(" It is susceptible to ");
 					continueLine = false;
 				} else if ((defense & Constants.CD_WEAKNESS) != 0) {
-					roff(", ");
+					printRecall(", ");
 				} else {
-					roff(" and ");
+					printRecall(" and ");
 				}
-				roff(descWeakness[i]);
+				printRecall(descWeakness[i]);
 			}
 		}
 		if (!continueLine) {
-			roff(".");
+			printRecall(".");
 		}
 		
 		if ((monsterDefense & Constants.CD_INFRA) != 0) {
-			roff(" It is warm blooded");
+			printRecall(" It is warm blooded");
 		}
 		if ((monsterDefense & Constants.CD_NO_SLEEP) != 0) {
 			if ((monsterDefense & Constants.CD_INFRA) != 0) {
-				roff(", and");
+				printRecall(", and");
 			} else {
-				roff(" It");
+				printRecall(" It");
 			}
-			roff(" cannot be charmed or slept");
+			printRecall(" cannot be charmed or slept");
 		}
 		if ((monsterDefense & (Constants.CD_NO_SLEEP|Constants.CD_INFRA)) != 0) {
-			roff(".");
+			printRecall(".");
 		}
 	}
 	
@@ -604,31 +600,31 @@ public class Recall {
 			return;
 		}
 		
-		roff(" It ");
+		printRecall(" It ");
 		if (creature.sleep > 200) {
-			roff("prefers to ignore");
+			printRecall("prefers to ignore");
 		} else if (creature.sleep > 95) {
-			roff("pays very little attention to");
+			printRecall("pays very little attention to");
 		} else if (creature.sleep > 75) {
-			roff("pays little attention to");
+			printRecall("pays little attention to");
 		} else if (creature.sleep > 45) {
-			roff("tends to overlook");
+			printRecall("tends to overlook");
 		} else if (creature.sleep > 25) {
-			roff("takes quite a while to see");
+			printRecall("takes quite a while to see");
 		} else if (creature.sleep > 10) {
-			roff("takes a while to see");
+			printRecall("takes a while to see");
 		} else if (creature.sleep > 5) {
-			roff("is fairly observant of");
+			printRecall("is fairly observant of");
 		} else if (creature.sleep > 3) {
-			roff("is observant of");
+			printRecall("is observant of");
 		} else if (creature.sleep > 1) {
-			roff("is very observant of");
+			printRecall("is very observant of");
 		} else if (creature.sleep != 0) {
-			roff("is vigilant for");
+			printRecall("is vigilant for");
 		} else {
-			roff("is ever vigilant for");
+			printRecall("is ever vigilant for");
 		}
-		roff(String.format(" intruders, which it may notice from %d feet.",
+		printRecall(String.format(" intruders, which it may notice from %d feet.",
 				10 * creature.aoeRadius));
 	}
 	
@@ -639,19 +635,19 @@ public class Recall {
 			return;
 		}
 		
-		roff(" It may");
+		printRecall(" It may");
 		int carry = (monsterMovement & Constants.CM_TREASURE) >> Constants.CM_TR_SHIFT;
 		if (carry == 1) {
 			if ((creature.cmove & Constants.CM_TREASURE) == Constants.CM_60_RANDOM) {
-				roff(" sometimes");
+				printRecall(" sometimes");
 			} else {
-				roff(" often");
+				printRecall(" often");
 			}
 		} else if (carry == 2 && ((creature.cmove & Constants.CM_TREASURE) == (Constants.CM_60_RANDOM|Constants.CM_90_RANDOM))) {
-			roff(" often");
+			printRecall(" often");
 		}
 		
-		roff(" carry");
+		printRecall(" carry");
 		String object;
 		if ((monsterMovement & Constants.CM_SMALL_OBJ) != 0) {
 			object = " small objects";
@@ -666,24 +662,24 @@ public class Recall {
 				object = " an object";
 			}
 		} else if (carry == 2) {
-			roff(" one or two");
+			printRecall(" one or two");
 		} else {
-			roff(String.format(" up to %d", carry));
+			printRecall(String.format(" up to %d", carry));
 		}
 		
 		if ((monsterMovement & Constants.CM_CARRY_OBJ) != 0) {
-			roff(object);
+			printRecall(object);
 			if ((monsterMovement & Constants.CM_CARRY_GOLD) != 0) {
-				roff(" or treasure");
+				printRecall(" or treasure");
 				if (carry > 1) {
-					roff("s");
+					printRecall("s");
 				}
 			}
-			roff(".");
+			printRecall(".");
 		} else if (carry != 1) {
-			roff(" treasures.");
+			printRecall(" treasures.");
 		} else {
-			roff(" treasure.");
+			printRecall(" treasure.");
 		}
 	}
 	
@@ -712,95 +708,71 @@ public class Recall {
 			
 			j++;
 			if (j == 1) {
-				roff(" It can ");
+				printRecall(" It can ");
 			} else if (j == knownAttacks) {
-				roff(", and ");
+				printRecall(", and ");
 			} else {
-				roff(", ");
+				printRecall(", ");
 			}
 			
 			if (attHow > 19) {
 				attHow = 0;
 			}
 			
-			roff(descAttackMethod[attHow]);
+			printRecall(descAttackMethod[attHow]);
 			if (attType != 1 || dice > 0 && sides > 0) {
-				roff(" to ");
+				printRecall(" to ");
 				if (attType > 24) {
 					attType = 0;
 				}
-				roff(descAttackType[attType]);
+				printRecall(descAttackType[attType]);
 				if (dice != 0 && sides != 0) {
 					if (knowDamage(creature.level, memory.attacks[i], dice * sides)) {
 						if (attType == 19) { // Loss of experience
-							roff(" by");
+							printRecall(" by");
 						} else {
-							roff(" with damage");
+							printRecall(" with damage");
 						}
-						roff(String.format(" %dd%d", dice, sides));
+						printRecall(String.format(" %dd%d", dice, sides));
 					}
 				}
 			}
 		}
 		
 		if (j != 0) {
-			roff(".");
+			printRecall(".");
 		} else if (knownAttacks > 0 && memory.attacks[0] >= 10) {
-			roff(" It has no physical attacks.");
+			printRecall(" It has no physical attacks.");
 		} else {
-			roff(" Nothing is known about its attack.");
+			printRecall(" Nothing is known about its attack.");
 		}
 	}
 	
 	/**
 	 * Print out strings, filling up lines as we go.
 	 * 
-	 * @param p
+	 * @param toPrint
 	 */
-	public static void roff(String p) {
-		//String q, r;
-		// TODO pretty sure this is wrong. fix in master and pull in
-		for (int i = 0; i < p.length(); i++) {
-			roffp = roffp + p.charAt(i);
-			if (p.charAt(i) == '\n' || roffp.length() > 80) {
-				int j = i;
-				if (p.charAt(i) != '\n') {
-					while (p.charAt(j) != ' ') {
-						j--;
-					}
-				}
-				
-				p = p.substring(0, j);
-				IO.print(roffbuf, roffpline, 0);
-				roffpline++;
-				roffbuf = roffbuf.substring(j);
+	public static void printRecall(String toPrint) {
+		String[] lines = toPrint.split("\n");
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			while (curCol + line.length() > Constants.VTYPESIZ) {
+				String temp = line.substring(0, Constants.VTYPESIZ - curCol);
+				int index = temp.lastIndexOf(' ');
+				IO.print(line.substring(0, index), curLine, curCol);
+				line = line.substring(index + 1);
+				curCol = 0;
+				curLine++;
+			}
+			
+			IO.print(line, curLine, curCol);
+			curCol += line.length();
+			
+			if (i < lines.length - 1) {
+				curCol = 0;
+				curLine++;
 			}
 		}
-		/*
-		while (*p) {
-			*roffp = *p;
-			if (*p == '\n' || roffp >= roffbuf + sizeof(roffbuf)-1) {
-				q = roffp;
-				if (*p != '\n') {
-					while (*q != ' ') {
-						q--;
-					}
-				}
-				*q = 0;
-				io.prt(roffbuf, roffpline, 0);
-				roffpline++;
-				r = roffbuf;
-				while (q < roffp) {
-					q++;
-					*r = *q;
-					r++;
-				}
-				roffp = r;
-			} else {
-				roffp++;
-			}
-			p++;
-		}
-		*/
 	}
 }
